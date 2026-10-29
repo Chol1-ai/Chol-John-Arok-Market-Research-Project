@@ -1,55 +1,61 @@
 # End-to-End User Workflows & State Progression
 
-**Reference:** PRD Section 3 (Workflows A, B, and C)  
-**Related Files:** `Foundational_Concept.md` · `Tech_Stack.md` (DDL) · `Payment_Integration.md` (checkout & webhook detail)
+**Reference:** PRD Section 3 (Workflows A, B, and C)<br>
+**Related Files:** `Foundational_Concept.md` · `Design_System.md` · `User_Profiles_Personas.md` · `Delivery_Zones_and_Dispatch.md` · `Tech_Stack.md` (DDL) · `Payment_Integration.md` (checkout & webhook detail) · `Hardware_and_Peripherals.md` · `Seed_Data_and_Testing.md` · `Repo_Scaffold_and_Config.md` · `Demo_Script_and_Closing_Strategy.md` · `Daily_Audit_Digest.md` (shift-close owner report) · `Deployment_Runbook.md` (offline edge operation) · `Service_Contract_and_Invoice_Template.md` · `Implementation_Phases.md`
 
 ---
 
-## 1. Master Ticket Lifecycle (PRD Compliant)
+## 1. Master Ticket Lifecycle
 
 ```
-[ CUSTOMER PRE-ORDER ]                      [ WAITER TABLE ORDER ]
-             │                                        │
-             ▼                                        ▼
-  (Payment: INITIATED)                      (Waiter Fires Tab)
-  (MoMo Webhook: SUCCESSFUL)                         │
-  └─ See Payment_Integration.md §§4–6               │
-             │                                        │
-             └──────────────────┬─────────────────────┘
+[ CUSTOMER PRE-ORDER ]                  [ DINE-IN TABLE TAB ]
+             │                                    │
+             ▼                                    ▼
+   POST /orders: AWAITING_PAYMENT       FOH fires tab: PENDING
+   Payment INITIATED                            (postpay;
+   → PENDING_CUSTOMER_PIN                        settled at bill close)
+             │                                    │
+   (MoMo/Airtel webhook: SUCCESSFUL)               │
+   order.status → PENDING                          │
+             └──────────────────┬─────────────────┘
                                 │
                                ▼
                         ┌─────────────┐
-                        │  1. PENDING │
+                        │  1. PENDING │  ← first KDS-visible state
                         └─────────────┘
              (Enters KDS Queue / Channel Segregated)
-                               │
-                    (Cook Claims / Taps Card)
-                               │
-                               ▼
+                                │
+                     (Cook Claims / Taps Card)
+                                │
+                                ▼
                        ┌──────────────┐
                        │ 2. PREPARING │
                        └──────────────┘
            (On Grill / In Steam Pot / Recipe Decremented)
-                               │
-                      (Cook Bumps Ticket)
-                               │
-                               ▼
+                                │
+                       (Cook Bumps Ticket)
+                                │
+                                ▼
                          ┌───────────┐
                          │  3. READY │
                          └───────────┘
-          (Customer Notified / Token Flashes on Screen)
-                               │
+          (Customer SMS / Token Flashes on Screen)
+                                │
                  (Expediter Hands Over Meal)
-                               │
-                               ▼
-                       ┌─────────────┐
-                       │ 4. COMPLETED│
-                       └─────────────┘
+                                │
+                                ▼
+                        ┌─────────────┐
+                        │ 4. COMPLETED│
+                        └─────────────┘
 ```
 
-> **Normalised State Machine:** Every order — regardless of channel — passes through exactly these four states. There are no shortcut or skip transitions permitted outside of `CANCELLED`.
-> 
-> **Payment Pre-Condition:** Pre-order tickets enter `PENDING` **only after** the payment reaches `SUCCESSFUL` status. The idempotency engine in `Payment_Integration.md §6` prevents duplicate tickets if a telco webhook is retried.
+> **Normalised State Machine:** Every kitchen ticket — regardless of channel — passes through exactly four KDS states: `PENDING`, `PREPARING`, `READY`, and `COMPLETED`. `AWAITING_PAYMENT` is a pre-kitchen holding state, not a fifth kitchen state; it never appears on the KDS. `CANCELLED` is a terminal exception available from `AWAITING_PAYMENT` or any KDS state, and every cancellation is logged.
+>
+> **Prepaid gate:** Customer-app, QR, and phone-delivery orders are created as `AWAITING_PAYMENT` before the STK push. They enter `PENDING` — and therefore the KDS — **only after** a verified `SUCCESSFUL` payment. A failed or timed-out attempt leaves the order available for retry until the payment TTL marks it `CANCELLED`. The idempotency engine in `Payment_Integration.md §6` prevents duplicate tickets when a telco webhook is retried.
+>
+> **Postpay exception:** A dine-in table tab fired by an authenticated `WAITER_FOH` or `MANAGER_ADMIN` enters `PENDING` without prepayment. The guest pays at bill close; the payment record is then attached to the tab. This exception never applies to customer-app, QR, or delivery orders.
+>
+> **Delivery Pre-Condition:** A `PHONE_DELIVERY` order cannot initiate payment until it has an active outlet-matched zone, a room/office/gate note, a recipient name, and a rider-callable phone number. The optional GPS pin is never a precondition. See `Delivery_Zones_and_Dispatch.md §4` and `§9`.
 
 ---
 
@@ -60,20 +66,21 @@
 | Step | Actor | Action |
 | :--- | :--- | :--- |
 | 1 | Customer | Scans Foodizo Ham Towers QR code or opens saved bookmark |
-| 2 | Customer | Adds `1x Fried Chicken & Chips` (UGX 14,000) + `1x Fresh Passion Juice` (UGX 4,000) |
-| 3 | Customer | Selects fulfillment type: `PRE_ORDER_PICKUP` |
-| 4 | Customer | Inputs MTN MoMo number (`077XXXXXXX`) → taps **"Pay Now"** |
-| 5 | System | MSISDN normalised to E.164 (`25677XXXXXXX`); carrier detected as MTN |
-| 6 | System | `POST /collection/v1_0/requesttopay` dispatched with `X-Reference-Id` (idempotency key); payment record status → `INITIATED` |
-| 7 | Customer | USSD prompt arrives on handset: *"Approve UGX 18,000 for Foodizo? Enter PIN"*; frontend shows 45s countdown |
-| 8 | Customer | Enters MoMo PIN on handset |
-| 9 | System | MTN webhook fires: `status: SUCCESSFUL` → idempotency guard checks → order promoted to `PENDING` → `TOKEN #088` issued *(see `Payment_Integration.md §6`)* |
-| 10 | KDS | Order appears on Station 2 (Fryer) with amber badge: `TAKEAWAY — TOKEN #088` |
-| 11 | Chef Juma | Advances: `PENDING` → `PREPARING` → `READY` |
-| 12 | System | Push notification sent: *"Token #088 is ready at the Express Counter!"* |
-| 13 | Customer | Walks past register queue → shows `TOKEN #088` → collects bag → departs |
+| 2 | Customer | Adds `1x 2pc Fried Chicken & Chips` (UGX 14,000) + `1x Fresh Passion Juice` (UGX 4,000) |
+| 3 | Customer | Selects fulfillment type: **Pre-order pickup** (canonical channel: `TAKEAWAY_PICKUP`) |
+| 4 | System | Resolves menu IDs, names, and prices from `menu_items`; creates the order as `AWAITING_PAYMENT`; reserves the next daily display token and a globally unique `public_ref` |
+| 5 | Customer | Inputs MTN MoMo number (`077XXXXXXX`) → taps **"Pay Now"** |
+| 6 | System | MSISDN normalised to E.164 (`25677XXXXXXX`); carrier detected as MTN; the same number is stored as `orders.customer_phone` so the `READY` SMS has a destination |
+| 7 | System | `POST /collection/v1_0/requesttopay` dispatched with `X-Reference-Id` (payment-attempt idempotency key); payment record status → `INITIATED` |
+| 8 | Customer | USSD prompt arrives on handset: *"Approve UGX 18,000 for Foodizo? Enter PIN"*; frontend shows the payment countdown |
+| 9 | Customer | Enters MoMo PIN on handset |
+| 10 | System | MTN webhook fires: `status: SUCCESSFUL` → `payment_events` dedupe and row locks run → `payments.status → SUCCESSFUL` → `orders.status: AWAITING_PAYMENT → PENDING` *(see `Payment_Integration.md §6`)* |
+| 11 | KDS | Order appears on Station 2 (Fryer) with the reserved token: `TAKEAWAY_PICKUP — TOKEN-088` |
+| 12 | Chef Juma | Advances: `PENDING` → `PREPARING` → `READY` |
+| 13 | System | SMS sent: *"TOKEN-088 is ready at the Express Counter!"* |
+| 14 | Customer | Walks past register queue → shows `TOKEN-088` → collects bag → departs |
 
-**Outcome:** Zero counter queue time. Order fulfilled in < 7 minutes from payment webhook confirmation. Duplicate KDS tickets are prevented by idempotency keys — see `Payment_Integration.md §6`.
+**Outcome:** Zero counter queue time. Order fulfilled in < 7 minutes from payment webhook confirmation. Duplicate KDS tickets are prevented by payment-attempt idempotency and event dedupe — see `Payment_Integration.md §6`.
 
 ---
 
@@ -81,18 +88,23 @@
 
 | Step | Actor | Action |
 | :--- | :--- | :--- |
-| 1 | Prossy N. | Views Table Occupancy Grid → taps `Table 4` (`VACANT` → `OCCUPIED`) |
+| 1 | Prossy N. | Views Table Occupancy Grid → taps `T-04` (`VACANT` → `OCCUPIED`) |
 | 2 | Prossy N. | Selects `2x Beef Luwombo`, `2x Matooke`, `2x Water`. Adds note: *"Sauce hot"* |
 | 3 | Prossy N. | Taps **"Send to Kitchen"** |
-| 4 | KDS | Order appears on Station 1 (Steam Line): `DINE_IN — TABLE 4` (blue badge) → `PENDING` |
-| 5 | Cashier | Takes phone order: `1x Beef Luwombo Takeaway` for Dr. Okello |
-| 6 | KDS | Second ticket appears: `PHONE_DELIVERY — DR. OKELLO` (purple badge) → `PENDING` |
-| 7 | Cook | KDS shows both tickets chronologically. Cook prepares both Luwombo portions together. |
-| 8 | Cook | Advances both tickets: `PREPARING` → `READY` |
-| 9 | Prossy N. | Tablet shows Table 4 order as `READY` → serves plated meal |
-| 10 | System | Delivery ticket triggers notification to cashier for driver dispatch |
+| 4 | KDS | The authenticated FOH action creates the postpay table tab as `PENDING`; it appears on Station 1 (Steam Line): `DINE_IN — T-04` (blue badge) |
+| 5 | Prossy N. (FOH cashier) | Takes phone order: `1x Beef Luwombo (delivery)` for Dr. Okello. Selects delivery zone `YMCA_MAIN`, enters note `Block C, Room 204 — call at security gate`, recipient `Dr. Okello`, phone `0701 234 567` |
+| 6 | System | Validates the zone is active and belongs to Obunuzi; recomputes menu prices and delivery fee `UGX 1,500`; creates the order as `AWAITING_PAYMENT`; includes the fee in the MoMo/Airtel amount. No payment is initiated if the zone, note, name, or phone is missing |
+| 7 | System | Verified payment promotes the delivery order to `PENDING` |
+| 8 | KDS | Second ticket appears: `PHONE_DELIVERY — TOKEN-043` (purple badge) with destination `YMCA MAIN CAMPUS`. Customer name, phone, room note, and GPS (if any) are not shown on the KDS |
+| 9 | Cook | KDS shows both tickets chronologically. Cook prepares both Luwombo portions together. |
+| 10 | Cook | Advances both tickets: `PREPARING` → `READY` |
+| 11 | Prossy N. | Tablet shows T-04 order as `READY` → serves plated meal |
+| 12 | System | Expo printer fires the delivery chit with token, destination, room/office note, phone, and instructions |
+| 13 | Prossy N. | Opens `/pos/dispatch`, verifies the chit, taps **CALL** or **WHATSAPP** if needed, hands the bag to the rider, and records rider name + dispatch method + any cash transport advance |
+| 14 | Prossy N. | On delivery, marks the order `COMPLETED` and records the handoff outcome plus any returned change. If the customer is unreachable, the manager follows the failed-delivery routine instead of marking it complete |
+| 15 | Prossy N. (FOH cashier) | When the T-04 guests leave, settles the table tab by cash, direct MoMo, or verified manual MoMo through `POST /api/v1/orders/:id/settle`, then marks the table `NEEDS_CLEARING` |
 
-**Outcome:** Zero duplicate prep. Table-side and phone channel harmonised in one shared queue.
+**Outcome:** Zero duplicate prep. Table-side and phone channels harmonised in one shared queue. The rider gets a complete landmark/room/phone chit without a live map, and the kitchen never sees customer personal data.
 
 ---
 
@@ -100,25 +112,28 @@
 
 #### C1. Real-Time BOM Decrement (Triggered at `PREPARING`)
 
-When `TOKEN #088` advances to `PREPARING`, the BOM engine automatically decrements:
+When `TOKEN-088` advances to `PREPARING`, the BOM engine automatically decrements the recipe attached to `menu_items.id`:
 
 | Ingredient | Amount Deducted | Unit |
 | :--- | :--- | :--- |
-| Raw Broiler Chicken | 1 | piece |
+| Raw Broiler Chicken Portions | 2 | pieces |
 | Potatoes (pre-cut chips) | 250 | grams |
-| Mukwano Cooking Oil | 30 | ml |
+| Mukwano Cooking Oil | 50 | ml |
+
+The same transaction deducts every defined BOM line on the ticket; menu items without a BOM do not affect inventory. The decrement is idempotent per order: a duplicate bump cannot consume inventory twice.
 
 #### C2. Low-Stock Threshold Alert
 
 1. Cooking oil stock drops below **5.0 Liters**.
-2. System pushes SMS + Dashboard alert to **Zito Mbowe**:  
+2. System sends an SMS and an in-page dashboard alert to **Zito Mbowe**:
    > *"⚠️ Warning: Mukwano Cooking Oil below reorder point at Ham Towers. Current: 4.7L / Threshold: 5.0L."*
 3. Manager can acknowledge and trigger a purchase order from the Manager Portal.
 
 #### C3. Closing Surplus Log — 9:00 PM EOD Routine
 
+0. **Optional 7:30 PM clearance:** The manager may apply a reduced price to selected items through the existing **Menu & Pricing** admin. This is a manual price change, not an automatic markdown engine. The normal menu price returns the next day.
 1. Kitchen supervisor opens **Manager Portal → "End-of-Day Surplus Log"**.
-2. System pre-populates with remaining cooked batch quantities:
+2. **System pre-populates the surplus form with the menu items and lets the supervisor enter the remaining cooked portions manually:**
 
    | Item | Leftover Portions |
    | :--- | :--- |
@@ -130,25 +145,63 @@ When `TOKEN #088` advances to `PREPARING`, the BOM engine automatically decremen
 
    | Resolution Code | Meaning |
    | :--- | :--- |
-   | `DISCOUNTED_CLEARANCE_SOLD` | Sold at reduced price before closing |
+   | `DISCOUNTED_CLEARANCE` | Sold at reduced price before closing |
    | `STAFF_MEAL` | Consumed by kitchen/service staff |
    | `WASTE_DISCARDED` | Disposed of — triggers waste metric |
 
-4. Log appends to **Predictive Sales Engine** to compute lower batch prep targets for the following day, reducing food cost variance.
+4. The manager records opening and closing stock counts for the high-turnover ingredients. The surplus log alone is not an inventory variance measurement.
+5. The surplus rows and the count delta feed the following day's prep-target review. They do not promise an automatic forecast or a fixed variance reduction.
+
+---
+
+### Flow D: Customer-App Delivery & Zone Dispatch
+
+This flow is the PWA equivalent of the phone-in delivery in Flow B. It uses the same zone catalogue and the same four KDS states after payment.
+
+| Step | Actor | Action |
+| :--- | :--- | :--- |
+| 1 | Customer | Opens the Foodizo or Obunuzi PWA and selects **Delivery** |
+| 2 | Customer | Selects an outlet-scoped zone, e.g. `Makerere University — Mary Stuart Hall` (UGX 2,000 · 10–15 min) |
+| 3 | Customer | Enters note `Block B, Room 14 — call at the gate`, recipient name, and phone `0772 123 456` |
+| 4 | Customer | Optionally taps **“Use my current GPS pin”**. Browser asks permission once; the pin is stored with an accuracy value. Declining continues checkout |
+| 5 | System | Normalises the phone to E.164, validates the active zone + note + name + phone, resolves menu prices, recomputes the fee, and displays `Subtotal + Delivery fee = Total` |
+| 6 | Customer | Pays via MTN MoMo or Airtel Money; the order remains `AWAITING_PAYMENT` until the verified webhook promotes it to `PENDING` — see `Payment_Integration.md §6` |
+| 7 | KDS | Ticket appears as `PHONE_DELIVERY` with destination zone `MARY STUART HALL`; the KDS does not show the phone, room note, or GPS |
+| 8 | Chef | Advances `PENDING` → `PREPARING` → `READY`; BOM decrements as normal |
+| 9 | System | Fires the delivery chit; the FOH Dispatch Queue shows `CALL`, `WHATSAPP`, `PRINT CHIT`, and `OPEN PIN` (if a pin exists) |
+| 10 | FOH / Rider | Rider takes the bag; FOH records rider name, dispatch method, and any cash transport advance. Rider calls the customer from the chit |
+| 11 | FOH | Marks the order `COMPLETED` on delivery; records `DELIVERED` handoff outcome and any returned change |
+| 12 | Manager | If unreachable, records `FAILED_UNREACHABLE`, returns food to the outlet, and routes it through the surplus/waste log |
+
+**Outcome:** The customer gets delivery without a live map, the rider gets a complete drop-off note and phone number, and the kitchen/manager retain a clean audit of the handoff.
 
 ---
 
 ## 3. State Transition Reference
 
 ```
-PENDING  ──(Cook Claims)──►  PREPARING  ──(Cook Bumps)──►  READY  ──(Handed Over)──►  COMPLETED
-   │                              │                           │
-   └────────(Manager Cancel)──────┴────────────────────────────┴──────►  CANCELLED
+AWAITING_PAYMENT ──(Verified payment)──► PENDING ──(Cook claims)──► PREPARING
+       │                                    │                         │
+       │                                    │                         ▼
+       │                                    │                ┌─────────────┐
+       │                                    │                │    READY    │
+       │                                    │                └─────────────┘
+       │                                    │                         │
+       │                                    │                (Handed over)
+       │                                    │                         ▼
+       │                                    │                ┌─────────────┐
+       │                                    │                │  COMPLETED  │
+       │                                    │                └─────────────┘
+       └──────────(Manager approval / payment TTL)────┴──────────────────────────────► CANCELLED
 ```
 
-- `CANCELLED` is only accessible by `MANAGER_ADMIN` or `WAITER_FOH` roles.
+- `AWAITING_PAYMENT` is pre-kitchen and is never returned to a KDS queue.
+- A dine-in table tab fired by authenticated FOH may start at `PENDING` (postpay exception). Every other order starts at `AWAITING_PAYMENT`.
+- `CANCELLED` is only accessible by `MANAGER_ADMIN`, by `WAITER_FOH` only with manager phone + PIN approval, or by the payment-TTL cleanup job (`cancellation_reason = 'PAYMENT_TIMEOUT'`). The void must write to the append-only audit log, naming both the requesting user and the approving manager. If the order already has a `SUCCESSFUL` MTN, Airtel, or manual-MoMo payment, the same transaction moves it to `REFUND_PENDING` with `audit_flag = 'CANCELLED_AFTER_PAYMENT'` (or `'FAILED_DELIVERY'`); a cash-paid cancellation is a manager exception recorded in the audit log, because Phase 1 has no cash-refund ledger. See `Payment_Integration.md §8.3`.
 - `COMPLETED` is a terminal state; no further transitions are permitted.
 - `OVERDUE` is a **display flag only** (> 10 minutes in `PREPARING`) — it does not alter the state machine.
+- Delivery does **not** add a fifth order status in Phase 1. The rider handoff is recorded in `delivery_handoffs` (`dispatched_at`, `delivered_at`, `outcome`, `rider_advance_ugx`, `rider_advance_returned_ugx`). The order stays `READY` while the rider is on the way, then becomes `COMPLETED` on delivery. Failed deliveries are resolved as `CANCELLED` with a manager-authorised reason and are logged; they are never marked `COMPLETED`.
+- **Derived dispatch state:** For UI and reporting, a `READY` delivery order with an open handoff (`outcome = 'PENDING'`) is displayed as **ON THE WAY**, not as “waiting in kitchen.” Any dashboard that counts `READY` orders must apply this rule, or kitchen-readiness metrics will be inflated by bags that already left the building. This is a view rule, not a new `order_status` value.
 
 ## 4. Payment State Reference
 
@@ -156,12 +209,22 @@ PENDING  ──(Cook Claims)──►  PREPARING  ──(Cook Bumps)──►  R
 
 ```
 INITIATED ──► PENDING_CUSTOMER_PIN ──(Webhook SUCCESS)──► SUCCESSFUL ──► [order.status = PENDING]
-                    │
-             (45s Timeout)
-                    │
-                    ► TIMED_OUT / FAILED ──► [Show USSD Fallback UI]
+    │                 │
+    │          (Webhook FAILED / timeout)
+    │                 │
+    │                 ▼
+    │          FAILED / TIMED_OUT ──► [retry with a new attempt]
+    │                 │
+    │          (Payment TTL expires)
+    │                 ▼
+    │            order CANCELLED
+    │
+    └──(Late/duplicate success, or paid order cancelled)──► REFUND_PENDING ──► REFUNDED [manager confirms external reversal; never gross]
 ```
 
 - The payment state machine lives in the `payments` table — DDL in `Payment_Integration.md §7`.
-- A KDS ticket (`order.status = PENDING`) is **never created** until payment reaches `SUCCESSFUL`.
-- `VERIFIED_MANUAL_MOMO` is set as `payments.audit_flag` when a cashier manually confirms a USSD counter payment.
+- A prepaid kitchen ticket (`order.status = PENDING`) is **never created** until payment reaches `SUCCESSFUL`. The exception is an authenticated dine-in table tab, which is postpay.
+- The display token is reserved at order creation, not when the webhook arrives; this keeps `TOKEN-088` stable while the customer pays. Telco references use the globally unique `orders.public_ref`, never the reusable token.
+- One `SUCCESSFUL` payment is allowed per order. A late or duplicate success, or a paid order cancelled after payment (including a failed delivery), becomes `REFUND_PENDING` with a reason and is excluded from gross collections until resolved. See `Payment_Integration.md §8.3`.
+- `VERIFIED_MANUAL_MOMO` is a `payments.audit_flag`, not a payment status. It marks a cashier-verified manual USSD payment; the payment row still moves to `SUCCESSFUL`.
+- For `PHONE_DELIVERY`, the STK amount includes the server-computed zone delivery fee. Validation of zone, note, recipient name, and phone happens before the payment record is created; a failed delivery validation never produces a payment prompt.

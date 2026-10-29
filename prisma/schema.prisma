@@ -1,0 +1,505 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ============================================================
+// 1. GLOBAL SYSTEM ENUMS
+// ============================================================
+
+enum outlet_location {
+  FOODIZO_HAM_TOWERS
+  OBUNUZI_YMCA
+}
+
+enum user_role {
+  CUSTOMER
+  WAITER_FOH
+  KITCHEN_STAFF
+  MANAGER_ADMIN
+}
+
+enum channel_type {
+  DINE_IN
+  TAKEAWAY_PICKUP
+  PHONE_DELIVERY
+}
+
+enum order_status {
+  AWAITING_PAYMENT
+  PENDING
+  PREPARING
+  READY
+  COMPLETED
+  CANCELLED
+}
+
+enum station_type {
+  STEAM_LINE
+  GRILL_FRYER
+  ROLEX_GRIDDLE
+  BAR_BEVERAGE
+}
+
+enum table_status {
+  VACANT
+  OCCUPIED
+  BILL_REQUESTED
+  NEEDS_CLEARING
+}
+
+enum uom_type {
+  MILLILITERS
+  LITERS
+  GRAMS
+  KILOGRAMS
+  PIECES
+  PORTIONS
+  UNITS
+}
+
+enum surplus_action {
+  DISCOUNTED_CLEARANCE
+  STAFF_MEAL
+  WASTE_DISCARDED
+}
+
+enum dispatch_method {
+  CALL
+  WHATSAPP
+  COUNTER_HANDOFF
+}
+
+enum handoff_outcome {
+  PENDING
+  DELIVERED
+  FAILED_UNREACHABLE
+  REFUSED
+  RETURNED
+}
+
+enum digest_status {
+  GENERATED
+  PARTIAL
+  SENT
+  FAILED
+}
+
+enum payment_status {
+  INITIATED
+  PENDING_CUSTOMER_PIN
+  SUCCESSFUL
+  FAILED
+  TIMED_OUT
+  CANCELLED
+  REFUND_PENDING
+  REFUNDED
+}
+
+enum payment_carrier {
+  MTN
+  AIRTEL
+  CASH
+  MANUAL_MOMO
+}
+
+// ============================================================
+// 2. USERS, SESSIONS & APPEND-ONLY AUDIT LOG
+// ============================================================
+
+model users {
+  id                 String           @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  outlet             outlet_location?
+  role               user_role
+  full_name          String           @db.VarChar(100)
+  phone_number       String           @unique @db.VarChar(20)
+  pin_hash           String
+  is_active          Boolean          @default(true)
+  failed_login_count Int              @default(0)
+  locked_until       DateTime?        @db.Timestamptz(6)
+  last_login_at      DateTime?        @db.Timestamptz(6)
+  created_at         DateTime         @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime         @default(now()) @updatedAt @db.Timestamptz(6)
+
+  sessions            user_sessions[]
+  audit_logs          audit_log[]
+  assigned_tables     restaurant_tables[]
+  created_orders      orders[]               @relation("orders_created_by")
+  cancelled_orders    orders[]               @relation("orders_cancelled_by")
+  surplus_logs        closing_surplus_logs[]
+  dispatched_handoffs delivery_handoffs[]
+  cash_counts         cash_counts[]
+  recorded_payments   payments[]             @relation("payments_recorded_by")
+  verified_payments   payments[]             @relation("payments_manual_verified_by")
+
+  @@map("users")
+}
+
+model user_sessions {
+  id         String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  user_id    String    @db.Uuid
+  token_hash String    @unique @db.Char(64)
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  expires_at DateTime  @db.Timestamptz(6)
+  revoked_at DateTime? @db.Timestamptz(6)
+  ip_address String?   @db.Inet
+  user_agent String?
+
+  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id, expires_at], name: "idx_user_sessions_active")
+  @@map("user_sessions")
+}
+
+model audit_log {
+  id            BigInt           @id @default(autoincrement())
+  occurred_at   DateTime         @default(now()) @db.Timestamptz(6)
+  actor_user_id String?          @db.Uuid
+  actor_role    user_role?
+  outlet        outlet_location?
+  action        String           @db.VarChar(80)
+  entity_type   String           @db.VarChar(40)
+  entity_id     String?          @db.Uuid
+  before_json   Json?
+  after_json    Json?
+  reason        String?
+  ip_address    String?          @db.Inet
+  request_id    String?          @db.Uuid
+
+  actor users? @relation(fields: [actor_user_id], references: [id], onDelete: SetNull)
+
+  @@index([occurred_at(sort: Desc)], name: "idx_audit_log_occurred")
+  @@index([entity_type, entity_id, occurred_at(sort: Desc)], name: "idx_audit_log_entity")
+  @@index([actor_user_id, occurred_at(sort: Desc)], name: "idx_audit_log_actor")
+  @@map("audit_log")
+}
+
+// ============================================================
+// 3. DELIVERY ZONES & LANDMARKS
+// ============================================================
+
+model delivery_zones {
+  id              String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  outlet          outlet_location
+  zone_code       String          @db.VarChar(40)
+  display_name    String          @db.VarChar(100)
+  landmark_group  String          @db.VarChar(60)
+  landmark_hint   String?         @db.VarChar(160)
+  fee_ugx         Decimal         @default(0.00) @db.Decimal(10, 2)
+  eta_min_minutes Int             @default(10)
+  eta_max_minutes Int             @default(20)
+  is_active       Boolean         @default(true)
+  display_order   Int             @default(0)
+  created_at      DateTime?       @default(now()) @db.Timestamptz(6)
+
+  orders orders[]
+
+  @@unique([outlet, zone_code], name: "delivery_zones_outlet_code_unique")
+  @@index([outlet, is_active, display_order], name: "idx_delivery_zones_outlet_active")
+  @@map("delivery_zones")
+}
+
+// ============================================================
+// 4. RESTAURANT TABLES & OCCUPANCY MATRIX
+// ============================================================
+
+model restaurant_tables {
+  id                String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  outlet            outlet_location
+  table_label       String          @db.VarChar(20)
+  capacity          Int?            @default(4)
+  status            table_status    @default(VACANT)
+  current_waiter_id String?         @db.Uuid
+  updated_at        DateTime?       @default(now()) @updatedAt @db.Timestamptz(6)
+
+  current_waiter users?   @relation(fields: [current_waiter_id], references: [id], onDelete: SetNull)
+  orders         orders[]
+
+  @@unique([outlet, table_label], name: "restaurant_tables_outlet_label_unique")
+  @@map("restaurant_tables")
+}
+
+// ============================================================
+// 5. MENU ITEMS & PRICING
+// ============================================================
+
+model menu_items {
+  id         String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  outlet     outlet_location
+  name       String          @db.VarChar(100)
+  category   String          @db.VarChar(40)
+  price_ugx  Decimal         @db.Decimal(10, 2)
+  station    station_type
+  is_active  Boolean         @default(true)
+  is_86      Boolean         @default(false)
+  created_at DateTime        @default(now()) @db.Timestamptz(6)
+  updated_at DateTime        @default(now()) @updatedAt @db.Timestamptz(6)
+
+  order_items  order_items[]
+  recipe_boms  recipe_bom[]
+  surplus_logs closing_surplus_logs[]
+
+  @@unique([outlet, name], name: "menu_items_outlet_name_unique")
+  @@index([outlet, is_active, category, name], name: "idx_menu_items_outlet_active")
+  @@map("menu_items")
+}
+
+// ============================================================
+// 6. ORDERS REGISTER
+// ============================================================
+
+model orders {
+  id                       String           @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  outlet                   outlet_location
+  digital_token            String           @db.VarChar(20)
+  public_ref               String           @unique @db.VarChar(32)
+  business_date            DateTime         @db.Date
+  channel                  channel_type
+  status                   order_status     @default(AWAITING_PAYMENT)
+  table_id                 String?          @db.Uuid
+  created_by               String?          @db.Uuid
+  customer_name            String?          @db.VarChar(80)
+  customer_phone           String?          @db.VarChar(20)
+  delivery_zone_id         String?          @db.Uuid
+  delivery_note            String?          @db.VarChar(160)
+  delivery_lat             Decimal?         @db.Decimal(9, 6)
+  delivery_lng             Decimal?         @db.Decimal(9, 6)
+  delivery_accuracy_m      Decimal?         @db.Decimal(6, 1)
+  delivery_pin_captured_at DateTime?        @db.Timestamptz(6)
+  subtotal_ugx             Decimal          @db.Decimal(10, 2)
+  delivery_fee_ugx         Decimal          @default(0.00) @db.Decimal(10, 2)
+  total_amount_ugx         Decimal          @db.Decimal(10, 2)
+  estimated_prep_minutes   Int?             @default(10)
+  created_at               DateTime         @default(now()) @db.Timestamptz(6)
+  ready_at                 DateTime?        @db.Timestamptz(6)
+  completed_at             DateTime?        @db.Timestamptz(6)
+  cancelled_at             DateTime?        @db.Timestamptz(6)
+  cancelled_by             String?          @db.Uuid
+  cancellation_reason      String?
+
+  table         restaurant_tables? @relation(fields: [table_id], references: [id])
+  creator       users?             @relation("orders_created_by", fields: [created_by], references: [id], onDelete: SetNull)
+  canceller     users?             @relation("orders_cancelled_by", fields: [cancelled_by], references: [id], onDelete: SetNull)
+  delivery_zone delivery_zones?    @relation(fields: [delivery_zone_id], references: [id], onDelete: Restrict)
+
+  order_items order_items[]
+  handoffs    delivery_handoffs[]
+  payments    payments[]
+
+  @@unique([outlet, business_date, digital_token], name: "orders_token_unique_per_day")
+  @@index([delivery_zone_id], name: "idx_orders_delivery_zone")
+  @@index([channel, status], name: "idx_orders_channel_status")
+  @@index([outlet, business_date, status], name: "idx_orders_outlet_business_date")
+  @@map("orders")
+}
+
+// ============================================================
+// 7. ORDER LINE ITEMS
+// ============================================================
+
+model order_items {
+  id             String       @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  order_id       String       @db.Uuid
+  menu_item_id   String       @db.Uuid
+  menu_item_name String       @db.VarChar(100)
+  station        station_type
+  quantity       Int          @default(1)
+  unit_price_ugx Decimal      @db.Decimal(10, 2)
+  line_total_ugx Decimal      @db.Decimal(10, 2)
+  is_bumped      Boolean      @default(false)
+  special_notes  String?
+
+  order     orders     @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  menu_item menu_items @relation(fields: [menu_item_id], references: [id], onDelete: Restrict)
+
+  @@index([order_id], name: "idx_order_items_order")
+  @@map("order_items")
+}
+
+// ============================================================
+// 8. RAW MATERIALS & INVENTORY REGISTER
+// ============================================================
+
+model raw_inventory {
+  id              String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  outlet          outlet_location
+  item_name       String          @db.VarChar(100)
+  unit_of_measure uom_type
+  current_stock   Decimal         @default(0.00) @db.Decimal(10, 2)
+  alert_threshold Decimal         @default(5.00) @db.Decimal(10, 2)
+  updated_at      DateTime?       @default(now()) @updatedAt @db.Timestamptz(6)
+
+  recipe_boms recipe_bom[]
+
+  @@unique([outlet, item_name], name: "raw_inventory_outlet_name_unique")
+  @@map("raw_inventory")
+}
+
+// ============================================================
+// 9. RECIPE BILL OF MATERIALS (BOM)
+// ============================================================
+
+model recipe_bom {
+  id                String  @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  menu_item_id      String  @db.Uuid
+  raw_material_id   String  @db.Uuid
+  quantity_deducted Decimal @db.Decimal(10, 2)
+
+  menu_item    menu_items    @relation(fields: [menu_item_id], references: [id], onDelete: Cascade)
+  raw_material raw_inventory @relation(fields: [raw_material_id], references: [id], onDelete: Restrict)
+
+  @@unique([menu_item_id, raw_material_id], name: "recipe_bom_unique")
+  @@map("recipe_bom")
+}
+
+// ============================================================
+// 10. CLOSING SURPLUS LOGS
+// ============================================================
+
+model closing_surplus_logs {
+  id                String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  outlet            outlet_location
+  log_date          DateTime        @db.Date
+  menu_item_id      String?         @db.Uuid
+  item_name         String          @db.VarChar(100)
+  leftover_portions Int
+  resolution        surplus_action
+  logged_by         String          @db.Uuid
+  created_at        DateTime        @default(now()) @db.Timestamptz(6)
+
+  menu_item menu_items? @relation(fields: [menu_item_id], references: [id], onDelete: SetNull)
+  user      users       @relation(fields: [logged_by], references: [id], onDelete: Restrict)
+
+  @@index([outlet, log_date], name: "idx_closing_surplus_date")
+  @@map("closing_surplus_logs")
+}
+
+// ============================================================
+// 11. DELIVERY HANDOFFS
+// ============================================================
+
+model delivery_handoffs {
+  id                         String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  order_id                   String          @db.Uuid
+  rider_name                 String          @db.VarChar(80)
+  rider_phone                String?         @db.VarChar(20)
+  dispatched_by              String          @db.Uuid
+  dispatch_method            dispatch_method @default(CALL)
+  rider_advance_ugx          Decimal         @default(0.00) @db.Decimal(10, 2)
+  rider_advance_returned_ugx Decimal         @default(0.00) @db.Decimal(10, 2)
+  dispatched_at              DateTime?       @default(now()) @db.Timestamptz(6)
+  delivered_at               DateTime?       @db.Timestamptz(6)
+  outcome                    handoff_outcome @default(PENDING)
+  notes                      String?
+
+  order      orders @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  dispatcher users  @relation(fields: [dispatched_by], references: [id], onDelete: Restrict)
+
+  @@index([order_id], name: "idx_delivery_handoffs_order")
+  @@index([outcome, dispatched_at], name: "idx_delivery_handoffs_outcome")
+  @@map("delivery_handoffs")
+}
+
+// ============================================================
+// 12. CASH COUNTS
+// ============================================================
+
+model cash_counts {
+  id                String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  outlet            outlet_location
+  business_date     DateTime        @db.Date
+  counted_cash_ugx  Decimal         @db.Decimal(10, 2)
+  expected_cash_ugx Decimal         @db.Decimal(10, 2)
+  variance_ugx      Decimal         @db.Decimal(10, 2)
+  counted_by        String          @db.Uuid
+  counted_at        DateTime        @default(now()) @db.Timestamptz(6)
+  notes             String?
+
+  counter users @relation(fields: [counted_by], references: [id], onDelete: Restrict)
+
+  @@unique([outlet, business_date], name: "cash_counts_unique")
+  @@index([business_date, outlet], name: "idx_cash_counts_date")
+  @@map("cash_counts")
+}
+
+// ============================================================
+// 13. DAILY DIGESTS
+// ============================================================
+
+model daily_digests {
+  id            String        @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  digest_date   DateTime      @unique @db.Date
+  generated_at  DateTime      @default(now()) @db.Timestamptz(6)
+  status        digest_status @default(GENERATED)
+  payload_json  Json
+  channels_sent String[]      @default([])
+  error         String?
+
+  @@index([status, digest_date], name: "idx_daily_digests_status")
+  @@map("daily_digests")
+}
+
+// ============================================================
+// 14. TOKEN COUNTERS
+// ============================================================
+
+model token_counters {
+  outlet        outlet_location
+  business_date DateTime        @db.Date
+  last_value    Int             @default(0)
+
+  @@id([outlet, business_date])
+  @@map("token_counters")
+}
+
+// ============================================================
+// 15. PAYMENTS REGISTER & WEBHOOK EVENTS
+// ============================================================
+
+model payments {
+  id                      String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  order_id                String          @db.Uuid
+  idempotency_key         String          @unique @db.VarChar(36)
+  carrier                 payment_carrier
+  customer_msisdn         String?         @db.VarChar(20)
+  amount_ugx              Decimal         @db.Decimal(10, 2)
+  status                  payment_status  @default(INITIATED)
+  external_transaction_id String?         @db.VarChar(100)
+  audit_flag              String?         @db.VarChar(50)
+  failure_reason          String?
+  recorded_by             String?         @db.Uuid
+  manual_verified_by      String?         @db.Uuid
+  manual_verified_at      DateTime?       @db.Timestamptz(6)
+  initiated_at            DateTime        @default(now()) @db.Timestamptz(6)
+  completed_at            DateTime?       @db.Timestamptz(6)
+  refunded_at             DateTime?       @db.Timestamptz(6)
+  refund_reference        String?         @db.VarChar(100)
+
+  order    orders           @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  recorder users?           @relation("payments_recorded_by", fields: [recorded_by], references: [id], onDelete: SetNull)
+  verifier users?           @relation("payments_manual_verified_by", fields: [manual_verified_by], references: [id], onDelete: SetNull)
+  events   payment_events[]
+
+  @@index([order_id], name: "idx_payments_order")
+  @@index([carrier, completed_at], name: "idx_payments_completed")
+  @@map("payments")
+}
+
+model payment_events {
+  id           BigInt   @id @default(autoincrement())
+  payment_id   String   @db.Uuid
+  provider     String   @db.VarChar(20)
+  event_id     String   @db.VarChar(180)
+  payload_json Json
+  received_at  DateTime @default(now()) @db.Timestamptz(6)
+
+  payment payments @relation(fields: [payment_id], references: [id], onDelete: Cascade)
+
+  @@unique([provider, event_id], name: "payment_events_unique")
+  @@map("payment_events")
+}
+
