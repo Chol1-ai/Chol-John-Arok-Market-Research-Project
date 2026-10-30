@@ -325,13 +325,15 @@ model order_items {
 // ============================================================
 
 model raw_inventory {
-  id              String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  outlet          outlet_location
-  item_name       String          @db.VarChar(100)
-  unit_of_measure uom_type
-  current_stock   Decimal         @default(0.00) @db.Decimal(10, 2)
-  alert_threshold Decimal         @default(5.00) @db.Decimal(10, 2)
-  updated_at      DateTime?       @default(now()) @updatedAt @db.Timestamptz(6)
+  id               String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  outlet           outlet_location
+  item_name        String          @db.VarChar(100)
+  unit_of_measure  uom_type
+  current_stock    Decimal         @default(0.00) @db.Decimal(10, 2)
+  alert_threshold  Decimal         @default(5.00) @db.Decimal(10, 2)
+  // true = poultry, cooking oil, beef — tracked in daily digest inventory summary
+  is_high_turnover Boolean         @default(false)
+  updated_at       DateTime?       @default(now()) @updatedAt @db.Timestamptz(6)
 
   recipe_boms recipe_bom[]
 
@@ -394,6 +396,8 @@ model delivery_handoffs {
   dispatched_at              DateTime?       @default(now()) @db.Timestamptz(6)
   delivered_at               DateTime?       @db.Timestamptz(6)
   outcome                    handoff_outcome @default(PENDING)
+  // true once a manager has reviewed a FAILED_UNREACHABLE outcome
+  reviewed                   Boolean         @default(false)
   notes                      String?
 
   order      orders @relation(fields: [order_id], references: [id], onDelete: Cascade)
@@ -432,14 +436,25 @@ model cash_counts {
 
 model daily_digests {
   id            String        @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  digest_date   DateTime      @unique @db.Date
+  business_date DateTime      @unique @db.Date
   generated_at  DateTime      @default(now()) @db.Timestamptz(6)
   status        digest_status @default(GENERATED)
+  // Total gross revenue for the day — null until the cron has computed it
+  gross_ugx     Decimal?      @db.Decimal(12, 2)
+  // Count of exceptions requiring manager review (refunds, failed deliveries, missing cash counts)
+  flags         Int           @default(0)
+  // 8-char hex token for the /d/[token] secure deep-link; 72-hour expiry
+  link_token    String?       @db.VarChar(16)
   payload_json  Json
   channels_sent String[]      @default([])
+  // SENT | FAILED | SKIPPED — tracked independently per channel
+  sms_status    String?       @db.VarChar(20)
+  email_status  String?       @db.VarChar(20)
+  // null until the digest has been dispatched; used for idempotency guard
+  sent_at       DateTime?     @db.Timestamptz(6)
   error         String?
 
-  @@index([status, digest_date], name: "idx_daily_digests_status")
+  @@index([status, business_date], name: "idx_daily_digests_status")
   @@map("daily_digests")
 }
 

@@ -1,11 +1,11 @@
-# Daily Audit & Owner Digest Engine
+﻿# Daily Audit & Owner Digest Engine
 
-**Status:** Phase 1 specification — owner reporting, not customer messaging.<br>
-**Target Recipient:** Zito Mbowe (Project Coordinator — MRFSS Project)<br>
+**Status:** Phase 1 specification â€” owner reporting, not customer messaging.<br>
+**Target Recipient:** Zito Mbowe (Project Coordinator â€” MRFSS Project)<br>
 **Scheduled Execution:** Daily at **21:30 EAT** (after kitchen close and cash count)<br>
 **Primary Channels:** Africa's Talking **SMS** (short summary) + **email** (full report)<br>
-**Optional Channel:** WhatsApp Cloud API utility template (owner only; see §3.3)<br>
-**Related Specifications:** `Foundational_Concept.md` · `Design_System.md` · `User_Flow.md` · `User_Profiles_Personas.md` · `Delivery_Zones_and_Dispatch.md` · `Tech_Stack.md` · `Payment_Integration.md` · `Hardware_and_Peripherals.md` · `Seed_Data_and_Testing.md` · `Repo_Scaffold_and_Config.md` · `Demo_Script_and_Closing_Strategy.md` · `Deployment_Runbook.md` · `Service_Contract_and_Invoice_Template.md` · `Implementation_Phases.md`
+**Optional Channel:** WhatsApp Cloud API utility template (owner only; see Â§3.3)<br>
+**Related Specifications:** `Foundational_Concept.md` Â· `Design_System.md` Â· `User_Flow.md` Â· `User_Profiles_Personas.md` Â· `Delivery_Zones_and_Dispatch.md` Â· `Tech_Stack.md` Â· `Payment_Integration.md` Â· `Hardware_and_Peripherals.md` Â· `Seed_Data_and_Testing.md` Â· `Repo_Scaffold_and_Config.md` Â· `Demo_Script_and_Closing_Strategy.md` Â· `Deployment_Runbook.md` Â· `Service_Contract_and_Invoice_Template.md` Â · `build_strategy/Build_Strategy_and_Phases.md`
 
 ---
 
@@ -21,7 +21,7 @@ A restaurant coordinator will not reliably open an admin dashboard at 10:00 PM a
 
 The digest is a **notification layer**. It does not replace the `/admin/reconcile`, `/admin/inventory`, or `/admin/audit` screens; it links to them.
 
-> **Rule:** Never hard-code a zero variance. If the cash count is missing, the digest must say **“cash count not submitted”** and flag it. A false “BALANCED” message is worse than no message.
+> **Rule:** Never hard-code a zero variance. If the cash count is missing, the digest must say **â€œcash count not submittedâ€** and flag it. A false â€œBALANCEDâ€ message is worse than no message.
 
 ---
 
@@ -31,13 +31,13 @@ The original proposal made WhatsApp Business API the primary channel. That is no
 
 | Channel | Phase 1 decision | Why |
 | :--- | :--- | :--- |
-| **SMS — Africa's Talking** | **Primary** | Already integrated for pickup alerts; no new vendor; works on any phone; ~UGX 25–30 per segment |
+| **SMS â€” Africa's Talking** | **Primary** | Already integrated for pickup alerts; no new vendor; works on any phone; ~UGX 25â€“30 per segment |
 | **Email** | **Primary for the full report** | Free/cheap, printable, no message-length limit, good for the audit trail |
-| **WhatsApp Cloud API** | **Optional, owner-only, Phase 1.5** | Requires Meta Business verification, a dedicated number, an approved utility template, a permanent token, and per-message fees. It also conflicts with the customer-facing “no WhatsApp Business API” decision unless scoped carefully |
+| **WhatsApp Cloud API** | **Optional, owner-only, Phase 1.5** | Requires Meta Business verification, a dedicated number, an approved utility template, a permanent token, and per-message fees. It also conflicts with the customer-facing â€œno WhatsApp Business APIâ€ decision unless scoped carefully |
 | **WhatsApp `wa.me` link** | **Not a notification channel** | It opens a chat; it cannot push an automated 21:30 message |
 | **Telegram bot** | Not adopted | Another app for the owner to install; SMS/email already work |
 
-The existing `Delivery_Zones_and_Dispatch.md §3` rule remains: **no customer-facing WhatsApp Business API in Phase 1**. The owner digest is a separate, internal notification. If WhatsApp is enabled for the owner, it must be behind `OWNER_WHATSAPP_ENABLED=false` by default.
+The existing `Delivery_Zones_and_Dispatch.md Â§3` rule remains: **no customer-facing WhatsApp Business API in Phase 1**. The owner digest is a separate, internal notification. If WhatsApp is enabled for the owner, it must be behind `OWNER_WHATSAPP_ENABLED=false` by default.
 
 **SMS length:** Africa's Talking bills per 160-character segment. The digest must send a **2-segment maximum** summary, not the full report. The full report goes by email (and optionally WhatsApp).
 
@@ -61,12 +61,12 @@ CASH COUNT MISSING - drawer not verified.
 Full: https://admin.foodizo.ug/d/7f3c2a
 ```
 
-The SMS is always the **consolidated** figure. Per-outlet detail belongs in the email and the report page; do not label a consolidated total “FOODIZO.”
+The SMS is always the **consolidated** figure. Per-outlet detail belongs in the email and the report page; do not label a consolidated total â€œFOODIZO.â€
 
 ### 3.2 Full email report (illustrative)
 
 ```text
-FOODIZO & OBUNUZI — DAILY AUDIT
+FOODIZO & OBUNUZI â€” DAILY AUDIT
 Date: Wednesday, 28 October 2026 | Generated: 21:30 EAT
 Status: CLOSED | Prepared by: automated digest
 
@@ -91,13 +91,13 @@ CASH RECONCILIATION
   Variance                      UGX         0   BALANCED
 
 HIGH-TURNOVER STOCK
-  Foodizo — Mukwano cooking oil 25.8 L remaining | 14.2 L BOM usage today
-  Foodizo — Broiler chicken     18 pcs remaining | 68 pcs sold
-  Foodizo — Farm eggs           36 eggs remaining | 142 used (71 Rolexes)
-  Obunuzi — Stewing beef        18.2 kg remaining | 6.8 kg BOM usage today
+  Foodizo â€” Mukwano cooking oil 25.8 L remaining | 14.2 L BOM usage today
+  Foodizo â€” Broiler chicken     18 pcs remaining | 68 pcs sold
+  Foodizo â€” Farm eggs           36 eggs remaining | 142 used (71 Rolexes)
+  Obunuzi â€” Stewing beef        18.2 kg remaining | 6.8 kg BOM usage today
 
 SURPLUS RESOLUTIONS
-  Obunuzi — Beef Luwombo        6 portions cleared | 2 staff meals | 1 waste
+  Obunuzi â€” Beef Luwombo        6 portions cleared | 2 staff meals | 1 waste
 
 EXCEPTIONS
   - 1 voided ticket (T-02, waiter error, manager phone + PIN approved)
@@ -129,14 +129,14 @@ Setup burden to document before enabling: Meta Business Portfolio, phone number 
 
 ## 4. Data Sources & Formulas
 
-The canonical schema is in `Tech_Stack.md §3` and `Payment_Integration.md §7`. The digest requires two supporting tables, also defined in `Tech_Stack.md §3`:
+The canonical schema is in `Tech_Stack.md Â§3` and `Payment_Integration.md Â§7`. The digest requires two supporting tables, also defined in `Tech_Stack.md Â§3`:
 
-- `cash_counts` — the FOH/manager cash count at close, one row per outlet per business date.
-- `daily_digests` — the generated payload, send status (`GENERATED`, `PARTIAL`, `SENT`, `FAILED`), and idempotency key.
+- `cash_counts` â€” the FOH/manager cash count at close, one row per outlet per business date.
+- `daily_digests` â€” the generated payload, send status (`GENERATED`, `PARTIAL`, `SENT`, `FAILED`), and idempotency key.
 
 ### 4.1 Financial settlement
 
-For business date `D` (00:00–23:59 EAT):
+For business date `D` (00:00â€“23:59 EAT):
 
 | Line | Formula |
 | :--- | :--- |
@@ -149,7 +149,7 @@ For business date `D` (00:00–23:59 EAT):
 | Refunds completed (memo) | `SUM(payments.amount_ugx)` where `status = 'REFUNDED'` and `refunded_at` in `D`; never added to gross |
 | Delivery fees (memo) | `SUM(orders.delivery_fee_ugx)` for paid `PHONE_DELIVERY` orders in `D` |
 | Rider advances (net) | `SUM(delivery_handoffs.rider_advance_ugx - rider_advance_returned_ugx)` for handoffs in `D` |
-| Net delivery contribution | delivery fees − net rider advances |
+| Net delivery contribution | delivery fees âˆ’ net rider advances |
 
 `MANUAL_MOMO` must be included. The original sample showed it but the proposed code omitted it. Every financial line is computed per outlet and then summed; the consolidated total is never labelled with one outlet's name.
 
@@ -157,9 +157,9 @@ For business date `D` (00:00–23:59 EAT):
 
 | Line | Formula |
 | :--- | :--- |
-| Expected cash | `cash payments − net rider advances` (Phase 1 has no cash refunds; do not subtract an assumed zero silently) |
+| Expected cash | `cash payments âˆ’ net rider advances` (Phase 1 has no cash refunds; do not subtract an assumed zero silently) |
 | Counted cash | `SUM(cash_counts.counted_cash_ugx)` for `D` |
-| Variance | `counted cash − expected cash` |
+| Variance | `counted cash âˆ’ expected cash` |
 
 If no `cash_counts` row exists for an outlet, set `variance = null`, add the flag `CASH_COUNT_MISSING`, and do not print a zero. Cash refunds out of the drawer are not implemented in Phase 1; the digest must state that the formula excludes them rather than implying they were considered.
 
@@ -168,36 +168,36 @@ If no `cash_counts` row exists for an outlet, set `variance = null`, add the fla
 The digest reports three things separately:
 
 1. **Current stock** from `raw_inventory.current_stock` for high-turnover items.
-2. **Theoretical BOM usage** from `order_items` × `recipe_bom.quantity_deducted` for completed orders in `D`.
-3. **Variance** only if an opening/closing count exists. Without both counts, print `N/A — count not submitted`; never fabricate a variance.
+2. **Theoretical BOM usage** from `order_items` Ã— `recipe_bom.quantity_deducted` for completed orders in `D`.
+3. **Variance** only if an opening/closing count exists. Without both counts, print `N/A â€” count not submitted`; never fabricate a variance.
 
-The original proposal's “Variance: +0.2L - OK” had no data source. Do not ship that. Add a closing stock count to the manager routine if variance is required; otherwise report stock remaining and BOM usage.
+The original proposal's â€œVariance: +0.2L - OKâ€ had no data source. Do not ship that. Add a closing stock count to the manager routine if variance is required; otherwise report stock remaining and BOM usage.
 
 ### 4.4 Clearance and waste
 
 Use `closing_surplus_logs` grouped by `resolution`:
 
-- `DISCOUNTED_CLEARANCE` — portions sold at clearance; actual revenue is already in gross sales.
-- `STAFF_MEAL` — portions consumed by staff.
-- `WASTE_DISCARDED` — portions discarded.
+- `DISCOUNTED_CLEARANCE` â€” portions sold at clearance; actual revenue is already in gross sales.
+- `STAFF_MEAL` â€” portions consumed by staff.
+- `WASTE_DISCARDED` â€” portions discarded.
 
-Do **not** label `leftover_portions × clearance price` as “revenue recovered.” It is an estimate at best, and it double-counts revenue already in the sales total. If an estimate is useful, label it **“estimated clearance value, not additional revenue.”**
+Do **not** label `leftover_portions Ã— clearance price` as â€œrevenue recovered.â€ It is an estimate at best, and it double-counts revenue already in the sales total. If an estimate is useful, label it **â€œestimated clearance value, not additional revenue.â€**
 
 ### 4.5 Exceptions and flags
 
 The digest should flag, at minimum:
 
-- `CASH_COUNT_MISSING` — no cash count for one or both outlets.
-- `CASH_VARIANCE` — absolute variance above `CASH_VARIANCE_ALERT_UGX` (default `UGX 5,000`).
-- `FAILED_PAYMENTS` — count of `FAILED` / `TIMED_OUT` payments.
-- `REFUND_PENDING` — count and value of successful payments awaiting refund (late/duplicate successes and paid orders cancelled after payment, including failed deliveries); excluded from gross. A manager closes the reversal as `REFUNDED` through `Payment_Integration.md §8.2`; closed refunds move to the memo count and are no longer flagged pending.
-- `CASH_REFUND_EXCEPTION` — a `CANCELLED` order still has a `SUCCESSFUL` `CASH` payment. Phase 1 has no cash-refund ledger, so the digest names the order and amount and asks the manager to confirm the drawer adjustment; it must not imply the system refunded it.
-- `FAILED_DELIVERIES` — count of `FAILED_UNREACHABLE` / `REFUSED` / `RETURNED` handoffs.
-- `LOW_STOCK` — `raw_inventory.current_stock <= alert_threshold`.
-- `STALE_ORDERS` — `PENDING` / `PREPARING` / `READY` orders older than 45 minutes at close.
-- `DIGEST_RETRY` — previous day's digest failed or was not sent.
-- `PRINTER_OFFLINE` — only if the printer health check is stored; otherwise omit.
-- `VOIDS` — only if the audit log has a void event; otherwise show “void tracking not available.”
+- `CASH_COUNT_MISSING` â€” no cash count for one or both outlets.
+- `CASH_VARIANCE` â€” absolute variance above `CASH_VARIANCE_ALERT_UGX` (default `UGX 5,000`).
+- `FAILED_PAYMENTS` â€” count of `FAILED` / `TIMED_OUT` payments.
+- `REFUND_PENDING` â€” count and value of successful payments awaiting refund (late/duplicate successes and paid orders cancelled after payment, including failed deliveries); excluded from gross. A manager closes the reversal as `REFUNDED` through `Payment_Integration.md Â§8.2`; closed refunds move to the memo count and are no longer flagged pending.
+- `CASH_REFUND_EXCEPTION` â€” a `CANCELLED` order still has a `SUCCESSFUL` `CASH` payment. Phase 1 has no cash-refund ledger, so the digest names the order and amount and asks the manager to confirm the drawer adjustment; it must not imply the system refunded it.
+- `FAILED_DELIVERIES` â€” count of `FAILED_UNREACHABLE` / `REFUSED` / `RETURNED` handoffs.
+- `LOW_STOCK` â€” `raw_inventory.current_stock <= alert_threshold`.
+- `STALE_ORDERS` â€” `PENDING` / `PREPARING` / `READY` orders older than 45 minutes at close.
+- `DIGEST_RETRY` â€” previous day's digest failed or was not sent.
+- `PRINTER_OFFLINE` â€” only if the printer health check is stored; otherwise omit.
+- `VOIDS` â€” only if the audit log has a void event; otherwise show â€œvoid tracking not available.â€
 
 Flags are actionable, not decorative. The email lists them; the SMS says only the count.
 
@@ -366,9 +366,9 @@ const outletTotals = (outlet: 'FOODIZO_HAM_TOWERS' | 'OBUNUZI_YMCA') => {
 **Notes:**
 
 - `payments.carrier` is the actual column; the proposal's `payments.method` would not compile.
-- `payments.completed_at` exists in `Payment_Integration.md §7`.
-- `cash_counts` is defined in `Tech_Stack.md §3`.
-- Per-outlet figures must join `orders.outlet`; neither `payments` nor `delivery_handoffs` carries the outlet directly. Do not silently sum both outlets into one and call it “Foodizo,” and do not label a consolidated figure as one outlet.
+- `payments.completed_at` exists in `Payment_Integration.md Â§7`.
+- `cash_counts` is defined in `Tech_Stack.md Â§3`.
+- Per-outlet figures must join `orders.outlet`; neither `payments` nor `delivery_handoffs` carries the outlet directly. Do not silently sum both outlets into one and call it â€œFoodizo,â€ and do not label a consolidated figure as one outlet.
 - `REFUND_PENDING` payments are reported separately and never added to gross collections. The query has no date filter because the memo is an open liability; a refundable payment stays visible until a manager closes it with `POST /api/v1/payments/:id/refund`. `REFUNDED` payments are excluded from gross and appear only in the completed-refund memo for the day they were closed (`refunded_at`).
 - A cancelled order with a `SUCCESSFUL` `CASH` payment is not moved automatically; raise `CASH_REFUND_EXCEPTION` and require a manager to reconcile the drawer, because Phase 1 has no cash-refund ledger.
 - Use `Prisma.Decimal` or integer UGX; never use JavaScript floating point for money beyond display.
@@ -438,7 +438,7 @@ export function startDailyDigestCron() {
 - **Secrets:** SMTP password, Africa's Talking API key, and WhatsApp token live in `.env`/secret storage, never in the repository.
 - **Link access:** the full report requires an authenticated manager session or a signed URL; do not expose an unauthenticated `/audit` endpoint.
 - **Logging:** mask phone numbers (`2567***567`) and never log the full digest payload at `info`.
-- **Cost:** SMS is ~UGX 25–30 per 160-character segment. A 2-segment daily SMS is ~UGX 50–60/day (~UGX 1,500–1,800/month). Email is effectively free. WhatsApp utility pricing is separate and market-dependent; do not promise “free WhatsApp.”
+- **Cost:** SMS is ~UGX 25â€“30 per 160-character segment. A 2-segment daily SMS is ~UGX 50â€“60/day (~UGX 1,500â€“1,800/month). Email is effectively free. WhatsApp utility pricing is separate and market-dependent; do not promise â€œfree WhatsApp.â€
 - **Retention:** keep `daily_digests.payload_json` for 12 months, then archive or delete; it contains business data, not customer PII.
 
 ---
@@ -449,7 +449,7 @@ export function startDailyDigestCron() {
 - [ ] A second run for the same date does not send a duplicate SMS/email.
 - [ ] Cash variance is computed from `cash_counts`; a missing count produces `CASH_COUNT_MISSING`, not `UGX 0`.
 - [ ] `MANUAL_MOMO` payments are included in the gross total.
-- [ ] Per-outlet figures are shown separately and the consolidated total is labelled “Foodizo + Obunuzi,” not “Foodizo.”
+- [ ] Per-outlet figures are shown separately and the consolidated total is labelled â€œFoodizo + Obunuzi,â€ not â€œFoodizo.â€
 - [ ] `REFUND_PENDING` payments are listed outside gross collections with their reason; a manager-closed `REFUNDED` payment leaves the pending memo, remains outside gross, and appears in the completed-refund memo.
 - [ ] A partial send is recorded as `PARTIAL`; the retry sends only the missing channel(s) and never duplicates a delivered SMS/email.
 - [ ] Rider advances are netted out of expected cash and shown as a separate delivery-contribution line.
@@ -480,4 +480,129 @@ export function startDailyDigestCron() {
 | `Demo_Script_and_Closing_Strategy.md` | Demonstration flow for reconciliation and owner reporting |
 | `Deployment_Runbook.md` | Cron, timezone (`Africa/Kampala`), SMTP, and backup configuration |
 | `Service_Contract_and_Invoice_Template.md` | Commercial SLA, reporting milestones, and support hours |
-| `Implementation_Phases.md` | Delivery Stage 3 / Coding Phase C7 digest acceptance criteria |
+|  · `build_strategy/Build_Strategy_and_Phases.md` | Delivery Stage 3 / Coding Phase C7 digest acceptance criteria |
+
+
+---
+
+## 10. Digest Query Specification
+
+This section defines the exact database queries that power each line of the 21:30 digest. Developers must implement these queries in `scripts/run-daily-digest.ts` (or the equivalent Fastify service).
+
+> All queries are scoped to a single calendar date (`digest_date`) in the **Africa/Kampala** timezone (UTC+3). The cron job passes `new Date()` rounded down to the business day boundary (midnight EAT).
+
+### 10.1 Gross Revenue (MTN + Airtel + Manual MoMo + Cash)
+
+```typescript
+// Gross = sum of all SUCCESSFUL payments for the day, across both outlets
+// Delivery fees are included in the payment amount; they are a memo component, not a separate channel
+const grossResult = await prisma.payments.aggregate({
+  where: {
+    status: 'SUCCESSFUL',
+    created_at: { gte: startOfDayEAT, lt: endOfDayEAT },
+  },
+  _sum: { amount_ugx: true },
+});
+const grossUgx = grossResult._sum.amount_ugx ?? 0;
+```
+
+### 10.2 Revenue by Carrier Channel
+
+```typescript
+// Breakdown: MTN / AIRTEL / CASH / MANUAL_MOMO
+const byCarrier = await prisma.payments.groupBy({
+  by: ['carrier'],
+  where: {
+    status: 'SUCCESSFUL',
+    created_at: { gte: startOfDayEAT, lt: endOfDayEAT },
+  },
+  _sum: { amount_ugx: true },
+});
+// Result: [{ carrier: 'MTN', _sum: { amount_ugx: 1_200_000 } }, ...]
+```
+
+### 10.3 Cash Variance
+
+```typescript
+// For each outlet: variance = cash_counts.cash_counted_ugx - expected_cash_ugx
+// expected_cash_ugx = sum of CASH payments + sum of rider advances returned
+const cashCounts = await prisma.cash_counts.findMany({
+  where: {
+    business_date: digestDate,
+  },
+});
+
+// If no cash_count row exists for an outlet â†’ digest flag = CASH_COUNT_MISSING
+// If count exists â†’ variance = cash_counted_ugx - expected_cash_ugx
+// Never fabricate a 0 variance when the count is missing
+```
+
+### 10.4 Active Flags (Exceptions Needing Review)
+
+```typescript
+// Count of items that require manager action tonight
+const refundPending = await prisma.payments.count({
+  where: { status: 'REFUND_PENDING' },
+});
+
+const failedDeliveries = await prisma.delivery_handoffs.count({
+  where: {
+    outcome: 'FAILED_UNREACHABLE',
+    created_at: { gte: startOfDayEAT, lt: endOfDayEAT },
+    reviewed: false,
+  },
+});
+
+const missingCashCounts = cashCounts.filter(c => c.cash_counted_ugx === null).length;
+
+const totalFlags = refundPending + failedDeliveries + missingCashCounts;
+// SMS line: "2 flags." â€” links to admin for details
+```
+
+### 10.5 Inventory Summary (High-Turnover Items)
+
+```typescript
+// For each high-turnover ingredient: opening - used = closing (or "not submitted")
+// Used = sum of BOM decrements recorded during the day for this ingredient
+const inventorySummary = await prisma.recipe_bom.findMany({
+  where: { is_high_turnover: true },
+  include: { ingredient: true },
+});
+// If opening_count or closing_count is null â†’ show "count not submitted" in the digest
+// Never compute a variance from null values
+```
+
+### 10.6 Deep-Link Token for the Secure Report URL
+
+```typescript
+// Generate a short token for the secure admin report link
+// Token is 4 random bytes â†’ 8 hex chars (e.g., "7f3c2a1b")
+// Stored in daily_digests.link_token; expires 72 hours after creation
+import crypto from 'crypto';
+const linkToken = crypto.randomBytes(4).toString('hex');
+// Report URL: https://admin.foodizo.ug/d/{linkToken}
+// The /d/[token] route validates the token and expiry before showing the report
+// Token is single-use or read-only; it does not expose mutation endpoints
+```
+
+### 10.7 Idempotency â€” Prevent Double-Send
+
+```typescript
+// Before running any queries or sending anything, check if today's digest already exists
+const existing = await prisma.daily_digests.findUnique({
+  where: { business_date: digestDate },
+});
+
+if (existing && existing.sent_at !== null) {
+  console.log(`Digest for ${digestDate} already sent at ${existing.sent_at}. Skipping.`);
+  return;
+}
+
+// After all queries succeed, write the digest row atomically BEFORE sending
+// This prevents a partial send where SMS goes but email fails â†’ digest row marks only what was sent
+await prisma.daily_digests.upsert({
+  where: { business_date: digestDate },
+  create: { business_date: digestDate, gross_ugx: grossUgx, flags: totalFlags, link_token: linkToken, sent_at: new Date() },
+  update: { gross_ugx: grossUgx, flags: totalFlags, link_token: linkToken, sent_at: new Date() },
+});
+```

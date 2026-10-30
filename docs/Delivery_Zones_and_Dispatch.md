@@ -1,9 +1,9 @@
-# Delivery Zones, Landmark Checkout & Rider Dispatch
+﻿# Delivery Zones, Landmark Checkout & Rider Dispatch
 
-**Status:** Phase 1 canonical specification — supersedes any assumption that checkout requires a live map.<br>
+**Status:** Phase 1 canonical specification â€” supersedes any assumption that checkout requires a live map.<br>
 **Target Outlets:** Foodizo (Ham Towers) & Obunuzi Restaurant & Cafe (Opposite YMCA)<br>
 **Location:** Wandegeya, Kampala, Uganda<br>
-**Related Specifications:** `Foundational_Concept.md` · `Design_System.md` · `User_Flow.md` · `User_Profiles_Personas.md` · `Tech_Stack.md` · `Payment_Integration.md` · `Hardware_and_Peripherals.md` · `Seed_Data_and_Testing.md` · `Repo_Scaffold_and_Config.md` · `Demo_Script_and_Closing_Strategy.md` · `Daily_Audit_Digest.md` · `Deployment_Runbook.md` · `Service_Contract_and_Invoice_Template.md` · `Implementation_Phases.md`
+**Related Specifications:** `Foundational_Concept.md` Â· `Design_System.md` Â· `User_Flow.md` Â· `User_Profiles_Personas.md` Â· `Tech_Stack.md` Â· `Payment_Integration.md` Â· `Hardware_and_Peripherals.md` Â· `Seed_Data_and_Testing.md` Â· `Repo_Scaffold_and_Config.md` Â· `Demo_Script_and_Closing_Strategy.md` Â· `Daily_Audit_Digest.md` Â· `Deployment_Runbook.md` Â· `Service_Contract_and_Invoice_Template.md` Â · `build_strategy/Build_Strategy_and_Phases.md`
 
 ---
 
@@ -11,30 +11,30 @@
 
 Adopt the **Zone & Landmark Dropdown + Direct Phone/WhatsApp Dispatch** model for Phase 1. Do **not** build a live Google Maps checkout or live rider tracking for the initial deployment.
 
-The AI Studio recommendation is directionally correct — location matters — but a live Google Maps checkout is the wrong implementation for two Wandegeya restaurants serving Makerere halls, YMCA, Ham Towers, and the surrounding market corridor. The local-first model matches how freelance boda riders actually operate: they know landmarks, call the customer, and navigate from a room/office note — not from a pin dropped on a rooftop.
+The AI Studio recommendation is directionally correct â€” location matters â€” but a live Google Maps checkout is the wrong implementation for two Wandegeya restaurants serving Makerere halls, YMCA, Ham Towers, and the surrounding market corridor. The local-first model matches how freelance boda riders actually operate: they know landmarks, call the customer, and navigate from a room/office note â€” not from a pin dropped on a rooftop.
 
 ### 1.1 What we adopt
 
 | Recommendation | Decision |
 | :--- | :--- |
-| Outlet-scoped zone/landmark dropdown | **Adopt** — required for every delivery order |
-| Exact room/office/landmark note | **Adopt** — required, 3–160 characters |
-| Customer phone for rider calls | **Adopt** — required for delivery, normalised to E.164 |
-| Optional HTML5 geolocation pin | **Adopt as optional convenience only** — one-shot, never required |
-| Google Maps universal link (`https://www.google.com/maps/search/?api=1&query=...`) | **Adopt** — free link, no API key, no map SDK |
-| Thermal packaging chit with destination + room/note + phone | **Adopt** — printed at `READY` for takeaway and delivery only; dine-in does not print |
-| Call / WhatsApp dispatch from FOH | **Adopt** — native `tel:` and `wa.me` links |
-| Live rider tracking | **Defer to Phase 2** — see §11 |
-| Dedicated rider login/app | **Defer to Phase 2** — riders are non-system actors in Phase 1 |
+| Outlet-scoped zone/landmark dropdown | **Adopt** â€” required for every delivery order |
+| Exact room/office/landmark note | **Adopt** â€” required, 3â€“160 characters |
+| Customer phone for rider calls | **Adopt** â€” required for delivery, normalised to E.164 |
+| Optional HTML5 geolocation pin | **Adopt as optional convenience only** â€” one-shot, never required |
+| Google Maps universal link (`https://www.google.com/maps/search/?api=1&query=...`) | **Adopt** â€” free link, no API key, no map SDK |
+| Thermal packaging chit with destination + room/note + phone | **Adopt** â€” printed at `READY` for takeaway and delivery only; dine-in does not print |
+| Call / WhatsApp dispatch from FOH | **Adopt** â€” native `tel:` and `wa.me` links |
+| Live rider tracking | **Defer to Phase 2** â€” see Â§11 |
+| Dedicated rider login/app | **Defer to Phase 2** â€” riders are non-system actors in Phase 1 |
 
 ### 1.2 Corrections to the original suggestion
 
-1. **“Send WhatsApp Location Pin (Optional)” is not implementable as a checkbox in a normal web app.** A `wa.me` link can prefill text, but it cannot attach a WhatsApp location object. Replace it with two honest controls:
-   - **“Use my current GPS pin (optional)”** — captures coordinates with `navigator.geolocation`.
-   - **“Share map link on WhatsApp (optional)”** — opens the outlet’s WhatsApp chat with a prefilled Google Maps link. The customer still taps **Send** inside WhatsApp.
+1. **â€œSend WhatsApp Location Pin (Optional)â€ is not implementable as a checkbox in a normal web app.** A `wa.me` link can prefill text, but it cannot attach a WhatsApp location object. Replace it with two honest controls:
+   - **â€œUse my current GPS pin (optional)â€** â€” captures coordinates with `navigator.geolocation`.
+   - **â€œShare map link on WhatsApp (optional)â€** â€” opens the outletâ€™s WhatsApp chat with a prefilled Google Maps link. The customer still taps **Send** inside WhatsApp.
 2. **A Google Maps *link* is free; the Google Maps *Platform* is not.** Embedding a map, geocoding, directions, or place search uses billable APIs, requires a key, and introduces quota/failure modes. A universal map link does not. Even if a monthly free credit covers the pilot volume, enabling billing and an API key creates an account, quota, and key-rotation burden that a two-outlet MVP does not need; Google can change pricing and terms.
 3. **Riders should not become a fifth system role in Phase 1.** The existing four-role model stays intact. FOH/cashier dispatches from a dedicated queue, and the rider receives a printed chit. A rider app is a Phase 2 decision.
-4. **“UGX 0” is accurate only for map API fees.** SMS, thermal paper, rider airtime/data, rider transport advances (the typical stage-boda payment is UGX 1,500–3,000), and staff time still cost money. The claim should be “UGX 0 in map API fees,” not “zero operating cost.”
+4. **â€œUGX 0â€ is accurate only for map API fees.** SMS, thermal paper, rider airtime/data, rider transport advances (the typical stage-boda payment is UGX 1,500â€“3,000), and staff time still cost money. The claim should be â€œUGX 0 in map API fees,â€ not â€œzero operating cost.â€
 5. **Leaflet + OpenStreetMap is free and open-source, but public OSM tile servers are not an unconditional production CDN.** Phase 2 must use a tile provider with a real usage policy or self-host tiles.
 
 ### 1.3 What this document fixes
@@ -48,8 +48,8 @@ Before this specification, the documentation defined `PHONE_DELIVERY` as a chann
 ### 2.1 The operational reality
 
 - Obunuzi runs a **60/40 split** between sit-down diners and phone-based takeaway/delivery orders. The phone order currently relies on a handwritten note or a verbal address.
-- Foodizo’s delivery radius is dominated by Makerere University halls, YMCA blocks, Ham Towers offices, and Wandegeya Market.
-- Campus buildings have named halls, blocks, reception desks, and security gates. A rooftop GPS pin is often less useful than “Mary Stuart Hall, Block B, Room 14 — call at the gate.”
+- Foodizoâ€™s delivery radius is dominated by Makerere University halls, YMCA blocks, Ham Towers offices, and Wandegeya Market.
+- Campus buildings have named halls, blocks, reception desks, and security gates. A rooftop GPS pin is often less useful than â€œMary Stuart Hall, Block B, Room 14 â€” call at the gate.â€
 - Riders are often freelance boda riders picked from the stage. They do not install a fleet app for a single lunch delivery; they answer a phone call and follow a landmark.
 - A delivery that fails because the rider cannot find a room costs more than the map API fee ever would: the food cools, the customer calls the cashier, and the kitchen loses a ticket.
 
@@ -85,7 +85,7 @@ The existing `channel_type` enum keeps `PHONE_DELIVERY` for backward compatibili
 | Static Google Maps link on the FOH dispatch screen | Google Maps JavaScript SDK / Places / Directions / Geocoding |
 | Thermal delivery chit | Rider mobile app or rider login |
 | FOH call / WhatsApp links | Customer-facing WhatsApp Business API / automated customer messages (the owner-only 21:30 digest is separate; see `Daily_Audit_Digest.md`) |
-| Rider handoff audit | Customer-facing live “rider is 3 minutes away” view |
+| Rider handoff audit | Customer-facing live â€œrider is 3 minutes awayâ€ view |
 | Zone and fee maintenance in the admin portal | Distance-based dynamic pricing |
 
 ---
@@ -96,14 +96,14 @@ The existing `channel_type` enum keeps `PHONE_DELIVERY` for backward compatibili
 
 | Field | Required | Validation | Error copy |
 | :--- | :--- | :--- | :--- |
-| `outlet` | Yes | One of `FOODIZO_HAM_TOWERS` / `OBUNUZI_YMCA` | “Choose the outlet preparing your order.” |
-| `delivery_zone_id` | Yes | Active zone belonging to the selected outlet | “Choose your campus, hall, or landmark.” |
-| `delivery_note` | Yes | 3–160 printable characters | “Add a room, office, block, or gate instruction.” |
-| `customer_name` | Yes | 2–80 characters | “Who should the rider ask for?” |
-| `customer_phone` | Yes | Ugandan MSISDN normalised to E.164 (`2567XXXXXXXX`) | “Enter the phone number the rider should call.” |
-| `delivery_lat` / `delivery_lng` | No | Valid WGS84 range; only from the GPS button | — |
-| `delivery_accuracy_m` | No | `>= 0`; shown to FOH as a confidence hint | — |
-| `delivery_fee_ugx` | Server-owned | Recomputed from the selected zone; client value ignored | — |
+| `outlet` | Yes | One of `FOODIZO_HAM_TOWERS` / `OBUNUZI_YMCA` | â€œChoose the outlet preparing your order.â€ |
+| `delivery_zone_id` | Yes | Active zone belonging to the selected outlet | â€œChoose your campus, hall, or landmark.â€ |
+| `delivery_note` | Yes | 3â€“160 printable characters | â€œAdd a room, office, block, or gate instruction.â€ |
+| `customer_name` | Yes | 2â€“80 characters | â€œWho should the rider ask for?â€ |
+| `customer_phone` | Yes | Ugandan MSISDN normalised to E.164 (`2567XXXXXXXX`) | â€œEnter the phone number the rider should call.â€ |
+| `delivery_lat` / `delivery_lng` | No | Valid WGS84 range; only from the GPS button | â€” |
+| `delivery_accuracy_m` | No | `>= 0`; shown to FOH as a confidence hint | â€” |
+| `delivery_fee_ugx` | Server-owned | Recomputed from the selected zone; client value ignored | â€” |
 
 `customer_phone` remains optional for `TAKEAWAY_PICKUP` at the schema level. A customer-app pickup stores the payer MSISDN there so the `READY` SMS works; a cash walk-in with no phone stores `NULL` and receives no SMS. It is mandatory for `PHONE_DELIVERY`.
 
@@ -114,7 +114,7 @@ The existing `channel_type` enum keeps `PHONE_DELIVERY` for backward compatibili
 3. Customer selects a zone from a grouped dropdown. Each option shows the zone name, fee, and ETA range.
 4. Customer types the exact room/office/block and a gate or reception instruction.
 5. Customer enters recipient name and the phone number the rider should call.
-6. Customer may tap **“Use my current GPS pin (optional)”**. If permission is denied, checkout continues normally.
+6. Customer may tap **â€œUse my current GPS pin (optional)â€**. If permission is denied, checkout continues normally.
 7. The order summary shows `Subtotal + Delivery fee = Total`. The fee comes from the server, not the client.
 8. Payment is initiated only after all required delivery fields pass validation. The normal MoMo/Airtel flow in `Payment_Integration.md` is unchanged.
 9. After payment succeeds, the order enters the KDS as `PENDING` with the purple `PHONE_DELIVERY` channel and the destination zone on the ticket.
@@ -155,15 +155,15 @@ The layout uses the existing Customer PWA tokens from `Design_System.md`: warm c
 
 - **Source:** `GET /api/v1/delivery-zones?outlet=...` returns only active zones for the outlet.
 - **Grouping:** native `<optgroup>` by area (Makerere Campus, YMCA, Wandegeya, Phase 2). If an outlet ever exceeds 20 zones, replace the native select with an accessible searchable combobox; keep the same server contract.
-- **Option label:** `Makerere University — Lumumba Hall · UGX 2,000 · 10–15 min`.
-- **No “Other / type your own” option in Phase 1.** If the customer’s location is not listed, show the outlet phone number and the message “Call us to confirm delivery.” This keeps zone data clean and prevents surprise fees.
+- **Option label:** `Makerere University â€” Lumumba Hall Â· UGX 2,000 Â· 10â€“15 min`.
+- **No â€œOther / type your ownâ€ option in Phase 1.** If the customerâ€™s location is not listed, show the outlet phone number and the message â€œCall us to confirm delivery.â€ This keeps zone data clean and prevents surprise fees.
 - **Changing a zone recalculates fee and ETA**, clears any previously selected zone-specific hint, and keeps the typed note.
 - **Empty state:** if no active zones exist, disable delivery and show the outlet phone number. Do not fall back to a free-text address.
 - **Accessibility:** a real `<label>`; keyboard-operable; error text linked with `aria-describedby`; no placeholder-only labels.
 
 ### 4.5 Optional GPS pin
 
-Use the browser’s one-shot geolocation API. Do **not** use `watchPosition`, background location, or a third-party location SDK.
+Use the browserâ€™s one-shot geolocation API. Do **not** use `watchPosition`, background location, or a third-party location SDK.
 
 ```ts
 // src/lib/capture-delivery-pin.ts
@@ -207,8 +207,8 @@ export function captureDeliveryPin(): Promise<DeliveryPin | null> {
 
 - Geolocation requires a secure context: HTTPS in production, or `localhost` during development. It is not available on a plain-HTTP LAN address.
 - The permission prompt must only appear after an explicit tap. Never request geolocation on page load.
-- Never block “Pay” on geolocation. The pin is optional.
-- Show the accuracy radius. If `accuracyM > 100`, label the pin **“Approximate”**. If `accuracyM > 500`, keep it as a hint but tell the customer the landmark note is more important.
+- Never block â€œPayâ€ on geolocation. The pin is optional.
+- Show the accuracy radius. If `accuracyM > 100`, label the pin **â€œApproximateâ€**. If `accuracyM > 500`, keep it as a hint but tell the customer the landmark note is more important.
 - Provide **Clear pin**. A customer must be able to remove a location before paying.
 - Store coordinates and accuracy in the database. Generate the link on demand; do not store a URL that can go stale.
 - Map link format: `https://www.google.com/maps/search/?api=1&query=<lat>,<lng>`. Open it with `target="_blank"` and `rel="noopener noreferrer"`.
@@ -219,16 +219,16 @@ export function captureDeliveryPin(): Promise<DeliveryPin | null> {
 A normal web page cannot attach a WhatsApp location pin or read a pin the customer received in WhatsApp. The honest implementation is:
 
 1. Capture the pin with the GPS button.
-2. Show a **“Share map link on WhatsApp”** button after capture.
+2. Show a **â€œShare map link on WhatsAppâ€** button after capture.
 3. Open `https://wa.me/<outlet-number>?text=<urlencoded message>` with a message such as:
 
 ```text
-Order TOKEN-042 — my delivery pin: https://www.google.com/maps/search/?api=1&query=0.33410,32.56820
+Order TOKEN-042 â€” my delivery pin: https://www.google.com/maps/search/?api=1&query=0.33410,32.56820
 ```
 
 4. The customer taps **Send** in WhatsApp. The outlet receives a normal text message with a clickable link.
 
-Outlet numbers are configured in `.env` as `FOODIZO_WHATSAPP_NUMBER` and `OBUNUZI_WHATSAPP_NUMBER` (see `Repo_Scaffold_and_Config.md §3`). Do not label this control “Send WhatsApp Location Pin.” It sends a **link**, not a WhatsApp location object. The zone and room note remain mandatory even if a pin is shared.
+Outlet numbers are configured in `.env` as `FOODIZO_WHATSAPP_NUMBER` and `OBUNUZI_WHATSAPP_NUMBER` (see `Repo_Scaffold_and_Config.md Â§3`). Do not label this control â€œSend WhatsApp Location Pin.â€ It sends a **link**, not a WhatsApp location object. The zone and room note remain mandatory even if a pin is shared.
 
 ### 4.7 Delivery fee and ETA display
 
@@ -247,7 +247,7 @@ Delivery orders do not need a fifth role. When a delivery order reaches `READY`,
 
 ```text
 +--------------------------------------------------------+
-|  READY · TOKEN-042                    WAITING 02:14   |
+|  READY Â· TOKEN-042                    WAITING 02:14   |
 |  DESTINATION: YMCA MAIN CAMPUS                         |
 |  ROOM/NOTE: BLOCK C, ROOM 204 - CALL AT SECURITY GATE  |
 |  Dr. Okello - 0701 234 567                             |
@@ -261,7 +261,7 @@ Delivery orders do not need a fifth role. When a delivery order reaches `READY`,
 
 | Action | Behaviour |
 | :--- | :--- |
-| **CALL** | Opens `tel:+2567XXXXXXXX`. The FOH phone or a rider’s phone dials the customer. |
+| **CALL** | Opens `tel:+2567XXXXXXXX`. The FOH phone or a riderâ€™s phone dials the customer. |
 | **WHATSAPP** | Opens `https://wa.me/2567XXXXXXXX?text=...` with a short order message. No WhatsApp Business API. |
 | **PRINT CHIT** | Re-fires the ESC/POS delivery chit to the Expo printer. Every reprint is audit-logged. |
 | **OPEN PIN** | Opens the static Google Maps link in a new tab. It never embeds a map. |
@@ -269,15 +269,15 @@ Delivery orders do not need a fifth role. When a delivery order reaches `READY`,
 
 ### 5.3 Handoff rules
 
-- The rider does **not** log in. FOH records the rider’s name and phone number for accountability.
-- If the outlet pays the rider’s transport (the normal Wandegeya stage-boda arrangement), record the cash advance in `rider_advance_ugx`. Record any change or unused advance returned by the rider in `rider_advance_returned_ugx`. An unrecorded UGX 2,000 handoff will show up as a cash-drawer variance at shift close.
+- The rider does **not** log in. FOH records the riderâ€™s name and phone number for accountability.
+- If the outlet pays the riderâ€™s transport (the normal Wandegeya stage-boda arrangement), record the cash advance in `rider_advance_ugx`. Record any change or unused advance returned by the rider in `rider_advance_returned_ugx`. An unrecorded UGX 2,000 handoff will show up as a cash-drawer variance at shift close.
 - Do not confuse the rider advance with the delivery fee. The customer pays the delivery fee; the outlet pays the rider. The difference is the delivery contribution, which can be positive or negative.
 - On handoff, write a `delivery_handoffs` row with `dispatched_at`, the FOH user, the dispatch method, and the rider advance fields.
 - The active queue (`state=active`, default) lists `READY` delivery orders that have no handoff row yet, plus orders whose handoff is still `PENDING` (the card shows **ON THE WAY**). Failed handoffs move to the manager review lane (`state=review`) instead of remaining in the active queue.
 - The order remains `READY` while the rider is on the way. Delivering the food moves the order to `COMPLETED` and sets `delivery_handoffs.delivered_at`.
 - If the customer is unreachable: call twice, wait five minutes, notify the manager, and record the outcome. Do not mark the order `COMPLETED` if the food was not handed over.
-- Undelivered food follows the closing surplus/waste routine in `User_Flow.md §2 Flow C3` and is logged with a reason.
-- An optional SMS can be sent when the rider is dispatched (“Your order is on the way”). It must not claim live tracking or a precise arrival minute.
+- Undelivered food follows the closing surplus/waste routine in `User_Flow.md Â§2 Flow C3` and is logged with a reason.
+- An optional SMS can be sent when the rider is dispatched (â€œYour order is on the wayâ€). It must not claim live tracking or a precise arrival minute.
 
 ### 5.4 What FOH sees vs. what the kitchen sees
 
@@ -291,13 +291,13 @@ Delivery orders do not need a fifth role. When a delivery order reaches `READY`,
 | GPS coordinates / map link | **No** | Link only | **No** |
 | Prices / totals | **No** | Yes | **No** |
 
-The KDS must remain free of customer names, phone numbers, and personal delivery notes, consistent with `Design_System.md §4.3`. The KDS may show the destination zone so the expo station can label the bag correctly.
+The KDS must remain free of customer names, phone numbers, and personal delivery notes, consistent with `Design_System.md Â§4.3`. The KDS may show the destination zone so the expo station can label the bag correctly.
 
 ---
 
 ## 6. Data Model Summary
 
-The canonical DDL lives in `Tech_Stack.md §3`. This section defines the intent.
+The canonical DDL lives in `Tech_Stack.md Â§3`. This section defines the intent.
 
 ### 6.1 `delivery_zones`
 
@@ -307,8 +307,8 @@ The canonical DDL lives in `Tech_Stack.md §3`. This section defines the intent.
 | `outlet` | `outlet_location` | Zone belongs to exactly one outlet |
 | `zone_code` | `VARCHAR(40)` | Stable code, e.g. `MK_LUMUMBA` |
 | `display_name` | `VARCHAR(100)` | Customer-facing label |
-| `landmark_group` | `VARCHAR(60)` | Dropdown group, e.g. “Makerere Campus” |
-| `landmark_hint` | `VARCHAR(160)` | Short helper, e.g. “Call at hall reception” |
+| `landmark_group` | `VARCHAR(60)` | Dropdown group, e.g. â€œMakerere Campusâ€ |
+| `landmark_hint` | `VARCHAR(160)` | Short helper, e.g. â€œCall at hall receptionâ€ |
 | `fee_ugx` | `NUMERIC(10,2)` | Server-owned delivery fee |
 | `eta_min_minutes` / `eta_max_minutes` | `INT` | Display range |
 | `is_active` | `BOOLEAN` | Inactive zones never appear at checkout |
@@ -321,7 +321,7 @@ Unique constraint: `(outlet, zone_code)`.
 | Column | Type | Notes |
 | :--- | :--- | :--- |
 | `customer_name` | `VARCHAR(80)` | Required for delivery; used on the chit |
-| `delivery_zone_id` | `UUID` FK → `delivery_zones.id` | Required when `channel = PHONE_DELIVERY` |
+| `delivery_zone_id` | `UUID` FK â†’ `delivery_zones.id` | Required when `channel = PHONE_DELIVERY` |
 | `delivery_note` | `VARCHAR(160)` | Room/office/gate instruction; never shown on KDS |
 | `delivery_lat` / `delivery_lng` | `NUMERIC(9,6)` | Optional one-shot pin |
 | `delivery_accuracy_m` | `NUMERIC(6,1)` | Optional confidence hint |
@@ -335,7 +335,7 @@ Unique constraint: `(outlet, zone_code)`.
 | Column | Type | Notes |
 | :--- | :--- | :--- |
 | `id` | UUID | Primary key |
-| `order_id` | UUID FK → `orders.id` | Cascade delete |
+| `order_id` | UUID FK â†’ `orders.id` | Cascade delete |
 | `rider_name` | `VARCHAR(80)` | Required |
 | `rider_phone` | `VARCHAR(20)` | Optional |
 | `dispatched_by` | UUID (references `users.id`) | FOH or manager; users table is defined by the auth module |
@@ -355,7 +355,7 @@ Unique constraint: `(outlet, zone_code)`.
 4. Coordinates, if present, must be within valid WGS84 ranges.
 5. A customer can clear the GPS pin without invalidating the order.
 6. The KDS broadcast payload must not include customer name, phone, room note, or coordinates.
-7. Notes printed to ESC/POS must be stripped of control characters (see `Hardware_and_Peripherals.md §1.3`).
+7. Notes printed to ESC/POS must be stripped of control characters (see `Hardware_and_Peripherals.md Â§1.3`).
 8. `rider_advance_returned_ugx` must be `>= 0` and must not exceed `rider_advance_ugx`; a negative net advance is invalid.
 9. Rider advance fields are FOH/manager-only and must never appear on the KDS or the customer-facing order view.
 
@@ -363,24 +363,24 @@ Unique constraint: `(outlet, zone_code)`.
 
 ## 7. Zone Catalogue & Fee Policy
 
-The following zones are the proposed Phase 1 pilot catalogue. Fees and ETAs are **launch defaults pending Zito Mbowe’s approval**, not contractual prices. All values are editable in the admin portal and must be seeded per outlet.
+The following zones are the proposed Phase 1 pilot catalogue. Fees and ETAs are **launch defaults pending Zito Mboweâ€™s approval**, not contractual prices. All values are editable in the admin portal and must be seeded per outlet.
 
 | Zone code | Display name | Group | Fee (UGX) | ETA | Landmark hint | Active |
 | :--- | :--- | :--- | ---: | :--- | :--- | :---: |
-| `MK_LUMUMBA` | Makerere University — Lumumba Hall | Makerere Campus | 2,000 | 10–15 min | Call at hall reception | Yes |
-| `MK_MITCHELL` | Makerere University — Mitchell Hall | Makerere Campus | 2,000 | 10–15 min | Call at the main gate | Yes |
-| `MK_AFRICA` | Makerere University — Africa Hall | Makerere Campus | 2,000 | 10–15 min | Call at the reception desk | Yes |
-| `MK_MARY_STUART` | Makerere University — Mary Stuart Hall | Makerere Campus | 2,000 | 10–15 min | Call at the security gate | Yes |
-| `MK_COMPLEX` | Makerere University — Main Complex / Freedom Square | Makerere Campus | 2,000 | 10–15 min | Meet at the main entrance | Yes |
-| `MK_SENATE` | Makerere University — Senate Building / Main Gate | Makerere Campus | 2,000 | 10–15 min | Call at the main gate | Yes |
-| `YMCA_MAIN` | YMCA Main Campus | YMCA | 1,500 | 5–10 min | Call at the reception | Yes |
-| `HAM_TOWERS` | Ham Towers | Wandegeya | 1,000 | 5–10 min | Foodizo atrium / office floor | Yes |
-| `WANDEGEYA_MARKET` | Wandegeya Market | Wandegeya | 2,000 | 10–15 min | Call at the market main gate | Yes |
-| `KIKONI` | Kikoni | Wandegeya | 3,000 | 15–20 min | Call at the hostel gate | Yes |
-| `MULAGO` | Mulago Hospital Area | Phase 2 | 4,000 | 20–30 min | Confirm with outlet | No |
-| `KAMWOKYA` | Kamwokya | Phase 2 | 4,000 | 20–30 min | Confirm with outlet | No |
-| `NAKASERO` | Nakasero | Phase 2 | 5,000 | 25–35 min | Confirm with outlet | No |
-| `KOLOLO` | Kololo | Phase 2 | 6,000 | 30–40 min | Confirm with outlet | No |
+| `MK_LUMUMBA` | Makerere University â€” Lumumba Hall | Makerere Campus | 2,000 | 10â€“15 min | Call at hall reception | Yes |
+| `MK_MITCHELL` | Makerere University â€” Mitchell Hall | Makerere Campus | 2,000 | 10â€“15 min | Call at the main gate | Yes |
+| `MK_AFRICA` | Makerere University â€” Africa Hall | Makerere Campus | 2,000 | 10â€“15 min | Call at the reception desk | Yes |
+| `MK_MARY_STUART` | Makerere University â€” Mary Stuart Hall | Makerere Campus | 2,000 | 10â€“15 min | Call at the security gate | Yes |
+| `MK_COMPLEX` | Makerere University â€” Main Complex / Freedom Square | Makerere Campus | 2,000 | 10â€“15 min | Meet at the main entrance | Yes |
+| `MK_SENATE` | Makerere University â€” Senate Building / Main Gate | Makerere Campus | 2,000 | 10â€“15 min | Call at the main gate | Yes |
+| `YMCA_MAIN` | YMCA Main Campus | YMCA | 1,500 | 5â€“10 min | Call at the reception | Yes |
+| `HAM_TOWERS` | Ham Towers | Wandegeya | 1,000 | 5â€“10 min | Foodizo atrium / office floor | Yes |
+| `WANDEGEYA_MARKET` | Wandegeya Market | Wandegeya | 2,000 | 10â€“15 min | Call at the market main gate | Yes |
+| `KIKONI` | Kikoni | Wandegeya | 3,000 | 15â€“20 min | Call at the hostel gate | Yes |
+| `MULAGO` | Mulago Hospital Area | Phase 2 | 4,000 | 20â€“30 min | Confirm with outlet | No |
+| `KAMWOKYA` | Kamwokya | Phase 2 | 4,000 | 20â€“30 min | Confirm with outlet | No |
+| `NAKASERO` | Nakasero | Phase 2 | 5,000 | 25â€“35 min | Confirm with outlet | No |
+| `KOLOLO` | Kololo | Phase 2 | 6,000 | 30â€“40 min | Confirm with outlet | No |
 
 **Fee policy**
 
@@ -397,7 +397,7 @@ The following zones are the proposed Phase 1 pilot catalogue. Fees and ETAs are 
 
 ## 8. Rider Chit Contract
 
-The existing Expo ESC/POS printer fires the packaging chit when the kitchen bumps a `TAKEAWAY_PICKUP` or `PHONE_DELIVERY` order to `READY`; `DINE_IN` does not print a bag label. For delivery orders, the chit adds a delivery block. Full byte-level template: `Hardware_and_Peripherals.md §1`.
+The existing Expo ESC/POS printer fires the packaging chit when the kitchen bumps a `TAKEAWAY_PICKUP` or `PHONE_DELIVERY` order to `READY`; `DINE_IN` does not print a bag label. For delivery orders, the chit adds a delivery block. Full byte-level template: `Hardware_and_Peripherals.md Â§1`.
 
 ```text
 +------------------------------------------------+
@@ -435,7 +435,7 @@ The existing Expo ESC/POS printer fires the packaging chit when the kitchen bump
 | `/api/v1/delivery-zones?outlet=FOODIZO_HAM_TOWERS` | `GET` | Active zones, fee, ETA, display order |
 | `/api/v1/orders` | `POST` | Create order; validate delivery fields and recompute fee |
 | `/api/v1/dispatch/queue?outlet=...&state=active\|review` | `GET` | `active` (default): `READY` delivery orders with no handoff or an open `PENDING` handoff, displayed as **ON THE WAY**. `review`: failed handoffs for manager resolution. Both include zone, note, phone, and pin link |
-| `/api/v1/orders/:id/dispatch` | `POST` | Record rider handoff, transport advance, and optional “on the way” SMS |
+| `/api/v1/orders/:id/dispatch` | `POST` | Record rider handoff, transport advance, and optional â€œon the wayâ€ SMS |
 | `/api/v1/orders/:id/delivery-complete` | `POST` | Mark delivered, set `delivered_at`, record returned advance, move order to `COMPLETED` |
 | `/api/v1/orders/:id/reprint-chit` | `POST` | Re-fire the delivery chit; audit-log |
 | `/api/v1/admin/delivery-zones` | `GET/POST/PATCH` | Manager-only zone and fee maintenance |
@@ -455,6 +455,22 @@ The order request may include `deliveryFeeUgx`, but the server ignores it and re
 
 The order creation handler must run these checks **before** initiating the MoMo/Airtel STK push. There is no value in collecting payment for an undeliverable order.
 
+### 9.1 Zone Deactivated Between Selection and Payment
+
+A customer selects an active zone during checkout, but by the time they approve the MoMo STK push, a manager has deactivated that zone (e.g., riders are unavailable for the evening).
+
+| Step | Actor | Action |
+| :--- | :--- | :--- |
+| 1 | Customer | Selects `YMCA_MAIN_CAMPUS` zone (active, fee UGX 2,000) |
+| 2 | Customer | Enters delivery details and taps **Pay Now** |
+| 3 | Manager | Deactivates `YMCA_MAIN_CAMPUS` zone in `/admin/delivery-zones` (sets `is_active = false`) |
+| 4 | System | `POST /api/v1/orders` is received â€” server re-validates zone at creation time |
+| 5 | System | Zone lookup returns `is_active = false` â†’ server rejects the order with `DELIVERY_ZONE_INACTIVE` |
+| 6 | Customer | Frontend shows: *"Sorry, this delivery zone is no longer available. Please choose another zone or select pickup."* |
+| 7 | Customer | Selects a different active zone or switches to pickup â€” no payment was initiated |
+
+> **Rule:** Zone validation and fee recomputation happen at `POST /api/v1/orders` â€” **before** the STK push is dispatched. The client-side zone selection is advisory only; the server always re-reads `delivery_zones.is_active` and `delivery_zones.fee_ugx` from the database before creating the order. A zone that was active when the customer opened checkout may be inactive by the time they submit â€” this must be handled gracefully without charging the customer.
+
 ---
 
 ## 10. Privacy, Security & Operational Safety
@@ -463,7 +479,7 @@ The order creation handler must run these checks **before** initiating the MoMo/
 - **Data minimisation:** Store zone, note, name, phone, and optional pin. Do not collect continuous location, background location, or contacts.
 - **Access control:** Customer name, phone, room note, and GPS link are visible to `WAITER_FOH` and `MANAGER_ADMIN`. `KITCHEN_STAFF` sees only the destination zone. Riders receive the printed chit, not a system login.
 - **Logging:** Mask phone numbers in application logs (`0701***567`). Do not log GPS coordinates at `info` level.
-- **Retention:** Keep precise coordinates only as long as needed for delivery disputes; a default proposal is 90 days, then null the lat/lng/accuracy fields while retaining the zone and note for order history. Confirm the final retention period with Zito Mbowe and the business’s data-protection policy.
+- **Retention:** Keep precise coordinates only as long as needed for delivery disputes; a default proposal is 90 days, then null the lat/lng/accuracy fields while retaining the zone and note for order history. Confirm the final retention period with Zito Mbowe and the businessâ€™s data-protection policy.
 - **Uganda Data Protection and Privacy Act, 2019:** Treat phone numbers and precise location as personal data. Collect for a stated purpose, protect it, and do not repurpose it for marketing without consent. This is an engineering note, not legal advice.
 - **ESC/POS injection:** Customer notes are printed to a raw printer. Strip `ESC`, `GS`, and control bytes before printing; cap the note length. A malicious note must not be able to issue printer commands.
 - **Client trust:** The client may send coordinates, but the server must validate ranges. The client must never send a trusted fee. The server recomputes the zone fee and total.
@@ -486,7 +502,7 @@ Do not add live GPS tracking because a competitor has a map. Add it when the ope
 ### 11.1 Phase 2 architecture (if triggered)
 
 - **Map:** Leaflet + OpenStreetMap, not Google Maps JavaScript SDK. Budget for a tile provider or self-host tiles; public OSM tile servers have usage policies and no SLA.
-- **Rider PWA:** a lightweight rider view with `navigator.geolocation.watchPosition`, a 15–30 second heartbeat, and a visible “sharing location” indicator.
+- **Rider PWA:** a lightweight rider view with `navigator.geolocation.watchPosition`, a 15â€“30 second heartbeat, and a visible â€œsharing locationâ€ indicator.
 - **Transport:** WebSocket (`@fastify/websocket`) to the FOH dispatch screen; Redis pub/sub already exists in the stack.
 - **Storage:** `rider_locations` table (optionally PostGIS) with rider ID, order ID, lat/lng, accuracy, and timestamp. Retain only the latest point plus a short trail.
 - **Consent and battery:** explicit rider opt-in, foreground-only sharing by default, pause when the app is backgrounded, and a clear battery impact warning.
@@ -540,4 +556,4 @@ Before the delivery feature is demoed to Zito Mbowe, verify:
 | `Hardware_and_Peripherals.md` | ESC/POS delivery chit and printer safety |
 | `Seed_Data_and_Testing.md` | Zone seed data and delivery test cases |
 | `Repo_Scaffold_and_Config.md` | Delivery components, services, and environment variables |
-| `Demo_Script_and_Closing_Strategy.md` | Delivery demo segment and “why no live map” objection |
+| `Demo_Script_and_Closing_Strategy.md` | Delivery demo segment and â€œwhy no live mapâ€ objection |

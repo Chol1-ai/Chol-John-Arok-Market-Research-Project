@@ -5,7 +5,7 @@
 **Currency:** Ugandan Shilling (UGX)<br>
 **Author:** Lead Technical Product Manager & System Architect<br>
 **Target Environment:** Antigravity IDE + Opencode CLI Repository Scaffold<br>
-**Related Files:** `Foundational_Concept.md` · `Design_System.md` · `User_Flow.md` · `User_Profiles_Personas.md` · `Delivery_Zones_and_Dispatch.md` · `Tech_Stack.md` · `Hardware_and_Peripherals.md` · `Seed_Data_and_Testing.md` · `Repo_Scaffold_and_Config.md` · `Demo_Script_and_Closing_Strategy.md` · `Daily_Audit_Digest.md` · `Deployment_Runbook.md` · `Service_Contract_and_Invoice_Template.md` · `Implementation_Phases.md`
+**Related Files:** `Foundational_Concept.md` Â· `Design_System.md` Â· `User_Flow.md` Â· `User_Profiles_Personas.md` Â· `Delivery_Zones_and_Dispatch.md` Â· `Tech_Stack.md` Â· `Hardware_and_Peripherals.md` Â· `Seed_Data_and_Testing.md` Â· `Repo_Scaffold_and_Config.md` Â· `Demo_Script_and_Closing_Strategy.md` Â· `Daily_Audit_Digest.md` Â· `Deployment_Runbook.md` Â· `Service_Contract_and_Invoice_Template.md` Â · `build_strategy/Build_Strategy_and_Phases.md`
 
 ---
 
@@ -26,9 +26,9 @@ This module manages the end-to-end payment lifecycle:
 - Generating verified financial receipts **before** firing tickets to the KDS
 - Charging the server-computed delivery fee as part of the order total for `PHONE_DELIVERY`
 
-> **Payment gate:** A prepaid request to `POST /api/v1/orders` creates the order as `AWAITING_PAYMENT` and a payment row as `INITIATED`. The order becomes `PENDING` — the first state visible to the KDS — **only** after a verified `SUCCESSFUL` payment. A failed or timed-out payment leaves the order in `AWAITING_PAYMENT` for a retry and is auto-cancelled after the payment TTL. The single exception is an authenticated FOH dine-in **POSTPAY** tab, which enters `PENDING` immediately and is settled at bill close; this exception is not available to customer-app, QR, or delivery orders. See `User_Flow.md §2 Flow A` and `Payment_Integration.md §6` for the promotion handler; `Tech_Stack.md §5` shows the downstream KDS status handler.
+> **Payment gate:** A prepaid request to `POST /api/v1/orders` creates the order as `AWAITING_PAYMENT` and a payment row as `INITIATED`. The order becomes `PENDING` â€” the first state visible to the KDS â€” **only** after a verified `SUCCESSFUL` payment. A failed or timed-out payment leaves the order in `AWAITING_PAYMENT` for a retry and is auto-cancelled after the payment TTL. The single exception is an authenticated FOH dine-in **POSTPAY** tab, which enters `PENDING` immediately and is settled at bill close; this exception is not available to customer-app, QR, or delivery orders. See `User_Flow.md Â§2 Flow A` and `Payment_Integration.md Â§6` for the promotion handler; `Tech_Stack.md Â§5` shows the downstream KDS status handler.
 
-> **Delivery fee rule:** For delivery orders, `amountUgx` is `subtotal + delivery_fee_ugx`, where the fee is resolved from the active `delivery_zones` row on the server. The client never supplies a trusted fee. Zone, room note, recipient name, and rider-callable phone must validate **before** the order and payment record are created. See `Delivery_Zones_and_Dispatch.md §4` and `Tech_Stack.md §4`.
+> **Delivery fee rule:** For delivery orders, `amountUgx` is `subtotal + delivery_fee_ugx`, where the fee is resolved from the active `delivery_zones` row on the server. The client never supplies a trusted fee. Zone, room note, recipient name, and rider-callable phone must validate **before** the order and payment record are created. See `Delivery_Zones_and_Dispatch.md Â§4` and `Tech_Stack.md Â§4`.
 
 ---
 
@@ -36,55 +36,55 @@ This module manages the end-to-end payment lifecycle:
 
 ```
 [ CUSTOMER / WAITER CLIENT ]
-             │
-  (Initiates Checkout — subtotal + delivery fee + phone)
-             │
-             ▼
-┌────────────────────────────────────────┐
-│       PAYMENT GATEWAY CONTROLLER       │
-│  - Server-side menu price + fee total  │
-│  - Order created: AWAITING_PAYMENT     │
-│  - Daily display token + public_ref    │
-│  - MSISDN normalization to E.164       │
-│  - Telco Detection (MTN vs AIRTEL)     │
-│  - Idempotency UUIDv4 token assigned   │
-│  - Payment record created: INITIATED   │
-└──────────────────┬─────────────────────┘
-                   │
-       ┌───────────┴───────────┐
-(MTN)  │                       │  (Airtel)
-       ▼                       ▼
-┌────────────────────┐  ┌────────────────────┐
-│  MTN MOMO OPEN API │  │  AIRTEL MONEY API  │
-│  POST /requesttopay│  │  POST /merchant/   │
-│                    │  │        v2/payments/│
-└─────────┬──────────┘  └────────┬───────────┘
-          └──────────┬───────────┘
-                     │
+             â”‚
+  (Initiates Checkout â€” subtotal + delivery fee + phone)
+             â”‚
+             â–¼
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚       PAYMENT GATEWAY CONTROLLER       â”‚
+â”‚  - Server-side menu price + fee total  â”‚
+â”‚  - Order created: AWAITING_PAYMENT     â”‚
+â”‚  - Daily display token + public_ref    â”‚
+â”‚  - MSISDN normalization to E.164       â”‚
+â”‚  - Telco Detection (MTN vs AIRTEL)     â”‚
+â”‚  - Idempotency UUIDv4 token assigned   â”‚
+â”‚  - Payment record created: INITIATED   â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                   â”‚
+       â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+(MTN)  â”‚                       â”‚  (Airtel)
+       â–¼                       â–¼
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚  MTN MOMO OPEN API â”‚  â”‚  AIRTEL MONEY API  â”‚
+â”‚  POST /requesttopayâ”‚  â”‚  POST /merchant/   â”‚
+â”‚                    â”‚  â”‚        v2/payments/â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â””â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+          â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                     â”‚
          (USSD STK Push to Handset)
-                     │
-                     ▼
+                     â”‚
+                     â–¼
          [ CUSTOMER PHONE PROMPT ]
           "Approve UGX 14,000 for
           Foodizo? Enter MoMo PIN"
-                     │
-                     ▼
-       ┌─────────────────────────────┐
-       │    INBOUND WEBHOOK RECEIVER │
-       │  - Provider credential      │
-       │  - IP allowlist check       │
-       │  - Idempotency lock check   │
-       └──────────────┬──────────────┘
-                      │
-                      ▼
-       ┌─────────────────────────────┐
-       │       PAYMENT SETTLED       │
-       │  payment.status → SUCCESSFUL│
-       │  order.status:              │
-       │    AWAITING_PAYMENT → PENDING│ ←── Fires to KDS via Redis
-       │  display token already      │
-       │  reserved at order creation │
-       └─────────────────────────────┘
+                     â”‚
+                     â–¼
+       â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+       â”‚    INBOUND WEBHOOK RECEIVER â”‚
+       â”‚  - Provider credential      â”‚
+       â”‚  - IP allowlist check       â”‚
+       â”‚  - Idempotency lock check   â”‚
+       â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                      â”‚
+                      â–¼
+       â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+       â”‚       PAYMENT SETTLED       â”‚
+       â”‚  payment.status â†’ SUCCESSFULâ”‚
+       â”‚  order.status:              â”‚
+       â”‚    AWAITING_PAYMENT â†’ PENDINGâ”‚ â†â”€â”€ Fires to KDS via Redis
+       â”‚  display token already      â”‚
+       â”‚  reserved at order creation â”‚
+       â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
 ---
@@ -105,7 +105,7 @@ export function parseUgandanMsisdn(rawInput: string): {
 } {
   let cleaned = rawInput.replace(/\D/g, ''); // Strip all non-digit characters
 
-  // Convert 07XXXXXXXX (10 digits) → 2567XXXXXXXX (12 digits)
+  // Convert 07XXXXXXXX (10 digits) â†’ 2567XXXXXXXX (12 digits)
   if (cleaned.startsWith('0') && cleaned.length === 10) {
     cleaned = '256' + cleaned.substring(1);
   }
@@ -133,20 +133,20 @@ export function parseUgandanMsisdn(rawInput: string): {
 
 ```
 [ INITIATED ]
-      │
+      â”‚
 (STK Push Dispatched to Handset)
-      │
-      ▼
-[ PENDING_CUSTOMER_PIN ] ◄─────────────────────┐
-      │                  │                      │
-(Webhook: SUCCESS)  (30s → Poll Telco API)  (45s Timeout)
-      │                  │                      │
-      ▼                  └──────────────────────┘
-[ SUCCESSFUL ]                  │
-      │                         ▼
+      â”‚
+      â–¼
+[ PENDING_CUSTOMER_PIN ] â—„â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+      â”‚                  â”‚                      â”‚
+(Webhook: SUCCESS)  (30s â†’ Poll Telco API)  (45s Timeout)
+      â”‚                  â”‚                      â”‚
+      â–¼                  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+[ SUCCESSFUL ]                  â”‚
+      â”‚                         â–¼
 (Order AWAITING_PAYMENT    [ TIMED_OUT ]
- → PENDING → KDS)               │
-                                ▼
+ â†’ PENDING â†’ KDS)               â”‚
+                                â–¼
                          [ FAILED / CANCELLED ]
                          (Order stays AWAITING_PAYMENT
                           for retry, then auto-cancels)
@@ -156,7 +156,7 @@ export function parseUgandanMsisdn(rawInput: string): {
 
 ### The 45-Second Rule & Polling Fallback
 
-In Kampala, USSD network congestion causes pushes to take **10–25 seconds** to appear on handsets, and webhook callbacks can experience brief carrier delays.
+In Kampala, USSD network congestion causes pushes to take **10â€“25 seconds** to appear on handsets, and webhook callbacks can experience brief carrier delays.
 
 | Time | System Action |
 | :--- | :--- |
@@ -173,7 +173,7 @@ In Kampala, USSD network congestion causes pushes to take **10–25 seconds** to
 | Endpoint | Method | Purpose |
 | :--- | :--- | :--- |
 | `/collection/token/` | `POST` | Obtain Bearer token (Basic Auth: API User + API Key) |
-| `/collection/v1_0/requesttopay` | `POST` | Initiate USSD STK push → returns `202 Accepted` |
+| `/collection/v1_0/requesttopay` | `POST` | Initiate USSD STK push â†’ returns `202 Accepted` |
 | `/collection/v1_0/requesttopay/{X-Reference-Id}` | `GET` | Poll transaction status |
 
 ```typescript
@@ -279,7 +279,7 @@ export async function handlePaymentWebhook(
 ): Promise<void> {
   const payload = request.body as PaymentWebhookPayload;
   // The route preflight verifies the provider callback credential and source
-  // allowlist before this handler runs; see §10. Use an HMAC check only where
+  // allowlist before this handler runs; see Â§10. Use an HMAC check only where
   // the provider actually supplies a signature.
   const eventId =
     payload.eventId ??
@@ -305,7 +305,7 @@ export async function handlePaymentWebhook(
       return;
     }
 
-    // ── 1. Durable event dedupe. provider + event_id is UNIQUE. ────────────
+    // â”€â”€ 1. Durable event dedupe. provider + event_id is UNIQUE. â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     // Two concurrent deliveries of the same callback: exactly one INSERT wins;
     // the loser gets P2002 and returns 200 without side effects.
     try {
@@ -325,7 +325,7 @@ export async function handlePaymentWebhook(
       throw error;
     }
 
-    // ── 2. Serialize all state changes for this payment. ──────────────────
+    // â”€â”€ 2. Serialize all state changes for this payment. â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     await tx.$queryRaw`SELECT id FROM payments WHERE id = ${payment.id} FOR UPDATE`;
     const locked = await tx.payments.findUniqueOrThrow({
       where: { id: payment.id },
@@ -422,7 +422,7 @@ export async function handlePaymentWebhook(
       return;
     }
 
-    // ── 3. Success: conditional update prevents a double-success race. ────
+    // â”€â”€ 3. Success: conditional update prevents a double-success race. â”€â”€â”€â”€
     const paid = await tx.payments.updateMany({
       where: {
         id: payment.id,
@@ -440,7 +440,7 @@ export async function handlePaymentWebhook(
       return;
     }
 
-    // ── 4. Promote only an AWAITING_PAYMENT order. ────────────────────────
+    // â”€â”€ 4. Promote only an AWAITING_PAYMENT order. â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const promoted = await tx.orders.updateMany({
       where: { id: payment.order_id, status: 'AWAITING_PAYMENT' },
       data: { status: 'PENDING' },
@@ -512,7 +512,7 @@ export async function handlePaymentWebhook(
 
 ## 7. PostgreSQL Payments Table (DDL Extension)
 
-This table extends the schema in `Tech_Stack.md §3`. Add after the `orders` table:
+This table extends the schema in `Tech_Stack.md Â§3`. Add after the `orders` table:
 
 ```sql
 -- ============================================================
@@ -615,21 +615,21 @@ COMMENT ON TABLE payment_events IS
 
 When telecom APIs experience downtime or signal drops inside Ham Towers basement or Obunuzi back rooms:
 
-**Step 1 — App renders fallback UI:**
+**Step 1 â€” App renders fallback UI:**
 
 ```
-┌────────────────────────────────────────────┐
-│         PAY MANUALLY WITH MOMO             │
-├────────────────────────────────────────────┤
-│  MTN:    Dial  *165*3*242424#              │
-│  Airtel: Dial  *185*9*121212#              │
-│  Reference:    ORD-7F3C2A9D4B11            │
-├────────────────────────────────────────────┤
-│  Then show your SMS receipt to the cashier │
-└────────────────────────────────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚         PAY MANUALLY WITH MOMO             â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚  MTN:    Dial  *165*3*242424#              â”‚
+â”‚  Airtel: Dial  *185*9*121212#              â”‚
+â”‚  Reference:    ORD-7F3C2A9D4B11            â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚  Then show your SMS receipt to the cashier â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
-**Step 2 — Cashier manual verification:**
+**Step 2 â€” Cashier manual verification:**
 1. Customer shows the telco SMS receipt at the counter.
 2. Cashier taps **"Verify MoMo Transaction"** on their terminal.
 3. Cashier enters the **full transaction ID** (or, if the receipt truncates it, the last **six** characters) plus the amount and payer phone. Four digits alone are not sufficient; they collide too easily and invite fraud.
@@ -640,7 +640,7 @@ When telecom APIs experience downtime or signal drops inside Ham Towers basement
 | `*165*3*242424#` | Foodizo Ham Towers | MTN |
 | `*185*9*121212#` | Obunuzi YMCA | Airtel |
 
-> These are example merchant codes, not universal dial strings. Confirm a working manual code for **each carrier the outlet accepts**. Do not assume the Foodizo MTN code works at Obunuzi, or that one outlet’s Airtel code covers MTN customers. Record the confirmed codes in the outlet’s go-live checklist.
+> These are example merchant codes, not universal dial strings. Confirm a working manual code for **each carrier the outlet accepts**. Do not assume the Foodizo MTN code works at Obunuzi, or that one outletâ€™s Airtel code covers MTN customers. Record the confirmed codes in the outletâ€™s go-live checklist.
 
 ### 8.1 Cash, manual MoMo, and POSTPAY settlement
 
@@ -655,7 +655,7 @@ A cash sale is a real payment method, not a missing payment. Use `POST /api/v1/o
 }
 ```
 
-- `CASH` and `MANUAL_MOMO` settle immediately as `SUCCESSFUL`; `MANUAL_MOMO` requires the transaction ID, amount, and payer phone from §8.
+- `CASH` and `MANUAL_MOMO` settle immediately as `SUCCESSFUL`; `MANUAL_MOMO` requires the transaction ID, amount, and payer phone from Â§8.
 - `MTN` and `AIRTEL` create a new payment attempt and dispatch an STK push to `customerMsisdn`; the verified webhook completes it. Use this for a table tab that the guest wants to pay by mobile money at bill close.
 - The endpoint never changes kitchen status. A tab that is already `PENDING`, `PREPARING`, `READY`, or `COMPLETED` stays there.
 - One `SUCCESSFUL` payment is allowed per order. A second success becomes `REFUND_PENDING`; it is not a second ticket.
@@ -674,7 +674,7 @@ Phase 1 does not call a telco refund API. Late or duplicate MoMo successes are r
 
 1. The manager completes the reversal in the telco merchant app and obtains the reversal/confirmation reference.
 2. The manager calls `POST /api/v1/payments/:id/refund` (`MANAGER_ADMIN`) with the reference.
-3. The service moves the payment `REFUND_PENDING` → `REFUNDED`, sets `refunded_at` and `refund_reference`, and writes an append-only audit row naming the manager, amount, carrier, and reference. It does not change order or kitchen status.
+3. The service moves the payment `REFUND_PENDING` â†’ `REFUNDED`, sets `refunded_at` and `refund_reference`, and writes an append-only audit row naming the manager, amount, carrier, and reference. It does not change order or kitchen status.
 4. `REFUNDED` is terminal. The payment leaves the pending-refund memo and remains excluded from gross collections. It is never re-promoted to `SUCCESSFUL`.
 
 Cash refunds out of the drawer remain out of scope in Phase 1. If the business later needs them, the cash-count formula must add a `cash_refunds` line rather than assuming zero.
@@ -683,7 +683,7 @@ Cash refunds out of the drawer remain out of scope in Phase 1. If the business l
 
 `POST /api/v1/orders/:id/cancel` must resolve the money in the same transaction as the cancellation. Otherwise a verified payment stays in gross after the order is voided and the digest overstates collections.
 
-- **MTN, Airtel, or manual MoMo:** move the `SUCCESSFUL` payment to `REFUND_PENDING` and set `audit_flag = 'CANCELLED_AFTER_PAYMENT'` (or `'FAILED_DELIVERY'` when the cancellation follows a failed handoff). The payment leaves gross immediately and appears in the 21:30 refund memo. The manager completes the external reversal and closes it through `POST /api/v1/payments/:id/refund` under §8.2.
+- **MTN, Airtel, or manual MoMo:** move the `SUCCESSFUL` payment to `REFUND_PENDING` and set `audit_flag = 'CANCELLED_AFTER_PAYMENT'` (or `'FAILED_DELIVERY'` when the cancellation follows a failed handoff). The payment leaves gross immediately and appears in the 21:30 refund memo. The manager completes the external reversal and closes it through `POST /api/v1/payments/:id/refund` under Â§8.2.
 - **Cash:** Phase 1 has no cash-refund ledger, so the system does not move a `CASH` payment automatically. A cash-paid cancellation is a manager-only exception: the order is cancelled, the audit row states that cash was returned outside the system, and the digest raises `CASH_REFUND_EXCEPTION`. The person returning the cash adjusts the drawer; the digest must not claim the system refunded it.
 - **No successful payment:** cancel the order directly. A late success after cancellation follows the `LATE_PAYMENT_AFTER_CANCEL` rule and becomes `REFUND_PENDING`.
 - Cancellation never changes kitchen status for any other order and never re-promotes a refunded payment.
@@ -694,7 +694,7 @@ A failed delivery is settled as `CANCELLED` by the manager; if the delivery was 
 
 ## 9. Manager Shift-Close Reconciliation Report
 
-At **9:30 PM**, Zito Mbowe reviews the daily financial reconciliation across both outlets. The figures below are illustrative; the report must compute every value, and “balanced” is valid only after a cash count:
+At **9:30 PM**, Zito Mbowe reviews the daily financial reconciliation across both outlets. The figures below are illustrative; the report must compute every value, and â€œbalancedâ€ is valid only after a cash count:
 
 ```
 +-------------------------------------------------------------------------+
@@ -712,7 +712,7 @@ At **9:30 PM**, Zito Mbowe reviews the daily financial reconciliation across bot
 +-------------------------------------------------------------------------+
 | OUTLET SPLIT: Foodizo UGX 1,780,000 (129) | Obunuzi UGX 964,000 (67)     |
 +-------------------------------------------------------------------------+
-| DELIVERY CONTRIBUTION (MEMO — NOT A COLLECTION CHANNEL)                 |
+| DELIVERY CONTRIBUTION (MEMO â€” NOT A COLLECTION CHANNEL)                 |
 | Delivery fees collected (inside MoMo/Airtel totals)  | UGX    84,000    |
 | Less: rider transport advances paid from cash drawer | UGX   (62,000)   |
 | Net delivery contribution                            | UGX    22,000    |
@@ -726,7 +726,7 @@ At **9:30 PM**, Zito Mbowe reviews the daily financial reconciliation across bot
 
 > The reconciliation report is generated automatically from the `payments`, `delivery_handoffs`, and `cash_counts` tables at 9:30 PM and pushed to Zito Mbowe's admin dashboard and email. Delivery fees are included in the MTN/Airtel totals; the report may show a **Delivery Fees (memo)** line for audit, but it is not a separate collection channel and must never be collected as an untracked cash top-up.
 
-> **Daily digest:** The same figures feed the 21:30 owner SMS/email digest in `Daily_Audit_Digest.md`. The digest must read `cash_counts.variance_ugx`; if the cash count is missing, it must say so instead of printing a zero. `REFUND_PENDING` payments are not gross collections; list them separately with the reason (`LATE_PAYMENT_AFTER_CANCEL`, `DUPLICATE_SUCCESS_REQUIRES_REFUND`, `CANCELLED_AFTER_PAYMENT`, or `FAILED_DELIVERY`) until a manager closes the reversal as `REFUNDED` through §8.2. Closed refunds stay out of gross and move to a memo count.
+> **Daily digest:** The same figures feed the 21:30 owner SMS/email digest in `Daily_Audit_Digest.md`. The digest must read `cash_counts.variance_ugx`; if the cash count is missing, it must say so instead of printing a zero. `REFUND_PENDING` payments are not gross collections; list them separately with the reason (`LATE_PAYMENT_AFTER_CANCEL`, `DUPLICATE_SUCCESS_REQUIRES_REFUND`, `CANCELLED_AFTER_PAYMENT`, or `FAILED_DELIVERY`) until a manager closes the reversal as `REFUNDED` through Â§8.2. Closed refunds stay out of gross and move to a memo count.
 
 > **Rider advance rule:** If the outlet pays the rider from the cash drawer, the handoff must record `rider_advance_ugx` and any returned change. The cash drawer count is reconciled against cash sales **minus net rider advances**. An unrecorded UGX 2,000 handoff appears as a UGX 2,000 drawer variance even though the money was spent correctly. The delivery fee is revenue; the rider advance is an operating cost. Report the net contribution, not just the fee collected.
 
@@ -736,9 +736,81 @@ At **9:30 PM**, Zito Mbowe reviews the daily financial reconciliation across bot
 
 | Control | Implementation |
 | :--- | :--- |
-| **No PIN Handling** | Customer MoMo PINs are entered exclusively on the telco SIM card level — never passed through or stored by this app |
+| **No PIN Handling** | Customer MoMo PINs are entered exclusively on the telco SIM card level â€” never passed through or stored by this app |
 | **Idempotency Keys** | Every payment attempt uses a cryptographically generated `UUIDv4` sent as `X-Reference-Id`; `payment_events(provider, event_id)` dedupes webhook retries |
-| **Webhook Validation** | Verify the provider callback credential (shared secret or API key where the provider supports one) and enforce the provider’s published source IP ranges. Add an HMAC check only if the provider actually signs callbacks; do not claim HMAC support that the telco does not offer. |
+| **Webhook Validation** | Verify the provider callback credential (shared secret or API key where the provider supports one) and enforce the providerâ€™s published source IP ranges. Add an HMAC check only if the provider actually signs callbacks; do not claim HMAC support that the telco does not offer. |
 | **Transport Security** | TLS is required for every internet-facing hop (telco APIs, Cloudflare Tunnel, SMTP). The in-store LAN is HTTP on a restricted staff SSID; do not expose it to the WAN |
 | **Environment Isolation** | `MOMO_TARGET_ENV=sandbox` for development; `production` flag requires explicit deployment approval |
-| **PCI Scope Reduction** | No card data is stored or processed — system is MoMo-only, reducing PCI DSS scope to SAQ A |
+| **PCI Scope Reduction** | No card data is stored or processed â€” system is MoMo-only, reducing PCI DSS scope to SAQ A |
+
+
+---
+
+## 11. Telco Sandbox & Test Credentials Setup Guide
+
+Developers must configure the developer sandbox before running automated or manual payment tests. Never use live SIMs or real funds in development.
+
+### 11.1 MTN MoMo Sandbox Provisioning
+
+The MTN MoMo Open API operates on a self-provisioned sandbox environment (`https://sandbox.momodeveloper.mtn.com`).
+
+#### Step 1: Provision API User & API Key
+```bash
+# Generate a random UUIDv4 to act as the API User ID
+API_USER_UUID=$(uuidgen | tr '[:upper:]' '[:lower:]')
+SUBSCRIPTION_KEY="your_collection_primary_key_here"
+
+# 1. Create API User in MTN Sandbox
+curl -X POST "https://sandbox.momodeveloper.mtn.com/v1_0/apiuser" \
+  -H "X-Reference-Id: ${API_USER_UUID}" \
+  -H "Ocp-Apim-Subscription-Key: ${SUBSCRIPTION_KEY}" \
+  -H "Content-Type: application/json" \
+  -d '{"providerCallbackHost": "webhook.site"}'
+
+# 2. Generate API Key for this user
+curl -X POST "https://sandbox.momodeveloper.mtn.com/v1_0/apiuser/${API_USER_UUID}/apikey" \
+  -H "Ocp-Apim-Subscription-Key: ${SUBSCRIPTION_KEY}"
+# Returns: {"apiKey": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}
+```
+
+#### Step 2: Configure `.env`
+```bash
+MOMO_TARGET_ENV="sandbox"
+MOMO_COLLECTION_SUBSCRIPTION_KEY="your_collection_primary_key"
+MOMO_API_USER="<generated-uuid-from-above>"
+MOMO_API_KEY="<generated-api-key-from-above>"
+MOMO_CALLBACK_URL="http://192.168.1.100:4000/api/v1/webhooks/momo"
+```
+
+#### Step 3: Test MSISDNs & Simulation Rules (Sandbox)
+* Any MSISDN prefixed with `25677` or `25678` is valid in sandbox (e.g., `256772123456`).
+* In the MTN sandbox, amounts under `UGX 50,000` automatically succeed with `SUCCESSFUL`.
+* Amounts ending in `99` (e.g., `UGX 10,099`) simulate `FAILED_INSUFFICIENT_FUNDS`.
+* Amounts ending in `88` (e.g., `UGX 10,088`) simulate a timeout / no response on handset.
+
+---
+
+### 11.2 Airtel Money OpenAPI Test Setup
+
+Airtel Money operates through their partner integration portal (`https://openapiportal.airtel.africa`).
+
+#### Step 1: Credentials Required
+* `AIRTEL_CLIENT_ID`: Issued upon application creation.
+* `AIRTEL_CLIENT_SECRET`: Paired secret for OAuth token generation.
+* `AIRTEL_MERCHANT_PIN`: 4-digit PIN for merchant collections.
+* `AIRTEL_COUNTRY_CODE`: `UG`.
+* `AIRTEL_CURRENCY`: `UGX`.
+
+#### Step 2: Configure `.env`
+```bash
+AIRTEL_BASE_URL="https://openapi.airtel.africa/auth/v1/token"
+AIRTEL_PAYMENT_URL="https://openapi.airtel.africa/merchant/v2/payments/"
+AIRTEL_CLIENT_ID="your_airtel_client_id"
+AIRTEL_CLIENT_SECRET="your_airtel_client_secret"
+AIRTEL_MERCHANT_ID="FOODIZO_UG"
+AIRTEL_CALLBACK_URL="http://192.168.1.100:4000/api/v1/webhooks/airtel"
+```
+
+#### Step 3: Test MSISDNs (Sandbox)
+* Airtel Uganda test MSISDNs must start with `25670`, `25675`, or `25674` (e.g., `256701234567`).
+* Any sandbox test request triggers a webhook payload within 3–5 seconds without requiring an actual handset interaction.

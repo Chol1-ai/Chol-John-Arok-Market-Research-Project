@@ -1,9 +1,128 @@
-# Deployment Runbook — Edge Node, Docker & Network
+﻿# Deployment Runbook â€” Edge Node, Docker & Network
 
-**Deployment Model:** Edge-first hybrid — local LAN node is the source of truth; cloud tunnel is for remote administration and backup, not live ticket sync.<br>
+**Deployment Model:** Edge-first hybrid â€” local LAN node is the source of truth; cloud tunnel is for remote administration and backup, not live ticket sync.<br>
 **Target Hardware:** Intel NUC / mini-PC (recommended) or Raspberry Pi 5 (8 GB) with SSD and UPS. A Raspberry Pi 4 with 2 GB is not sufficient for Next.js + PostgreSQL + Redis + Fastify.<br>
 **Target Sites:** Foodizo (Ham Towers) and Obunuzi (Opposite YMCA), Wandegeya, Kampala.<br>
-**Related Specifications:** `Foundational_Concept.md` · `Design_System.md` · `User_Flow.md` · `User_Profiles_Personas.md` · `Delivery_Zones_and_Dispatch.md` · `Tech_Stack.md` · `Payment_Integration.md` · `Hardware_and_Peripherals.md` · `Seed_Data_and_Testing.md` · `Repo_Scaffold_and_Config.md` · `Demo_Script_and_Closing_Strategy.md` · `Daily_Audit_Digest.md` · `Service_Contract_and_Invoice_Template.md` · `Implementation_Phases.md`
+**Related Specifications:** `Foundational_Concept.md` Â· `Design_System.md` Â· `User_Flow.md` Â· `User_Profiles_Personas.md` Â· `Delivery_Zones_and_Dispatch.md` Â· `Tech_Stack.md` Â· `Payment_Integration.md` Â· `Hardware_and_Peripherals.md` Â· `Seed_Data_and_Testing.md` Â· `Repo_Scaffold_and_Config.md` Â· `Daily_Audit_Digest.md` Â · `build_strategy/Build_Strategy_and_Phases.md`
+
+---
+
+## 0. First-Boot Checklist â€” New Edge Machine (Ubuntu Server 22.04 LTS)
+
+This is the exact sequence a field technician follows when setting up a **brand-new mini-PC or Raspberry Pi 5** at a restaurant site for the first time. Follow steps in order.
+
+> [!IMPORTANT]
+> Complete every step before calling it done. A missed step (e.g., skipping static DHCP or forgetting `.env`) will cause failures that are hard to diagnose on-site.
+
+### 0.1 OS & Prerequisites
+
+```bash
+# 1. Flash Ubuntu Server 22.04 LTS to an SSD (not an SD card in production)
+# 2. Boot the machine and run initial updates
+sudo apt update && sudo apt upgrade -y
+
+# 3. Install Docker Engine (not Docker Desktop)
+curl -fsSL https://get.docker.com | sudo sh
+sudo usermod -aG docker $USER
+newgrp docker                  # apply group change without logout
+
+# 4. Verify Docker
+docker --version               # expect Docker 24.x or later
+docker compose version         # expect Compose 2.x (built-in plugin)
+```
+
+### 0.2 Static IP on the Edge Server
+
+```bash
+# Edit Netplan (adjust interface name: ip link show)
+sudo nano /etc/netplan/00-installer-config.yaml
+```
+
+```yaml
+network:
+  ethernets:
+    eth0:                        # or enp3s0, etc. â€” check your interface
+      dhcp4: no
+      addresses: [192.168.1.100/24]
+      gateway4: 192.168.1.1
+      nameservers:
+        addresses: [8.8.8.8, 1.1.1.1]
+  version: 2
+```
+
+```bash
+sudo netplan apply
+ping 192.168.1.1 -c 3          # confirm gateway reachable
+```
+
+### 0.3 Clone Repo & Configure Environment
+
+```bash
+# 5. Clone the project repository
+cd /opt
+sudo mkdir foodizo && sudo chown $USER:$USER foodizo
+cd foodizo
+git clone https://github.com/YOUR-ORG/foodizo-obunuzi-kds.git .
+
+# 6. Copy and fill environment files
+cp .env.example .env
+cp .env.client.example .env.client
+nano .env                      # fill in real values: DATABASE_URL, MTN/Airtel keys, AT SMS key, SMTP creds
+nano .env.client               # fill in NEXT_PUBLIC_API_URL = http://192.168.1.100:4000
+```
+
+### 0.4 Start the Stack & Seed the Database
+
+```bash
+# 7. Pull images and start all services
+docker compose pull
+docker compose up -d
+
+# 8. Wait for PostgreSQL to be healthy (up to 30 s)
+docker compose ps              # all services should show "Up" or "healthy"
+
+# 9. Run database migrations
+docker compose exec api npx prisma migrate deploy
+
+# 10. Seed the database (development/first-install only)
+docker compose exec api npx prisma db seed
+
+# 11. Verify the API health endpoint
+curl http://192.168.1.100:4000/health    # expect {"status":"ok"}
+curl http://192.168.1.100:3000           # expect the Customer PWA homepage HTML
+```
+
+### 0.5 Network & Printer
+
+```bash
+# 12. Assign static DHCP to the printer in the router admin UI
+#     Printer MAC â†’ 192.168.1.200 (see router admin â†’ DHCP reservations)
+
+# 13. Test the printer
+echo -e "\x1b\x40Hello Foodizo\x0a\x0a\x0a" | nc 192.168.1.200 9100
+# Expect a slip to print; if nothing prints, check the cable and power
+
+# 14. Set the router's DHCP pool to 192.168.1.110â€“150 for FOH and KDS tablets
+```
+
+### 0.6 Final Go-Live Verification
+
+```bash
+# 15. Open the KDS on a tablet: http://192.168.1.100:3000/kds/fryer
+# 16. Log in as a waiter: http://192.168.1.100:3000/login
+# 17. Place a test dine-in order from the waiter POS â€” confirm it appears on KDS
+# 18. Bump the order to READY â€” confirm a chit prints
+# 19. Log in as admin: http://192.168.1.100:3000/admin
+# 20. Run the digest dry-run:
+docker compose exec api node scripts/run-daily-digest.js --dry-run
+# Expect: "Dry run complete â€” no SMS or email sent"
+
+# 21. Test backup:
+bash deploy/backup.sh
+ls -lh /opt/foodizo/backups/   # expect a .tar.gz file with today's date
+```
+
+> âœ… **First-boot complete.** Proceed to staff training (Stage 4 in  · `build_strategy/Build_Strategy_and_Phases.md`).
 
 ---
 
@@ -23,7 +142,7 @@
 - Provide a live cloud replica of every ticket. If cloud sync is ever required, use an outbox/event-log pattern; do not point the edge app at a remote database over an unreliable link.
 - Turn a Raspberry Pi into a data-centre. Use a mini-PC with an SSD for production.
 
-> **Offline rule:** Local table orders, KDS bumps, and printing continue on LAN. Mobile-money payments require the telco network. Do not show “PAID” from a local guess; only a verified webhook or a manager-verified manual transaction may release a MoMo order.
+> **Offline rule:** Local table orders, KDS bumps, and printing continue on LAN. Mobile-money payments require the telco network. Do not show â€œPAIDâ€ from a local guess; only a verified webhook or a manager-verified manual transaction may release a MoMo order.
 
 ---
 
@@ -31,11 +150,11 @@
 
 | Item | Minimum | Recommended | Notes |
 | :--- | :--- | :--- | :--- |
-| Edge server | Raspberry Pi 5, 8 GB, 128 GB SSD | Intel NUC / mini-PC, i3 or better, 8–16 GB RAM, 256 GB SSD | Runs Docker, PostgreSQL, Redis, API, frontend |
-| UPS | 650 VA | 1,000 VA pure sine wave | Covers edge server, router, switch; 15–30 min runtime |
+| Edge server | Raspberry Pi 5, 8 GB, 128 GB SSD | Intel NUC / mini-PC, i3 or better, 8â€“16 GB RAM, 256 GB SSD | Runs Docker, PostgreSQL, Redis, API, frontend |
+| UPS | 650 VA | 1,000 VA pure sine wave | Covers edge server, router, switch; 15â€“30 min runtime |
 | Network switch | 5-port gigabit unmanaged | 8-port gigabit managed | Connect edge, KDS tablets, printer |
 | Router | Existing ISP router | Dual-WAN router with 4G failover | Static DHCP reservations; guest Wi-Fi isolation |
-| KDS displays | 4 × 10–15" Android tablets | Wall-mounted, powered, ethernet or 5 GHz Wi-Fi | Steam, Fryer, Rolex, Expo |
+| KDS displays | 4 Ã— 10â€“15" Android tablets | Wall-mounted, powered, ethernet or 5 GHz Wi-Fi | Steam, Fryer, Rolex, Expo |
 | Printer | 80 mm ESC/POS LAN printer | Same, with auto-cutter | Port 9100; static IP |
 | FOH device | 6.5" Android handheld/tablet | Same, with charging dock | Prossy's POS |
 | Cabling | Cat5e | Cat6 | Prefer ethernet for KDS and printer where possible |
@@ -48,16 +167,16 @@ The hardware list and ESC/POS model notes are in `Hardware_and_Peripherals.md`. 
 
 ```text
 INTERNET
-   │
-   ├── Fiber router / 4G failover (192.168.1.1)
-   │
-   ├── 192.168.1.100  Edge server (Docker: frontend, API, Postgres, Redis)
-   ├── 192.168.1.101  KDS — Steam Line
-   ├── 192.168.1.102  KDS — Grill & Fryer
-   ├── 192.168.1.103  KDS — Rolex Griddle
-   ├── 192.168.1.104  KDS — Expo / Pass
-   ├── 192.168.1.200  80 mm ESC/POS LAN printer (port 9100)
-   └── 192.168.1.110–150  DHCP pool for FOH handhelds and customer phones
+   â”‚
+   â”œâ”€â”€ Fiber router / 4G failover (192.168.1.1)
+   â”‚
+   â”œâ”€â”€ 192.168.1.100  Edge server (Docker: frontend, API, Postgres, Redis)
+   â”œâ”€â”€ 192.168.1.101  KDS â€” Steam Line
+   â”œâ”€â”€ 192.168.1.102  KDS â€” Grill & Fryer
+   â”œâ”€â”€ 192.168.1.103  KDS â€” Rolex Griddle
+   â”œâ”€â”€ 192.168.1.104  KDS â€” Expo / Pass
+   â”œâ”€â”€ 192.168.1.200  80 mm ESC/POS LAN printer (port 9100)
+   â””â”€â”€ 192.168.1.110â€“150  DHCP pool for FOH handhelds and customer phones
 ```
 
 ### 3.1 Router rules
@@ -317,7 +436,7 @@ The rewrite is server-side. It lets the same build work on the LAN and through t
 
 ## 6. Step-by-Step Setup
 
-### Step 1 — Prepare Ubuntu Server 24.04
+### Step 1 â€” Prepare Ubuntu Server 24.04
 
 ```bash
 sudo apt update && sudo apt upgrade -y
@@ -332,7 +451,7 @@ sudo systemctl restart avahi-daemon
 
 Log out and back in for the Docker group change.
 
-### Step 2 — Set the edge server's LAN address
+### Step 2 â€” Set the edge server's LAN address
 
 Use a DHCP reservation on the router for `192.168.1.100`. On the server, verify:
 
@@ -344,7 +463,7 @@ ping -c 3 192.168.1.1
 
 Do not use a static IP inside the OS unless the router reservation is impossible; duplicate IPs are a common cause of KDS outages.
 
-### Step 3 — Firewall
+### Step 3 â€” Firewall
 
 ```bash
 sudo ufw default deny incoming
@@ -361,7 +480,7 @@ sudo ufw status verbose
 
 Do **not** open `5432` (Postgres), `6379` (Redis), or `9100` to the whole LAN or the internet. The printer rule allows only the edge server.
 
-### Step 4 — Clone and configure
+### Step 4 â€” Clone and configure
 
 ```bash
 sudo mkdir -p /opt/foodizo
@@ -387,7 +506,7 @@ PAYMENT_TTL_MINUTES=15
 
 Add telco, SMTP, and optional Cloudflare values from `Repo_Scaffold_and_Config.md`. The frontend gets `NEXT_PUBLIC_API_URL=/api` and `API_INTERNAL_URL=http://api:4000` from the compose service, not from the server `.env`.
 
-### Step 5 — Build, migrate, seed, start
+### Step 5 â€” Build, migrate, seed, start
 
 ```bash
 docker compose build
@@ -399,7 +518,7 @@ docker compose ps
 
 The seed runs in the `migrate` stage because that stage keeps the dev dependencies (`tsx`) and a generated Prisma client. The production API image intentionally omits them. Do not add `tsx` to production dependencies just for seeding.
 
-### Step 6 — Verify
+### Step 6 â€” Verify
 
 ```bash
 # Health is checked inside the API container because port 4000 is not published.
@@ -413,10 +532,10 @@ docker compose logs -f --tail=100 api
 On a KDS tablet:
 
 1. Open `http://192.168.1.100:3000/kds/expo`.
-2. Confirm `ONLINE — LAN LOCAL`.
+2. Confirm `ONLINE â€” LAN LOCAL`.
 3. Log in as FOH on the handheld, place a dine-in table order, and confirm it reaches the KDS as `PENDING`.
 4. Print a test chit to `192.168.1.200:9100`.
-5. Disconnect the WAN/fiber cable and repeat steps 3–4. Local orders and printing must still work; MoMo/SMS must show a clear offline/error state.
+5. Disconnect the WAN/fiber cable and repeat steps 3â€“4. Local orders and printing must still work; MoMo/SMS must show a clear offline/error state.
 
 ---
 
@@ -427,12 +546,12 @@ Use a tunnel for **remote administration**, not as a database replication link.
 1. Create a Cloudflare account, add the domain, and create a tunnel named `foodizo-edge`.
 2. Install `cloudflared` on a machine with a browser, authenticate, and create the tunnel credentials.
 3. In the Cloudflare dashboard, add one public hostname:
-   - `admin.foodizo.ug` → `http://frontend:3000`
+   - `admin.foodizo.ug` â†’ `http://frontend:3000`
    The API is reached through the Next.js `/api` rewrite; do not expose `api:4000` separately.
 4. Put `admin.foodizo.ug` behind **Cloudflare Access** with an allow-list for the owner and developer emails. Require email OTP or Google login; do not leave the app public.
 5. Put the tunnel token in `.env` as `CLOUDFLARE_TUNNEL_TOKEN` and start with `docker compose --profile tunnel up -d`.
 6. Test from outside the LAN: open `https://admin.foodizo.ug`, log in through Access, and confirm an API-backed screen loads. Then test that the tunnel being down does not affect local KDS/POS operations.
-7. If the remote page loads but API calls fail, the frontend was built without the §5.3 `/api` rewrite. Rebuild the frontend; do not "fix" it by opening the API port to the internet.
+7. If the remote page loads but API calls fail, the frontend was built without the Â§5.3 `/api` rewrite. Rebuild the frontend; do not "fix" it by opening the API port to the internet.
 
 Do not expose PostgreSQL (`5432`), Redis (`6379`), or the printer (`9100`) through the tunnel. Do not use the tunnel as a substitute for a VPN if the owner needs full network access.
 
@@ -532,10 +651,10 @@ Add an external uptime monitor (Uptime Kuma, Cloudflare Health Checks, or a simp
 
 | Symptom | Likely cause | Fix |
 | :--- | :--- | :--- |
-| KDS shows “Reconnecting” | Tablet on guest Wi-Fi with client isolation; API container down; IP changed | Join staff SSID; `docker compose ps`; check DHCP reservation |
+| KDS shows â€œReconnectingâ€ | Tablet on guest Wi-Fi with client isolation; API container down; IP changed | Join staff SSID; `docker compose ps`; check DHCP reservation |
 | Printer not printing | Wrong IP/port, paper out, printer on different subnet, firewall | `ping 192.168.1.200`; `nc -vz 192.168.1.200 9100`; check UFW rule |
 | API 502 / blank page | API failed migration or DB password mismatch | `docker compose logs api`; verify `.env`; run migrate |
-| “Too many clients” / DB slow | Long-running queries or low RAM | Check `docker stats`; add indexes; use mini-PC with more RAM |
+| â€œToo many clientsâ€ / DB slow | Long-running queries or low RAM | Check `docker stats`; add indexes; use mini-PC with more RAM |
 | MoMo payments fail | Telco outage, wrong keys, no internet | Check telco status; verify `.env`; use manual verification fallback |
 | Digest not sent | Cron timezone, SMTP blocked, SMS credits | Check container logs; verify `TZ`; test SMTP/SMS credentials |
 | Clock drift | Host timezone/UTC misconfigured | `timedatectl set-timezone Africa/Kampala`; enable NTP |

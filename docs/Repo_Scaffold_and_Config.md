@@ -3,7 +3,7 @@
 **Target Build Tools:** Antigravity IDE + Opencode CLI Repository Scaffold<br>
 **Framework:** TypeScript / Next.js 14 (App Router) + Fastify API Engine + Prisma ORM<br>
 **Target Locations:** Foodizo (Ham Towers) & Obunuzi (Opposite YMCA)<br>
-**Related Specifications:** `Foundational_Concept.md` · `Design_System.md` · `User_Flow.md` · `User_Profiles_Personas.md` · `Delivery_Zones_and_Dispatch.md` · `Tech_Stack.md` · `Payment_Integration.md` · `Hardware_and_Peripherals.md` · `Seed_Data_and_Testing.md` · `Demo_Script_and_Closing_Strategy.md` · `Daily_Audit_Digest.md` · `Deployment_Runbook.md` · `Service_Contract_and_Invoice_Template.md` · `Implementation_Phases.md`
+**Related Specifications:** `Foundational_Concept.md` Â· `Design_System.md` Â· `User_Flow.md` Â· `User_Profiles_Personas.md` Â· `Delivery_Zones_and_Dispatch.md` Â· `Tech_Stack.md` Â· `Payment_Integration.md` Â· `Hardware_and_Peripherals.md` Â· `Seed_Data_and_Testing.md` Â· `Demo_Script_and_Closing_Strategy.md` Â· `Daily_Audit_Digest.md` Â· `Deployment_Runbook.md` Â· `Service_Contract_and_Invoice_Template.md` Â · `build_strategy/Build_Strategy_and_Phases.md`
 
 ---
 
@@ -13,121 +13,121 @@ The Next.js App Router must live at `src/app`. There is no `src/client/app`; tha
 
 ```text
 foodizo-obunuzi-kds/
-├── .env.example
-├── .env.client.example
-├── .dockerignore
-├── .gitignore
-├── .eslintrc.json
-├── README.md
-├── Dockerfile.client
-├── Dockerfile.server
-├── docker-compose.yml
-├── next.config.js
-├── package.json
-├── package-lock.json
-├── postcss.config.js
-├── tailwind.config.ts
-├── tsconfig.json
-├── tsconfig.server.json
-├── vitest.config.ts
-├── public/
-│   └── manifest.webmanifest
-├── deploy/
-│   ├── backup.sh
-│   └── cloudflared.yml
-├── prisma/
-│   ├── schema.prisma
-│   ├── seed.ts
-│   └── migrations/
-├── scripts/
-│   ├── run-daily-digest.ts
-│   └── simulate-rush-hour.ts
-├── tests/
-│   ├── unit/
-│   └── integration/
-├── src/
-│   ├── app/                              # Next.js 14 App Router
-│   │   ├── globals.css
-│   │   ├── layout.tsx
-│   │   ├── page.tsx                      # Customer menu & pre-order
-│   │   ├── login/page.tsx                # Staff phone + PIN login
-│   │   ├── cart/page.tsx                 # Customer cart review
-│   │   ├── checkout/page.tsx             # Delivery details + MoMo/Airtel checkout
-│   │   ├── token/[token]/page.tsx        # Customer token status view
-│   │   ├── pos/
-│   │   │   ├── page.tsx                  # Waiter table-side POS
-│   │   │   ├── tables/page.tsx           # Table occupancy grid
-│   │   │   ├── phone-entry/page.tsx      # Phone-in delivery capture
-│   │   │   └── dispatch/page.tsx         # FOH delivery dispatch queue
-│   │   ├── kds/
-│   │   │   ├── steam/page.tsx            # Station 1: Luwombo / steam line
-│   │   │   ├── fryer/page.tsx            # Station 2: Grill & fryer
-│   │   │   ├── rolex/page.tsx            # Station 3: Rolex griddle
-│   │   │   └── expo/page.tsx             # Station 4: Pass / consolidation
-│   │   └── admin/
-│   │       ├── dashboard/page.tsx        # Cross-outlet overview
-│   │       ├── menu/page.tsx             # Menu, price, availability
-│   │       ├── inventory/page.tsx        # Recipe BOM & thresholds
-│   │       ├── delivery-zones/page.tsx   # Zone, fee, ETA maintenance
-│   │       ├── surplus/page.tsx          # Closing surplus logs
-│   │       ├── reconcile/page.tsx        # Cash, MoMo, refunds
-│   │       ├── digest/page.tsx           # Digest history / preview
-│   │       ├── users/page.tsx            # Staff accounts, roles, PIN resets
-│   │       └── audit/page.tsx            # Append-only audit log
-│   ├── components/
-│   │   ├── ui/                           # Buttons, badges, modals, form fields
-│   │   ├── delivery/DeliveryZoneSelect.tsx
-│   │   ├── delivery/DeliveryDetailsPanel.tsx
-│   │   ├── kds/TicketCard.tsx
-│   │   ├── pos/TableTile.tsx
-│   │   ├── pos/DispatchQueueCard.tsx
-│   │   └── TokenBanner.tsx
-│   ├── lib/
-│   │   ├── api-client.ts                 # Same-origin /api fetch wrapper
-│   │   ├── audio-alerts.ts               # KDS Web Audio alert
-│   │   ├── capture-delivery-pin.ts       # One-shot optional geolocation
-│   │   └── websocket-client.ts           # Reconnecting KDS/FOH socket
-│   └── server/                           # Fastify API
-│       ├── index.ts                      # API entrypoint (port 4000)
-│       ├── jobs/
-│       │   ├── daily-digest-cron.ts      # 21:30 EAT owner digest
-│       │   └── payment-expiry-job.ts     # AWAITING_PAYMENT TTL cleanup
-│       ├── plugins/
-│       │   ├── auth.ts                   # Cookie session guard + role checks
-│       │   ├── prisma.ts                 # Database connection pool
-│       │   ├── redis.ts                  # Pub/Sub event bus
-│       │   └── websocket.ts              # Socket server
-│       ├── routes/
-│       │   ├── auth.ts                   # login, logout, me
-│       │   ├── health.ts                 # /health readiness/liveness
-│       │   ├── menu.ts                   # Public active menu
-│       │   ├── orders.ts                 # Prepaid + POSTPAY orders, status, settle, cancel
-│       │   ├── delivery.ts               # Zone lookup + manager zone maintenance
-│       │   ├── dispatch.ts               # Dispatch queue + rider handoffs
-│       │   ├── payments.ts               # MoMo/Airtel/cash/manual + webhooks
-│       │   ├── inventory.ts              # BOM, stock, surplus
-│       │   ├── digest.ts                 # Digest history, preview, resend
-│       │   └── tables.ts                 # Table occupancy state
-│       ├── services/
-│       │   ├── auth-service.ts           # PIN verification, sessions, lockout
-│       │   ├── menu-service.ts           # Server price resolution + auto-86
-│       │   ├── order-service.ts          # Token allocation, totals, transitions
-│       │   ├── inventory-service.ts      # BOM decrement, low-stock flags, surplus
-│       │   ├── momo-service.ts           # MTN MoMo Collections v1.0
-│       │   ├── airtel-service.ts         # Airtel Money Merchant Pay v2.0
-│       │   ├── delivery-zone-service.ts  # Zone validation + fee resolution
-│       │   ├── dispatch-service.ts       # Rider handoff/completion
-│       │   ├── daily-digest-service.ts   # Owner digest aggregation
-│       │   ├── sms-service.ts            # Africa's Talking SMS
-│       │   ├── email-service.ts          # SMTP digest delivery
-│       │   ├── printer-service.ts        # Raw TCP ESC/POS chits
-│       │   └── audit-service.ts          # Append-only audit writes
-│       └── utils/
-│           ├── password.ts               # bcrypt/argon2id hash + verify
-│           ├── session.ts                # Opaque token, SHA-256, cookie options
-│           ├── msisdn-validator.ts       # Ugandan E.164 normalisation
-│           ├── chit-sanitizer.ts         # ESC/POS control-byte removal
-│           └── maps-link.ts              # Static Maps + tel/wa.me links
+â”œâ”€â”€ .env.example
+â”œâ”€â”€ .env.client.example
+â”œâ”€â”€ .dockerignore
+â”œâ”€â”€ .gitignore
+â”œâ”€â”€ .eslintrc.json
+â”œâ”€â”€ README.md
+â”œâ”€â”€ Dockerfile.client
+â”œâ”€â”€ Dockerfile.server
+â”œâ”€â”€ docker-compose.yml
+â”œâ”€â”€ next.config.js
+â”œâ”€â”€ package.json
+â”œâ”€â”€ package-lock.json
+â”œâ”€â”€ postcss.config.js
+â”œâ”€â”€ tailwind.config.ts
+â”œâ”€â”€ tsconfig.json
+â”œâ”€â”€ tsconfig.server.json
+â”œâ”€â”€ vitest.config.ts
+â”œâ”€â”€ public/
+â”‚   â””â”€â”€ manifest.webmanifest
+â”œâ”€â”€ deploy/
+â”‚   â”œâ”€â”€ backup.sh
+â”‚   â””â”€â”€ cloudflared.yml
+â”œâ”€â”€ prisma/
+â”‚   â”œâ”€â”€ schema.prisma
+â”‚   â”œâ”€â”€ seed.ts
+â”‚   â””â”€â”€ migrations/
+â”œâ”€â”€ scripts/
+â”‚   â”œâ”€â”€ run-daily-digest.ts
+â”‚   â””â”€â”€ simulate-rush-hour.ts
+â”œâ”€â”€ tests/
+â”‚   â”œâ”€â”€ unit/
+â”‚   â””â”€â”€ integration/
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ app/                              # Next.js 14 App Router
+â”‚   â”‚   â”œâ”€â”€ globals.css
+â”‚   â”‚   â”œâ”€â”€ layout.tsx
+â”‚   â”‚   â”œâ”€â”€ page.tsx                      # Customer menu & pre-order
+â”‚   â”‚   â”œâ”€â”€ login/page.tsx                # Staff phone + PIN login
+â”‚   â”‚   â”œâ”€â”€ cart/page.tsx                 # Customer cart review
+â”‚   â”‚   â”œâ”€â”€ checkout/page.tsx             # Delivery details + MoMo/Airtel checkout
+â”‚   â”‚   â”œâ”€â”€ token/[token]/page.tsx        # Customer token status view
+â”‚   â”‚   â”œâ”€â”€ pos/
+â”‚   â”‚   â”‚   â”œâ”€â”€ page.tsx                  # Waiter table-side POS
+â”‚   â”‚   â”‚   â”œâ”€â”€ tables/page.tsx           # Table occupancy grid
+â”‚   â”‚   â”‚   â”œâ”€â”€ phone-entry/page.tsx      # Phone-in delivery capture
+â”‚   â”‚   â”‚   â””â”€â”€ dispatch/page.tsx         # FOH delivery dispatch queue
+â”‚   â”‚   â”œâ”€â”€ kds/
+â”‚   â”‚   â”‚   â”œâ”€â”€ steam/page.tsx            # Station 1: Luwombo / steam line
+â”‚   â”‚   â”‚   â”œâ”€â”€ fryer/page.tsx            # Station 2: Grill & fryer
+â”‚   â”‚   â”‚   â”œâ”€â”€ rolex/page.tsx            # Station 3: Rolex griddle
+â”‚   â”‚   â”‚   â””â”€â”€ expo/page.tsx             # Station 4: Pass / consolidation
+â”‚   â”‚   â””â”€â”€ admin/
+â”‚   â”‚       â”œâ”€â”€ dashboard/page.tsx        # Cross-outlet overview
+â”‚   â”‚       â”œâ”€â”€ menu/page.tsx             # Menu, price, availability
+â”‚   â”‚       â”œâ”€â”€ inventory/page.tsx        # Recipe BOM & thresholds
+â”‚   â”‚       â”œâ”€â”€ delivery-zones/page.tsx   # Zone, fee, ETA maintenance
+â”‚   â”‚       â”œâ”€â”€ surplus/page.tsx          # Closing surplus logs
+â”‚   â”‚       â”œâ”€â”€ reconcile/page.tsx        # Cash, MoMo, refunds
+â”‚   â”‚       â”œâ”€â”€ digest/page.tsx           # Digest history / preview
+â”‚   â”‚       â”œâ”€â”€ users/page.tsx            # Staff accounts, roles, PIN resets
+â”‚   â”‚       â””â”€â”€ audit/page.tsx            # Append-only audit log
+â”‚   â”œâ”€â”€ components/
+â”‚   â”‚   â”œâ”€â”€ ui/                           # Buttons, badges, modals, form fields
+â”‚   â”‚   â”œâ”€â”€ delivery/DeliveryZoneSelect.tsx
+â”‚   â”‚   â”œâ”€â”€ delivery/DeliveryDetailsPanel.tsx
+â”‚   â”‚   â”œâ”€â”€ kds/TicketCard.tsx
+â”‚   â”‚   â”œâ”€â”€ pos/TableTile.tsx
+â”‚   â”‚   â”œâ”€â”€ pos/DispatchQueueCard.tsx
+â”‚   â”‚   â””â”€â”€ TokenBanner.tsx
+â”‚   â”œâ”€â”€ lib/
+â”‚   â”‚   â”œâ”€â”€ api-client.ts                 # Same-origin /api fetch wrapper
+â”‚   â”‚   â”œâ”€â”€ audio-alerts.ts               # KDS Web Audio alert
+â”‚   â”‚   â”œâ”€â”€ capture-delivery-pin.ts       # One-shot optional geolocation
+â”‚   â”‚   â””â”€â”€ websocket-client.ts           # Reconnecting KDS/FOH socket
+â”‚   â””â”€â”€ server/                           # Fastify API
+â”‚       â”œâ”€â”€ index.ts                      # API entrypoint (port 4000)
+â”‚       â”œâ”€â”€ jobs/
+â”‚       â”‚   â”œâ”€â”€ daily-digest-cron.ts      # 21:30 EAT owner digest
+â”‚       â”‚   â””â”€â”€ payment-expiry-job.ts     # AWAITING_PAYMENT TTL cleanup
+â”‚       â”œâ”€â”€ plugins/
+â”‚       â”‚   â”œâ”€â”€ auth.ts                   # Cookie session guard + role checks
+â”‚       â”‚   â”œâ”€â”€ prisma.ts                 # Database connection pool
+â”‚       â”‚   â”œâ”€â”€ redis.ts                  # Pub/Sub event bus
+â”‚       â”‚   â””â”€â”€ websocket.ts              # Socket server
+â”‚       â”œâ”€â”€ routes/
+â”‚       â”‚   â”œâ”€â”€ auth.ts                   # login, logout, me
+â”‚       â”‚   â”œâ”€â”€ health.ts                 # /health readiness/liveness
+â”‚       â”‚   â”œâ”€â”€ menu.ts                   # Public active menu
+â”‚       â”‚   â”œâ”€â”€ orders.ts                 # Prepaid + POSTPAY orders, status, settle, cancel
+â”‚       â”‚   â”œâ”€â”€ delivery.ts               # Zone lookup + manager zone maintenance
+â”‚       â”‚   â”œâ”€â”€ dispatch.ts               # Dispatch queue + rider handoffs
+â”‚       â”‚   â”œâ”€â”€ payments.ts               # MoMo/Airtel/cash/manual + webhooks
+â”‚       â”‚   â”œâ”€â”€ inventory.ts              # BOM, stock, surplus
+â”‚       â”‚   â”œâ”€â”€ digest.ts                 # Digest history, preview, resend
+â”‚       â”‚   â””â”€â”€ tables.ts                 # Table occupancy state
+â”‚       â”œâ”€â”€ services/
+â”‚       â”‚   â”œâ”€â”€ auth-service.ts           # PIN verification, sessions, lockout
+â”‚       â”‚   â”œâ”€â”€ menu-service.ts           # Server price resolution + auto-86
+â”‚       â”‚   â”œâ”€â”€ order-service.ts          # Token allocation, totals, transitions
+â”‚       â”‚   â”œâ”€â”€ inventory-service.ts      # BOM decrement, low-stock flags, surplus
+â”‚       â”‚   â”œâ”€â”€ momo-service.ts           # MTN MoMo Collections v1.0
+â”‚       â”‚   â”œâ”€â”€ airtel-service.ts         # Airtel Money Merchant Pay v2.0
+â”‚       â”‚   â”œâ”€â”€ delivery-zone-service.ts  # Zone validation + fee resolution
+â”‚       â”‚   â”œâ”€â”€ dispatch-service.ts       # Rider handoff/completion
+â”‚       â”‚   â”œâ”€â”€ daily-digest-service.ts   # Owner digest aggregation
+â”‚       â”‚   â”œâ”€â”€ sms-service.ts            # Africa's Talking SMS
+â”‚       â”‚   â”œâ”€â”€ email-service.ts          # SMTP digest delivery
+â”‚       â”‚   â”œâ”€â”€ printer-service.ts        # Raw TCP ESC/POS chits
+â”‚       â”‚   â””â”€â”€ audit-service.ts          # Append-only audit writes
+â”‚       â””â”€â”€ utils/
+â”‚           â”œâ”€â”€ password.ts               # bcrypt/argon2id hash + verify
+â”‚           â”œâ”€â”€ session.ts                # Opaque token, SHA-256, cookie options
+â”‚           â”œâ”€â”€ msisdn-validator.ts       # Ugandan E.164 normalisation
+â”‚           â”œâ”€â”€ chit-sanitizer.ts         # ESC/POS control-byte removal
+â”‚           â””â”€â”€ maps-link.ts              # Static Maps + tel/wa.me links
 ```
 
 ---
@@ -211,7 +211,7 @@ foodizo-obunuzi-kds/
 
 ## 3. Database Schema Specification (`prisma/schema.prisma`)
 
-This is the canonical Prisma ORM schema directly mapping PostgreSQL 16 DDL from `Tech_Stack.md §3` and `Payment_Integration.md §7`. It enforces foreign keys, relations, cascading deletes, unique constraints, and indexes across all 15 tables.
+This is the canonical Prisma ORM schema directly mapping PostgreSQL 16 DDL from `Tech_Stack.md Â§3` and `Payment_Integration.md Â§7`. It enforces foreign keys, relations, cascading deletes, unique constraints, and indexes across all 15 tables.
 
 ```prisma
 datasource db {
@@ -856,3 +856,196 @@ For a direct-API development run outside Docker, set `NEXT_PUBLIC_API_URL=http:/
 6. **Start dev servers:** `npm run dev`
 7. **Quality gate:** `npm run lint && npm run typecheck && npm test && npm run build`
 8. **Execute the prepaid/concurrency test:** `npm run test:rush`. Test the authenticated `DINE_IN` POSTPAY tab separately with the seeded FOH login.
+
+
+---
+
+## 6. Docker Containerization Manifests
+
+### 6.1 `Dockerfile.client` (Next.js 14 PWA Frontend)
+
+```dockerfile
+# syntax=docker/dockerfile:1.4
+FROM node:20-alpine AS base
+WORKDIR /app
+RUN apk add --no-cache libc6-compat
+
+# --- Dependencies stage ---
+FROM base AS deps
+COPY package.json package-lock.json ./
+RUN npm ci
+
+# --- Builder stage ---
+FROM base AS builder
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
+RUN npm run build
+
+# --- Runner stage ---
+FROM base AS runner
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
+
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
+EXPOSE 3000
+HEALTHCHECK --interval=15s --timeout=5s --start-period=10s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
+
+CMD ["node", "server.js"]
+```
+
+---
+
+### 6.2 `Dockerfile.server` (Fastify API & Prisma Service)
+
+```dockerfile
+# syntax=docker/dockerfile:1.4
+FROM node:20-alpine AS base
+WORKDIR /app
+RUN apk add --no-cache openssl libc6-compat
+
+# --- Dependencies stage ---
+FROM base AS deps
+COPY package.json package-lock.json ./
+COPY prisma ./prisma/
+RUN npm ci && npx prisma generate
+
+# --- Builder stage ---
+FROM base AS builder
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN npm run build:server
+
+# --- Runner stage ---
+FROM base AS runner
+ENV NODE_ENV=production
+ENV PORT=4000
+RUN addgroup --system --gid 1001 fastify && adduser --system --uid 1001 fastify
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/prisma ./prisma
+COPY --from=builder /app/dist-server ./dist-server
+COPY package.json ./
+
+USER fastify
+EXPOSE 4000
+HEALTHCHECK --interval=15s --timeout=5s --start-period=10s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:4000/health || exit 1
+
+CMD ["node", "dist-server/index.js"]
+```
+
+---
+
+### 6.3 Production `docker-compose.yml`
+
+```yaml
+version: '3.8'
+
+networks:
+  foodizo_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+
+volumes:
+  pgdata:
+    driver: local
+  redisdata:
+    driver: local
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: foodizo_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-foodizo_admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Database password required}
+      POSTGRES_DB: ${POSTGRES_DB:-foodizo_obunuzi_kds}
+      TZ: Africa/Kampala
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - foodizo_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-foodizo_admin} -d ${POSTGRES_DB:-foodizo_obunuzi_kds}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # Do NOT expose 5432 to host in production; accessible only via foodizo_net
+
+  redis:
+    image: redis:7-alpine
+    container_name: foodizo_redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD:-}"]
+    volumes:
+      - redisdata:/data
+    networks:
+      - foodizo_net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # Do NOT expose 6379 to host in production
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    container_name: foodizo_api
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-foodizo_admin}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-foodizo_obunuzi_kds}?schema=public
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
+      TZ: Africa/Kampala
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - foodizo_net
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:4000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    container_name: foodizo_client
+    restart: unless-stopped
+    env_file: .env.client
+    environment:
+      NODE_ENV: production
+      API_INTERNAL_URL: http://api:4000
+      TZ: Africa/Kampala
+    ports:
+      - "3000:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - foodizo_net
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+```
