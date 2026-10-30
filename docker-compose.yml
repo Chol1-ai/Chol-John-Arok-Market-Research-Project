@@ -1,0 +1,107 @@
+# ==============================================================================
+# FOODIZO & OBUNUZI RESTAURANT ECOSYSTEM — EDGE CONTAINER ORCHESTRATION
+# Deploy Target: In-Store Edge Mini-PC / LAN Server / Cloud Fallback
+# Locations: Foodizo (Ham Towers) & Obunuzi Restaurant (Opposite YMCA, Kampala)
+# ==============================================================================
+
+version: '3.8'
+
+services:
+  # ----------------------------------------------------------------------------
+  # 1. NGINX EDGE REVERSE PROXY & STATIC ASSET SERVER
+  # Serves all frontend HTML prototypes & stylesheets, proxies /api and /ws
+  # ----------------------------------------------------------------------------
+  edge-proxy:
+    image: nginx:alpine
+    container_name: foodizo_edge_proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"       # Local In-Store LAN POS/KDS & PWA Access
+      - "443:443"     # In-Store SSL
+    volumes:
+      - ./frontend:/usr/share/nginx/html/frontend:ro
+      - edge_logs:/var/log/nginx
+    depends_on:
+      - backend-api
+    networks:
+      - foodizo_edge_net
+
+  # ----------------------------------------------------------------------------
+  # 2. FASTIFY EDGE BACKEND & REAL-TIME WEBSOCKET TICKET BUS
+  # Handles MTN MoMo / Airtel Money callbacks, KDS ticket bumps, recipe BOM decrements,
+  # 21:30 EAT Nightly Owner Digest, and SMS gateway
+  # ----------------------------------------------------------------------------
+  backend-api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: foodizo_backend_api
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      - HOST=0.0.0.0
+      - DATABASE_URL=postgresql://foodizo_admin:WandegeyaSecure2026@postgres-edge:5432/foodizo_obunuzi_db?schema=public
+      - JWT_SECRET=kla_foodizo_obunuzi_secure_session_key_2026_kampala_fast_casual
+      - EXPO_PRINTER_IP=192.168.1.200
+      - EXPO_PRINTER_PORT=9100
+      - CASH_DRAWER_KICK_ENABLED=1
+      - MTN_MOMO_PRIMARY_KEY=${MTN_MOMO_PRIMARY_KEY:-sandbox_key}
+      - AIRTEL_MONEY_CLIENT_ID=${AIRTEL_MONEY_CLIENT_ID:-sandbox_client_id}
+      - AFRICASTALKING_API_KEY=${AFRICASTALKING_API_KEY:-sandbox_key}
+    depends_on:
+      - postgres-edge
+    networks:
+      - foodizo_edge_net
+
+  # ----------------------------------------------------------------------------
+  # 3. ESC/POS THERMAL PRINTER HARDWARE SPOOLER DAEMON
+  # Manages RAW TCP 9100 thermal print spooling, auto-cutter pulses,
+  # Cash drawer kick (ESC p 0 25 250), and end-of-roll buzzer alert queue
+  # ----------------------------------------------------------------------------
+  escpos-spooler:
+    image: alpine:latest
+    container_name: foodizo_escpos_spooler
+    restart: unless-stopped
+    command: ["sleep", "infinity"]
+    environment:
+      - PRINTER_IP=192.168.1.200
+      - PRINTER_PORT=9100
+    volumes:
+      - spooler_queue:/spooler/queue
+    networks:
+      - foodizo_edge_net
+
+  # ----------------------------------------------------------------------------
+  # 4. LOCAL POSTGRESQL CANONICAL DATABASE LAYER (PORT 5432)
+  # ----------------------------------------------------------------------------
+  postgres-edge:
+    image: postgres:15-alpine
+    container_name: foodizo_postgres_edge
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: foodizo_admin
+      POSTGRES_PASSWORD: WandegeyaSecure2026
+      POSTGRES_DB: foodizo_obunuzi_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_edge_data:/var/lib/postgresql/data
+    networks:
+      - foodizo_edge_net
+
+volumes:
+  edge_logs:
+    name: foodizo_edge_logs
+  spooler_queue:
+    name: foodizo_spooler_queue
+  postgres_edge_data:
+    name: foodizo_postgres_edge_data
+
+networks:
+  foodizo_edge_net:
+    name: foodizo_edge_net
+    driver: bridge
+

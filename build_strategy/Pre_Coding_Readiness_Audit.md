@@ -318,6 +318,22 @@ The specification suite consists of **15 active core files** (12 in `docs/`, 2 i
 - [x] Isolated all post-launch files (`Go_To_Market_Strategy.md`, `Demo_Script_and_Closing_Strategy.md`, `Service_Contract_and_Invoice_Template.md`) in `go_to_market/`
 - [x] Cleaned all cross-references across `README.md` and all markdown files in `docs/` and `go_to_market/` to point to `build_strategy/Build_Strategy_and_Phases.md`
 
+### UI Prototypes & Google Stitch Alignment (Surfaces 1–6)
+- [x] Audited all 19 prototype folders against Phase 1 scope boundaries
+- [x] Permanently pruned 8 out-of-scope, Phase 2, or redundant directories (`boda_rider_mobile_delivery_interface`, `ham_towers_self_checkout_kiosk_pos`, `esc_pos_thermal_chit_layout_multi_guest_split`, `foodizo_obunuzi_desktop_brand_landing_page`, `foodizo_obunuzi_user_login_campus_authentication`, `kitchen_display_system_kds_station_operator_login`, `manager_owner_administrative_security_login`, and `live_order_flow_simulator_pwa_to_kds`)
+- [x] Retained and validated the 10 canonical UI prototypes covering Surfaces 1–6 and fast-casual design tokens
+- [x] Consolidated all frontend assets into a clean top-level `frontend/` module with `frontend/html/`, `frontend/css/`, and `frontend/images/` with 1-to-1 file naming
+- [x] Created `frontend/README.md`, `frontend/html/README.md`, `frontend/css/README.md`, and deleted legacy `stitch_market_research_dashboard/`
+- [x] Executed exhaustive frontend pre-coding audit: verified 10/10 stylesheet links, 34/34 inter-page navigation links, 37 image assets, injected branded `<title>` metadata, and verified 0 broken references
+- [x] Cross-referenced standalone HTML prototype paths directly inside `build_strategy/Dashboard_Build_Progression.md` for seamless developer handoff
+
+### Backend Engine & Edge Architecture (backend/)
+- [x] Scaffolded modular Fastify API engine in `backend/src/` with Prisma ORM, WebSocket bus, and TypeScript
+- [x] Integrated Google Stitch backend research artifacts (ESC/POS cash drawer pulse `1B 70 00 19 FA`, WhatsApp Nightly Digest summary generator, real staff profiles)
+- [x] Formatted production edge orchestration in `docker-compose.yml` (Nginx, Fastify API, ESC/POS spooler, PostgreSQL)
+- [x] Added unit tests for sequential token generation, recipe BOM inventory deductions, ESC/POS thermal chit formatting, and cash drawer variance
+- [x] Cleaned up temporary Stitch draft files and duplicate directories to maintain repository cleanliness
+
 ---
 
 ## Part 5 — Post-Launch Files (Not Used During Coding)

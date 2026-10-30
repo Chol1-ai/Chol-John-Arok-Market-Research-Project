@@ -1,0 +1,76 @@
+/**
+ * Stylesheet for: 01_staff_terminal_pin_login.html
+ * Surface 1: Unified Staff Terminal PIN Gateway
+ * Viewport: Tablet / Desktop Landscape (1024px+)
+ */
+
+@import './theme_tokens.css';
+
+/* Staff Terminal Layout & Keypad */
+.staff-terminal-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+/* 4-Digit PIN Indicators */
+.pin-dot {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 9999px;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.pin-dot.active {
+  background-color: var(--color-primary);
+  transform: scale(1.25);
+}
+
+/* Tactile 48px/56px Numeric Keypad Buttons */
+.pin-pad-btn {
+  min-height: 56px;
+  min-width: 56px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  border-radius: var(--radius-xl);
+  background-color: var(--color-surface-container-low);
+  color: var(--color-on-surface);
+  border: 1px solid var(--color-border-default);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.08s ease, background-color 0.1s ease;
+  user-select: none;
+}
+
+.pin-pad-btn:active {
+  transform: translateY(2px) scale(0.96);
+  background-color: var(--color-surface-container-high);
+}
+
+/* Staff Quick Selector Cards */
+.staff-card {
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-lg);
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.staff-card.selected {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-fixed);
+}
+
+/* Terminal Node Telemetry Bar */
+.telemetry-node-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-label-sm);
+  font-weight: 700;
+}
+

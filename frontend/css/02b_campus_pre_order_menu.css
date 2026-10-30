@@ -1,0 +1,98 @@
+/**
+ * Stylesheet for: 02b_campus_pre_order_menu.html
+ * Surface 2B: Campus Pre-Order Menu (Rolex, Fried Chicken, Katogo, Luwombo)
+ * Viewport: Mobile PWA (375px–480px)
+ */
+
+@import './theme_tokens.css';
+
+/* Category Filter Rail */
+.category-filter-rail {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding: 0.5rem 1rem;
+  scrollbar-width: none;
+}
+
+.category-chip {
+  min-height: 38px;
+  padding: 0.375rem 1rem;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-label-md);
+  font-weight: 700;
+  white-space: nowrap;
+  background-color: var(--color-surface-container);
+  color: var(--color-on-surface);
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.category-chip.active {
+  background-color: var(--color-on-surface);
+  color: #FFFFFF;
+}
+
+/* Fast-Casual Food Item Card */
+.menu-item-card {
+  background-color: var(--color-canvas-elevated);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border-default);
+  overflow: hidden;
+  box-shadow: var(--shadow-level-1);
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-item-img-container {
+  aspect-ratio: 4 / 3;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.menu-item-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Single-Tap Add Trigger Button */
+.btn-add-item {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-level-1);
+  transition: transform 0.1s ease;
+}
+
+.btn-add-item:active {
+  transform: scale(0.92);
+}
+
+/* Floating Bottom Tray Drawer */
+.floating-order-tray {
+  position: fixed;
+  bottom: 80px;
+  left: 1rem;
+  right: 1rem;
+  max-width: 448px;
+  margin: 0 auto;
+  background-color: var(--color-inverse-surface);
+  color: var(--color-inverse-on-surface);
+  border-radius: var(--radius-xl);
+  padding: 0.75rem 1.25rem;
+  box-shadow: var(--shadow-level-3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 40;
+}
+

@@ -84,6 +84,7 @@ Every screen represents a physical actor in the restaurant service loop: the hun
 ### Surface 1: Staff Authentication & Role Dispatch Gateway
 
 * **Route:** `/login`
+* **Stitch Prototype:** [`frontend/html/01_staff_terminal_pin_login.html`](file:///c:/Users/USER/OneDrive/Desktop/Chol-John-Arok-Market-Research-Project/frontend/html/01_staff_terminal_pin_login.html)
 * **Target Users:** All staff members: Prossy N. (Waiter), Chef Juma (Cook), Zito Mbowe (Manager/Admin).
 * **Design Personality:** Tactical Service Slate (`#F1F5F9` surface, `#1E3A8A` Cobalt primary, 6px crisp radius).
 
@@ -133,6 +134,7 @@ Every screen represents a physical actor in the restaurant service loop: the hun
 ### Surface 2: Customer Pre-Order PWA & Pickup Token Interface
 
 * **Routes:** `/` (Menu), `/cart` (Cart Review), `/checkout` (Fulfillment & Payment), `/token/[token]` (Token Card).
+* **Stitch Prototypes:** [`02a Landing`](file:///c:/Users/USER/OneDrive/Desktop/Chol-John-Arok-Market-Research-Project/frontend/html/02a_customer_pwa_landing_page.html), [`02b Menu`](file:///c:/Users/USER/OneDrive/Desktop/Chol-John-Arok-Market-Research-Project/frontend/html/02b_campus_pre_order_menu.html), [`02c Checkout`](file:///c:/Users/USER/OneDrive/Desktop/Chol-John-Arok-Market-Research-Project/frontend/html/02c_momo_checkout_delivery_zone_selector.html), [`02d Token`](file:///c:/Users/USER/OneDrive/Desktop/Chol-John-Arok-Market-Research-Project/frontend/html/02d_digital_token_queue_bypass_status.html), [`02e Delivery Tracker`](file:///c:/Users/USER/OneDrive/Desktop/Chol-John-Arok-Market-Research-Project/frontend/html/02e_boda_landmark_delivery_tracker.html)
 * **Target User:** Brian K. (Makerere University Student rushing between lectures).
 * **Design Personality:** Warm Street Craft (`#FAF8F5` Warm Cream background, `#C2410C` Chili pill buttons `9999px` radius, soft warm lift shadows).
 
@@ -233,6 +235,7 @@ Every screen represents a physical actor in the restaurant service loop: the hun
 ### Surface 3: Waitress / FOH Handheld POS & Table Dashboard
 
 * **Routes:** `/pos/tables` (Table Grid), `/pos` (Order Entry), `/pos/phone-entry` (Phone Orders).
+* **Stitch Prototype:** [`frontend/html/03_waitress_pos_table_floor_order_pad.html`](file:///c:/Users/USER/OneDrive/Desktop/Chol-John-Arok-Market-Research-Project/frontend/html/03_waitress_pos_table_floor_order_pad.html)
 * **Target User:** Prossy N. (Senior Waitress & Floor Lead at Obunuzi).
 * **Design Personality:** Tactical Service Slate (`#F1F5F9` slate background, `#1E3A8A` Cobalt primary, 6px crisp buttons, 48px/56px touch targets).
 
@@ -295,6 +298,7 @@ Every screen represents a physical actor in the restaurant service loop: the hun
 ### Surface 4: Kitchen Display System (KDS) Station Dashboards
 
 * **Routes:** `/kds/steam` (Station 1), `/kds/fryer` (Station 2), `/kds/rolex` (Station 3), `/kds/expo` (Station 4 Pass).
+* **Stitch Prototype:** [`frontend/html/04_kitchen_display_system_kds_active_stations.html`](file:///c:/Users/USER/OneDrive/Desktop/Chol-John-Arok-Market-Research-Project/frontend/html/04_kitchen_display_system_kds_active_stations.html)
 * **Target User:** Chef Juma & Kitchen Cooks (working with hot fryers, griddles, and steam pots).
 * **Design Personality:** Industrial Machinery HUD (`#050811` Carbon Matte background, `#059669` Phosphor Green accents, 0px border radius, 68px full-width physical bevel bump buttons).
 
@@ -339,6 +343,7 @@ Every screen represents a physical actor in the restaurant service loop: the hun
 ### Surface 5: Front-of-House Delivery Dispatch Queue
 
 * **Route:** `/pos/dispatch`.
+* **Stitch Prototype:** [`frontend/html/05_foh_boda_dispatch_delivery_queue.html`](file:///c:/Users/USER/OneDrive/Desktop/Chol-John-Arok-Market-Research-Project/frontend/html/05_foh_boda_dispatch_delivery_queue.html)
 * **Target Users:** FOH Cashier / Waiter (Prossy N.) and Freelance Boda Riders.
 * **Design Personality:** Tactical Service Slate (`#F1F5F9`).
 
@@ -376,6 +381,7 @@ Every screen represents a physical actor in the restaurant service loop: the hun
 ### Surface 6: Manager & Admin Executive Portal
 
 * **Routes:** `/admin/dashboard`, `/admin/menu`, `/admin/inventory`, `/admin/surplus`, `/admin/reconcile`, `/admin/audit`, `/admin/users`.
+* **Stitch Prototype:** [`frontend/html/06_manager_admin_eod_surplus_audit_digest.html`](file:///c:/Users/USER/OneDrive/Desktop/Chol-John-Arok-Market-Research-Project/frontend/html/06_manager_admin_eod_surplus_audit_digest.html)
 * **Target User:** Zito Mbowe (Project Coordinator / Operations Owner).
 * **Design Personality:** Executive Obsidian Ledger (`#0B0F17` dark obsidian background, Champagne Brass `#C8A96A` accents, 2px precision borders, high data density).
 

@@ -1,0 +1,72 @@
+/**
+ * Stylesheet for: 06_manager_admin_eod_surplus_audit_digest.html
+ * Surface 6: Manager Admin EOD Surplus Audit & Daily Digest
+ * Viewport: Desktop / Laptop (1280px+)
+ */
+
+@import './theme_tokens.css';
+
+/* Manager Executive Obsidian / Command Layout */
+.admin-audit-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+/* EOD Financial & Shift Summary Cards */
+.shift-summary-banner {
+  background-color: var(--color-surface-container-low);
+  border-radius: var(--radius-xl);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-level-1);
+}
+
+/* Raw Recipe Bill-of-Materials (BOM) Deduction Ledger Table */
+.bom-ledger-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--color-canvas-elevated);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-level-1);
+}
+
+.bom-ledger-table th {
+  background-color: var(--color-surface-container);
+  color: var(--color-on-surface-variant);
+  font-size: var(--font-size-label-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.75rem 1rem;
+  text-align: left;
+}
+
+.bom-ledger-table td {
+  padding: 1rem;
+  border-top: 1px solid var(--color-border-default);
+  font-size: var(--font-size-body-md);
+}
+
+/* 21:00 EAT Surplus Flash Clearance Discount Trigger */
+.surplus-clearance-switch {
+  background-color: rgba(220, 38, 38, 0.1);
+  border: 1.5px dashed var(--color-primary);
+  border-radius: var(--radius-xl);
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Nightly 21:30 EAT WhatsApp/SMS Digest Push Notification Toast */
+.digest-toast-banner {
+  background-color: var(--color-tertiary-container);
+  color: var(--color-on-tertiary);
+  border-radius: var(--radius-xl);
+  padding: 1rem 1.5rem;
+  box-shadow: var(--shadow-level-2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+

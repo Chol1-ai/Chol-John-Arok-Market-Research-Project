@@ -1,4 +1,4 @@
-﻿# Chol-John-Arok-Market-Research-Project
+# Chol-John-Arok-Market-Research-Project
 
 Solution Project: Foodizo & Obunuzi Restaurant & Cafe
 1. Business Name
@@ -90,8 +90,18 @@ The end-to-end technical and operational specifications are organized into clean
 * **[Demo Script & Closing Strategy](go_to_market/Demo_Script_and_Closing_Strategy.md)** — Live demonstration script, objection handling, and commercial closing proposal in UGX to close Zito Mbowe.
 * **[Service Contract & Invoice Template](go_to_market/Service_Contract_and_Invoice_Template.md)** — Milestone-based service agreement and UGX invoice template for legal review.
 
-### 7.4 Canonical Database Definition (prisma/)
-* **[schema.prisma](prisma/schema.prisma)** — The authoritative database definition for all 15 models, 13 enums, and relations.
+### 7.4 Frontend Prototypes & UI Screens (frontend/)
+* **[Frontend Architecture Guide](frontend/README.md)** — Master index of all 10 canonical fast-casual UI screens, modular stylesheets, and design tokens.
+* **[HTML Prototypes](frontend/html/README.md)** (`frontend/html/`) — Standalone HTML prototypes for Surfaces 1–6 (PIN Login, Customer PWA, Floor POS, KDS, Dispatch Queue, Manager Admin).
+* **[Modular CSS Stylesheets](frontend/css/README.md)** (`frontend/css/`) — 1-to-1 matching companion CSS files and shared `theme_tokens.css`.
+* **[UI Screen Previews](frontend/images/)** (`frontend/images/`) — High-resolution full-screen PNG previews.
+* **[Design Tokens Specification](frontend/design_tokens_kampala_fast_casual.md)** (`frontend/design_tokens_kampala_fast_casual.md`) — Fast-casual color palette, typography scales, touch targets, and spacing rules.
+
+### 7.5 Backend Engine & Fastify API (backend/)
+* **[Backend Architecture & API Guide](backend/README.md)** — Master guide to the Fastify API engine, Prisma ORM, and WebSocket real-time bus.
+* **[Database Schema & Seeder](backend/prisma/)** (`backend/prisma/schema.prisma`) — The authoritative database definition for all 15 models, 13 enums, and relations, plus production seeder `seed.ts`.
+* **[API Routes & Plugins](backend/src/)** (`backend/src/`) — Route handlers for Auth, Menu, Tables, Orders, KDS, MoMo Payments, Dispatch, Surplus, and Nightly Digest.
+* **[Automated Unit Tests](backend/tests/)** (`backend/tests/`) — Vitest test suites verifying token sequences, BOM deductions, ESC/POS printer buffers, and cash variance.
 
 ## 8. Strategic Execution Separation: Build Strategy vs. Go-To-Market Strategy
 

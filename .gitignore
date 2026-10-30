@@ -1,0 +1,49 @@
+# ==============================================================================
+# Git Ignore Configuration — Kampala Fast-Casual Research & Engineering Workspace
+# ==============================================================================
+
+# Node.js Dependencies
+node_modules/
+*/node_modules/
+
+# Build Outputs & Bundles
+dist/
+*/dist/
+build/
+.next/
+out/
+
+# Environment Secrets & Local Overrides (keep .env.example tracked)
+.env
+.env.local
+.env.*.local
+backend/.env
+frontend/.env
+!*.env.example
+
+# Logs & Diagnostics
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS-Generated Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE & Editor Specific Folders
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Test Coverage & Temp Caches
+coverage/
+.nyc_output/
+.vitest/
+.cache/

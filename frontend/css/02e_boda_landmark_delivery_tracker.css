@@ -1,0 +1,77 @@
+/**
+ * Stylesheet for: 02e_boda_landmark_delivery_tracker.html
+ * Surface 2E: Customer Landmark Boda Delivery Tracker (No GPS / Static Landmark Guide)
+ * Viewport: Mobile PWA (375px–480px)
+ */
+
+@import './theme_tokens.css';
+
+/* Drop-off Zone & Landmark Instructions Card */
+.landmark-guide-card {
+  background-color: var(--color-surface-container-low);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  border-left: 4px solid var(--color-primary);
+}
+
+/* Assigned Stage Boda Rider Profile */
+.rider-profile-module {
+  background-color: var(--color-canvas-elevated);
+  border-radius: var(--radius-xl);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-level-1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rider-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  position: relative;
+}
+
+/* Motorbike Plate Badge */
+.vehicle-plate-badge {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-label-md);
+  font-weight: 800;
+  color: var(--color-primary);
+  background-color: var(--color-primary-fixed);
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--radius-sm);
+  display: inline-block;
+  letter-spacing: 0.04em;
+}
+
+/* 1-Tap Rider Contact Buttons (Tel & WhatsApp) */
+.btn-action-call {
+  min-height: 48px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary);
+  color: #FFFFFF;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  box-shadow: var(--shadow-level-1);
+}
+
+.btn-action-whatsapp {
+  min-height: 48px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-tertiary-container);
+  color: #FFFFFF;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  box-shadow: var(--shadow-level-1);
+}
+

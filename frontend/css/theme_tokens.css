@@ -1,0 +1,106 @@
+/**
+ * Kampala Fast-Casual Design System — Global Theme Tokens
+ * Brand: Foodizo (Ham Towers) & Obunuzi Restaurant (Opposite YMCA, Kampala)
+ * Colors: Terracotta Red (#DC2626), Saffron Amber (#FEA619), Forest Green (#16A34A), Warm Cream (#FAF9F6)
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+
+:root {
+  /* Canvas & Neutral Surfaces */
+  --color-canvas-base: #FAF9F6;
+  --color-canvas-elevated: #FFFFFF;
+  --color-surface: #F9F9FF;
+  --color-surface-dim: #D3DAEF;
+  --color-surface-bright: #F9F9FF;
+  --color-surface-lowest: #FFFFFF;
+  --color-surface-low: #F1F3FF;
+  --color-surface-container: #E9EDFF;
+  --color-surface-high: #E1E8FD;
+  --color-surface-highest: #DCE2F7;
+  --color-on-surface: #141B2B;
+  --color-on-surface-variant: #5C403C;
+  --color-inverse-surface: #293040;
+  --color-inverse-on-surface: #EDF0FF;
+
+  /* Primary Brand: Spicy Terracotta Red (CTAs, Urgency, Active Cart) */
+  --color-primary: #DC2626;
+  --color-primary-dark: #B70011;
+  --color-primary-container: #DC2626;
+  --color-on-primary: #FFFFFF;
+  --color-on-primary-container: #FFF6F5;
+  --color-primary-fixed: #FFDAD6;
+  --color-primary-fixed-dim: #FFB4AB;
+  --color-on-primary-fixed: #410002;
+
+  /* Secondary Brand: Warm Saffron Amber (Spices, Steppers, Warnings) */
+  --color-secondary: #855300;
+  --color-secondary-container: #FEA619;
+  --color-on-secondary: #FFFFFF;
+  --color-on-secondary-container: #684000;
+  --color-secondary-fixed: #FFDDB8;
+  --color-secondary-fixed-dim: #FFB95F;
+  --color-on-secondary-fixed: #2A1700;
+
+  /* Tertiary Brand: Crisp Forest Green (MoMo Payments, Ready State, KDS Bump) */
+  --color-tertiary: #16A34A;
+  --color-tertiary-dark: #00682B;
+  --color-tertiary-container: #008438;
+  --color-on-tertiary: #FFFFFF;
+  --color-on-tertiary-container: #E7FFE4;
+  --color-tertiary-fixed: #7FFC97;
+  --color-tertiary-fixed-dim: #62DF7D;
+  --color-on-tertiary-fixed: #002109;
+
+  /* Errors & Outlines */
+  --color-error: #BA1A1A;
+  --color-on-error: #FFFFFF;
+  --color-error-container: #FFDAD6;
+  --color-on-error-container: #93000A;
+  --color-outline: #916F6B;
+  --color-outline-variant: #E6BDB8;
+  --color-border-default: #E5E0D8;
+
+  /* Typography Scales */
+  --font-family-base: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-size-headline-xl: 36px;
+  --font-size-headline-lg: 24px;
+  --font-size-headline-md: 20px;
+  --font-size-headline-sm: 18px;
+  --font-size-body-lg: 16px;
+  --font-size-body-md: 14px;
+  --font-size-body-sm: 12px;
+  --font-size-label-lg: 14px;
+  --font-size-label-md: 12px;
+  --font-size-label-sm: 11px;
+  --font-size-currency: 22px;
+
+  /* Radii & Shadows */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-full: 9999px;
+
+  --shadow-level-1: 0px 2px 6px -1px rgba(17, 24, 39, 0.04);
+  --shadow-level-2: 0px 8px 18px -3px rgba(17, 24, 39, 0.08);
+  --shadow-level-3: 0px 16px 32px -4px rgba(17, 24, 39, 0.16);
+}
+
+/* Global Reset */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  font-family: var(--font-family-base);
+  background-color: var(--color-canvas-base);
+  color: var(--color-on-surface);
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+

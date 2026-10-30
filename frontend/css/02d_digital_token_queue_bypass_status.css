@@ -1,0 +1,69 @@
+/**
+ * Stylesheet for: 02d_digital_token_queue_bypass_status.html
+ * Surface 2D: Takeaway Digital Token Pickup Voucher & Queue Bypass
+ * Viewport: Mobile PWA (375px–480px)
+ */
+
+@import './theme_tokens.css';
+
+/* Giant Digital Token Card */
+.token-pass-card {
+  background: linear-gradient(135deg, var(--color-primary) 0%, #B70011 50%, var(--color-secondary-container) 100%);
+  color: #FFFFFF;
+  border-radius: var(--radius-xl);
+  padding: 1.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-level-2);
+}
+
+.token-pass-number {
+  font-family: var(--font-family-base);
+  font-size: 2.25rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  margin: 0.5rem 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* 4-Step Preparation Flow Progress Stepper */
+.prep-flow-stepper {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.375rem;
+  padding-top: 0.5rem;
+}
+
+.stepper-bar-segment {
+  height: 6px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface-container-highest);
+}
+
+.stepper-bar-segment.done {
+  background-color: var(--color-tertiary);
+}
+
+.stepper-bar-segment.in-progress {
+  background-color: var(--color-secondary-container);
+  animation: pulse-step 1.5s infinite;
+}
+
+@keyframes pulse-step {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Audio Bell / Chime Switch */
+.chime-toggle-switch {
+  width: 48px;
+  height: 28px;
+  background-color: var(--color-tertiary-container);
+  border-radius: var(--radius-full);
+  padding: 2px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+

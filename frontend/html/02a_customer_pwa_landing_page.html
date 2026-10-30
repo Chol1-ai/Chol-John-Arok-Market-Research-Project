@@ -1,0 +1,908 @@
+﻿<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+  <title>Foodizo Campus Pre-Order | Skip The Line (Ham Towers)</title>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    name="viewport">
+  <meta content="mobile_tab" name="shell-type">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap"
+    rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet">
+  <style>
+    @layer base {
+
+      html,
+      body {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        background-color: #f9f9ff;
+      }
+
+      body {
+        overscroll-behavior-y: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .pb-safe {
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+
+      .pt-safe {
+        padding-top: env(safe-area-inset-top, 0px);
+      }
+
+      main>:first-child {
+        margin-top: 0 !important;
+      }
+
+      main>:last-child {
+        margin-bottom: 0 !important;
+      }
+    }
+
+    ::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../css/02a_customer_pwa_landing_page.css" />
+  <script
+    id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "on-secondary-fixed-variant": "#653e00", "secondary-fixed-dim": "#ffb95f", "surface-bright": "#f9f9ff", "on-primary-fixed-variant": "#93000b", "primary": "#b70011", "secondary": "#855300", "secondary-container": "#fea619", "on-secondary-fixed": "#2a1700", "on-primary-fixed": "#410002", "on-surface-variant": "#5c403c", "on-error": "#ffffff", "on-background": "#141b2b", "on-primary-container": "#fff6f5", "tertiary-container": "#008438", "on-tertiary-container": "#e7ffe4", "outline-variant": "#e6bdb8", "surface-tint": "#bf0715", "on-surface": "#141b2b", "outline": "#916f6b", "secondary-fixed": "#ffddb8", "on-tertiary-fixed": "#002109", "surface-container": "#e9edff", "inverse-surface": "#293040", "inverse-on-surface": "#edf0ff", "surface-dim": "#d3daef", "surface-container-lowest": "#ffffff", "tertiary-fixed": "#7ffc97", "surface": "#f9f9ff", "tertiary": "#00682b", "surface-container-highest": "#dce2f7", "surface-container-high": "#e1e8fd", "surface-variant": "#dce2f7", "error-container": "#ffdad6", "inverse-primary": "#ffb4ab", "primary-container": "#dc2626", "surface-container-low": "#f1f3ff", "primary-fixed": "#ffdad6", "tertiary-fixed-dim": "#62df7d", "background": "#f9f9ff", "on-error-container": "#93000a", "on-secondary-container": "#684000", "on-primary": "#ffffff", "primary-fixed-dim": "#ffb4ab", "on-tertiary": "#ffffff", "on-tertiary-fixed-variant": "#005320", "error": "#ba1a1a", "on-secondary": "#ffffff" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "margin-lg": "1.5rem", "space-md": "1rem", "gutter-sm": "0.75rem", "space-lg": "1.5rem", "space-xs": "0.25rem", "space-xl": "2rem", "gutter": "1rem", "margin": "1rem", "margin-sm": "0.75rem", "space-sm": "0.5rem" }, fontFamily: { "headline-xl": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "headline-xl-mobile": ["Plus Jakarta Sans"], "currency-display": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"] }, fontSize: { "headline-xl": ["36px", { lineHeight: "44px", letterSpacing: "-0.02em", fontWeight: "800" }], "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }], "body-sm": ["12px", { lineHeight: "16px", fontWeight: "400" }], "headline-md": ["20px", { lineHeight: "26px", fontWeight: "700" }], "headline-xl-mobile": ["28px", { lineHeight: "34px", letterSpacing: "-0.02em", fontWeight: "800" }], "currency-display": ["22px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "800" }], "label-sm": ["11px", { lineHeight: "14px", letterSpacing: "0.03em", fontWeight: "600" }], "label-md": ["12px", { lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "700" }], "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }], "headline-lg": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "700" }], "label-lg": ["14px", { lineHeight: "18px", letterSpacing: "0.01em", fontWeight: "700" }], "headline-sm": ["18px", { lineHeight: "24px", fontWeight: "600" }] } } } }</script>
+</head>
+
+<body class="bg-surface font-body-md text-body-md text-on-surface antialiased min-h-screen flex flex-col">
+  <header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+  <title>Foodizo Campus Pre-Order | Skip The Line (Ham Towers)</title>
+    <div class="h-16 px-margin flex items-center justify-between gap-space-sm">
+      <div class="flex items-center gap-space-xs">
+        <div class="flex items-center gap-1"><span
+            class="font-headline-sm text-headline-sm text-primary tracking-tight">Foodizo</span><span
+            class="font-label-sm text-label-sm text-outline px-1">â€¢</span><span
+            class="font-headline-sm text-headline-sm text-tertiary tracking-tight">Obunuzi</span></div><span
+          class="sr-only">Home</span>
+      </div><button id="branch-switcher-btn" aria-haspopup="dialog" aria-expanded="false"
+        class="min-h-[44px] px-space-sm py-space-xs bg-surface-container-high hover:bg-surface-variant rounded-full flex items-center gap-space-xs text-on-surface transition-all active:scale-95 shadow-sm"
+        type="button"><span class="material-symbols-outlined text-[18px] text-primary">location_on</span><span
+          id="current-branch-label" class="font-label-md text-label-md font-bold">Ham Towers</span><span
+          class="material-symbols-outlined text-[16px] text-on-surface-variant">expand_more</span></button>
+      <div class="flex items-center gap-space-xs"><a
+          class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface hover:bg-surface-container relative transition-colors"
+          data-path="cart-checkout" href="02c_momo_checkout_delivery_zone_selector.html"><span
+            class="material-symbols-outlined text-[22px]">shopping_bag</span><span
+            class="absolute top-1.5 right-1.5 w-4 h-4 bg-primary text-on-primary rounded-full font-label-sm text-[10px] flex items-center justify-center font-bold">2</span></a>
+        <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span
+            class="material-symbols-outlined text-on-primary text-[18px]">person</span></div>
+      </div>
+    </div>
+  </header>
+  <main class="flex-1 flex flex-col relative w-full pt-16 pb-20 bg-surface">
+    <div class="flex flex-col w-full">
+      <!-- PWA Install Prompt Banner -->
+      <aside aria-label="PWA install banner" class="mx-margin mt-space-sm mb-space-xs">
+        <div
+          class="bg-secondary-container text-on-secondary-container px-space-md py-space-xs rounded-full flex items-center justify-between gap-space-xs shadow-sm">
+          <div class="flex items-center gap-space-xs min-w-0">
+            <span class="material-symbols-outlined text-[18px] text-secondary shrink-0">bolt</span>
+            <p class="font-label-sm text-label-sm truncate font-bold">Add PWA to Home Screen for 1-Tap Lunch Pickup</p>
+          </div>
+          <button aria-label="Install Foodizo PWA"
+            class="shrink-0 bg-on-secondary-container text-surface-container-lowest font-label-sm text-label-sm px-space-sm py-1 rounded-full active:scale-95 transition-transform"
+            type="button">
+            Install
+          </button>
+        </div>
+      </aside>
+      <!-- Hero Section -->
+      <section class="px-margin pt-space-xs pb-space-md flex flex-col gap-space-sm">
+        <div
+          class="inline-flex items-center gap-1.5 self-start bg-error-container text-on-error-container px-space-sm py-1 rounded-full font-label-sm text-label-sm">
+          <span class="w-2 h-2 rounded-full bg-primary-container animate-ping"></span>
+          <span class="font-bold">Hot, Fresh &amp; Ready When You Arrive</span>
+        </div>
+        <div class="flex flex-col gap-space-xs">
+          <h1 class="font-headline-xl-mobile text-headline-xl-mobile text-on-surface tracking-tight">
+            Skip the 20-Minute Lunch Rush at Ham Towers &amp; YMCA
+          </h1>
+          <p class="font-body-md text-body-md text-on-surface-variant">
+            Pre-order your favorite Rolex, Beef Luwombo, &amp; steaming Katogo. Pay seamlessly with MTN MoMo or Airtel
+            Money.
+          </p>
+        </div>
+        <!-- Hero Visual Card with Scrim & Queue Badge -->
+        <div class="relative w-full h-52 rounded-xl overflow-hidden shadow-md mt-space-xs">
+          <img class="w-full h-full object-cover"
+            data-alt="A sizzling hot Ugandan street-style rolex and earthenware dish of rich beef luwombo garnished with coriander, resting on fresh banana leaves in a vibrant Kampala fast-casual restaurant setting with warm afternoon sunlight, steaming presentation, and rich red and yellow branded tones."
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCj6haBVzE2F-DXcBPlNtwVeJAJ2Fe9fNR__9hbmchlaBG20_wqEd2Dosk2Zg31Kf6s_45fdTUvbOF-JnMWOlo_92wz7A-vDCJz9Vqv-ehg7VFHg0SrJtw6S-QB9mZW1VJR-xcCGGJ6aDJqj9L3fI0edvLGZDsJphbKzONT4O0eP14_NhH-WjbTRi2gn_UUf4nXW3w9dBajW_2nntC49vj0F9a5wuI1Lna0TkZLPME">
+          <div class="absolute inset-0 bg-gradient-to-t from-on-background/90 via-on-background/30 to-transparent">
+          </div>
+          <!-- Live Kitchen Overlay Status -->
+          <div
+            class="absolute top-space-sm left-space-sm bg-surface-container-lowest/90 backdrop-blur-md px-space-sm py-1 rounded-full flex items-center gap-1.5 shadow-sm">
+            <span class="w-2 h-2 rounded-full bg-tertiary-container"></span>
+            <span class="font-label-sm text-label-sm text-on-surface font-bold">Kitchens Active Now</span>
+          </div>
+          <div
+            class="absolute bottom-space-sm left-space-sm right-space-sm flex items-end justify-between gap-space-xs text-on-primary">
+            <div>
+              <p class="font-label-sm text-label-sm uppercase tracking-wider text-secondary-fixed-dim font-bold">Express
+                Counter Ready</p>
+              <p class="font-headline-sm text-headline-sm font-bold text-surface-container-lowest">Avg Pickup: 6 - 9
+                mins</p>
+            </div>
+            <div class="bg-primary text-on-primary px-space-sm py-1 rounded-lg text-center shrink-0 shadow-sm">
+              <p class="font-label-sm text-[10px] leading-tight opacity-90">Tokens Issued</p>
+              <p class="font-label-lg text-label-lg font-extrabold">#B-184</p>
+            </div>
+          </div>
+        </div>
+        <!-- CTA Stack -->
+        <div class="flex flex-col gap-space-xs mt-space-xs">
+          <a class="w-full min-h-[50px] bg-primary text-on-primary rounded-full font-label-lg text-label-lg flex items-center justify-center gap-space-xs shadow-md active:bg-primary-container active:scale-[0.99] transition-all"
+            href="02b_campus_pre_order_menu.html">
+            <span class="material-symbols-outlined text-[20px]"
+              style="font-variation-settings: 'FILL' 1;">electric_bolt</span>
+            <span class="">Pre-Order Now â€¢ Skip Queue</span>
+          </a>
+          <a class="w-full min-h-[46px] bg-surface-container-high text-on-surface rounded-full font-label-md text-label-md flex items-center justify-center gap-space-xs active:bg-surface-variant transition-colors"
+            href="02b_campus_pre_order_menu.html">
+            <span class="material-symbols-outlined text-[18px]">restaurant_menu</span>
+            <span class="">Browse Full Branch Menu</span>
+          </a>
+        </div>
+      </section>
+      <!-- Live Kitchen Status & Wait-Time Tracker -->
+      <section aria-label="Kitchen Wait Time Tracker" class="px-margin py-space-sm bg-surface-container-low">
+        <div class="flex items-center justify-between mb-space-xs">
+          <div class="flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-primary text-[20px]">timer</span>
+            <h2 class="font-label-lg text-label-lg text-on-surface font-bold uppercase tracking-wide">Live Prep Tracker
+            </h2>
+          </div>
+          <span class="font-label-sm text-label-sm text-tertiary font-bold flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-tertiary inline-block animate-pulse"></span>
+            Auto-refreshed
+          </span>
+        </div>
+        <!-- Rush Hour Warning Pill -->
+        <div
+          class="bg-secondary-fixed text-on-secondary-fixed p-space-sm rounded-lg flex items-center gap-space-xs mb-space-sm shadow-sm">
+          <span class="material-symbols-outlined text-secondary text-[20px] shrink-0">warning</span>
+          <p class="font-label-sm text-label-sm leading-snug">
+            <span class="font-bold">Peak Window: 1:00 PM â€“ 3:00 PM.</span> Online pre-orders get priority kitchen slots
+            over walk-ins!
+          </p>
+        </div>
+        <!-- Branch Tracker Cards (Radio Style Interactive) -->
+        <div class="grid grid-cols-1 gap-space-xs" id="branch-tracker-group">
+          <!-- Ham Towers Branch -->
+          <div
+            class="bg-surface-container-lowest p-space-sm rounded-xl shadow-sm flex items-center justify-between gap-space-sm">
+            <div class="flex items-start gap-space-xs min-w-0">
+              <div
+                class="w-10 h-10 rounded-full bg-error-container text-on-error-container flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-[20px]">storefront</span>
+              </div>
+              <div class="min-w-0">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <h3 class="font-headline-sm text-headline-sm text-on-surface truncate">Ham Towers</h3>
+                  <span
+                    class="bg-tertiary-container text-on-tertiary-container font-label-sm text-[10px] px-1.5 py-0.5 rounded-full font-bold">Live</span>
+                </div>
+                <p class="font-body-sm text-body-sm text-on-surface-variant truncate">Makerere Main Gate â€¢ Counter A
+                  &amp; B</p>
+              </div>
+            </div>
+            <div class="text-right shrink-0">
+              <p class="font-currency-display text-currency-display text-primary leading-tight font-extrabold">8m</p>
+              <p class="font-label-sm text-label-sm text-on-surface-variant">prep wait</p>
+            </div>
+          </div>
+          <!-- Obunuzi YMCA Branch -->
+          <div
+            class="bg-surface-container-lowest p-space-sm rounded-xl shadow-sm flex items-center justify-between gap-space-sm">
+            <div class="flex items-start gap-space-xs min-w-0">
+              <div
+                class="w-10 h-10 rounded-full bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-[20px]">lunch_dining</span>
+              </div>
+              <div class="min-w-0">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <h3 class="font-headline-sm text-headline-sm text-on-surface truncate">Obunuzi Cafe</h3>
+                  <span
+                    class="bg-tertiary-container text-on-tertiary-container font-label-sm text-[10px] px-1.5 py-0.5 rounded-full font-bold">Live</span>
+                </div>
+                <p class="font-body-sm text-body-sm text-on-surface-variant truncate">Opposite YMCA Campus â€¢ Express
+                  Lane</p>
+              </div>
+            </div>
+            <div class="text-right shrink-0">
+              <p class="font-currency-display text-currency-display text-secondary leading-tight font-extrabold">10m</p>
+              <p class="font-label-sm text-label-sm text-on-surface-variant">prep wait</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Campus-Tailored Value Props (Bento Mosaic) -->
+      <section class="px-margin py-space-md flex flex-col gap-space-sm">
+        <div class="flex flex-col">
+          <span class="font-label-sm text-label-sm uppercase tracking-wider text-primary font-bold">Why Students &amp;
+            Staff Love Foodizo</span>
+          <h2 class="font-headline-md text-headline-md text-on-surface">Built for Campus Speed</h2>
+        </div>
+        <div class="grid grid-cols-1 gap-space-sm">
+          <!-- Perk 1 -->
+          <div class="bg-surface-container-low p-space-md rounded-xl flex gap-space-sm items-start shadow-sm">
+            <div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-[22px]">flash_on</span>
+            </div>
+            <div class="flex-1">
+              <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">15-Minute Queue Bypass</h3>
+              <p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                Order in the middle of lectures or study groups. Walk straight to the digital pickup shelf and flash
+                your token.
+              </p>
+            </div>
+          </div>
+          <!-- Perk 2 -->
+          <div class="bg-surface-container-low p-space-md rounded-xl flex gap-space-sm items-start shadow-sm">
+            <div
+              class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-[22px]">outdoor_grill</span>
+            </div>
+            <div class="flex-1">
+              <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Charcoal &amp; Steam Kitchen</h3>
+              <p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                Piping-hot rolexes folded on charcoal tavas, hearty beef katogo, and authentic banana-leaf luwombo
+                cooked fresh daily.
+              </p>
+            </div>
+          </div>
+          <!-- Perk 3 -->
+          <div class="bg-surface-container-low p-space-md rounded-xl flex gap-space-sm items-start shadow-sm">
+            <div
+              class="w-10 h-10 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-[22px]">payments</span>
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Zero-Friction MoMo Push</h3>
+                <span class="bg-secondary-fixed text-on-secondary-fixed text-[10px] font-bold px-1.5 py-0.5 rounded">MTN
+                  â€¢ Airtel</span>
+              </div>
+              <p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                No ATM runs. Direct USSD pin prompt on your phone with instant payment confirmation and automatic queue
+                token.
+              </p>
+            </div>
+          </div>
+          <!-- Perk 4 -->
+          <div class="bg-surface-container-low p-space-md rounded-xl flex gap-space-sm items-start shadow-sm">
+            <div
+              class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-[22px]">two_wheeler</span>
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Free Campus Hostel Delivery</h3>
+                <span
+                  class="bg-primary-fixed text-on-primary-fixed-variant text-[10px] font-bold px-1.5 py-0.5 rounded">Orders
+                  &gt; 15k UGX</span>
+              </div>
+              <p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                Delivering right to Complex, Lumumba, Africa, Mary Stuart gates, and YMCA hostels without delivery
+                surcharges.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Campus Favorite Signatures -->
+      <section aria-label="Campus Favorites" class="px-margin py-space-md bg-surface" id="signatures">
+        <div class="flex items-end justify-between mb-space-sm">
+          <div>
+            <span class="font-label-sm text-label-sm uppercase tracking-wider text-primary font-bold">Student
+              Favorites</span>
+            <h2 class="font-headline-md text-headline-md text-on-surface">Top Campus Picks</h2>
+          </div>
+          <span class="font-label-sm text-label-sm text-on-surface-variant">Tap + to add</span>
+        </div>
+        <!-- Product Grid -->
+        <div class="grid grid-cols-1 gap-space-md" id="menu-preview">
+          <!-- Item 1: Obunuzi Super Rolex -->
+          <article class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm flex flex-col">
+            <div class="relative w-full h-44">
+              <img class="w-full h-full object-cover"
+                data-alt="A thick Ugandan street Rolex sliced diagonally displaying three fluffy fried eggs, seasoned minced beef, shredded green cabbage, red tomatoes, and purple onions rolled inside golden fried chapati, served on craft paper with fresh lemon wedge."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWAgoYPKsqwmfEZMtKKZpFU9CpEkOV83X4oivW47wpLFxcrK-zOzVD-QO4SkUIpLFmqK-cBkRuegtdEy7e3PJvYyhssGX72RvAm_kwuDL4DsDnUYzk3NL_dv-H3eUvaQs46WLJ6v__7YkYDyLaXiEXqnJcBY7TBQcQmssF0scmdgDA3LL4qgX1MVfa4M8XLaGhosMx-XachaytoUAonGe_OYjsyK0mvvfTCSNPJzw">
+              <span
+                class="absolute top-2 left-2 bg-primary text-on-primary font-label-sm text-[11px] px-2 py-0.5 rounded-full font-bold shadow-sm">
+                Bestseller â€¢ 4m prep
+              </span>
+              <span
+                class="absolute bottom-2 right-2 bg-surface-container-lowest/90 backdrop-blur-md text-on-surface font-label-sm text-[11px] px-2 py-0.5 rounded-md font-bold">
+                Ham &amp; YMCA
+              </span>
+            </div>
+            <div class="p-space-sm flex flex-col gap-space-xs">
+              <div class="flex items-start justify-between gap-space-xs">
+                <div>
+                  <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Obunuzi Super Rolex</h3>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1">3 Eggs, Minced Beef,
+                    Cabbage, Tomato, Red Onion</p>
+                </div>
+              </div>
+              <div class="flex items-center justify-between pt-space-xs mt-space-xs">
+                <div>
+                  <span class="font-label-sm text-[10px] text-on-surface-variant uppercase font-semibold">Price</span>
+                  <p class="font-currency-display text-currency-display text-on-surface font-bold leading-none">UGX
+                    7,000</p>
+                </div>
+                <button aria-label="Add Obunuzi Super Rolex to pre-order"
+                  class="order-add-btn min-h-[44px] min-w-[44px] px-space-md bg-primary text-on-primary rounded-full font-label-md text-label-md flex items-center justify-center gap-1 active:scale-95 transition-transform"
+                  data-item="Obunuzi Super Rolex" data-price="7000" type="button">
+                  <span class="material-symbols-outlined text-[18px]">add</span>
+                  <span class="">Pre-Order</span>
+                </button>
+              </div>
+            </div>
+          </article>
+          <!-- Item 2: Traditional Beef Luwombo -->
+          <article class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm flex flex-col">
+            <div class="relative w-full h-44">
+              <img class="w-full h-full object-cover"
+                data-alt="Traditional Ugandan Beef Luwombo wrapped and cooked in smoked banana leaves, untied to reveal tender beef chunks simmering in rich savory groundnut sauce and smoked aromatics, accompanied by hot steamed yellow matooke mash."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkogD0N5c-Pb9oQQzRRDIOZOuXwHdl7WEy229jXfIo645GaaKNB2GG-T9_aqm2Sv1xhtXG10bxYOJoCWonhbgoBF0Gs1NRxXM4Y0nNfGvbTO9Jc1ZHiZHUueFKemy76O73BaYnOsvP-8VVCvluOagB4QlJTY9i4kcAvZ3hxYUnHegim6MUCwZRFppTPWQSSIUnhaQGVyzoZjZye5g7ruc4c08p4AlO2TGXRbby0gA">
+              <span
+                class="absolute top-2 left-2 bg-secondary text-on-secondary font-label-sm text-[11px] px-2 py-0.5 rounded-full font-bold shadow-sm">
+                Slow Steamed Daily
+              </span>
+              <span
+                class="absolute bottom-2 right-2 bg-surface-container-lowest/90 backdrop-blur-md text-on-surface font-label-sm text-[11px] px-2 py-0.5 rounded-md font-bold">
+                Obunuzi Hall
+              </span>
+            </div>
+            <div class="p-space-sm flex flex-col gap-space-xs">
+              <div class="flex items-start justify-between gap-space-xs">
+                <div>
+                  <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Traditional Beef Luwombo</h3>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1">Steamed in Banana Leaves,
+                    Groundnut Sauce, Matooke</p>
+                </div>
+              </div>
+              <div class="flex items-center justify-between pt-space-xs mt-space-xs">
+                <div>
+                  <span class="font-label-sm text-[10px] text-on-surface-variant uppercase font-semibold">Price</span>
+                  <p class="font-currency-display text-currency-display text-on-surface font-bold leading-none">UGX
+                    14,000</p>
+                </div>
+                <button aria-label="Add Traditional Beef Luwombo to pre-order"
+                  class="order-add-btn min-h-[44px] min-w-[44px] px-space-md bg-primary text-on-primary rounded-full font-label-md text-label-md flex items-center justify-center gap-1 active:scale-95 transition-transform"
+                  data-item="Traditional Beef Luwombo" data-price="14000" type="button">
+                  <span class="material-symbols-outlined text-[18px]">add</span>
+                  <span class="">Pre-Order</span>
+                </button>
+              </div>
+            </div>
+          </article>
+          <!-- Item 3: Katogo Special Bowl -->
+          <article class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm flex flex-col">
+            <div class="relative w-full h-44">
+              <img class="w-full h-full object-cover"
+                data-alt="A steaming bowl of traditional Ugandan Katogo featuring soft cooked matooke plantains simmered with tender beef gravy, fresh green chili, and topped with sliced ripe avocado on a colorful rustic wooden cafe tabletop."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6gLQOydw9oCQwxoNOhK_TmWHg-s2SY0YM8lgOSidLxxJxtRvIrzeySLe5FFJlWRZb4J7x5rOrAaAYKIrryvm4LRPElliU-8y6e1XrsRcU3AJfCYpeSkusv8A9YwHVwufpI3DF8UaxeB67wN8rK_uhAKQNY2UxDcdIJm9c9nRDoyamwPHBbw3HPfysjVCIbnj-_UDGmTz5CumDWbz2N0CPGRj9iBxTTcNwNKdSgBU">
+              <span
+                class="absolute top-2 left-2 bg-tertiary-container text-on-tertiary-container font-label-sm text-[11px] px-2 py-0.5 rounded-full font-bold shadow-sm">
+                Morning &amp; Lunch Fuel
+              </span>
+            </div>
+            <div class="p-space-sm flex flex-col gap-space-xs">
+              <div class="flex items-start justify-between gap-space-xs">
+                <div>
+                  <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Katogo Special Bowl</h3>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1">Braised Matooke, Tender Beef
+                    Stew &amp; Avocado Slice</p>
+                </div>
+              </div>
+              <div class="flex items-center justify-between pt-space-xs mt-space-xs">
+                <div>
+                  <span class="font-label-sm text-[10px] text-on-surface-variant uppercase font-semibold">Price</span>
+                  <p class="font-currency-display text-currency-display text-on-surface font-bold leading-none">UGX
+                    10,000</p>
+                </div>
+                <button aria-label="Add Katogo Special Bowl to pre-order"
+                  class="order-add-btn min-h-[44px] min-w-[44px] px-space-md bg-primary text-on-primary rounded-full font-label-md text-label-md flex items-center justify-center gap-1 active:scale-95 transition-transform"
+                  data-item="Katogo Special Bowl" data-price="10000" type="button">
+                  <span class="material-symbols-outlined text-[18px]">add</span>
+                  <span class="">Pre-Order</span>
+                </button>
+              </div>
+            </div>
+          </article>
+          <!-- Item 4: Fresh Passion Juice Jug -->
+          <article class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm flex flex-col">
+            <div class="relative w-full h-44">
+              <img class="w-full h-full object-cover"
+                data-alt="A frosty chilled glass jar of natural dark Ugandan passion fruit juice with ice cubes and condensation droplets, garnished with mint leaves and sliced passion fruit seeds on a bright cafe background."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiUG6JRfNx2YoxQ8lxBhxMEefWlafbu42VHv4CYwGBjesfthYVzkHA6X4OY2SLXAo1s9jaPDDhn9vCaLpD43f5AE2lEdEPsw7DsB4K7W_eRUGDLtZzJPpAHTQc6Lo1cBLGeU6snIPFf8VvX4EGgR0q5su9tbOOTjFFhdJmcn9j-2qFtdV-aggy6NAJjbO3WfCBplb_vh00ObzRIny3A96QTP5QOU3T6kaSFmnVPkg">
+              <span
+                class="absolute top-2 left-2 bg-secondary-container text-on-secondary-container font-label-sm text-[11px] px-2 py-0.5 rounded-full font-bold shadow-sm">
+                Cold Pressed â€¢ Ice Chilled
+              </span>
+            </div>
+            <div class="p-space-sm flex flex-col gap-space-xs">
+              <div class="flex items-start justify-between gap-space-xs">
+                <div>
+                  <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Fresh Passion Juice (500ml)
+                  </h3>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1">Natural Masaka Passion
+                    Fruits, Light Cane Sweetener</p>
+                </div>
+              </div>
+              <div class="flex items-center justify-between pt-space-xs mt-space-xs">
+                <div>
+                  <span class="font-label-sm text-[10px] text-on-surface-variant uppercase font-semibold">Price</span>
+                  <p class="font-currency-display text-currency-display text-on-surface font-bold leading-none">UGX
+                    4,000</p>
+                </div>
+                <button aria-label="Add Passion Juice to pre-order"
+                  class="order-add-btn min-h-[44px] min-w-[44px] px-space-md bg-primary text-on-primary rounded-full font-label-md text-label-md flex items-center justify-center gap-1 active:scale-95 transition-transform"
+                  data-item="Fresh Passion Juice" data-price="4000" type="button">
+                  <span class="material-symbols-outlined text-[18px]">add</span>
+                  <span class="">Pre-Order</span>
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+      <!-- How It Works in 3 Quick Steps -->
+      <section aria-label="How Pre-Ordering Works" class="px-margin py-space-md bg-surface-container-low">
+        <div class="text-center mb-space-md">
+          <span class="font-label-sm text-label-sm uppercase tracking-wider text-primary font-bold">Fast â€¢ Easy â€¢
+            Reliable</span>
+          <h2 class="font-headline-md text-headline-md text-on-surface">3 Steps to Fast Food</h2>
+        </div>
+        <div class="flex flex-col gap-space-sm">
+          <!-- Step 1 -->
+          <div class="bg-surface-container-lowest p-space-md rounded-xl flex gap-space-sm items-center shadow-sm">
+            <div
+              class="w-10 h-10 rounded-full bg-primary text-on-primary font-headline-sm text-headline-sm flex items-center justify-center shrink-0 font-bold">
+              1
+            </div>
+            <div>
+              <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Choose Branch &amp; Dish</h3>
+              <p class="font-body-sm text-body-sm text-on-surface-variant">Select Ham Towers (Main Gate) or Obunuzi
+                (YMCA) and pick your favorites.</p>
+            </div>
+          </div>
+          <!-- Step 2 -->
+          <div class="bg-surface-container-lowest p-space-md rounded-xl flex gap-space-sm items-center shadow-sm">
+            <div
+              class="w-10 h-10 rounded-full bg-tertiary-container text-on-tertiary-container font-headline-sm text-headline-sm flex items-center justify-center shrink-0 font-bold">
+              2
+            </div>
+            <div>
+              <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Tap &amp; Enter MoMo PIN</h3>
+              <p class="font-body-sm text-body-sm text-on-surface-variant">Automated push prompt via MTN MoMo or Airtel
+                Money. No cash hassle.</p>
+            </div>
+          </div>
+          <!-- Step 3 -->
+          <div class="bg-surface-container-lowest p-space-md rounded-xl flex gap-space-sm items-center shadow-sm">
+            <div
+              class="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container font-headline-sm text-headline-sm flex items-center justify-center shrink-0 font-bold">
+              3
+            </div>
+            <div>
+              <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Flash Token â€¢ Eat Happy</h3>
+              <p class="font-body-sm text-body-sm text-on-surface-variant">Walk up to the Express Shelf, show your
+                digital token # or take delivery at your hall.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Social Proof & Campus Reviews -->
+      <section aria-label="Campus Student Reviews" class="px-margin py-space-md flex flex-col gap-space-sm">
+        <div
+          class="bg-surface-container-high p-space-md rounded-xl flex flex-col gap-space-xs text-center items-center shadow-sm">
+          <div class="flex items-center gap-1 text-secondary">
+            <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+            <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+            <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+            <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+            <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+          </div>
+          <p class="font-headline-sm text-headline-sm text-on-surface font-bold">4.9 Campus Rating</p>
+          <p class="font-body-sm text-body-sm text-on-surface-variant">Based on 1,400+ Makerere &amp; YMCA student
+            orders this semester</p>
+        </div>
+        <!-- Review Cards -->
+        <div class="grid grid-cols-1 gap-space-sm">
+          <div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-xs">
+            <div class="flex items-center gap-space-xs">
+              <div
+                class="w-8 h-8 rounded-full bg-error-container text-on-error-container font-label-md text-label-md flex items-center justify-center font-bold">
+                BK
+              </div>
+              <div>
+                <p class="font-label-md text-label-md text-on-surface font-bold">Brian K.</p>
+                <p class="font-label-sm text-[11px] text-on-surface-variant">Makerere University CoBAMS</p>
+              </div>
+            </div>
+            <p class="font-body-sm text-body-sm text-on-surface italic">
+              â€œSaved me during my 1:15 PM test break at Makerere. Food was piping hot at the counter when I got there!
+              Zero wait time.â€
+            </p>
+          </div>
+          <div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-xs">
+            <div class="flex items-center gap-space-xs">
+              <div
+                class="w-8 h-8 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-md text-label-md flex items-center justify-center font-bold">
+                SN
+              </div>
+              <div>
+                <p class="font-label-md text-label-md text-on-surface font-bold">Sarah N.</p>
+                <p class="font-label-sm text-[11px] text-on-surface-variant">YMCA Student</p>
+              </div>
+            </div>
+            <p class="font-body-sm text-body-sm text-on-surface italic">
+              â€œBest Luwombo near YMCA. The pre-order means no standing in the afternoon sun waiting for lunch with the
+              crowd.â€
+            </p>
+          </div>
+        </div>
+      </section>
+      <!-- Interactive Digital Token Demonstration Modal (Inline Preview) -->
+      <section
+        class="mx-margin mb-space-lg p-space-md bg-surface-container-lowest rounded-xl shadow-md flex flex-col gap-space-sm">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-primary text-[20px]">confirmation_number</span>
+            <span class="font-label-md text-label-md text-on-surface uppercase font-bold">Sample Digital Token</span>
+          </div>
+          <span
+            class="bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-[10px] px-2 py-0.5 rounded-full font-bold">
+            Live Demonstration
+          </span>
+        </div>
+        <!-- Dashed Ticket Representation without explicit border classes (uses background styling) -->
+        <div
+          class="bg-surface-container p-space-md rounded-lg flex flex-col items-center justify-center gap-space-xs text-center relative overflow-hidden">
+          <p class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Ready
+            for Pickup at Ham Towers</p>
+          <p class="font-headline-xl text-headline-xl text-primary font-black tracking-tight" id="demo-token-display">
+            #B-42</p>
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-tertiary animate-ping"></span>
+            <span class="font-label-sm text-label-sm text-tertiary font-bold">Piping Hot at Express Shelf 1</span>
+          </div>
+          <p class="font-body-sm text-[11px] text-on-surface-variant mt-1">Show this token to the barista or counter
+            host</p>
+        </div>
+      </section>
+      <!-- Spacer to ensure sticky order bar doesn't overlap content -->
+      <div class="h-24"></div>
+      <!-- Sticky Bottom Quick-Bar / CTA (Placed directly above the shell navigation) -->
+      <aside aria-label="Quick order checkout tray"
+        class="fixed bottom-16 left-0 right-0 z-40 px-margin pb-space-xs pointer-events-none">
+        <div
+          class="w-full max-w-[480px] mx-auto bg-inverse-surface text-inverse-on-surface p-space-sm rounded-2xl shadow-xl flex items-center justify-between gap-space-sm pointer-events-auto">
+          <div class="flex flex-col min-w-0">
+            <div class="flex items-center gap-1">
+              <span
+                class="bg-secondary text-on-secondary font-label-sm text-[9px] uppercase px-1.5 py-0.5 rounded font-extrabold tracking-wide">CAMPUSFIRST</span>
+              <span class="font-label-sm text-label-sm text-tertiary-fixed font-bold">15% Off</span>
+            </div>
+            <p class="font-label-md text-label-md truncate text-inverse-on-surface font-semibold mt-0.5"
+              id="cart-summary-text">Ready for lunch? Pre-order now</p>
+          </div>
+          <a class="shrink-0 min-h-[44px] px-space-md bg-primary text-on-primary rounded-full font-label-md text-label-md flex items-center justify-center gap-1.5 active:scale-95 transition-transform font-bold"
+            href="02b_campus_pre_order_menu.html">
+            <span class="">Start Order</span>
+            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+          </a>
+        </div>
+      </aside>
+      <!-- Micro-interactions Script -->
+      <script>
+          (function () {
+            let orderCount = 0;
+            const cartSummary = document.getElementById('cart-summary-text');
+            const buttons = document.querySelectorAll('.order-add-btn');
+
+            buttons.forEach(button => {
+              button.addEventListener('click', function (e) {
+                orderCount++;
+                const itemName = this.getAttribute('data-item') || 'Item';
+
+                if (cartSummary) {
+                  cartSummary.textContent = `${orderCount} item(s) in bag &bull; ${itemName.split(' ')[0]} added`;
+                }
+
+                // Subtle tactile button animation
+                const originalText = this.innerHTML;
+                this.innerHTML = '<span class="material-symbols-outlined text-[18px]">check</span><span>Added</span>';
+                this.classList.replace('bg-primary', 'bg-tertiary-container');
+                this.classList.replace('text-on-primary', 'text-on-tertiary-container');
+
+                setTimeout(() => {
+                  this.innerHTML = originalText;
+                  this.classList.replace('bg-tertiary-container', 'bg-primary');
+                  this.classList.replace('text-on-tertiary-container', 'text-on-primary');
+                }, 1400);
+              });
+            });
+          })();
+      </script>
+    </div>
+  </main>
+  <nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"
+    data-active-classes="text-primary font-bold">
+    <div class="h-16 px-space-md flex items-center justify-around"><a aria-current="page"
+        class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] gap-space-xs transition-colors text-primary font-bold"
+        data-path="home" href="02a_customer_pwa_landing_page.html"><span
+          class="material-symbols-outlined text-[22px]">home</span><span
+          class="font-label-md text-label-md">Home</span></a><a
+        class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] gap-space-xs text-on-surface-variant transition-colors"
+        data-path="menu" href="02b_campus_pre_order_menu.html"><span
+          class="material-symbols-outlined text-[22px]">restaurant_menu</span><span
+          class="font-label-md text-label-md">Menu</span></a><a
+        class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] gap-space-xs text-on-surface-variant transition-colors"
+        data-path="orders" href="02d_digital_token_queue_bypass_status.html"><span
+          class="material-symbols-outlined text-[22px]">receipt_long</span><span
+          class="font-label-md text-label-md">Orders</span></a><a
+        class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] gap-space-xs text-on-surface-variant transition-colors"
+        data-path="profile" href="#"><span class="material-symbols-outlined text-[22px]">account_circle</span><span
+          class="font-label-md text-label-md">Profile</span></a></div>
+  </nav>
+
+  <!-- Branch Switcher Bottom Sheet Modal -->
+  <div id="branch-modal"
+    class="fixed inset-0 z-50 flex flex-col justify-end pointer-events-none transition-opacity duration-300 opacity-0"
+    role="dialog" aria-modal="true" aria-labelledby="branch-modal-title" style="display: none;">
+    <!-- Backdrop Backdrop -->
+    <div id="branch-modal-backdrop"
+      class="fixed inset-0 bg-on-background/60 backdrop-blur-sm pointer-events-auto transition-opacity"></div>
+
+    <!-- Bottom Sheet Card -->
+    <div
+      class="relative z-10 w-full max-w-[480px] mx-auto bg-surface-container-lowest rounded-2xl shadow-xl flex flex-col max-h-[88vh] overflow-hidden pointer-events-auto transition-transform duration-300 transform translate-y-full"
+      id="branch-modal-sheet">
+      <!-- Sheet Handle & Header -->
+      <div class="p-space-md pb-space-xs border-b border-surface-container flex flex-col gap-space-xs relative">
+        <div class="w-10 h-1 bg-surface-variant rounded-full mx-auto mb-1"></div>
+        <div class="flex items-start justify-between gap-space-sm">
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-primary text-[20px]">store</span>
+              <h2 id="branch-modal-title" class="font-headline-sm text-headline-sm text-on-surface font-bold">Select
+                Campus Branch</h2>
+            </div>
+            <p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Choose where you want to pick up or
+              order from</p>
+          </div>
+          <button id="close-branch-modal-btn" aria-label="Close branch switcher"
+            class="w-8 h-8 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center hover:bg-surface-variant active:scale-95 transition-colors"
+            type="button">
+            <span class="material-symbols-outlined text-[18px]">close</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Scrollable Branch Options List -->
+      <div class="p-space-md flex flex-col gap-space-sm overflow-y-auto">
+        <!-- Branch Option 1: Ham Towers (Active) -->
+        <div id="branch-card-ham"
+          class="branch-option-card relative bg-surface-container-low rounded-xl p-space-sm flex flex-col gap-space-xs transition-all shadow-sm ring-2 ring-primary">
+          <div class="flex items-start justify-between gap-space-xs">
+            <div class="flex items-center gap-space-xs flex-wrap">
+              <span class="font-headline-sm text-[16px] text-on-surface font-bold">Foodizo â€¢ Ham Towers</span>
+              <span
+                class="bg-primary text-on-primary font-label-sm text-[10px] px-2 py-0.5 rounded-full font-bold shadow-sm">Active
+                Selection</span>
+              <span
+                class="bg-tertiary-container text-on-tertiary-container font-label-sm text-[10px] px-2 py-0.5 rounded-full font-bold">6-9
+                mins pickup</span>
+            </div>
+            <div class="w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-[16px]">check</span>
+            </div>
+          </div>
+          <p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px] text-primary shrink-0">location_on</span>
+            Ham Towers Mezzanine Suite, Opposite Makerere Main Gate
+          </p>
+          <div
+            class="bg-surface-container-lowest p-space-xs rounded-lg flex flex-col gap-1 text-[11px] font-body-sm text-on-surface-variant">
+            <div class="flex items-center gap-1 text-tertiary font-semibold">
+              <span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
+              Kitchen: 2 Sizzler Tavas Active â€¢ Express Shelves 1 &amp; 2 Open
+            </div>
+            <p class="text-on-surface font-medium"><span class="text-primary font-bold">Specialties:</span> Hot Rolexes,
+              Katogo Bowls, Charcoal Platters</p>
+            <p class="text-on-surface-variant"><span class="font-semibold text-on-surface">Hostel Delivery:</span>
+              Lumumba, Mary Stuart, Africa, Complex, Mitchel &amp; Wandegeya</p>
+          </div>
+          <div class="flex items-center justify-between pt-1">
+            <span class="font-label-sm text-label-sm text-tertiary font-bold flex items-center gap-1">
+              <span class="material-symbols-outlined text-[16px]">verified</span> Ordering here currently
+            </span>
+            <button
+              class="px-space-sm py-1 bg-surface-container text-on-surface rounded-full font-label-sm text-label-sm font-semibold select-branch-btn active:scale-95 transition-transform"
+              data-branch="Ham Towers" type="button">
+              Current
+            </button>
+          </div>
+        </div>
+
+        <!-- Branch Option 2: Obunuzi Cafe YMCA -->
+        <div id="branch-card-ymca"
+          class="branch-option-card relative bg-surface-container-lowest rounded-xl p-space-sm flex flex-col gap-space-xs transition-all shadow-sm ring-1 ring-surface-variant hover:bg-surface-container-low cursor-pointer">
+          <div class="flex items-start justify-between gap-space-xs">
+            <div class="flex items-center gap-space-xs flex-wrap">
+              <span class="font-headline-sm text-[16px] text-on-surface font-bold">Obunuzi Cafe &amp; Restaurant</span>
+              <span
+                class="bg-secondary-fixed text-on-secondary-fixed font-label-sm text-[10px] px-2 py-0.5 rounded-full font-bold">10-12
+                mins prep</span>
+            </div>
+            <div
+              class="w-6 h-6 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center shrink-0 ymca-radio-icon">
+              <span class="w-2 h-2 rounded-full bg-transparent"></span>
+            </div>
+          </div>
+          <p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px] text-secondary shrink-0">location_on</span>
+            YMCA Road, Facing YMCA Comprehensive Institute Main Gate
+          </p>
+          <div
+            class="bg-surface-container-low p-space-xs rounded-lg flex flex-col gap-1 text-[11px] font-body-sm text-on-surface-variant">
+            <div class="flex items-center gap-1 text-tertiary font-semibold">
+              <span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
+              Kitchen: Banana-leaf Luwombo Steam Pots Active â€¢ Fresh Juice Bar
+            </div>
+            <p class="text-on-surface font-medium"><span class="text-secondary font-bold">Specialties:</span> Beef &amp;
+              Chicken Luwombo, Groundnut Sauce, Fresh Cold Passion Juice</p>
+            <p class="text-on-surface-variant"><span class="font-semibold text-on-surface">Hostel Delivery:</span> YMCA
+              Hostels, Sir Apollo Kaggwa Rd, Northern Corridor</p>
+          </div>
+          <div class="flex items-center justify-between pt-1">
+            <span class="font-label-sm text-label-sm text-on-surface-variant">Tap card to switch location</span>
+            <button
+              class="px-space-sm py-1 bg-primary text-on-primary rounded-full font-label-sm text-label-sm font-semibold select-branch-btn active:scale-95 transition-transform"
+              data-branch="Obunuzi (YMCA)" type="button">
+              Switch to Obunuzi
+            </button>
+          </div>
+        </div>
+
+        <!-- Info Notice Pill -->
+        <div
+          class="bg-surface-container-high text-on-surface p-space-sm rounded-lg flex items-center gap-space-xs text-[11px] font-body-sm">
+          <span class="material-symbols-outlined text-primary text-[18px] shrink-0">info</span>
+          <p class="leading-tight">Your cart items and express pickup counter will sync according to branch station
+            availability.</p>
+        </div>
+      </div>
+
+      <!-- Actions Bottom Bar -->
+      <div
+        class="p-space-md pt-0 pb-safe bg-surface-container-lowest border-t border-surface-container flex gap-space-xs mt-space-xs">
+        <button id="keep-branch-btn"
+          class="flex-1 min-h-[46px] bg-surface-container-high text-on-surface rounded-full font-label-md text-label-md font-bold flex items-center justify-center active:bg-surface-variant transition-colors"
+          type="button">
+          Keep Ham Towers
+        </button>
+        <button id="confirm-branch-btn"
+          class="flex-1 min-h-[46px] bg-primary text-on-primary rounded-full font-label-md text-label-md font-bold flex items-center justify-center gap-1 active:bg-primary-container active:scale-95 transition-all shadow-md"
+          type="button">
+          <span class="">Confirm &amp; Explore</span>
+          <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Branch Switcher Interactive Modal Script -->
+  <script>
+    (function () {
+      const triggerBtn = document.getElementById('branch-switcher-btn');
+      const modal = document.getElementById('branch-modal');
+      const sheet = document.getElementById('branch-modal-sheet');
+      const backdrop = document.getElementById('branch-modal-backdrop');
+      const closeBtn = document.getElementById('close-branch-modal-btn');
+      const keepBtn = document.getElementById('keep-branch-btn');
+      const confirmBtn = document.getElementById('confirm-branch-btn');
+      const branchLabel = document.getElementById('current-branch-label');
+      const branchCards = document.querySelectorAll('.branch-option-card');
+      const branchActionBtns = document.querySelectorAll('.select-branch-btn');
+
+      let selectedBranch = 'Ham Towers';
+
+      function openModal() {
+        if (!modal) return;
+        modal.style.display = 'flex';
+        requestAnimationFrame(() => {
+          modal.classList.remove('opacity-0', 'pointer-events-none');
+          modal.classList.add('opacity-100');
+          sheet.classList.remove('translate-y-full');
+          sheet.classList.add('translate-y-0');
+        });
+        triggerBtn.setAttribute('aria-expanded', 'true');
+      }
+
+      function closeModal() {
+        if (!modal) return;
+        modal.classList.remove('opacity-100');
+        modal.classList.add('opacity-0', 'pointer-events-none');
+        sheet.classList.remove('translate-y-0');
+        sheet.classList.add('translate-y-full');
+        setTimeout(() => {
+          modal.style.display = 'none';
+        }, 300);
+        triggerBtn.setAttribute('aria-expanded', 'false');
+      }
+
+      if (triggerBtn) triggerBtn.addEventListener('click', openModal);
+      if (backdrop) backdrop.addEventListener('click', closeModal);
+      if (closeBtn) closeBtn.addEventListener('click', closeModal);
+      if (keepBtn) keepBtn.addEventListener('click', closeModal);
+
+      function selectBranch(name) {
+        selectedBranch = name;
+        if (branchLabel) {
+          branchLabel.textContent = name === 'Ham Towers' ? 'Ham Towers' : 'Obunuzi YMCA';
+        }
+        const hamCard = document.getElementById('branch-card-ham');
+        const ymcaCard = document.getElementById('branch-card-ymca');
+
+        if (name === 'Ham Towers') {
+          hamCard.classList.add('ring-2', 'ring-primary', 'bg-surface-container-low');
+          hamCard.classList.remove('ring-1', 'ring-surface-variant');
+          ymcaCard.classList.remove('ring-2', 'ring-primary', 'bg-surface-container-low');
+          ymcaCard.classList.add('ring-1', 'ring-surface-variant');
+        } else {
+          ymcaCard.classList.add('ring-2', 'ring-primary', 'bg-surface-container-low');
+          ymcaCard.classList.remove('ring-1', 'ring-surface-variant');
+          hamCard.classList.remove('ring-2', 'ring-primary', 'bg-surface-container-low');
+          hamCard.classList.add('ring-1', 'ring-surface-variant');
+        }
+      }
+
+      branchActionBtns.forEach(btn => {
+        btn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          const b = this.getAttribute('data-branch');
+          selectBranch(b);
+          closeModal();
+        });
+      });
+
+      const ymcaCard = document.getElementById('branch-card-ymca');
+      if (ymcaCard) {
+        ymcaCard.addEventListener('click', () => {
+          selectBranch('Obunuzi (YMCA)');
+        });
+      }
+      const hamCard = document.getElementById('branch-card-ham');
+      if (hamCard) {
+        hamCard.addEventListener('click', () => {
+          selectBranch('Ham Towers');
+        });
+      }
+
+      if (confirmBtn) {
+        confirmBtn.addEventListener('click', closeModal);
+      }
+    })();
+  </script>
+</body>
+
+</html>
