@@ -1,0 +1,30 @@
+{
+  "name": "kampala-fast-casual-dining-suite",
+  "version": "1.0.0",
+  "description": "Full-stack fast-casual dining and kitchen display system for Foodizo (Ham Towers) & Obunuzi Restaurant (Opp. YMCA, Wandegeya, Kampala). Currency: UGX.",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "serve": "node server.js",
+    "dev": "node server.js",
+    "backend": "npm --prefix backend run dev",
+    "backend:start": "npm --prefix backend start",
+    "backend:build": "npm --prefix backend run build",
+    "test": "npm --prefix backend test"
+  },
+  "keywords": [
+    "kampala",
+    "wandegeya",
+    "foodizo",
+    "obunuzi",
+    "pos",
+    "kds",
+    "ugx",
+    "momo",
+    "makerere"
+  ],
+  "author": "Chol John Arok",
+  "license": "ISC"
+}
+

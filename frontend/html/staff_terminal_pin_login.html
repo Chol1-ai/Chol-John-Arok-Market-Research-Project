@@ -42,7 +42,7 @@
     }
   </style>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="../css/01_staff_terminal_pin_login.css"/>
+  <link rel="stylesheet" href="../css/staff_terminal_pin_login.css"/>
   <script
     id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "secondary-container": "#fea619", "on-primary-container": "#fff6f5", "inverse-primary": "#ffb4ab", "on-error": "#ffffff", "on-surface": "#141b2b", "inverse-surface": "#293040", "tertiary-fixed": "#7ffc97", "surface-container-high": "#e1e8fd", "on-primary-fixed": "#410002", "on-error-container": "#93000a", "tertiary": "#00682b", "primary-container": "#dc2626", "error": "#ba1a1a", "secondary-fixed-dim": "#ffb95f", "surface-container-highest": "#dce2f7", "background": "#f9f9ff", "on-secondary": "#ffffff", "surface-variant": "#dce2f7", "surface-container-lowest": "#ffffff", "on-background": "#141b2b", "error-container": "#ffdad6", "surface-container-low": "#f1f3ff", "secondary-fixed": "#ffddb8", "on-tertiary-fixed-variant": "#005320", "primary": "#b70011", "primary-fixed": "#ffdad6", "on-primary": "#ffffff", "surface": "#f9f9ff", "on-secondary-fixed-variant": "#653e00", "surface-dim": "#d3daef", "on-tertiary": "#ffffff", "outline-variant": "#e6bdb8", "on-tertiary-fixed": "#002109", "tertiary-container": "#008438", "surface-bright": "#f9f9ff", "inverse-on-surface": "#edf0ff", "surface-container": "#e9edff", "primary-fixed-dim": "#ffb4ab", "on-primary-fixed-variant": "#93000b", "on-surface-variant": "#5c403c", "on-secondary-container": "#684000", "outline": "#916f6b", "surface-tint": "#bf0715", "secondary": "#855300", "on-secondary-fixed": "#2a1700", "on-tertiary-container": "#e7ffe4", "tertiary-fixed-dim": "#62df7d" }, borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" }, spacing: { "space-lg": "1.5rem", "margin-lg": "1.5rem", "space-sm": "0.5rem", "space-xs": "0.25rem", margin: "1rem", "gutter-sm": "0.75rem", gutter: "1rem", "margin-sm": "0.75rem", "space-md": "1rem", "space-xl": "2rem" }, fontFamily: { "body-lg": ["Plus Jakarta Sans"], "headline-xl": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "headline-xl-mobile": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "currency-display": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"] }, fontSize: { "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }], "headline-xl": ["36px", { lineHeight: "44px", letterSpacing: "-0.02em", fontWeight: "800" }], "headline-lg": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "700" }], "headline-xl-mobile": ["28px", { lineHeight: "34px", letterSpacing: "-0.02em", fontWeight: "800" }], "label-lg": ["14px", { lineHeight: "18px", letterSpacing: "0.01em", fontWeight: "700" }], "body-sm": ["12px", { lineHeight: "16px", fontWeight: "400" }], "label-md": ["12px", { lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "700" }], "currency-display": ["22px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "800" }], "headline-sm": ["18px", { lineHeight: "24px", fontWeight: "600" }], "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }], "headline-md": ["20px", { lineHeight: "26px", fontWeight: "700" }], "label-sm": ["11px", { lineHeight: "14px", letterSpacing: "0.03em", fontWeight: "600" }] } } } };</script>
 </head>
@@ -69,14 +69,14 @@
       <nav class="hidden lg:flex items-center gap-space-xs p-space-xs rounded-full bg-surface-container-low"
         data-active-classes="bg-primary-container text-on-primary-container font-label-lg"><a
           class="px-space-md py-space-xs rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors"
-          data-path="staff-login" href="01_staff_terminal_pin_login.html">Service Login</a><a
+          data-path="staff-login" href="staff_terminal_pin_login.html">Service Login</a><a
           class="px-space-md py-space-xs rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors"
-          data-path="kitchen-display-login" href="04_kitchen_display_system_kds_active_stations.html">Kitchen
+          data-path="kitchen-display-login" href="kitchen_display_system_kds_active_stations.html">Kitchen
           Access</a><a aria-current="page"
           class="px-space-md py-space-xs rounded-full transition-colors bg-primary-container text-on-primary-container font-label-lg"
-          data-path="waitress-pos-login" href="03_waitress_pos_table_floor_order_pad.html">Waitress Floor</a><a
+          data-path="waitress-pos-login" href="waitress_pos_table_floor_order_pad.html">Waitress Floor</a><a
           class="px-space-md py-space-xs rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors"
-          data-path="manager-auth" href="06_manager_admin_eod_surplus_audit_digest.html">Duty Manager</a></nav>
+          data-path="manager-auth" href="manager_admin_eod_surplus_audit_digest.html">Duty Manager</a></nav>
       <div class="flex items-center gap-space-sm"><a
           class="flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-error-container text-on-error-container hover:bg-error hover:text-on-error transition-colors"
           data-path="emergency-dispatch" href="#"><span
@@ -574,7 +574,7 @@
                 feedbackEl.className = 'font-label-sm text-label-sm text-tertiary font-bold h-4';
                 unlockBtn.classList.add('opacity-75');
                 setTimeout(() => {
-                  feedbackEl.textContent = 'Floor Table Matrix Unlocked. Opening Floor View...'; window.location.href = '03_waitress_pos_table_floor_order_pad.html';
+                  feedbackEl.textContent = 'Floor Table Matrix Unlocked. Opening Floor View...'; window.location.href = 'waitress_pos_table_floor_order_pad.html';
                   unlockBtn.classList.remove('opacity-75');
                 }, 500);
               } else {
