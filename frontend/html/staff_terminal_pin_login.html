@@ -114,7 +114,7 @@
               <span class="material-symbols-outlined text-[16px] text-tertiary">print</span>
               ESC/POS Receipt Kitchen Bus OK
             </span>
-            <span class="text-outline-variant font-bold hidden sm:inline">â€¢</span>
+            <span class="text-outline-variant font-bold hidden sm:inline">•</span>
             <span class="flex items-center gap-space-xs text-primary font-bold">
               <span class="material-symbols-outlined text-[16px]">lock</span>
               Drawer Lock Engaged
@@ -169,7 +169,7 @@
             <!-- Shift Staff Card Grid -->
             <div class="flex flex-col gap-space-xs">
               <div class="flex items-center justify-between px-space-xs">
-                <span class="font-label-lg text-label-lg text-on-surface">Floor Roster â€¢ On Duty (4)</span>
+                <span class="font-label-lg text-label-lg text-on-surface">Floor Roster • On Duty (4)</span>
                 <span class="font-label-sm text-label-sm text-primary">Tap staff profile to enter PIN</span>
               </div>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm" id="staff-grid">
@@ -194,7 +194,7 @@
                         <span
                           class="px-space-xs py-0.5 rounded bg-surface-container font-label-sm text-label-sm text-on-surface-variant">#104</span>
                       </div>
-                      <p class="font-body-sm text-body-sm text-on-surface-variant">Waitress â€¢ Zone A (T1-T8)</p>
+                      <p class="font-body-sm text-body-sm text-on-surface-variant">Waitress • Zone A (T1-T8)</p>
                       <p class="font-label-sm text-label-sm text-tertiary font-semibold">Active Orders: 3 open</p>
                     </div>
                   </div>
@@ -224,7 +224,7 @@
                         <span
                           class="px-space-xs py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-bold">#101</span>
                       </div>
-                      <p class="font-body-sm text-body-sm text-on-surface-variant">Head Waiter â€¢ Captain</p>
+                      <p class="font-body-sm text-body-sm text-on-surface-variant">Head Waiter • Captain</p>
                       <p class="font-label-sm text-label-sm text-on-surface-variant font-mono">+256 760 723280</p>
                     </div>
                   </div>
@@ -254,7 +254,7 @@
                         <span
                           class="px-space-xs py-0.5 rounded bg-surface-container font-label-sm text-label-sm text-on-surface-variant">#106</span>
                       </div>
-                      <p class="font-body-sm text-body-sm text-on-surface-variant">Waitress â€¢ Terrace Deck</p>
+                      <p class="font-body-sm text-body-sm text-on-surface-variant">Waitress • Terrace Deck</p>
                       <p class="font-label-sm text-label-sm text-tertiary font-semibold">Active Orders: 1 open</p>
                     </div>
                   </div>
@@ -284,7 +284,7 @@
                         <span
                           class="px-space-xs py-0.5 rounded bg-primary-container text-on-primary-container font-label-sm text-label-sm font-bold">#102</span>
                       </div>
-                      <p class="font-body-sm text-body-sm text-on-surface-variant">Shift Lead â€¢ Overrides</p>
+                      <p class="font-body-sm text-body-sm text-on-surface-variant">Shift Lead • Overrides</p>
                       <p class="font-label-sm text-label-sm text-primary font-semibold">Supervisor Auth</p>
                     </div>
                   </div>
@@ -357,7 +357,7 @@
                   <div class="min-w-0">
                     <p class="font-label-lg text-label-lg text-on-surface truncate" id="active-user-name">Prossy N.</p>
                     <p class="font-body-sm text-body-sm text-on-surface-variant truncate" id="active-user-meta">Waitress
-                      #104 â€¢ Table Zone A</p>
+                      #104 • Table Zone A</p>
                   </div>
                 </div>
                 <span
@@ -558,7 +558,7 @@
               const zone = card.getAttribute('data-zone');
 
               activeName.textContent = name;
-              activeMeta.textContent = role + ' #' + id + ' â€¢ ' + zone;
+              activeMeta.textContent = role + ' #' + id + ' • ' + zone;
               activeInitials.textContent = name.split(' ').map(n => n[0]).join('').substring(0, 2);
 
               pinCode = '';
@@ -606,11 +606,11 @@
     <div class="max-w-7xl mx-auto px-margin flex flex-col sm:flex-row items-center justify-between gap-space-sm">
       <div class="flex items-center gap-space-sm text-on-surface-variant font-body-sm text-body-sm"><span
           class="font-label-md text-label-md text-on-surface">Wandegeya District Node
-          #04</span><span>â€¢</span><span>Offline Cache Primed</span><span>â€¢</span><span>Obunuzi Hall POS Terminals</span>
+          #04</span><span>•</span><span>Offline Cache Primed</span><span>•</span><span>Obunuzi Hall POS Terminals</span>
       </div>
       <div class="flex items-center gap-space-md font-label-sm text-label-sm text-on-surface-variant"><span
           class="flex items-center gap-space-xs"><span
-            class="material-symbols-outlined text-[14px] text-tertiary">wifi</span>Local Peer Connected</span><span>Â©
+            class="material-symbols-outlined text-[14px] text-tertiary">wifi</span>Local Peer Connected</span><span>©
           2024 Foodizo &amp; Obunuzi</span></div>
     </div>
   </footer>

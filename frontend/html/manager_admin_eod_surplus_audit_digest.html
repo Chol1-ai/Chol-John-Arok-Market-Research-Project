@@ -1,575 +1,946 @@
-<!DOCTYPE html><html lang="en"><head><title>Manager Admin &amp; EOD Surplus Audit Digest | Foodizo &amp; Obunuzi</title><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_standard" name="shell-type"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"surface":"#f9f9ff","primary-container":"#dc2626","tertiary-fixed-dim":"#62df7d","on-primary-fixed":"#410002","on-error":"#ffffff","secondary":"#855300","surface-dim":"#d3daef","on-primary-fixed-variant":"#93000b","on-tertiary-fixed-variant":"#005320","inverse-primary":"#ffb4ab","on-background":"#141b2b","on-surface":"#141b2b","primary-fixed":"#ffdad6","primary-fixed-dim":"#ffb4ab","on-tertiary-fixed":"#002109","on-error-container":"#93000a","tertiary-container":"#008438","background":"#f9f9ff","error":"#ba1a1a","surface-tint":"#bf0715","surface-container-high":"#e1e8fd","on-secondary":"#ffffff","on-tertiary":"#ffffff","tertiary-fixed":"#7ffc97","outline-variant":"#e6bdb8","primary":"#b70011","on-primary-container":"#fff6f5","surface-container":"#e9edff","on-secondary-fixed-variant":"#653e00","surface-bright":"#f9f9ff","on-primary":"#ffffff","outline":"#916f6b","surface-container-lowest":"#ffffff","inverse-surface":"#293040","secondary-fixed":"#ffddb8","on-tertiary-container":"#e7ffe4","on-secondary-container":"#684000","error-container":"#ffdad6","secondary-container":"#fea619","surface-container-low":"#f1f3ff","inverse-on-surface":"#edf0ff","on-secondary-fixed":"#2a1700","surface-container-highest":"#dce2f7","on-surface-variant":"#5c403c","tertiary":"#00682b","secondary-fixed-dim":"#ffb95f","surface-variant":"#dce2f7"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"space-sm":"0.5rem","gutter-sm":"0.75rem","margin-sm":"0.75rem","gutter":"1rem","space-md":"1rem","space-xs":"0.25rem","margin-lg":"1.5rem","space-xl":"2rem","space-lg":"1.5rem","margin":"1rem"},fontFamily:{"headline-sm":["Plus Jakarta Sans"],"body-sm":["Plus Jakarta Sans"],"label-md":["Plus Jakarta Sans"],"label-sm":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"headline-xl-mobile":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"label-lg":["Plus Jakarta Sans"],"body-md":["Plus Jakarta Sans"],"body-lg":["Plus Jakarta Sans"],"headline-xl":["Plus Jakarta Sans"],"currency-display":["Plus Jakarta Sans"]},fontSize:{"headline-sm":["18px",{"lineHeight":"24px","fontWeight":"600"}],"body-sm":["12px",{"lineHeight":"16px","fontWeight":"400"}],"label-md":["12px",{"lineHeight":"16px","letterSpacing":"0.02em","fontWeight":"700"}],"label-sm":["11px",{"lineHeight":"14px","letterSpacing":"0.03em","fontWeight":"600"}],"headline-md":["20px",{"lineHeight":"26px","fontWeight":"700"}],"headline-xl-mobile":["28px",{"lineHeight":"34px","letterSpacing":"-0.02em","fontWeight":"800"}],"headline-lg":["24px",{"lineHeight":"32px","letterSpacing":"-0.01em","fontWeight":"700"}],"label-lg":["14px",{"lineHeight":"18px","letterSpacing":"0.01em","fontWeight":"700"}],"body-md":["14px",{"lineHeight":"20px","fontWeight":"400"}],"body-lg":["16px",{"lineHeight":"24px","fontWeight":"400"}],"headline-xl":["36px",{"lineHeight":"44px","letterSpacing":"-0.02em","fontWeight":"800"}],"currency-display":["22px",{"lineHeight":"28px","letterSpacing":"-0.01em","fontWeight":"800"}]}}}};</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><header class="fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 w-full px-gutter flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-primary text-[24px]">local_dining</span><span class="font-headline-sm text-headline-sm text-primary tracking-tight">KLA RESTAURANT SUITE</span></div><div class="hidden sm:flex items-center bg-surface-container-high rounded-full p-space-xs"><button class="px-space-sm py-space-xs rounded-full bg-surface-container-lowest text-on-surface font-label-sm text-label-sm shadow-[0_1px_4px_rgba(0,0,0,0.04)]" type="button">Foodizo (Ham Towers)</button><button class="px-space-sm py-space-xs rounded-full text-on-surface-variant font-label-sm text-label-sm hover:text-on-surface" type="button">Obunuzi (Opp. YMCA)</button></div></div><nav class="hidden lg:flex items-center gap-space-xs" data-active-classes="bg-primary-container text-on-primary-container font-label-lg text-label-lg rounded-full px-space-md py-space-xs"><a class="px-space-md py-space-xs rounded-full text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="waitress-pos" href="waitress_pos_table_floor_order_pad.html">Waitress POS</a><a class="px-space-md py-space-xs rounded-full text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="kitchen-kds" href="kitchen_display_system_kds_active_stations.html">Kitchen KDS</a><a class="px-space-md py-space-xs rounded-full text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="dispatch-queue" href="foh_boda_dispatch_delivery_queue.html">Dispatch Queue</a><a aria-current="page" class="transition-colors bg-primary-container text-on-primary-container font-label-lg text-label-lg rounded-full px-space-md py-space-xs" data-path="manager-admin-and-eod" href="manager_admin_eod_surplus_audit_digest.html">Manager Admin &amp; EOD</a></nav><div class="flex items-center gap-space-sm"><div class="flex items-center gap-space-xs bg-tertiary-container/10 px-space-sm py-space-xs rounded-full"><span class="w-2 h-2 rounded-full bg-tertiary-container animate-pulse"></span><span class="font-label-sm text-label-sm text-tertiary font-bold uppercase tracking-wider">LAN Edge</span></div><div class="flex items-center gap-space-xs bg-surface-container px-space-sm py-space-xs rounded-full"><span class="material-symbols-outlined text-[16px] text-on-surface-variant">pin</span><span class="font-label-sm text-label-sm text-on-surface">PIN #4290</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-16 bg-surface"><div class="flex flex-col w-full">
-<div class="w-full px-gutter py-space-md sm:py-space-lg flex flex-col gap-space-lg max-w-7xl mx-auto">
-<!-- Header Context Strip -->
-<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md bg-surface-container-low p-space-md sm:p-space-lg rounded-xl shadow-sm">
-<div class="flex flex-col gap-space-xs">
-<div class="flex items-center gap-space-sm flex-wrap">
-<span class="bg-primary/10 text-primary font-label-sm text-label-sm px-space-sm py-0.5 rounded-full uppercase tracking-wider font-bold">Foodizo Ham Towers</span>
-<span class="text-on-surface-variant font-label-sm text-label-sm">•</span>
-<span class="text-on-surface-variant font-label-sm text-label-sm">Shift ID: #HT-20250518-EOD</span>
-<span class="bg-tertiary-container/15 text-tertiary font-label-sm text-label-sm px-space-sm py-0.5 rounded-full flex items-center gap-1 font-bold">
-<span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span>
-            Edge Node Synced
-          </span>
-</div>
-<div class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Manager EOD &amp; Kitchen Inventory Audit</div>
-<p class="font-body-md text-body-md text-on-surface-variant">Reconciling Makerere corridor evening flow, surplus yield clearance, and automated 21:30 EAT investor digests.</p>
-</div>
-<div class="flex items-center gap-space-sm flex-wrap">
-<button class="px-space-md py-space-sm bg-surface-container-lowest text-on-surface font-label-lg text-label-lg rounded-full shadow-sm hover:bg-surface-container transition-all flex items-center gap-space-xs active:translate-y-px" id="exportCsvBtn" type="button">
-<span class="material-symbols-outlined text-[18px]">download</span>
-<span class="">Export EOD CSV</span>
-</button>
-<button class="px-space-lg py-space-sm bg-primary-container text-on-primary-container font-label-lg text-label-lg rounded-full shadow-md hover:bg-primary transition-all flex items-center gap-space-xs active:translate-y-px" id="sendDigestNowBtn" type="button">
-<span class="material-symbols-outlined text-[18px]">send</span>
-<span class="">Force Send 21:30 Digest Now</span>
-</button>
-</div>
-</div>
-<!-- Alert / Toast Banner for Interactive Feedback -->
-<div class="hidden w-full bg-tertiary-container text-on-tertiary-container p-space-md rounded-xl shadow-md flex items-center justify-between transition-all" id="actionToast">
-<div class="flex items-center gap-space-sm">
-<span class="material-symbols-outlined text-[20px]">check_circle</span>
-<span class="font-label-lg text-label-lg" id="toastMsg">Nightly digest preview pushed to Cyrus &amp; Mubiru Mahad (WhatsApp &amp; SMS queues).</span>
-</div>
-<button class="text-on-tertiary-container hover:opacity-80" onclick="document.getElementById('actionToast').classList.add('hidden')">
-<span class="material-symbols-outlined text-[18px]">close</span>
-</button>
-</div>
-<!-- Top KPIs Grid -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-space-md">
-<!-- KPI 1: Gross Rev -->
-<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
-<div class="flex items-center justify-between">
-<span class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider font-bold">Gross Revenue</span>
-<span class="material-symbols-outlined text-primary text-[22px]">payments</span>
-</div>
-<div class="my-space-xs">
-<div class="font-currency-display text-currency-display text-on-surface tracking-tight">UGX 3,420,000</div>
-<div class="flex items-center gap-1 font-body-sm text-body-sm text-tertiary mt-0.5">
-<span class="material-symbols-outlined text-[16px]">arrow_upward</span>
-<span class="font-bold">+18.4%</span>
-<span class="text-on-surface-variant">vs last Sun (168 chits)</span>
-</div>
-</div>
-<div class="h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
-<div class="h-full bg-primary-container rounded-full" style="width: 86%;"></div>
-</div>
-</div>
-<!-- KPI 2: MoMo Breakdown -->
-<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
-<div class="flex items-center justify-between">
-<span class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider font-bold">MoMo Aggregate</span>
-<div class="flex items-center gap-1">
-<span class="w-2.5 h-2.5 rounded-full bg-secondary-container" title="MTN MoMo"></span>
-<span class="w-2.5 h-2.5 rounded-full bg-primary" title="Airtel Money"></span>
-</div>
-</div>
-<div class="my-space-xs">
-<div class="font-currency-display text-currency-display text-on-surface tracking-tight">UGX 2,180,000</div>
-<div class="text-on-surface-variant font-body-sm text-body-sm">MTN: 1.42M • Airtel: 760K</div>
-</div>
-<div class="flex items-center justify-between font-label-sm text-label-sm text-on-surface-variant">
-<span class="">63.7% of Volume</span>
-<span class="text-tertiary font-bold">Auto-Settled</span>
-</div>
-</div>
-<!-- KPI 3: Cash Drawer -->
-<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
-<div class="flex items-center justify-between">
-<span class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider font-bold">Cash Drawer</span>
-<span class="material-symbols-outlined text-secondary text-[22px]">point_of_sale</span>
-</div>
-<div class="my-space-xs">
-<div class="font-currency-display text-currency-display text-on-surface tracking-tight">UGX 1,240,000</div>
-<div class="text-on-surface-variant font-body-sm text-body-sm">Counted 80 chits physical notes</div>
-</div>
-<div class="flex items-center justify-between font-label-sm text-label-sm text-on-surface-variant">
-<span class="">Safe Bag: #BAG-992</span>
-<span class="text-on-surface font-bold">Verified</span>
-</div>
-</div>
-<!-- KPI 4: Boda Advances -->
-<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
-<div class="flex items-center justify-between">
-<span class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider font-bold">Boda Fuel Advances</span>
-<span class="material-symbols-outlined text-on-surface-variant text-[22px]">two_wheeler</span>
-</div>
-<div class="my-space-xs">
-<div class="font-currency-display text-currency-display text-on-surface tracking-tight">UGX 42,500</div>
-<div class="text-on-surface-variant font-body-sm text-body-sm">4 Stage Runners Reconciled</div>
-</div>
-<div class="flex items-center justify-between font-label-sm text-label-sm text-tertiary font-bold">
-<span class="">Fuel Receipts Logged</span>
-<span class="material-symbols-outlined text-[16px]">receipt_long</span>
-</div>
-</div>
-<!-- KPI 5: Cash Variance -->
-<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
-<div class="flex items-center justify-between">
-<span class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider font-bold">Audited Variance</span>
-<span class="material-symbols-outlined text-tertiary text-[22px]">verified</span>
-</div>
-<div class="my-space-xs">
-<div class="font-currency-display text-currency-display text-tertiary tracking-tight">+UGX 0</div>
-<div class="text-tertiary font-body-sm text-body-sm font-bold">Zero Discrepancy (100% Balanced)</div>
-</div>
-<div class="flex items-center justify-between font-label-sm text-label-sm text-on-surface-variant">
-<span class="">Shift Close PIN: #4290</span>
-<span class="text-tertiary font-bold">Passed</span>
-</div>
-</div>
-</div>
-<!-- MAIN GRID: Left (Section 1 Inventory & Section 2 Surplus), Right (Section 3 Nightly Owner Digest) -->
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
-<!-- LEFT COLUMN: Inventory & Surplus (7 cols) -->
-<div class="lg:col-span-7 flex flex-col gap-space-lg">
-<!-- SECTION 1: Recipe BOM & Ingredient Stocks -->
-<div class="bg-surface-container-lowest p-space-md sm:p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
-<div class="flex items-center justify-between flex-wrap gap-space-sm">
-<div class="flex items-center gap-space-sm">
-<span class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center">
-<span class="material-symbols-outlined text-[20px]">inventory_2</span>
-</span>
-<div>
-<h2 class="font-headline-sm text-headline-sm text-on-surface">Kitchen Recipe BOM &amp; Live Stock Track</h2>
-<p class="font-body-sm text-body-sm text-on-surface-variant">Automated depletion ledger based on 168 tickets fulfilled today</p>
-</div>
-</div>
-<span role="status" class="px-space-sm py-1 bg-error-container/20 border border-error-container rounded-full text-error font-label-sm text-label-sm font-bold flex items-center gap-space-xs animate-pulse"><span class="material-symbols-outlined text-[16px]">warning</span><span class="">🚨 2 Low-Stock Alerts (Supplier Action Required)</span></span><span class="font-label-sm text-label-sm bg-surface-container px-space-sm py-0.5 rounded-full text-on-surface">Updated 21:12 EAT</span>
-</div>
-<!-- Stock Items Bento Table -->
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm">
-<!-- Item 1: Cooking Oil (CRITICAL LOW) -->
-<div class="p-space-md bg-error-container/20 rounded-lg flex flex-col justify-between gap-space-xs">
-<div class="flex items-start justify-between">
-<div>
-<div class="font-label-lg text-label-lg text-on-surface font-bold">Golden Fry Cooking Oil</div>
-<div class="font-body-sm text-body-sm text-on-surface-variant">Deep Fryer &amp; Sauce base</div>
-</div>
-<span class="bg-error text-on-error font-label-sm text-label-sm px-space-xs py-0.5 rounded uppercase font-bold flex items-center gap-1">
-<span class="material-symbols-outlined text-[14px]">warning</span> Low
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Manager Admin &amp; EOD Surplus Audit Digest | Foodizo &amp; Obunuzi</title>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <meta content="web_standard" name="shell-type">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap"
+    rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet">
+  <style>
+    @layer base {
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        overscroll-behavior: none;
+      }
+
+      main>:first-child {
+        margin-top: 0 !important;
+      }
+
+      main>:last-child {
+        margin-bottom: 0 !important;
+      }
+    }
+
+    ::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script
+    id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "surface": "#f9f9ff", "primary-container": "#dc2626", "tertiary-fixed-dim": "#62df7d", "on-primary-fixed": "#410002", "on-error": "#ffffff", "secondary": "#855300", "surface-dim": "#d3daef", "on-primary-fixed-variant": "#93000b", "on-tertiary-fixed-variant": "#005320", "inverse-primary": "#ffb4ab", "on-background": "#141b2b", "on-surface": "#141b2b", "primary-fixed": "#ffdad6", "primary-fixed-dim": "#ffb4ab", "on-tertiary-fixed": "#002109", "on-error-container": "#93000a", "tertiary-container": "#008438", "background": "#f9f9ff", "error": "#ba1a1a", "surface-tint": "#bf0715", "surface-container-high": "#e1e8fd", "on-secondary": "#ffffff", "on-tertiary": "#ffffff", "tertiary-fixed": "#7ffc97", "outline-variant": "#e6bdb8", "primary": "#b70011", "on-primary-container": "#fff6f5", "surface-container": "#e9edff", "on-secondary-fixed-variant": "#653e00", "surface-bright": "#f9f9ff", "on-primary": "#ffffff", "outline": "#916f6b", "surface-container-lowest": "#ffffff", "inverse-surface": "#293040", "secondary-fixed": "#ffddb8", "on-tertiary-container": "#e7ffe4", "on-secondary-container": "#684000", "error-container": "#ffdad6", "secondary-container": "#fea619", "surface-container-low": "#f1f3ff", "inverse-on-surface": "#edf0ff", "on-secondary-fixed": "#2a1700", "surface-container-highest": "#dce2f7", "on-surface-variant": "#5c403c", "tertiary": "#00682b", "secondary-fixed-dim": "#ffb95f", "surface-variant": "#dce2f7" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "space-sm": "0.5rem", "gutter-sm": "0.75rem", "margin-sm": "0.75rem", "gutter": "1rem", "space-md": "1rem", "space-xs": "0.25rem", "margin-lg": "1.5rem", "space-xl": "2rem", "space-lg": "1.5rem", "margin": "1rem" }, fontFamily: { "headline-sm": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "headline-xl-mobile": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "headline-xl": ["Plus Jakarta Sans"], "currency-display": ["Plus Jakarta Sans"] }, fontSize: { "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }], "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }], "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "700" }], "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.03em", "fontWeight": "600" }], "headline-md": ["20px", { "lineHeight": "26px", "fontWeight": "700" }], "headline-xl-mobile": ["28px", { "lineHeight": "34px", "letterSpacing": "-0.02em", "fontWeight": "800" }], "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }], "label-lg": ["14px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "700" }], "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "headline-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "800" }], "currency-display": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "800" }] } } } };</script>
+</head>
+
+<body class="bg-surface font-body-md text-on-surface antialiased">
+  <header class="fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+    <div class="h-16 w-full px-gutter flex items-center justify-between gap-space-md">
+      <div class="flex items-center gap-space-md">
+        <div class="flex items-center gap-space-xs"><span
+            class="material-symbols-outlined text-primary text-[24px]">local_dining</span><span
+            class="font-headline-sm text-headline-sm text-primary tracking-tight">KLA RESTAURANT SUITE</span></div>
+        <div class="hidden sm:flex items-center bg-surface-container-high rounded-full p-space-xs"><button
+            class="px-space-sm py-space-xs rounded-full bg-surface-container-lowest text-on-surface font-label-sm text-label-sm shadow-[0_1px_4px_rgba(0,0,0,0.04)]"
+            type="button">Foodizo (Ham Towers)</button><button
+            class="px-space-sm py-space-xs rounded-full text-on-surface-variant font-label-sm text-label-sm hover:text-on-surface"
+            type="button">Obunuzi (Opp. YMCA)</button></div>
+      </div>
+      <nav class="hidden lg:flex items-center gap-space-xs"
+        data-active-classes="bg-primary-container text-on-primary-container font-label-lg text-label-lg rounded-full px-space-md py-space-xs">
+        <a class="px-space-md py-space-xs rounded-full text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high hover:text-on-surface transition-colors"
+          data-path="waitress-pos" href="waitress_pos_table_floor_order_pad.html">Waitress POS</a><a
+          class="px-space-md py-space-xs rounded-full text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high hover:text-on-surface transition-colors"
+          data-path="kitchen-kds" href="kitchen_display_system_kds_active_stations.html">Kitchen KDS</a><a
+          class="px-space-md py-space-xs rounded-full text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high hover:text-on-surface transition-colors"
+          data-path="dispatch-queue" href="foh_boda_dispatch_delivery_queue.html">Dispatch Queue</a><a
+          aria-current="page"
+          class="transition-colors bg-primary-container text-on-primary-container font-label-lg text-label-lg rounded-full px-space-md py-space-xs"
+          data-path="manager-admin-and-eod" href="manager_admin_eod_surplus_audit_digest.html">Manager Admin &amp;
+          EOD</a>
+      </nav>
+      <div class="flex items-center gap-space-sm">
+        <div class="flex items-center gap-space-xs bg-tertiary-container/10 px-space-sm py-space-xs rounded-full"><span
+            class="w-2 h-2 rounded-full bg-tertiary-container animate-pulse"></span><span
+            class="font-label-sm text-label-sm text-tertiary font-bold uppercase tracking-wider">LAN Edge</span></div>
+        <div class="flex items-center gap-space-xs bg-surface-container px-space-sm py-space-xs rounded-full"><span
+            class="material-symbols-outlined text-[16px] text-on-surface-variant">pin</span><span
+            class="font-label-sm text-label-sm text-on-surface">PIN #4290</span></div>
+        <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span
+            class="material-symbols-outlined text-on-primary text-[18px]">person</span></div>
+      </div>
+    </div>
+  </header>
+  <main class="w-full pt-16 bg-surface">
+    <div class="flex flex-col w-full">
+      <div class="w-full px-gutter py-space-md sm:py-space-lg flex flex-col gap-space-lg max-w-7xl mx-auto">
+        <!-- Header Context Strip -->
+        <div
+          class="flex flex-col md:flex-row md:items-end justify-between gap-space-md bg-surface-container-low p-space-md sm:p-space-lg rounded-xl shadow-sm">
+          <div class="flex flex-col gap-space-xs">
+            <div class="flex items-center gap-space-sm flex-wrap">
+              <span
+                class="bg-primary/10 text-primary font-label-sm text-label-sm px-space-sm py-0.5 rounded-full uppercase tracking-wider font-bold">Foodizo
+                Ham Towers</span>
+              <span class="text-on-surface-variant font-label-sm text-label-sm">•</span>
+              <span class="text-on-surface-variant font-label-sm text-label-sm">Shift ID: #HT-20250518-EOD</span>
+              <span
+                class="bg-tertiary-container/15 text-tertiary font-label-sm text-label-sm px-space-sm py-0.5 rounded-full flex items-center gap-1 font-bold">
+                <span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span>
+                Edge Node Synced
+              </span>
+            </div>
+            <div class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Manager EOD &amp; Kitchen
+              Inventory Audit</div>
+            <p class="font-body-md text-body-md text-on-surface-variant">Reconciling Makerere corridor evening flow,
+              surplus yield clearance, and automated 21:30 EAT investor digests.</p>
+          </div>
+          <div class="flex items-center gap-space-sm flex-wrap">
+            <button
+              class="px-space-md py-space-sm bg-surface-container-lowest text-on-surface font-label-lg text-label-lg rounded-full shadow-sm hover:bg-surface-container transition-all flex items-center gap-space-xs active:translate-y-px"
+              id="exportCsvBtn" type="button">
+              <span class="material-symbols-outlined text-[18px]">download</span>
+              <span class="">Export EOD CSV</span>
+            </button>
+            <button
+              class="px-space-lg py-space-sm bg-primary-container text-on-primary-container font-label-lg text-label-lg rounded-full shadow-md hover:bg-primary transition-all flex items-center gap-space-xs active:translate-y-px"
+              id="sendDigestNowBtn" type="button">
+              <span class="material-symbols-outlined text-[18px]">send</span>
+              <span class="">Force Send 21:30 Digest Now</span>
+            </button>
+          </div>
+        </div>
+        <!-- Alert / Toast Banner for Interactive Feedback -->
+        <div
+          class="hidden w-full bg-tertiary-container text-on-tertiary-container p-space-md rounded-xl shadow-md flex items-center justify-between transition-all"
+          id="actionToast">
+          <div class="flex items-center gap-space-sm">
+            <span class="material-symbols-outlined text-[20px]">check_circle</span>
+            <span class="font-label-lg text-label-lg" id="toastMsg">Nightly digest preview pushed to Cyrus &amp; Mubiru
+              Mahad (WhatsApp &amp; SMS queues).</span>
+          </div>
+          <button class="text-on-tertiary-container hover:opacity-80"
+            onclick="document.getElementById('actionToast').classList.add('hidden')">
+            <span class="material-symbols-outlined text-[18px]">close</span>
+          </button>
+        </div>
+        <!-- Top KPIs Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-space-md">
+          <!-- KPI 1: Gross Rev -->
+          <div
+            class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between">
+              <span class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider font-bold">Gross
+                Revenue</span>
+              <span class="material-symbols-outlined text-primary text-[22px]">payments</span>
+            </div>
+            <div class="my-space-xs">
+              <div class="font-currency-display text-currency-display text-on-surface tracking-tight">UGX 3,420,000
+              </div>
+              <div class="flex items-center gap-1 font-body-sm text-body-sm text-tertiary mt-0.5">
+                <span class="material-symbols-outlined text-[16px]">arrow_upward</span>
+                <span class="font-bold">+18.4%</span>
+                <span class="text-on-surface-variant">vs last Sun (168 chits)</span>
+              </div>
+            </div>
+            <div class="h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
+              <div class="h-full bg-primary-container rounded-full" style="width: 86%;"></div>
+            </div>
+          </div>
+          <!-- KPI 2: MoMo Breakdown -->
+          <div
+            class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between">
+              <span class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider font-bold">MoMo
+                Aggregate</span>
+              <div class="flex items-center gap-1">
+                <span class="w-2.5 h-2.5 rounded-full bg-secondary-container" title="MTN MoMo"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-primary" title="Airtel Money"></span>
+              </div>
+            </div>
+            <div class="my-space-xs">
+              <div class="font-currency-display text-currency-display text-on-surface tracking-tight">UGX 2,180,000
+              </div>
+              <div class="text-on-surface-variant font-body-sm text-body-sm">MTN: 1.42M • Airtel: 760K</div>
+            </div>
+            <div class="flex items-center justify-between font-label-sm text-label-sm text-on-surface-variant">
+              <span class="">63.7% of Volume</span>
+              <span class="text-tertiary font-bold">Auto-Settled</span>
+            </div>
+          </div>
+          <!-- KPI 3: Cash Drawer -->
+          <div
+            class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between">
+              <span class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider font-bold">Cash
+                Drawer</span>
+              <span class="material-symbols-outlined text-secondary text-[22px]">point_of_sale</span>
+            </div>
+            <div class="my-space-xs">
+              <div class="font-currency-display text-currency-display text-on-surface tracking-tight">UGX 1,240,000
+              </div>
+              <div class="text-on-surface-variant font-body-sm text-body-sm">Counted 80 chits physical notes</div>
+            </div>
+            <div class="flex items-center justify-between font-label-sm text-label-sm text-on-surface-variant">
+              <span class="">Safe Bag: #BAG-992</span>
+              <span class="text-on-surface font-bold">Verified</span>
+            </div>
+          </div>
+          <!-- KPI 4: Boda Advances -->
+          <div
+            class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between">
+              <span class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider font-bold">Boda
+                Fuel Advances</span>
+              <span class="material-symbols-outlined text-on-surface-variant text-[22px]">two_wheeler</span>
+            </div>
+            <div class="my-space-xs">
+              <div class="font-currency-display text-currency-display text-on-surface tracking-tight">UGX 42,500</div>
+              <div class="text-on-surface-variant font-body-sm text-body-sm">4 Stage Runners Reconciled</div>
+            </div>
+            <div class="flex items-center justify-between font-label-sm text-label-sm text-tertiary font-bold">
+              <span class="">Fuel Receipts Logged</span>
+              <span class="material-symbols-outlined text-[16px]">receipt_long</span>
+            </div>
+          </div>
+          <!-- KPI 5: Cash Variance -->
+          <div
+            class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between">
+              <span
+                class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider font-bold">Audited
+                Variance</span>
+              <span class="material-symbols-outlined text-tertiary text-[22px]">verified</span>
+            </div>
+            <div class="my-space-xs">
+              <div class="font-currency-display text-currency-display text-tertiary tracking-tight">+UGX 0</div>
+              <div class="text-tertiary font-body-sm text-body-sm font-bold">Zero Discrepancy (100% Balanced)</div>
+            </div>
+            <div class="flex items-center justify-between font-label-sm text-label-sm text-on-surface-variant">
+              <span class="">Shift Close PIN: #4290</span>
+              <span class="text-tertiary font-bold">Passed</span>
+            </div>
+          </div>
+        </div>
+        <!-- MAIN GRID: Left (Section 1 Inventory & Section 2 Surplus), Right (Section 3 Nightly Owner Digest) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+          <!-- LEFT COLUMN: Inventory & Surplus (7 cols) -->
+          <div class="lg:col-span-7 flex flex-col gap-space-lg">
+            <!-- SECTION 1: Recipe BOM & Ingredient Stocks -->
+            <div
+              class="bg-surface-container-lowest p-space-md sm:p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+              <div class="flex items-center justify-between flex-wrap gap-space-sm">
+                <div class="flex items-center gap-space-sm">
+                  <span class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[20px]">inventory_2</span>
+                  </span>
+                  <div>
+                    <h2 class="font-headline-sm text-headline-sm text-on-surface">Kitchen Recipe BOM &amp; Live Stock
+                      Track</h2>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant">Automated depletion ledger based on 168
+                      tickets fulfilled today</p>
+                  </div>
+                </div>
+                <span role="status"
+                  class="px-space-sm py-1 bg-error-container/20 border border-error-container rounded-full text-error font-label-sm text-label-sm font-bold flex items-center gap-space-xs animate-pulse"><span
+                    class="material-symbols-outlined text-[16px]">warning</span><span class="">🚨 2 Low-Stock Alerts
+                    (Supplier Action Required)</span></span><span
+                  class="font-label-sm text-label-sm bg-surface-container px-space-sm py-0.5 rounded-full text-on-surface">Updated
+                  21:12 EAT</span>
+              </div>
+              <!-- Stock Items Bento Table -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm">
+                <!-- Item 1: Cooking Oil (CRITICAL LOW) -->
+                <div class="p-space-md bg-error-container/20 rounded-lg flex flex-col justify-between gap-space-xs">
+                  <div class="flex items-start justify-between">
+                    <div>
+                      <div class="font-label-lg text-label-lg text-on-surface font-bold">Golden Fry Cooking Oil</div>
+                      <div class="font-body-sm text-body-sm text-on-surface-variant">Deep Fryer &amp; Sauce base</div>
+                    </div>
+                    <span
+                      class="bg-error text-on-error font-label-sm text-label-sm px-space-xs py-0.5 rounded uppercase font-bold flex items-center gap-1">
+                      <span class="material-symbols-outlined text-[14px]">warning</span> Low
+                    </span>
+                  </div>
+                  <div class="flex items-baseline justify-between mt-space-xs">
+                    <span class="font-currency-display text-currency-display text-error">4.5 Liters</span>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant">Par: 20L | Min: 8L</span>
+                  </div>
+                  <div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+                    <div class="h-full bg-error rounded-full" style="width: 22%;"></div>
+                  </div>
+                  <div
+                    class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm pt-1">
+                    <span class="">Mukwano Supplier PO</span>
+                    <button class="text-primary font-bold hover:underline"
+                      onclick="alert('Supplier PO drafted for 20L Cooking Oil via Mukwano distributor.')">Re-order</button>
+                  </div>
+                </div>
+                <!-- Item 2: Smoked Banana Leaves (WARNING) -->
+                <div class="p-space-md bg-secondary-fixed/20 rounded-lg flex flex-col justify-between gap-space-xs">
+                  <div class="flex items-start justify-between">
+                    <div>
+                      <div class="font-label-lg text-label-lg text-on-surface font-bold">Smoked Banana Leaves</div>
+                      <div class="font-body-sm text-body-sm text-on-surface-variant">Beef &amp; Chicken Luwombo wrap
+                      </div>
+                    </div>
+                    <span
+                      class="bg-secondary text-on-secondary font-label-sm text-label-sm px-space-xs py-0.5 rounded uppercase font-bold">Restock</span>
+                  </div>
+                  <div class="flex items-baseline justify-between mt-space-xs">
+                    <span class="font-currency-display text-currency-display text-secondary">8 Bundles</span>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant">Par: 30 | Min: 12</span>
+                  </div>
+                  <div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+                    <div class="h-full bg-secondary rounded-full" style="width: 26%;"></div>
+                  </div>
+                  <div
+                    class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm pt-1">
+                    <span class="">Kalerwe Market Delivery</span>
+                    <span class="text-on-surface font-bold">Scheduled 05:30 EAT</span>
+                  </div>
+                </div>
+                <!-- Item 3: Fresh Poultry Drumsticks -->
+                <div class="p-space-md bg-surface-container-low rounded-lg flex flex-col justify-between gap-space-xs">
+                  <div class="flex items-start justify-between">
+                    <div>
+                      <div class="font-label-lg text-label-lg text-on-surface font-bold">Fresh Poultry Drumsticks</div>
+                      <div class="font-body-sm text-body-sm text-on-surface-variant">Battered 1-pc &amp; Luwombo pieces
+                      </div>
+                    </div>
+                    <span
+                      class="bg-tertiary text-on-tertiary font-label-sm text-label-sm px-space-xs py-0.5 rounded uppercase font-bold">Healthy</span>
+                  </div>
+                  <div class="flex items-baseline justify-between mt-space-xs">
+                    <span class="font-currency-display text-currency-display text-on-surface">34 Pieces</span>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant">Par: 80 | Min: 25</span>
+                  </div>
+                  <div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+                    <div class="h-full bg-tertiary rounded-full" style="width: 48%;"></div>
+                  </div>
+                  <div
+                    class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm pt-1">
+                    <span class="">Kigowa Farm Lot #21</span>
+                    <span class="">Sufficient for evening</span>
+                  </div>
+                </div>
+                <!-- Item 4: Matooke Bunches -->
+                <div class="p-space-md bg-surface-container-low rounded-lg flex flex-col justify-between gap-space-xs">
+                  <div class="flex items-start justify-between">
+                    <div>
+                      <div class="font-label-lg text-label-lg text-on-surface font-bold">Green Matooke (Mbarara)</div>
+                      <div class="font-body-sm text-body-sm text-on-surface-variant">Steamed Katogo &amp; Luwombo sides
+                      </div>
+                    </div>
+                    <span
+                      class="bg-tertiary text-on-tertiary font-label-sm text-label-sm px-space-xs py-0.5 rounded uppercase font-bold">Optimal</span>
+                  </div>
+                  <div class="flex items-baseline justify-between mt-space-xs">
+                    <span class="font-currency-display text-currency-display text-on-surface">5 Bunches</span>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant">Par: 6 | Min: 2</span>
+                  </div>
+                  <div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+                    <div class="h-full bg-tertiary rounded-full" style="width: 83%;"></div>
+                  </div>
+                  <div
+                    class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm pt-1">
+                    <span class="">Steamer Pot #1 &amp; #2</span>
+                    <span class="">1.5 Bunches in prep</span>
+                  </div>
+                </div>
+                <!-- Item 5: Posho Sacks -->
+                <div class="p-space-md bg-surface-container-low rounded-lg flex flex-col justify-between gap-space-xs">
+                  <div class="flex items-start justify-between">
+                    <div>
+                      <div class="font-label-lg text-label-lg text-on-surface font-bold">Grade-1 Maize Flour (Posho)
+                      </div>
+                      <div class="font-body-sm text-body-sm text-on-surface-variant">50kg Sacks (Busega Mill)</div>
+                    </div>
+                    <span
+                      class="bg-tertiary text-on-tertiary font-label-sm text-label-sm px-space-xs py-0.5 rounded uppercase font-bold">Healthy</span>
+                  </div>
+                  <div class="flex items-baseline justify-between mt-space-xs">
+                    <span class="font-currency-display text-currency-display text-on-surface">3.5 Sacks</span>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant">Par: 5 | Min: 1.5</span>
+                  </div>
+                  <div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+                    <div class="h-full bg-tertiary rounded-full" style="width: 70%;"></div>
+                  </div>
+                  <div
+                    class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm pt-1">
+                    <span class="">Dry Store Ham Towers</span>
+                    <span class="">Moisture sealed</span>
+                  </div>
+                </div>
+                <!-- Item 6: Eggs Flat -->
+                <div class="p-space-md bg-surface-container-low rounded-lg flex flex-col justify-between gap-space-xs">
+                  <div class="flex items-start justify-between">
+                    <div>
+                      <div class="font-label-lg text-label-lg text-on-surface font-bold">Fresh Brown Eggs</div>
+                      <div class="font-body-sm text-body-sm text-on-surface-variant">Breakfast Rolex &amp; Breading
+                      </div>
+                    </div>
+                    <span
+                      class="bg-tertiary text-on-tertiary font-label-sm text-label-sm px-space-xs py-0.5 rounded uppercase font-bold">Healthy</span>
+                  </div>
+                  <div class="flex items-baseline justify-between mt-space-xs">
+                    <span class="font-currency-display text-currency-display text-on-surface">4.2 Flats (126 pcs)</span>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant">Par: 6 | Min: 2</span>
+                  </div>
+                  <div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+                    <div class="h-full bg-tertiary rounded-full" style="width: 70%;"></div>
+                  </div>
+                  <div
+                    class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm pt-1">
+                    <span class="">Local Gayaza layer batch</span>
+                    <span class="">Exp: 7 Days</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- SECTION 2: Batch-Cooked Food Surplus & Waste Mitigation (Challenge #4) -->
+            <div
+              class="bg-surface-container-lowest p-space-md sm:p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
+                <div class="flex items-center gap-space-sm">
+                  <span class="w-8 h-8 rounded-full bg-secondary/10 text-secondary flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[20px]">soup_kitchen</span>
+                  </span>
+                  <div>
+                    <h2 class="font-headline-sm text-headline-sm text-on-surface">Batch Cooked Food Surplus Clearance
+                    </h2>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant">Challenge #4: High-margin zero-spoilage
+                      management for evening Makerere rush</p>
+                  </div>
+                </div>
+                <span
+                  class="bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-bold px-space-sm py-1 rounded-full text-center">
+                  Clearance Window: 21:00 - 22:30
                 </span>
-</div>
-<div class="flex items-baseline justify-between mt-space-xs">
-<span class="font-currency-display text-currency-display text-error">4.5 Liters</span>
-<span class="font-label-sm text-label-sm text-on-surface-variant">Par: 20L | Min: 8L</span>
-</div>
-<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
-<div class="h-full bg-error rounded-full" style="width: 22%;"></div>
-</div>
-<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm pt-1">
-<span class="">Mukwano Supplier PO</span>
-<button class="text-primary font-bold hover:underline" onclick="alert('Supplier PO drafted for 20L Cooking Oil via Mukwano distributor.')">Re-order</button>
-</div>
-</div>
-<!-- Item 2: Smoked Banana Leaves (WARNING) -->
-<div class="p-space-md bg-secondary-fixed/20 rounded-lg flex flex-col justify-between gap-space-xs">
-<div class="flex items-start justify-between">
-<div>
-<div class="font-label-lg text-label-lg text-on-surface font-bold">Smoked Banana Leaves</div>
-<div class="font-body-sm text-body-sm text-on-surface-variant">Beef &amp; Chicken Luwombo wrap</div>
-</div>
-<span class="bg-secondary text-on-secondary font-label-sm text-label-sm px-space-xs py-0.5 rounded uppercase font-bold">Restock</span>
-</div>
-<div class="flex items-baseline justify-between mt-space-xs">
-<span class="font-currency-display text-currency-display text-secondary">8 Bundles</span>
-<span class="font-label-sm text-label-sm text-on-surface-variant">Par: 30 | Min: 12</span>
-</div>
-<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
-<div class="h-full bg-secondary rounded-full" style="width: 26%;"></div>
-</div>
-<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm pt-1">
-<span class="">Kalerwe Market Delivery</span>
-<span class="text-on-surface font-bold">Scheduled 05:30 EAT</span>
-</div>
-</div>
-<!-- Item 3: Fresh Poultry Drumsticks -->
-<div class="p-space-md bg-surface-container-low rounded-lg flex flex-col justify-between gap-space-xs">
-<div class="flex items-start justify-between">
-<div>
-<div class="font-label-lg text-label-lg text-on-surface font-bold">Fresh Poultry Drumsticks</div>
-<div class="font-body-sm text-body-sm text-on-surface-variant">Battered 1-pc &amp; Luwombo pieces</div>
-</div>
-<span class="bg-tertiary text-on-tertiary font-label-sm text-label-sm px-space-xs py-0.5 rounded uppercase font-bold">Healthy</span>
-</div>
-<div class="flex items-baseline justify-between mt-space-xs">
-<span class="font-currency-display text-currency-display text-on-surface">34 Pieces</span>
-<span class="font-label-sm text-label-sm text-on-surface-variant">Par: 80 | Min: 25</span>
-</div>
-<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
-<div class="h-full bg-tertiary rounded-full" style="width: 48%;"></div>
-</div>
-<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm pt-1">
-<span class="">Kigowa Farm Lot #21</span>
-<span class="">Sufficient for evening</span>
-</div>
-</div>
-<!-- Item 4: Matooke Bunches -->
-<div class="p-space-md bg-surface-container-low rounded-lg flex flex-col justify-between gap-space-xs">
-<div class="flex items-start justify-between">
-<div>
-<div class="font-label-lg text-label-lg text-on-surface font-bold">Green Matooke (Mbarara)</div>
-<div class="font-body-sm text-body-sm text-on-surface-variant">Steamed Katogo &amp; Luwombo sides</div>
-</div>
-<span class="bg-tertiary text-on-tertiary font-label-sm text-label-sm px-space-xs py-0.5 rounded uppercase font-bold">Optimal</span>
-</div>
-<div class="flex items-baseline justify-between mt-space-xs">
-<span class="font-currency-display text-currency-display text-on-surface">5 Bunches</span>
-<span class="font-label-sm text-label-sm text-on-surface-variant">Par: 6 | Min: 2</span>
-</div>
-<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
-<div class="h-full bg-tertiary rounded-full" style="width: 83%;"></div>
-</div>
-<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm pt-1">
-<span class="">Steamer Pot #1 &amp; #2</span>
-<span class="">1.5 Bunches in prep</span>
-</div>
-</div>
-<!-- Item 5: Posho Sacks -->
-<div class="p-space-md bg-surface-container-low rounded-lg flex flex-col justify-between gap-space-xs">
-<div class="flex items-start justify-between">
-<div>
-<div class="font-label-lg text-label-lg text-on-surface font-bold">Grade-1 Maize Flour (Posho)</div>
-<div class="font-body-sm text-body-sm text-on-surface-variant">50kg Sacks (Busega Mill)</div>
-</div>
-<span class="bg-tertiary text-on-tertiary font-label-sm text-label-sm px-space-xs py-0.5 rounded uppercase font-bold">Healthy</span>
-</div>
-<div class="flex items-baseline justify-between mt-space-xs">
-<span class="font-currency-display text-currency-display text-on-surface">3.5 Sacks</span>
-<span class="font-label-sm text-label-sm text-on-surface-variant">Par: 5 | Min: 1.5</span>
-</div>
-<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
-<div class="h-full bg-tertiary rounded-full" style="width: 70%;"></div>
-</div>
-<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm pt-1">
-<span class="">Dry Store Ham Towers</span>
-<span class="">Moisture sealed</span>
-</div>
-</div>
-<!-- Item 6: Eggs Flat -->
-<div class="p-space-md bg-surface-container-low rounded-lg flex flex-col justify-between gap-space-xs">
-<div class="flex items-start justify-between">
-<div>
-<div class="font-label-lg text-label-lg text-on-surface font-bold">Fresh Brown Eggs</div>
-<div class="font-body-sm text-body-sm text-on-surface-variant">Breakfast Rolex &amp; Breading</div>
-</div>
-<span class="bg-tertiary text-on-tertiary font-label-sm text-label-sm px-space-xs py-0.5 rounded uppercase font-bold">Healthy</span>
-</div>
-<div class="flex items-baseline justify-between mt-space-xs">
-<span class="font-currency-display text-currency-display text-on-surface">4.2 Flats (126 pcs)</span>
-<span class="font-label-sm text-label-sm text-on-surface-variant">Par: 6 | Min: 2</span>
-</div>
-<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
-<div class="h-full bg-tertiary rounded-full" style="width: 70%;"></div>
-</div>
-<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm pt-1">
-<span class="">Local Gayaza layer batch</span>
-<span class="">Exp: 7 Days</span>
-</div>
-</div>
-</div>
-</div>
-<!-- SECTION 2: Batch-Cooked Food Surplus & Waste Mitigation (Challenge #4) -->
-<div class="bg-surface-container-lowest p-space-md sm:p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
-<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
-<div class="flex items-center gap-space-sm">
-<span class="w-8 h-8 rounded-full bg-secondary/10 text-secondary flex items-center justify-center">
-<span class="material-symbols-outlined text-[20px]">soup_kitchen</span>
-</span>
-<div>
-<h2 class="font-headline-sm text-headline-sm text-on-surface">Batch Cooked Food Surplus Clearance</h2>
-<p class="font-body-sm text-body-sm text-on-surface-variant">Challenge #4: High-margin zero-spoilage management for evening Makerere rush</p>
-</div>
-</div>
-<span class="bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-bold px-space-sm py-1 rounded-full text-center">
-              Clearance Window: 21:00 - 22:30
-            </span>
-</div>
-<!-- Current Surplus Items Visual List -->
-<div class="flex flex-col gap-space-sm">
-<!-- Surplus Row 1 -->
-<div class="p-space-sm sm:p-space-md bg-surface-container-low rounded-lg flex items-center justify-between gap-space-md">
-<div class="flex items-center gap-space-md">
-<div class="w-14 h-14 rounded-lg bg-surface-container flex items-center justify-center overflow-hidden shrink-0">
-<img class="w-full h-full object-cover" data-alt="A steaming clay pot bowl of traditional Ugandan Katogo with tender offal, plantains, and rich red gravy photographed under warm overhead kitchen lighting with fresh coriander garnish." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCV08AnMQii7s4f1YQ1mlHd2VQWTVA5jvkjlxQdqT_JPwxrujIaPPeIOP4E8i8n2DoL42zh5qavpnn-Ruj8x0TeAKtVLQVV70fzDpLEtF4cmt597vM3mBDrJYCSKzuPuiw7JGTFy6Bok-HmzbKqUhWYlJP2wlRO0Y-SPsHEPKL-YivPtTT52P_PYH6Ohi7XtctWn46DgwKvdDZZ4wXQdvKyQwg84jLTKMTu-kv0K0Y">
-</div>
-<div>
-<div class="font-headline-sm text-headline-sm text-on-surface">Katogo Special (Tripe &amp; Matooke)</div>
-<div class="font-body-sm text-body-sm text-on-surface-variant">Base prep at 13:00 EAT • Heated steam table pot 2</div>
-</div>
-</div>
-<div class="text-right shrink-0">
-<div class="font-headline-md text-headline-md text-primary font-bold">3 Portions</div>
-<div class="font-body-sm text-body-sm line-through text-on-surface-variant">UGX 12,000 ea</div>
-<div class="font-label-sm text-label-sm text-tertiary font-bold">Promo: UGX 8,400</div>
-</div>
-</div>
-<!-- Surplus Row 2 -->
-<div class="p-space-sm sm:p-space-md bg-surface-container-low rounded-lg flex items-center justify-between gap-space-md">
-<div class="flex items-center gap-space-md">
-<div class="w-14 h-14 rounded-lg bg-surface-container flex items-center justify-center overflow-hidden shrink-0">
-<img class="w-full h-full object-cover" data-alt="Authentic Ugandan smoked beef Luwombo served wrapped in tied banana leaf bundle with steaming natural juices and roasted tomato seasoning in a vibrant Kampala restaurant." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbwZaX0sPlhAQiJYdlsEB7vZ-SeHA8zAC8TlYLxP0eL6pWqrpaML298i0tFdVSoXic0LS8IIX2SJeQ9UoquI2lYEwcqXMFQZbQ3d_o3ZycyTah34op7lKfXAj1lLY9qXQh63Ha2CVN-cKUCBZzEpuyElPZS3tIo-E-A71aaGb7vhhW5rk_XLtL1IVJZCs7vCZTpdV2JgtQh3toRbzyd9vABxkFzi5OYB2KN90Qfls">
-</div>
-<div>
-<div class="font-headline-sm text-headline-sm text-on-surface">Smoked Beef Luwombo</div>
-<div class="font-body-sm text-body-sm text-on-surface-variant">Pouch sealed in leaf wrap • High perishable value</div>
-</div>
-</div>
-<div class="text-right shrink-0">
-<div class="font-headline-md text-headline-md text-primary font-bold">2 Pouches</div>
-<div class="font-body-sm text-body-sm line-through text-on-surface-variant">UGX 18,000 ea</div>
-<div class="font-label-sm text-label-sm text-tertiary font-bold">Promo: UGX 12,600</div>
-</div>
-</div>
-<!-- Surplus Row 3 -->
-<div class="p-space-sm sm:p-space-md bg-surface-container-low rounded-lg flex items-center justify-between gap-space-md">
-<div class="flex items-center gap-space-md">
-<div class="w-14 h-14 rounded-lg bg-surface-container flex items-center justify-center overflow-hidden shrink-0">
-<img class="w-full h-full object-cover" data-alt="Crispy golden fried Ugandan street style chicken drumsticks displayed in a stainless steel restaurant warming counter under bright warm halogen lights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAIehMyes-IHfslfmjYuGNpRxawMt0MFG0JqGe9teyd3NZZZBoPKwwbzARf6eZVhOzSiuxN7t6ZkxAtO-DUxFC-4jqA2vGqHiuf8q4ZYVMpDXSBeQ3S5FKfJE-Qn85KiKJ9UpwVtgs5B64qaaTW33qwkuawqvt4Bcp-th6Co5yDk4jiGBETKYjDghtmtqUguTK7l4ECQ4t0UNPQELKDGu08mAgXfg0jrxMw6ByaRwg">
-</div>
-<div>
-<div class="font-headline-sm text-headline-sm text-on-surface">1-Piece Fried Chicken Drumsticks</div>
-<div class="font-body-sm text-body-sm text-on-surface-variant">Cooked 19:40 EAT batch • Crisp heat bridge</div>
-</div>
-</div>
-<div class="text-right shrink-0">
-<div class="font-headline-md text-headline-md text-primary font-bold">5 Pieces</div>
-<div class="font-body-sm text-body-sm line-through text-on-surface-variant">UGX 7,000 ea</div>
-<div class="font-label-sm text-label-sm text-tertiary font-bold">Promo: UGX 4,900</div>
-</div>
-</div>
-</div>
-<!-- Clearance Trigger CTA Box -->
-<div class="p-space-md bg-secondary-fixed/30 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-space-md">
-<div class="flex items-center gap-space-sm">
-<span class="material-symbols-outlined text-[28px] text-secondary">campaign</span>
-<div>
-<div class="font-headline-sm text-headline-sm text-on-surface">Makerere Hostel Night Discount Chit</div>
-<div class="font-body-sm text-body-sm text-on-surface-variant">Pushes 30% discount pop-up to live PWA clients within 1.2km geo-radius</div>
-</div>
-</div>
-<button class="w-full sm:w-auto px-space-lg py-space-sm bg-secondary text-on-secondary font-label-lg text-label-lg rounded-full shadow-md hover:bg-secondary/90 transition-all flex items-center justify-center gap-space-xs active:translate-y-px whitespace-nowrap" id="triggerClearanceBtn" type="button">
-<span class="material-symbols-outlined text-[18px]">bolt</span>
-<span class="">Trigger 30% Clearance Chit</span>
-</button>
-</div>
-<!-- Spoilage Write-Off Audit Log -->
-<div class="pt-space-xs">
-<div class="flex items-center justify-between mb-space-xs">
-<span class="font-label-lg text-label-lg text-on-surface">Today's Spoilage &amp; Quality Discard Log</span>
-<button class="font-label-sm text-label-sm text-primary font-bold hover:underline cursor-pointer flex items-center gap-1 active:translate-y-px" id="openDiscardModalBtn" onclick="document.getElementById('discardModal').classList.remove('hidden')" type="button"><span class="material-symbols-outlined text-[16px]">add_circle</span><span class="">+ Add Discard Entry</span></button>
-</div>
-<div class="bg-surface-container-low rounded-lg p-space-sm divide-y divide-surface-container">
-<div class="flex items-center justify-between py-space-xs text-body-sm font-body-sm">
-<div class="flex items-center gap-space-xs">
-<span class="w-2 h-2 rounded-full bg-error"></span>
-<span class="font-bold text-on-surface">1x Chapati Flatbread</span>
-<span class="text-on-surface-variant">(Over-toasted / griddle crust burn)</span>
-</div>
-<div class="flex items-center gap-space-sm">
-<span class="text-on-surface-variant">Logged by Chef Ronald</span>
-<span class="font-bold text-on-surface">UGX 1,500</span>
-</div>
-</div>
-<div class="flex items-center justify-between py-space-xs text-body-sm font-body-sm">
-<div class="flex items-center gap-space-xs">
-<span class="w-2 h-2 rounded-full bg-secondary"></span>
-<span class="font-bold text-on-surface">0.5 Portion Posho Scraping</span>
-<span class="text-on-surface-variant">(Bottom pot layer adherence)</span>
-</div>
-<div class="flex items-center gap-space-sm">
-<span class="text-on-surface-variant">Logged by Cook Brenda</span>
-<span class="font-bold text-on-surface">UGX 800</span>
-</div>
-</div>
-</div>
-<div class="mt-space-xs flex justify-between font-label-sm text-label-sm text-on-surface-variant px-space-xs">
-<span class="">Total Discarded Value Today: <strong class="text-on-surface">UGX 2,300</strong> (0.06% of Gross)</span>
-<span class="text-tertiary font-bold">Within 1.5% Tolerable Threshold</span>
-</div>
-</div>
-</div>
-</div>
-<!-- RIGHT COLUMN: Section 3 Nightly Owner Audit Digest Preview (5 cols) -->
-<div class="lg:col-span-5 flex flex-col gap-space-lg">
-<!-- SECTION 3: 21:30 EAT Digest Preview Card -->
-<div class="bg-surface-container-lowest p-space-md sm:p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
-<div class="flex items-start justify-between">
-<div class="flex items-center gap-space-sm">
-<span class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center">
-<span class="material-symbols-outlined text-[20px]">notifications_active</span>
-</span>
-<div>
-<h2 class="font-headline-sm text-headline-sm text-on-surface">21:30 EAT Nightly Digest</h2>
-<p class="font-body-sm text-body-sm text-on-surface-variant">Automated transmission to owners</p>
-</div>
-</div>
-<span class="bg-primary/10 text-primary font-label-sm text-label-sm px-space-sm py-0.5 rounded-full font-bold">Scheduled: 18m left</span>
-</div>
-<!-- Recipient Pill Cards -->
-<div class="bg-surface-container-low p-space-sm rounded-lg flex flex-col gap-space-xs">
-<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-bold">Verified Recipients:</span>
-<div class="flex items-center justify-between">
-<div class="flex items-center gap-space-xs">
-<span class="material-symbols-outlined text-tertiary text-[18px]">verified_user</span>
-<span class="font-label-md text-label-md text-on-surface font-bold">Mr. Cyrus</span>
-<span class="font-body-sm text-body-sm text-on-surface-variant">(Managing Partner)</span>
-</div>
-<div class="flex items-center gap-1">
-<span class="bg-tertiary/15 text-tertiary font-label-sm text-label-sm px-1.5 py-0.5 rounded font-bold">WhatsApp</span>
-<span class="bg-surface-container text-on-surface font-label-sm text-label-sm px-1.5 py-0.5 rounded">SMS</span>
-</div>
-</div>
-<div class="flex items-center justify-between">
-<div class="flex items-center gap-space-xs">
-<span class="material-symbols-outlined text-tertiary text-[18px]">verified_user</span>
-<span class="font-label-md text-label-md text-on-surface font-bold">Mr. Mubiru Mahad</span>
-<span class="font-body-sm text-body-sm text-on-surface-variant">(Operations Lead)</span>
-</div>
-<div class="flex items-center gap-1">
-<span class="bg-tertiary/15 text-tertiary font-label-sm text-label-sm px-1.5 py-0.5 rounded font-bold">WhatsApp</span>
-<span class="bg-surface-container text-on-surface font-label-sm text-label-sm px-1.5 py-0.5 rounded">Email</span>
-</div>
-</div>
-</div>
-<!-- The Live WhatsApp-Style Digest Preview Box -->
-<div class="bg-surface-container p-space-md rounded-xl font-mono text-body-sm text-on-surface flex flex-col gap-space-xs shadow-inner">
-<div class="flex items-center justify-between text-on-surface-variant font-sans font-label-sm text-label-sm">
-<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-tertiary">chat</span> WhatsApp Outbox Payload</span>
-<span class="">21:30 EAT</span>
-</div>
-<div class="p-space-sm bg-surface-container-lowest rounded-lg font-mono text-xs sm:text-sm text-on-surface leading-relaxed shadow-sm">
-<div class="font-bold text-primary">📊 FOODIZO HAM TOWERS - EOD AUDIT</div>
-<div class="">📅 Sun, 18 May 2025 • Shift: Full Day</div>
-<div class="my-1">──────────────────────</div>
-<div class="">💰 <strong>GROSS SALES:</strong> UGX 3,420,000 (168 chits)</div>
-<div class="">📱 <strong>MoMo:</strong> UGX 2,180,000 (MTN 1.42M / Air 760K)</div>
-<div class="">💵 <strong>CASH:</strong> UGX 1,240,000 (Safe Bag #BAG-992)</div>
-<div class="">⚖️ <strong>VARIANCE:</strong> +UGX 0 (Perfect Match)</div>
-<div class="my-1">──────────────────────</div>
-<div class="">🛵 <strong>Rider Advances:</strong> UGX 42,500 settled</div>
-<div class="">🥘 <strong>Surplus Left:</strong> 3 Katogo, 2 Luwombo, 5 Chkn</div>
-<div class="">🏷️ <strong>Clearance Chit:</strong> 30% triggered at 21:14</div>
-<div class="">🗑️ <strong>Spoilage Total:</strong> UGX 2,300 (0.06%)</div>
-<div class="">📶 <strong>Edge LAN Sync:</strong> 100% (4ms latency)</div>
-<div class="my-1">──────────────────────</div>
-<div class="text-on-surface-variant text-xs">Approved by Supervisor: PIN #4290 (Sarah N.)</div>
-</div>
-</div>
-<!-- Order Channel Distribution Visual -->
-<div class="flex flex-col gap-space-xs">
-<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-bold">Fulfillment Channel Split:</span>
-<div class="flex items-center justify-between font-label-sm text-label-sm">
-<span class="flex items-center gap-1 font-bold text-on-surface"><span class="w-3 h-3 rounded-sm bg-primary"></span> Pre-Order PWA: 42%</span>
-<span class="flex items-center gap-1 font-bold text-on-surface"><span class="w-3 h-3 rounded-sm bg-tertiary"></span> Dine-In: 38%</span>
-<span class="flex items-center gap-1 font-bold text-on-surface"><span class="w-3 h-3 rounded-sm bg-secondary"></span> Boda Phone: 20%</span>
-</div>
-<!-- Stacked bar chart -->
-<div class="h-3 w-full rounded-full bg-surface-container overflow-hidden flex">
-<div class="h-full bg-primary" style="width: 42%;" title="Pre-Order PWA 42%"></div>
-<div class="h-full bg-tertiary" style="width: 38%;" title="Dine-In Obunuzi Hall 38%"></div>
-<div class="h-full bg-secondary" style="width: 20%;" title="Boda Phone Delivery 20%"></div>
-</div>
-<div class="flex justify-between text-on-surface-variant font-body-sm text-body-sm">
-<span class="">71 Web Chits</span>
-<span class="">64 Hall Tables</span>
-<span class="">33 Rider Deliveries</span>
-</div>
-</div>
-<!-- Edge Node Sync Diagnostic -->
-<div class="p-space-sm bg-tertiary/10 rounded-lg flex items-center justify-between">
-<div class="flex items-center gap-space-sm">
-<span class="material-symbols-outlined text-tertiary text-[24px]">cloud_done</span>
-<div>
-<div class="font-label-md text-label-md text-on-surface font-bold">Local Edge SQLite &lt;-&gt; Cloud DB</div>
-<div class="font-body-sm text-body-sm text-on-surface-variant">Last pinged 12s ago • 0 pending offline mutations</div>
-</div>
-</div>
-<span class="bg-tertiary text-on-tertiary font-label-sm text-label-sm px-space-xs py-0.5 rounded font-bold">ONLINE</span>
-</div>
-<!-- Action Buttons in Digest -->
-<div class="flex flex-col gap-space-xs pt-space-xs">
-<button class="w-full py-space-sm px-space-md bg-primary-container text-on-primary-container font-label-lg text-label-lg rounded-full shadow-sm hover:bg-primary transition-all flex items-center justify-center gap-space-xs active:translate-y-px" id="dispatchNowBtn2" type="button">
-<span class="material-symbols-outlined text-[18px]">forward_to_inbox</span>
-<span class="">Transmit Snapshot Immediately</span>
-</button>
-<div class="text-center font-body-sm text-body-sm text-on-surface-variant">Auto-timer armed: Dispatches automatically at exactly 21:30:00 EAT</div>
-</div>
-</div>
-<!-- Quick Shift Audit Checklist Card -->
-<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
-<div class="font-label-lg text-label-lg text-on-surface font-bold">End-of-Shift Compliance Checklist</div>
-<div class="flex flex-col gap-space-xs font-body-sm text-body-sm">
-<label class="flex items-center gap-space-sm cursor-pointer p-space-xs rounded hover:bg-surface-container-low">
-<input checked="" class="w-4 h-4 text-primary rounded" type="checkbox">
-<span class="text-on-surface">Deep fryer oil temperature logged and burner shut</span>
-</label>
-<label class="flex items-center gap-space-sm cursor-pointer p-space-xs rounded hover:bg-surface-container-low">
-<input checked="" class="w-4 h-4 text-primary rounded" type="checkbox">
-<span class="text-on-surface">Luwombo steamer pot cleaned and ash emptied</span>
-</label>
-<label class="flex items-center gap-space-sm cursor-pointer p-space-xs rounded hover:bg-surface-container-low">
-<input checked="" class="w-4 h-4 text-primary rounded" type="checkbox">
-<span class="text-on-surface">Physical cash counted and double-locked in Ham Safe</span>
-</label>
-<label class="flex items-center gap-space-sm cursor-pointer p-space-xs rounded hover:bg-surface-container-low">
-<input checked="" class="w-4 h-4 text-primary rounded" type="checkbox">
-<span class="text-on-surface">Waitress shift terminals unmounted and docked for charge</span>
-</label>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<script>
-  (function() {
-    const triggerClearance = document.getElementById('triggerClearanceBtn');
-    const sendDigestBtn = document.getElementById('sendDigestNowBtn');
-    const dispatchNowBtn2 = document.getElementById('dispatchNowBtn2');
-    const exportCsvBtn = document.getElementById('exportCsvBtn');
-    const toast = document.getElementById('actionToast');
-    const toastMsg = document.getElementById('toastMsg');
+              </div>
+              <!-- Current Surplus Items Visual List -->
+              <div class="flex flex-col gap-space-sm">
+                <!-- Surplus Row 1 -->
+                <div
+                  class="p-space-sm sm:p-space-md bg-surface-container-low rounded-lg flex items-center justify-between gap-space-md">
+                  <div class="flex items-center gap-space-md">
+                    <div
+                      class="w-14 h-14 rounded-lg bg-surface-container flex items-center justify-center overflow-hidden shrink-0">
+                      <img class="w-full h-full object-cover"
+                        data-alt="A steaming clay pot bowl of traditional Ugandan Katogo with tender offal, plantains, and rich red gravy photographed under warm overhead kitchen lighting with fresh coriander garnish."
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuCV08AnMQii7s4f1YQ1mlHd2VQWTVA5jvkjlxQdqT_JPwxrujIaPPeIOP4E8i8n2DoL42zh5qavpnn-Ruj8x0TeAKtVLQVV70fzDpLEtF4cmt597vM3mBDrJYCSKzuPuiw7JGTFy6Bok-HmzbKqUhWYlJP2wlRO0Y-SPsHEPKL-YivPtTT52P_PYH6Ohi7XtctWn46DgwKvdDZZ4wXQdvKyQwg84jLTKMTu-kv0K0Y">
+                    </div>
+                    <div>
+                      <div class="font-headline-sm text-headline-sm text-on-surface">Katogo Special (Tripe &amp;
+                        Matooke)</div>
+                      <div class="font-body-sm text-body-sm text-on-surface-variant">Base prep at 13:00 EAT • Heated
+                        steam table pot 2</div>
+                    </div>
+                  </div>
+                  <div class="text-right shrink-0">
+                    <div class="font-headline-md text-headline-md text-primary font-bold">3 Portions</div>
+                    <div class="font-body-sm text-body-sm line-through text-on-surface-variant">UGX 12,000 ea</div>
+                    <div class="font-label-sm text-label-sm text-tertiary font-bold">Promo: UGX 8,400</div>
+                  </div>
+                </div>
+                <!-- Surplus Row 2 -->
+                <div
+                  class="p-space-sm sm:p-space-md bg-surface-container-low rounded-lg flex items-center justify-between gap-space-md">
+                  <div class="flex items-center gap-space-md">
+                    <div
+                      class="w-14 h-14 rounded-lg bg-surface-container flex items-center justify-center overflow-hidden shrink-0">
+                      <img class="w-full h-full object-cover"
+                        data-alt="Authentic Ugandan smoked beef Luwombo served wrapped in tied banana leaf bundle with steaming natural juices and roasted tomato seasoning in a vibrant Kampala restaurant."
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbwZaX0sPlhAQiJYdlsEB7vZ-SeHA8zAC8TlYLxP0eL6pWqrpaML298i0tFdVSoXic0LS8IIX2SJeQ9UoquI2lYEwcqXMFQZbQ3d_o3ZycyTah34op7lKfXAj1lLY9qXQh63Ha2CVN-cKUCBZzEpuyElPZS3tIo-E-A71aaGb7vhhW5rk_XLtL1IVJZCs7vCZTpdV2JgtQh3toRbzyd9vABxkFzi5OYB2KN90Qfls">
+                    </div>
+                    <div>
+                      <div class="font-headline-sm text-headline-sm text-on-surface">Smoked Beef Luwombo</div>
+                      <div class="font-body-sm text-body-sm text-on-surface-variant">Pouch sealed in leaf wrap • High
+                        perishable value</div>
+                    </div>
+                  </div>
+                  <div class="text-right shrink-0">
+                    <div class="font-headline-md text-headline-md text-primary font-bold">2 Pouches</div>
+                    <div class="font-body-sm text-body-sm line-through text-on-surface-variant">UGX 18,000 ea</div>
+                    <div class="font-label-sm text-label-sm text-tertiary font-bold">Promo: UGX 12,600</div>
+                  </div>
+                </div>
+                <!-- Surplus Row 3 -->
+                <div
+                  class="p-space-sm sm:p-space-md bg-surface-container-low rounded-lg flex items-center justify-between gap-space-md">
+                  <div class="flex items-center gap-space-md">
+                    <div
+                      class="w-14 h-14 rounded-lg bg-surface-container flex items-center justify-center overflow-hidden shrink-0">
+                      <img class="w-full h-full object-cover"
+                        data-alt="Crispy golden fried Ugandan street style chicken drumsticks displayed in a stainless steel restaurant warming counter under bright warm halogen lights."
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuAIehMyes-IHfslfmjYuGNpRxawMt0MFG0JqGe9teyd3NZZZBoPKwwbzARf6eZVhOzSiuxN7t6ZkxAtO-DUxFC-4jqA2vGqHiuf8q4ZYVMpDXSBeQ3S5FKfJE-Qn85KiKJ9UpwVtgs5B64qaaTW33qwkuawqvt4Bcp-th6Co5yDk4jiGBETKYjDghtmtqUguTK7l4ECQ4t0UNPQELKDGu08mAgXfg0jrxMw6ByaRwg">
+                    </div>
+                    <div>
+                      <div class="font-headline-sm text-headline-sm text-on-surface">1-Piece Fried Chicken Drumsticks
+                      </div>
+                      <div class="font-body-sm text-body-sm text-on-surface-variant">Cooked 19:40 EAT batch • Crisp heat
+                        bridge</div>
+                    </div>
+                  </div>
+                  <div class="text-right shrink-0">
+                    <div class="font-headline-md text-headline-md text-primary font-bold">5 Pieces</div>
+                    <div class="font-body-sm text-body-sm line-through text-on-surface-variant">UGX 7,000 ea</div>
+                    <div class="font-label-sm text-label-sm text-tertiary font-bold">Promo: UGX 4,900</div>
+                  </div>
+                </div>
+              </div>
+              <!-- Clearance Trigger CTA Box -->
+              <div
+                class="p-space-md bg-secondary-fixed/30 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-space-md">
+                <div class="flex items-center gap-space-sm">
+                  <span class="material-symbols-outlined text-[28px] text-secondary">campaign</span>
+                  <div>
+                    <div class="font-headline-sm text-headline-sm text-on-surface">Makerere Hostel Night Discount Chit
+                    </div>
+                    <div class="font-body-sm text-body-sm text-on-surface-variant">Pushes 30% discount pop-up to live
+                      PWA clients within 1.2km geo-radius</div>
+                  </div>
+                </div>
+                <button
+                  class="w-full sm:w-auto px-space-lg py-space-sm bg-secondary text-on-secondary font-label-lg text-label-lg rounded-full shadow-md hover:bg-secondary/90 transition-all flex items-center justify-center gap-space-xs active:translate-y-px whitespace-nowrap"
+                  id="triggerClearanceBtn" type="button">
+                  <span class="material-symbols-outlined text-[18px]">bolt</span>
+                  <span class="">Trigger 30% Clearance Chit</span>
+                </button>
+              </div>
+              <!-- Spoilage Write-Off Audit Log -->
+              <div class="pt-space-xs">
+                <div class="flex items-center justify-between mb-space-xs">
+                  <span class="font-label-lg text-label-lg text-on-surface">Today's Spoilage &amp; Quality Discard
+                    Log</span>
+                  <button
+                    class="font-label-sm text-label-sm text-primary font-bold hover:underline cursor-pointer flex items-center gap-1 active:translate-y-px"
+                    id="openDiscardModalBtn"
+                    onclick="document.getElementById('discardModal').classList.remove('hidden')" type="button"><span
+                      class="material-symbols-outlined text-[16px]">add_circle</span><span class="">+ Add Discard
+                      Entry</span></button>
+                </div>
+                <div class="bg-surface-container-low rounded-lg p-space-sm divide-y divide-surface-container">
+                  <div class="flex items-center justify-between py-space-xs text-body-sm font-body-sm">
+                    <div class="flex items-center gap-space-xs">
+                      <span class="w-2 h-2 rounded-full bg-error"></span>
+                      <span class="font-bold text-on-surface">1x Chapati Flatbread</span>
+                      <span class="text-on-surface-variant">(Over-toasted / griddle crust burn)</span>
+                    </div>
+                    <div class="flex items-center gap-space-sm">
+                      <span class="text-on-surface-variant">Logged by Chef Ronald</span>
+                      <span class="font-bold text-on-surface">UGX 1,500</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center justify-between py-space-xs text-body-sm font-body-sm">
+                    <div class="flex items-center gap-space-xs">
+                      <span class="w-2 h-2 rounded-full bg-secondary"></span>
+                      <span class="font-bold text-on-surface">0.5 Portion Posho Scraping</span>
+                      <span class="text-on-surface-variant">(Bottom pot layer adherence)</span>
+                    </div>
+                    <div class="flex items-center gap-space-sm">
+                      <span class="text-on-surface-variant">Logged by Cook Brenda</span>
+                      <span class="font-bold text-on-surface">UGX 800</span>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="mt-space-xs flex justify-between font-label-sm text-label-sm text-on-surface-variant px-space-xs">
+                  <span class="">Total Discarded Value Today: <strong class="text-on-surface">UGX 2,300</strong> (0.06%
+                    of Gross)</span>
+                  <span class="text-tertiary font-bold">Within 1.5% Tolerable Threshold</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- RIGHT COLUMN: Section 3 Nightly Owner Audit Digest Preview (5 cols) -->
+          <div class="lg:col-span-5 flex flex-col gap-space-lg">
+            <!-- SECTION 3: 21:30 EAT Digest Preview Card -->
+            <div
+              class="bg-surface-container-lowest p-space-md sm:p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+              <div class="flex items-start justify-between">
+                <div class="flex items-center gap-space-sm">
+                  <span class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[20px]">notifications_active</span>
+                  </span>
+                  <div>
+                    <h2 class="font-headline-sm text-headline-sm text-on-surface">21:30 EAT Nightly Digest</h2>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant">Automated transmission to owners</p>
+                  </div>
+                </div>
+                <span
+                  class="bg-primary/10 text-primary font-label-sm text-label-sm px-space-sm py-0.5 rounded-full font-bold">Scheduled:
+                  18m left</span>
+              </div>
+              <!-- Recipient Pill Cards -->
+              <div class="bg-surface-container-low p-space-sm rounded-lg flex flex-col gap-space-xs">
+                <span
+                  class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-bold">Verified
+                  Recipients:</span>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-space-xs">
+                    <span class="material-symbols-outlined text-tertiary text-[18px]">verified_user</span>
+                    <span class="font-label-md text-label-md text-on-surface font-bold">Mr. Cyrus</span>
+                    <span class="font-body-sm text-body-sm text-on-surface-variant">(Managing Partner)</span>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <span
+                      class="bg-tertiary/15 text-tertiary font-label-sm text-label-sm px-1.5 py-0.5 rounded font-bold">WhatsApp</span>
+                    <span
+                      class="bg-surface-container text-on-surface font-label-sm text-label-sm px-1.5 py-0.5 rounded">SMS</span>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-space-xs">
+                    <span class="material-symbols-outlined text-tertiary text-[18px]">verified_user</span>
+                    <span class="font-label-md text-label-md text-on-surface font-bold">Mr. Mubiru Mahad</span>
+                    <span class="font-body-sm text-body-sm text-on-surface-variant">(Operations Lead)</span>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <span
+                      class="bg-tertiary/15 text-tertiary font-label-sm text-label-sm px-1.5 py-0.5 rounded font-bold">WhatsApp</span>
+                    <span
+                      class="bg-surface-container text-on-surface font-label-sm text-label-sm px-1.5 py-0.5 rounded">Email</span>
+                  </div>
+                </div>
+              </div>
+              <!-- The Live WhatsApp-Style Digest Preview Box -->
+              <div
+                class="bg-surface-container p-space-md rounded-xl font-mono text-body-sm text-on-surface flex flex-col gap-space-xs shadow-inner">
+                <div
+                  class="flex items-center justify-between text-on-surface-variant font-sans font-label-sm text-label-sm">
+                  <span class="flex items-center gap-1"><span
+                      class="material-symbols-outlined text-[14px] text-tertiary">chat</span> WhatsApp Outbox
+                    Payload</span>
+                  <span class="">21:30 EAT</span>
+                </div>
+                <div
+                  class="p-space-sm bg-surface-container-lowest rounded-lg font-mono text-xs sm:text-sm text-on-surface leading-relaxed shadow-sm">
+                  <div class="font-bold text-primary">📊 FOODIZO HAM TOWERS - EOD AUDIT</div>
+                  <div class="">📅 Sun, 18 May 2025 • Shift: Full Day</div>
+                  <div class="my-1">──────────────────────</div>
+                  <div class="">💰 <strong>GROSS SALES:</strong> UGX 3,420,000 (168 chits)</div>
+                  <div class="">📱 <strong>MoMo:</strong> UGX 2,180,000 (MTN 1.42M / Air 760K)</div>
+                  <div class="">💵 <strong>CASH:</strong> UGX 1,240,000 (Safe Bag #BAG-992)</div>
+                  <div class="">⚖️ <strong>VARIANCE:</strong> +UGX 0 (Perfect Match)</div>
+                  <div class="my-1">──────────────────────</div>
+                  <div class="">🛵 <strong>Rider Advances:</strong> UGX 42,500 settled</div>
+                  <div class="">🥘 <strong>Surplus Left:</strong> 3 Katogo, 2 Luwombo, 5 Chkn</div>
+                  <div class="">🏷️ <strong>Clearance Chit:</strong> 30% triggered at 21:14</div>
+                  <div class="">🗑️ <strong>Spoilage Total:</strong> UGX 2,300 (0.06%)</div>
+                  <div class="">📶 <strong>Edge LAN Sync:</strong> 100% (4ms latency)</div>
+                  <div class="my-1">──────────────────────</div>
+                  <div class="text-on-surface-variant text-xs">Approved by Supervisor: PIN #4290 (Sarah N.)</div>
+                </div>
+              </div>
+              <!-- Order Channel Distribution Visual -->
+              <div class="flex flex-col gap-space-xs">
+                <span
+                  class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-bold">Fulfillment
+                  Channel Split:</span>
+                <div class="flex items-center justify-between font-label-sm text-label-sm">
+                  <span class="flex items-center gap-1 font-bold text-on-surface"><span
+                      class="w-3 h-3 rounded-sm bg-primary"></span> Pre-Order PWA: 42%</span>
+                  <span class="flex items-center gap-1 font-bold text-on-surface"><span
+                      class="w-3 h-3 rounded-sm bg-tertiary"></span> Dine-In: 38%</span>
+                  <span class="flex items-center gap-1 font-bold text-on-surface"><span
+                      class="w-3 h-3 rounded-sm bg-secondary"></span> Boda Phone: 20%</span>
+                </div>
+                <!-- Stacked bar chart -->
+                <div class="h-3 w-full rounded-full bg-surface-container overflow-hidden flex">
+                  <div class="h-full bg-primary" style="width: 42%;" title="Pre-Order PWA 42%"></div>
+                  <div class="h-full bg-tertiary" style="width: 38%;" title="Dine-In Obunuzi Hall 38%"></div>
+                  <div class="h-full bg-secondary" style="width: 20%;" title="Boda Phone Delivery 20%"></div>
+                </div>
+                <div class="flex justify-between text-on-surface-variant font-body-sm text-body-sm">
+                  <span class="">71 Web Chits</span>
+                  <span class="">64 Hall Tables</span>
+                  <span class="">33 Rider Deliveries</span>
+                </div>
+              </div>
+              <!-- Edge Node Sync Diagnostic -->
+              <div class="p-space-sm bg-tertiary/10 rounded-lg flex items-center justify-between">
+                <div class="flex items-center gap-space-sm">
+                  <span class="material-symbols-outlined text-tertiary text-[24px]">cloud_done</span>
+                  <div>
+                    <div class="font-label-md text-label-md text-on-surface font-bold">Local Edge SQLite &lt;-&gt; Cloud
+                      DB</div>
+                    <div class="font-body-sm text-body-sm text-on-surface-variant">Last pinged 12s ago • 0 pending
+                      offline mutations</div>
+                  </div>
+                </div>
+                <span
+                  class="bg-tertiary text-on-tertiary font-label-sm text-label-sm px-space-xs py-0.5 rounded font-bold">ONLINE</span>
+              </div>
+              <!-- Action Buttons in Digest -->
+              <div class="flex flex-col gap-space-xs pt-space-xs">
+                <button
+                  class="w-full py-space-sm px-space-md bg-primary-container text-on-primary-container font-label-lg text-label-lg rounded-full shadow-sm hover:bg-primary transition-all flex items-center justify-center gap-space-xs active:translate-y-px"
+                  id="dispatchNowBtn2" type="button">
+                  <span class="material-symbols-outlined text-[18px]">forward_to_inbox</span>
+                  <span class="">Transmit Snapshot Immediately</span>
+                </button>
+                <div class="text-center font-body-sm text-body-sm text-on-surface-variant">Auto-timer armed: Dispatches
+                  automatically at exactly 21:30:00 EAT</div>
+              </div>
+            </div>
+            <!-- Quick Shift Audit Checklist Card -->
+            <div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
+              <div class="font-label-lg text-label-lg text-on-surface font-bold">End-of-Shift Compliance Checklist</div>
+              <div class="flex flex-col gap-space-xs font-body-sm text-body-sm">
+                <label
+                  class="flex items-center gap-space-sm cursor-pointer p-space-xs rounded hover:bg-surface-container-low">
+                  <input checked="" class="w-4 h-4 text-primary rounded" type="checkbox">
+                  <span class="text-on-surface">Deep fryer oil temperature logged and burner shut</span>
+                </label>
+                <label
+                  class="flex items-center gap-space-sm cursor-pointer p-space-xs rounded hover:bg-surface-container-low">
+                  <input checked="" class="w-4 h-4 text-primary rounded" type="checkbox">
+                  <span class="text-on-surface">Luwombo steamer pot cleaned and ash emptied</span>
+                </label>
+                <label
+                  class="flex items-center gap-space-sm cursor-pointer p-space-xs rounded hover:bg-surface-container-low">
+                  <input checked="" class="w-4 h-4 text-primary rounded" type="checkbox">
+                  <span class="text-on-surface">Physical cash counted and double-locked in Ham Safe</span>
+                </label>
+                <label
+                  class="flex items-center gap-space-sm cursor-pointer p-space-xs rounded hover:bg-surface-container-low">
+                  <input checked="" class="w-4 h-4 text-primary rounded" type="checkbox">
+                  <span class="text-on-surface">Waitress shift terminals unmounted and docked for charge</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      (function () {
+        const triggerClearance = document.getElementById('triggerClearanceBtn');
+        const sendDigestBtn = document.getElementById('sendDigestNowBtn');
+        const dispatchNowBtn2 = document.getElementById('dispatchNowBtn2');
+        const exportCsvBtn = document.getElementById('exportCsvBtn');
+        const toast = document.getElementById('actionToast');
+        const toastMsg = document.getElementById('toastMsg');
 
-    function showNotification(msg) {
-      if (!toast) return;
-      toastMsg.textContent = msg;
-      toast.classList.remove('hidden');
-      setTimeout(() => {
-        toast.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }, 50);
-    }
+        function showNotification(msg) {
+          if (!toast) return;
+          toastMsg.textContent = msg;
+          toast.classList.remove('hidden');
+          setTimeout(() => {
+            toast.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }, 50);
+        }
 
-    if (triggerClearance) {
-      triggerClearance.addEventListener('click', () => {
-        triggerClearance.disabled = true;
-        triggerClearance.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">refresh</span><span>Broadcasting Chit...</span>';
-        setTimeout(() => {
-          triggerClearance.innerHTML = '<span class="material-symbols-outlined text-[18px]">done_all</span><span>Chit Broadcasted (-30%)</span>';
-          triggerClearance.classList.remove('bg-secondary');
-          triggerClearance.classList.add('bg-tertiary');
-          showNotification('Late-Evening 30% Discount Chit live! Broadcasted to 142 nearby Makerere PWA customers.');
-        }, 800);
-      });
-    }
+        if (triggerClearance) {
+          triggerClearance.addEventListener('click', () => {
+            triggerClearance.disabled = true;
+            triggerClearance.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">refresh</span><span>Broadcasting Chit...</span>';
+            setTimeout(() => {
+              triggerClearance.innerHTML = '<span class="material-symbols-outlined text-[18px]">done_all</span><span>Chit Broadcasted (-30%)</span>';
+              triggerClearance.classList.remove('bg-secondary');
+              triggerClearance.classList.add('bg-tertiary');
+              showNotification('Late-Evening 30% Discount Chit live! Broadcasted to 142 nearby Makerere PWA customers.');
+            }, 800);
+          });
+        }
 
-    function handleDigestDispatch() {
-      showNotification('Nightly 21:30 EAT Audit Digest immediately pushed to Mr. Cyrus & Mr. Mubiru Mahad via WhatsApp API and SMS gateway.');
-    }
+        function handleDigestDispatch() {
+          showNotification('Nightly 21:30 EAT Audit Digest immediately pushed to Mr. Cyrus & Mr. Mubiru Mahad via WhatsApp API and SMS gateway.');
+        }
 
-    if (sendDigestBtn) sendDigestBtn.addEventListener('click', handleDigestDispatch);
-    if (dispatchNowBtn2) dispatchNowBtn2.addEventListener('click', handleDigestDispatch);
+        if (sendDigestBtn) sendDigestBtn.addEventListener('click', handleDigestDispatch);
+        if (dispatchNowBtn2) dispatchNowBtn2.addEventListener('click', handleDigestDispatch);
 
-    if (exportCsvBtn) {
-      exportCsvBtn.addEventListener('click', () => {
-        showNotification('Generating shift ledger CSV: Foodizo_HamTowers_EOD_2025-05-18.csv downloaded.');
-      });
-    }
-  })();
-</script><div class="fixed inset-0 z-50 flex items-center justify-center p-space-sm sm:p-space-md bg-black/60 backdrop-blur-sm hidden" id="discardModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="bg-surface-container-lowest w-full max-w-2xl rounded-xl shadow-md border border-outline-variant/30 overflow-hidden flex flex-col max-h-[92vh]"><div class="p-space-md bg-surface-container-low border-b border-surface-container flex items-start justify-between gap-space-md shrink-0"><div><div class="flex items-center gap-space-xs flex-wrap"><span class="bg-primary/10 text-primary font-label-sm text-label-sm px-space-sm py-0.5 rounded-full font-bold uppercase tracking-wider">Challenge #4 Quality &amp; Spoilage Control</span><span class="text-on-surface-variant font-label-sm text-label-sm">• Shift #HT-20250518-EOD</span></div><h3 class="font-headline-md text-headline-md text-on-surface mt-0.5 tracking-tight" id="modalTitle">Log Spoilage &amp; Quality Discard</h3><p class="font-body-sm text-body-sm text-on-surface-variant">Reconciles batch cooking yield against inventory BOM &amp; shift ledger.</p></div><button class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors shrink-0" onclick="document.getElementById('discardModal').classList.add('hidden')" type="button" aria-label="Close modal"><span class="material-symbols-outlined text-[20px]">close</span></button></div><div class="p-space-md sm:p-space-lg overflow-y-auto flex flex-col gap-space-md"><div class="flex flex-col gap-1"><label class="font-label-md text-label-md text-on-surface font-bold" for="discardItemSelect">Ingredient / Prepared Dish *</label><select class="w-full p-space-sm bg-surface-container-low border border-surface-container rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20" id="discardItemSelect"><option value="chapati">Chapati Flatbread (Over-toasted / griddle crust burn)</option><option value="posho">Posho Scraping (Bottom pot crust adherence)</option><option value="oil">Golden Fry Cooking Oil (Burnt / Oxidized - 20L lot)</option><option value="poultry">Fresh Poultry Drumsticks (Broken cold-chain / skin discoloration)</option><option value="luwombo">Smoked Beef Luwombo (Seal tear / vapor leak in steam pot)</option><option value="katogo">Katogo Portions (Holding time exceeded &gt;3 hrs)</option></select></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md"><div class="flex flex-col gap-1"><label class="font-label-md text-label-md text-on-surface font-bold" for="discardQty">Discard Quantity *</label><input class="w-full p-space-sm bg-surface-container-low border border-surface-container rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20" id="discardQty" type="number" min="0.5" step="0.5" value="2" placeholder="e.g. 2"></div><div class="flex flex-col gap-1"><label class="font-label-md text-label-md text-on-surface font-bold" for="discardUnit">Unit of Measure *</label><select class="w-full p-space-sm bg-surface-container-low border border-surface-container rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20" id="discardUnit"><option value="Portions">Portions</option><option value="Pieces">Pieces</option><option value="Liters">Liters</option><option value="Flats">Flats</option><option value="Sacks">Sacks (50kg)</option><option value="Bundles">Bundles</option></select></div></div><div class="flex flex-col gap-space-xs"><label class="font-label-md text-label-md text-on-surface font-bold">Discard Reason Category *</label><div class="grid grid-cols-2 sm:grid-cols-3 gap-space-xs"><label class="flex items-center gap-space-xs p-space-xs bg-surface-container-low rounded-lg border border-surface-container cursor-pointer hover:bg-surface-container text-body-sm"><input checked="" class="text-primary" name="reason" type="radio" value="Burned"><span class="text-on-surface font-label-sm">Burned / Overcooked</span></label><label class="flex items-center gap-space-xs p-space-xs bg-surface-container-low rounded-lg border border-surface-container cursor-pointer hover:bg-surface-container text-body-sm"><input class="text-primary" name="reason" type="radio" value="Holding"><span class="text-on-surface font-label-sm">Holding &gt;3 hrs</span></label><label class="flex items-center gap-space-xs p-space-xs bg-surface-container-low rounded-lg border border-surface-container cursor-pointer hover:bg-surface-container text-body-sm"><input class="text-primary" name="reason" type="radio" value="Seal"><span class="text-on-surface font-label-sm">Seal / Wrap Tear</span></label><label class="flex items-center gap-space-xs p-space-xs bg-surface-container-low rounded-lg border border-surface-container cursor-pointer hover:bg-surface-container text-body-sm"><input class="text-primary" name="reason" type="radio" value="ColdChain"><span class="text-on-surface font-label-sm">Cold Chain Issue</span></label><label class="flex items-center gap-space-xs p-space-xs bg-surface-container-low rounded-lg border border-surface-container cursor-pointer hover:bg-surface-container text-body-sm"><input class="text-primary" name="reason" type="radio" value="Comp"><span class="text-on-surface font-label-sm">Customer Remake</span></label><label class="flex items-center gap-space-xs p-space-xs bg-surface-container-low rounded-lg border border-surface-container cursor-pointer hover:bg-surface-container text-body-sm"><input class="text-primary" name="reason" type="radio" value="Other"><span class="text-on-surface font-label-sm">Trim / Prep Loss</span></label></div></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md"><div class="flex flex-col gap-1"><label class="font-label-md text-label-md text-on-surface font-bold" for="responsibleStaff">Responsible Station &amp; Cook *</label><select class="w-full p-space-sm bg-surface-container-low border border-surface-container rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20" id="responsibleStaff"><option value="Chef Ronald">Chef Ronald (Grill / Chapati Station)</option><option value="Cook Brenda">Cook Brenda (Posho &amp; Stews Station)</option><option value="Fryer Juma">Fryer Station - Juma</option><option value="Pantry Bar">Bar &amp; Salad Station - Aine</option></select></div><div class="flex flex-col gap-1"><label class="font-label-md text-label-md text-on-surface font-bold">Est. Cost Impact Preview</label><div class="p-space-sm bg-error-container/20 rounded-lg border border-error-container flex items-center justify-between"><span class="text-on-surface-variant font-label-sm">Ledger Impact:</span><span class="font-currency-display text-currency-display text-error font-bold">UGX 4,200</span></div></div></div><div class="flex flex-col gap-1"><label class="font-label-md text-label-md text-on-surface font-bold" for="discardNotes">Corrective / Prevention Action Notes</label><textarea class="w-full p-space-sm bg-surface-container-low border border-surface-container rounded-lg font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none" id="discardNotes" rows="2" placeholder="e.g. Lower burner regulator #2 during off-peak holding; adjust batch size down by 20% for 14:00 lull."></textarea></div><div class="p-space-sm bg-surface-container-low rounded-lg border border-surface-container flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm"><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[20px] text-primary">pin</span><div><div class="font-label-md text-label-md text-on-surface font-bold">Supervisor Authorization PIN</div><div class="font-body-sm text-body-sm text-on-surface-variant">Required to sign off waste write-down ledger</div></div></div><div class="flex items-center gap-space-xs"><input class="w-28 p-space-xs bg-surface-container-lowest border border-surface-container rounded-lg font-mono text-center font-bold text-on-surface text-headline-sm" maxlength="4" type="password" value="4290"><span class="bg-tertiary-container/15 text-tertiary font-label-sm px-space-xs py-1 rounded font-bold">Verified #4290</span></div></div></div><div class="p-space-md bg-surface-container-low border-t border-surface-container flex flex-col sm:flex-row items-center justify-between gap-space-sm shrink-0"><div class="flex items-center gap-space-xs text-on-surface-variant font-body-sm text-body-sm text-center sm:text-left"><span class="material-symbols-outlined text-[16px] text-secondary">info</span><span class="">Decrements kitchen ledger and updates 21:30 EAT WhatsApp payload.</span></div><div class="flex items-center gap-space-sm w-full sm:w-auto"><button class="w-1/2 sm:w-auto px-space-md py-space-sm rounded-full bg-surface-container text-on-surface font-label-md hover:bg-surface-container-high transition-colors" onclick="document.getElementById('discardModal').classList.add('hidden')" type="button">Cancel</button><button class="w-1/2 sm:w-auto px-space-lg py-space-sm rounded-full bg-primary-container text-on-primary-container font-label-md font-bold shadow-md hover:bg-primary transition-all flex items-center justify-center gap-1 active:translate-y-px whitespace-nowrap" onclick="document.getElementById('discardModal').classList.add('hidden');if(typeof showNotification==='function'){showNotification('Waste logged: UGX 4,200 written down and reflected in 21:30 EAT WhatsApp digest.');}else{const t=document.getElementById('toastMsg');if(t){t.textContent='Waste logged: UGX 4,200 written down and reflected in 21:30 EAT WhatsApp digest.';document.getElementById('actionToast').classList.remove('hidden');}}" type="button"><span class="material-symbols-outlined text-[18px]">save</span><span class="">Record Discard &amp; Update Inventory</span></button></div></div></div></div><div class="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm hidden" id="supplierAlertDrawer" role="dialog" aria-modal="true" aria-labelledby="supplierAlertTitle"><div class="w-full max-w-2xl bg-surface-container-lowest h-full shadow-2xl border-l border-outline-variant/30 flex flex-col overflow-hidden"><div class="p-space-md sm:p-space-lg bg-surface-container-low border-b border-surface-container flex items-start justify-between gap-space-md shrink-0"><div><div class="flex items-center gap-space-xs flex-wrap"><span class="bg-error text-on-error font-label-sm text-label-sm px-space-sm py-0.5 rounded-full font-bold uppercase tracking-wider flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">fmd_bad</span>Challenge #2 Supply Chain &amp; Price Volatility</span><span class="text-on-surface-variant font-label-sm text-label-sm">• Ham Towers Hub</span></div><h3 class="font-headline-md text-headline-md text-on-surface mt-space-xs tracking-tight" id="supplierAlertTitle">Automated Supplier Low-Stock Alerts</h3></div></div></div></div></main><footer class="w-full bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)] py-space-sm"><div class="w-full px-gutter flex flex-col sm:flex-row items-center justify-between gap-space-sm text-on-surface-variant font-label-sm text-label-sm"><div><span class="">Outlet: Foodizo Ham Towers (Makerere Corridor)</span><span class="mx-space-xs">•</span><span class="">Shift Audit: 21:30 EAT Cycle</span></div><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs"><span class="w-2 h-2 rounded-full bg-tertiary"></span><span class="">Thermal Kitchen: Online</span></div><div class="flex items-center gap-space-xs"><span class="w-2 h-2 rounded-full bg-tertiary"></span><span class="">FOH Receipt: Ready (80mm)</span></div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[16px] text-tertiary">wifi</span><span class="">Edge Sync: Latency 4ms</span></div></div></div></footer>
+        if (exportCsvBtn) {
+          exportCsvBtn.addEventListener('click', () => {
+            showNotification('Generating shift ledger CSV: Foodizo_HamTowers_EOD_2025-05-18.csv downloaded.');
+          });
+        }
+      })();
+    </script>
+    <div
+      class="fixed inset-0 z-50 flex items-center justify-center p-space-sm sm:p-space-md bg-black/60 backdrop-blur-sm hidden"
+      id="discardModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div
+        class="bg-surface-container-lowest w-full max-w-2xl rounded-xl shadow-md border border-outline-variant/30 overflow-hidden flex flex-col max-h-[92vh]">
+        <div
+          class="p-space-md bg-surface-container-low border-b border-surface-container flex items-start justify-between gap-space-md shrink-0">
+          <div>
+            <div class="flex items-center gap-space-xs flex-wrap"><span
+                class="bg-primary/10 text-primary font-label-sm text-label-sm px-space-sm py-0.5 rounded-full font-bold uppercase tracking-wider">Challenge
+                #4 Quality &amp; Spoilage Control</span><span
+                class="text-on-surface-variant font-label-sm text-label-sm">• Shift #HT-20250518-EOD</span></div>
+            <h3 class="font-headline-md text-headline-md text-on-surface mt-0.5 tracking-tight" id="modalTitle">Log
+              Spoilage &amp; Quality Discard</h3>
+            <p class="font-body-sm text-body-sm text-on-surface-variant">Reconciles batch cooking yield against
+              inventory BOM &amp; shift ledger.</p>
+          </div><button
+            class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors shrink-0"
+            onclick="document.getElementById('discardModal').classList.add('hidden')" type="button"
+            aria-label="Close modal"><span class="material-symbols-outlined text-[20px]">close</span></button>
+        </div>
+        <div class="p-space-md sm:p-space-lg overflow-y-auto flex flex-col gap-space-md">
+          <div class="flex flex-col gap-1"><label class="font-label-md text-label-md text-on-surface font-bold"
+              for="discardItemSelect">Ingredient / Prepared Dish *</label><select
+              class="w-full p-space-sm bg-surface-container-low border border-surface-container rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20"
+              id="discardItemSelect">
+              <option value="chapati">Chapati Flatbread (Over-toasted / griddle crust burn)</option>
+              <option value="posho">Posho Scraping (Bottom pot crust adherence)</option>
+              <option value="oil">Golden Fry Cooking Oil (Burnt / Oxidized - 20L lot)</option>
+              <option value="poultry">Fresh Poultry Drumsticks (Broken cold-chain / skin discoloration)</option>
+              <option value="luwombo">Smoked Beef Luwombo (Seal tear / vapor leak in steam pot)</option>
+              <option value="katogo">Katogo Portions (Holding time exceeded &gt;3 hrs)</option>
+            </select></div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+            <div class="flex flex-col gap-1"><label class="font-label-md text-label-md text-on-surface font-bold"
+                for="discardQty">Discard Quantity *</label><input
+                class="w-full p-space-sm bg-surface-container-low border border-surface-container rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20"
+                id="discardQty" type="number" min="0.5" step="0.5" value="2" placeholder="e.g. 2"></div>
+            <div class="flex flex-col gap-1"><label class="font-label-md text-label-md text-on-surface font-bold"
+                for="discardUnit">Unit of Measure *</label><select
+                class="w-full p-space-sm bg-surface-container-low border border-surface-container rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20"
+                id="discardUnit">
+                <option value="Portions">Portions</option>
+                <option value="Pieces">Pieces</option>
+                <option value="Liters">Liters</option>
+                <option value="Flats">Flats</option>
+                <option value="Sacks">Sacks (50kg)</option>
+                <option value="Bundles">Bundles</option>
+              </select></div>
+          </div>
+          <div class="flex flex-col gap-space-xs"><label
+              class="font-label-md text-label-md text-on-surface font-bold">Discard Reason Category *</label>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-space-xs"><label
+                class="flex items-center gap-space-xs p-space-xs bg-surface-container-low rounded-lg border border-surface-container cursor-pointer hover:bg-surface-container text-body-sm"><input
+                  checked="" class="text-primary" name="reason" type="radio" value="Burned"><span
+                  class="text-on-surface font-label-sm">Burned / Overcooked</span></label><label
+                class="flex items-center gap-space-xs p-space-xs bg-surface-container-low rounded-lg border border-surface-container cursor-pointer hover:bg-surface-container text-body-sm"><input
+                  class="text-primary" name="reason" type="radio" value="Holding"><span
+                  class="text-on-surface font-label-sm">Holding &gt;3 hrs</span></label><label
+                class="flex items-center gap-space-xs p-space-xs bg-surface-container-low rounded-lg border border-surface-container cursor-pointer hover:bg-surface-container text-body-sm"><input
+                  class="text-primary" name="reason" type="radio" value="Seal"><span
+                  class="text-on-surface font-label-sm">Seal / Wrap Tear</span></label><label
+                class="flex items-center gap-space-xs p-space-xs bg-surface-container-low rounded-lg border border-surface-container cursor-pointer hover:bg-surface-container text-body-sm"><input
+                  class="text-primary" name="reason" type="radio" value="ColdChain"><span
+                  class="text-on-surface font-label-sm">Cold Chain Issue</span></label><label
+                class="flex items-center gap-space-xs p-space-xs bg-surface-container-low rounded-lg border border-surface-container cursor-pointer hover:bg-surface-container text-body-sm"><input
+                  class="text-primary" name="reason" type="radio" value="Comp"><span
+                  class="text-on-surface font-label-sm">Customer Remake</span></label><label
+                class="flex items-center gap-space-xs p-space-xs bg-surface-container-low rounded-lg border border-surface-container cursor-pointer hover:bg-surface-container text-body-sm"><input
+                  class="text-primary" name="reason" type="radio" value="Other"><span
+                  class="text-on-surface font-label-sm">Trim / Prep Loss</span></label></div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+            <div class="flex flex-col gap-1"><label class="font-label-md text-label-md text-on-surface font-bold"
+                for="responsibleStaff">Responsible Station &amp; Cook *</label><select
+                class="w-full p-space-sm bg-surface-container-low border border-surface-container rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20"
+                id="responsibleStaff">
+                <option value="Chef Ronald">Chef Ronald (Grill / Chapati Station)</option>
+                <option value="Cook Brenda">Cook Brenda (Posho &amp; Stews Station)</option>
+                <option value="Fryer Juma">Fryer Station - Juma</option>
+                <option value="Pantry Bar">Bar &amp; Salad Station - Aine</option>
+              </select></div>
+            <div class="flex flex-col gap-1"><label class="font-label-md text-label-md text-on-surface font-bold">Est.
+                Cost Impact Preview</label>
+              <div
+                class="p-space-sm bg-error-container/20 rounded-lg border border-error-container flex items-center justify-between">
+                <span class="text-on-surface-variant font-label-sm">Ledger Impact:</span><span
+                  class="font-currency-display text-currency-display text-error font-bold">UGX 4,200</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-col gap-1"><label class="font-label-md text-label-md text-on-surface font-bold"
+              for="discardNotes">Corrective / Prevention Action Notes</label><textarea
+              class="w-full p-space-sm bg-surface-container-low border border-surface-container rounded-lg font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
+              id="discardNotes" rows="2"
+              placeholder="e.g. Lower burner regulator #2 during off-peak holding; adjust batch size down by 20% for 14:00 lull."></textarea>
+          </div>
+          <div
+            class="p-space-sm bg-surface-container-low rounded-lg border border-surface-container flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
+            <div class="flex items-center gap-space-xs"><span
+                class="material-symbols-outlined text-[20px] text-primary">pin</span>
+              <div>
+                <div class="font-label-md text-label-md text-on-surface font-bold">Supervisor Authorization PIN</div>
+                <div class="font-body-sm text-body-sm text-on-surface-variant">Required to sign off waste write-down
+                  ledger</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-space-xs"><input
+                class="w-28 p-space-xs bg-surface-container-lowest border border-surface-container rounded-lg font-mono text-center font-bold text-on-surface text-headline-sm"
+                maxlength="4" type="password" value="4290"><span
+                class="bg-tertiary-container/15 text-tertiary font-label-sm px-space-xs py-1 rounded font-bold">Verified
+                #4290</span></div>
+          </div>
+        </div>
+        <div
+          class="p-space-md bg-surface-container-low border-t border-surface-container flex flex-col sm:flex-row items-center justify-between gap-space-sm shrink-0">
+          <div
+            class="flex items-center gap-space-xs text-on-surface-variant font-body-sm text-body-sm text-center sm:text-left">
+            <span class="material-symbols-outlined text-[16px] text-secondary">info</span><span class="">Decrements
+              kitchen ledger and updates 21:30 EAT WhatsApp payload.</span>
+          </div>
+          <div class="flex items-center gap-space-sm w-full sm:w-auto"><button
+              class="w-1/2 sm:w-auto px-space-md py-space-sm rounded-full bg-surface-container text-on-surface font-label-md hover:bg-surface-container-high transition-colors"
+              onclick="document.getElementById('discardModal').classList.add('hidden')"
+              type="button">Cancel</button><button
+              class="w-1/2 sm:w-auto px-space-lg py-space-sm rounded-full bg-primary-container text-on-primary-container font-label-md font-bold shadow-md hover:bg-primary transition-all flex items-center justify-center gap-1 active:translate-y-px whitespace-nowrap"
+              onclick="document.getElementById('discardModal').classList.add('hidden');if(typeof showNotification==='function'){showNotification('Waste logged: UGX 4,200 written down and reflected in 21:30 EAT WhatsApp digest.');}else{const t=document.getElementById('toastMsg');if(t){t.textContent='Waste logged: UGX 4,200 written down and reflected in 21:30 EAT WhatsApp digest.';document.getElementById('actionToast').classList.remove('hidden');}}"
+              type="button"><span class="material-symbols-outlined text-[18px]">save</span><span class="">Record Discard
+                &amp; Update Inventory</span></button></div>
+        </div>
+      </div>
+    </div>
+    <div class="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm hidden" id="supplierAlertDrawer"
+      role="dialog" aria-modal="true" aria-labelledby="supplierAlertTitle">
+      <div
+        class="w-full max-w-2xl bg-surface-container-lowest h-full shadow-2xl border-l border-outline-variant/30 flex flex-col overflow-hidden">
+        <div
+          class="p-space-md sm:p-space-lg bg-surface-container-low border-b border-surface-container flex items-start justify-between gap-space-md shrink-0">
+          <div>
+            <div class="flex items-center gap-space-xs flex-wrap"><span
+                class="bg-error text-on-error font-label-sm text-label-sm px-space-sm py-0.5 rounded-full font-bold uppercase tracking-wider flex items-center gap-1"><span
+                  class="material-symbols-outlined text-[14px]">fmd_bad</span>Challenge #2 Supply Chain &amp; Price
+                Volatility</span><span class="text-on-surface-variant font-label-sm text-label-sm">• Ham Towers
+                Hub</span></div>
+            <h3 class="font-headline-md text-headline-md text-on-surface mt-space-xs tracking-tight"
+              id="supplierAlertTitle">Automated Supplier Low-Stock Alerts</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <footer class="w-full bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)] py-space-sm">
+    <div
+      class="w-full px-gutter flex flex-col sm:flex-row items-center justify-between gap-space-sm text-on-surface-variant font-label-sm text-label-sm">
+      <div><span class="">Outlet: Foodizo Ham Towers (Makerere Corridor)</span><span class="mx-space-xs">•</span><span
+          class="">Shift Audit: 21:30 EAT Cycle</span></div>
+      <div class="flex items-center gap-space-md">
+        <div class="flex items-center gap-space-xs"><span class="w-2 h-2 rounded-full bg-tertiary"></span><span
+            class="">Thermal Kitchen: Online</span></div>
+        <div class="flex items-center gap-space-xs"><span class="w-2 h-2 rounded-full bg-tertiary"></span><span
+            class="">FOH Receipt: Ready (80mm)</span></div>
+        <div class="flex items-center gap-space-xs"><span
+            class="material-symbols-outlined text-[16px] text-tertiary">wifi</span><span class="">Edge Sync: Latency
+            4ms</span></div>
+      </div>
+    </div>
+  </footer>
 
 
 
-</body></html>
+</body>
+
+</html>

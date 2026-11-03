@@ -3,7 +3,7 @@
 **Target Environment:** Antigravity IDE + Opencode CLI Repository Scaffold<br>
 **Database:** PostgreSQL 16 via Prisma ORM<br>
 **Location Data:** Wandegeya, Kampala, Uganda<br>
-**Related Specifications:** `Foundational_Concept.md` Â· `Design_System.md` Â· `User_Flow.md` Â· `User_Profiles_Personas.md` Â· `Delivery_Zones_and_Dispatch.md` Â· `Tech_Stack.md` Â· `Payment_Integration.md` Â· `Hardware_and_Peripherals.md` Â· `Repo_Scaffold_and_Config.md` Â· `Demo_Script_and_Closing_Strategy.md` Â· `Daily_Audit_Digest.md` Â· `Deployment_Runbook.md` Â· `Service_Contract_and_Invoice_Template.md` Â · `build_strategy/Build_Strategy_and_Phases.md`
+**Related Specifications:** `Foundational_Concept.md` · `Design_System.md` · `User_Flow.md` · `User_Profiles_Personas.md` · `Delivery_Zones_and_Dispatch.md` · `Tech_Stack.md` · `Payment_Integration.md` · `Hardware_and_Peripherals.md` · `Repo_Scaffold_and_Config.md` · `Demo_Script_and_Closing_Strategy.md` · `Daily_Audit_Digest.md` · `Deployment_Runbook.md` · `Service_Contract_and_Invoice_Template.md` · `build_strategy/Build_Strategy_and_Phases.md`
 
 ---
 
@@ -118,12 +118,12 @@ async function main() {
   // Fees/ETAs are launch defaults pending Zito Mbowe's approval. Both outlets
   // get their own rows so each can override a fee without affecting the other.
   const zoneTemplate = [
-    { zone_code: 'MK_LUMUMBA',      display_name: 'Makerere University â€” Lumumba Hall',       landmark_group: 'Makerere Campus', landmark_hint: 'Call at hall reception',        fee_ugx: 2000, eta_min_minutes: 10, eta_max_minutes: 15, display_order: 10, is_active: true },
-    { zone_code: 'MK_MITCHELL',     display_name: 'Makerere University â€” Mitchell Hall',      landmark_group: 'Makerere Campus', landmark_hint: 'Call at the main gate',         fee_ugx: 2000, eta_min_minutes: 10, eta_max_minutes: 15, display_order: 20, is_active: true },
-    { zone_code: 'MK_AFRICA',       display_name: 'Makerere University â€” Africa Hall',        landmark_group: 'Makerere Campus', landmark_hint: 'Call at the reception desk',    fee_ugx: 2000, eta_min_minutes: 10, eta_max_minutes: 15, display_order: 30, is_active: true },
-    { zone_code: 'MK_MARY_STUART',  display_name: 'Makerere University â€” Mary Stuart Hall',   landmark_group: 'Makerere Campus', landmark_hint: 'Call at the security gate',     fee_ugx: 2000, eta_min_minutes: 10, eta_max_minutes: 15, display_order: 40, is_active: true },
-    { zone_code: 'MK_COMPLEX',      display_name: 'Makerere University â€” Main Complex / Freedom Square', landmark_group: 'Makerere Campus', landmark_hint: 'Meet at the main entrance', fee_ugx: 2000, eta_min_minutes: 10, eta_max_minutes: 15, display_order: 50, is_active: true },
-    { zone_code: 'MK_SENATE',       display_name: 'Makerere University â€” Senate Building / Main Gate',    landmark_group: 'Makerere Campus', landmark_hint: 'Call at the main gate',    fee_ugx: 2000, eta_min_minutes: 10, eta_max_minutes: 15, display_order: 60, is_active: true },
+    { zone_code: 'MK_LUMUMBA',      display_name: 'Makerere University — Lumumba Hall',       landmark_group: 'Makerere Campus', landmark_hint: 'Call at hall reception',        fee_ugx: 2000, eta_min_minutes: 10, eta_max_minutes: 15, display_order: 10, is_active: true },
+    { zone_code: 'MK_MITCHELL',     display_name: 'Makerere University — Mitchell Hall',      landmark_group: 'Makerere Campus', landmark_hint: 'Call at the main gate',         fee_ugx: 2000, eta_min_minutes: 10, eta_max_minutes: 15, display_order: 20, is_active: true },
+    { zone_code: 'MK_AFRICA',       display_name: 'Makerere University — Africa Hall',        landmark_group: 'Makerere Campus', landmark_hint: 'Call at the reception desk',    fee_ugx: 2000, eta_min_minutes: 10, eta_max_minutes: 15, display_order: 30, is_active: true },
+    { zone_code: 'MK_MARY_STUART',  display_name: 'Makerere University — Mary Stuart Hall',   landmark_group: 'Makerere Campus', landmark_hint: 'Call at the security gate',     fee_ugx: 2000, eta_min_minutes: 10, eta_max_minutes: 15, display_order: 40, is_active: true },
+    { zone_code: 'MK_COMPLEX',      display_name: 'Makerere University — Main Complex / Freedom Square', landmark_group: 'Makerere Campus', landmark_hint: 'Meet at the main entrance', fee_ugx: 2000, eta_min_minutes: 10, eta_max_minutes: 15, display_order: 50, is_active: true },
+    { zone_code: 'MK_SENATE',       display_name: 'Makerere University — Senate Building / Main Gate',    landmark_group: 'Makerere Campus', landmark_hint: 'Call at the main gate',    fee_ugx: 2000, eta_min_minutes: 10, eta_max_minutes: 15, display_order: 60, is_active: true },
     { zone_code: 'YMCA_MAIN',       display_name: 'YMCA Main Campus',                         landmark_group: 'YMCA',            landmark_hint: 'Call at the reception',         fee_ugx: 1500, eta_min_minutes: 5,  eta_max_minutes: 10, display_order: 70, is_active: true },
     { zone_code: 'HAM_TOWERS',      display_name: 'Ham Towers',                               landmark_group: 'Wandegeya',       landmark_hint: 'Foodizo atrium / office floor',  fee_ugx: 1000, eta_min_minutes: 5,  eta_max_minutes: 10, display_order: 80, is_active: true },
     { zone_code: 'WANDEGEYA_MARKET',display_name: 'Wandegeya Market',                         landmark_group: 'Wandegeya',       landmark_hint: 'Call at the market main gate',   fee_ugx: 2000, eta_min_minutes: 10, eta_max_minutes: 15, display_order: 90, is_active: true },
@@ -141,7 +141,7 @@ async function main() {
     });
   }
 
-  // 5. CREATE MENU ITEMS â€” the server-owned price and availability catalogue
+  // 5. CREATE MENU ITEMS — the server-owned price and availability catalogue
   const foodizoMenu = await seedMenu('FOODIZO_HAM_TOWERS', [
     { name: '2pc Fried Chicken & Chips',        category: 'Mains',      price_ugx: 14000, station: 'GRILL_FRYER' },
     { name: 'Regular Rolex (2 Eggs, 1 Chapati)', category: 'Breakfast', price_ugx: 3500,  station: 'ROLEX_GRIDDLE' },
@@ -289,7 +289,7 @@ async function loadMenu(outlet: 'FOODIZO_HAM_TOWERS' | 'OBUNUZI_YMCA') {
 }
 
 async function simulatePeakRush() {
-  console.log('ðŸš€ Starting concurrent rush-hour simulation (1:00 PM)...');
+  console.log('🚀 Starting concurrent rush-hour simulation (1:00 PM)...');
 
   const [foodizoMenu, obunuziMenu] = await Promise.all([
     loadMenu('FOODIZO_HAM_TOWERS'),
@@ -327,7 +327,7 @@ async function simulatePeakRush() {
         ? {
             customerName: `Rush Customer ${index + 1}`,
             deliveryZoneId: ymcaZone.id,
-            deliveryNote: 'YMCA reception â€” call on arrival'
+            deliveryNote: 'YMCA reception — call on arrival'
           }
         : {})
     };
@@ -376,9 +376,9 @@ async function simulatePeakRush() {
     }
   }
 
-  console.log(`âœ… ${orderResponses.length} orders created AWAITING_PAYMENT.`);
-  console.log('âœ… All display tokens were unique per outlet.');
-  console.log('âœ… All webhooks acknowledged and promoted their orders to PENDING.');
+  console.log(`✅ ${orderResponses.length} orders created AWAITING_PAYMENT.`);
+  console.log('✅ All display tokens were unique per outlet.');
+  console.log('✅ All webhooks acknowledged and promoted their orders to PENDING.');
 }
 
 simulatePeakRush().catch((error) => {
@@ -395,7 +395,7 @@ Before demonstrating the solution to Zito Mbowe, the builders must verify these 
 
 1. **Auto-86 verification:** Decrement `Fresh Farm Eggs` to `0` in the database. Verify that `Regular Rolex (2 Eggs, 1 Chapati)` immediately displays an out-of-stock badge on the student mobile app and cannot be ordered.
 2. **Channel segregation:** Submit an authenticated FOH `DINE_IN` tab and prepaid `TAKEAWAY_PICKUP` and `PHONE_DELIVERY` orders. Verify the KDS displays distinct Blue, Amber, and Purple badges.
-3. **KDS bump progression:** Tap a `PENDING` `TAKEAWAY_PICKUP` order â†’ verify it transitions to `PREPARING` and decrements recipe inventory once â†’ tap to `READY` â†’ verify the packaging chit print job fires. A `DINE_IN` order must not print a bag label.
+3. **KDS bump progression:** Tap a `PENDING` `TAKEAWAY_PICKUP` order → verify it transitions to `PREPARING` and decrements recipe inventory once → tap to `READY` → verify the packaging chit print job fires. A `DINE_IN` order must not print a bag label.
 4. **Digital token and pickup SMS:** Verify the token allocated at checkout matches the token rendered on the KDS card and the Expo packaging/delivery chit. For a customer-app `TAKEAWAY_PICKUP`, verify the payer MSISDN was persisted as `orders.customer_phone` and the `READY` SMS reached that number; a cash walk-in without a phone must not attempt an SMS.
 5. **Delivery zone scope:** Attempt to submit an order with a zone from the other outlet. Verify the API rejects it with `DELIVERY_ZONE_OUTLET_MISMATCH` and no payment is initiated.
 6. **Delivery required fields:** Attempt to submit a `PHONE_DELIVERY` order with no room note, no recipient name, or no phone. Verify each request is rejected before the MoMo/Airtel prompt.
@@ -423,9 +423,9 @@ Use a fixed test date and synthetic fixtures. Do not copy production totals into
 | # | Test | Steps | Expected result |
 | :--- | :--- | :--- | :--- |
 | 21 | Cash count uniqueness | Insert two `cash_counts` rows for the same outlet and business date | Second insert is rejected by `cash_counts_unique` |
-| 22 | Expected cash formula | Seed `UGX 100,000` cash payments; rider advances `UGX 30,000` with `UGX 10,000` returned; no refunds implemented | Expected cash = `UGX 80,000` (cash âˆ’ net advances) |
+| 22 | Expected cash formula | Seed `UGX 100,000` cash payments; rider advances `UGX 30,000` with `UGX 10,000` returned; no refunds implemented | Expected cash = `UGX 80,000` (cash − net advances) |
 | 23 | Variance sign and flag | Counted cash `UGX 70,000` against expected `UGX 80,000` | Variance = `-UGX 10,000`; digest emits `CASH_VARIANCE` (threshold `UGX 5,000`) |
-| 24 | Missing cash count | Delete the day's `cash_counts` row | Variance is `null`; digest emits `CASH_COUNT_MISSING`; SMS says â€œCASH COUNT MISSING,â€ never â€œUGX 0â€ |
+| 24 | Missing cash count | Delete the day's `cash_counts` row | Variance is `null`; digest emits `CASH_COUNT_MISSING`; SMS says “CASH COUNT MISSING,” never “UGX 0” |
 | 25 | Carrier coverage | Seed one successful payment each for `MTN`, `AIRTEL`, `MANUAL_MOMO`, and `CASH` | All four appear in the digest; gross equals their sum; the query uses `carrier`, not `method` |
 | 26 | Rider advance netting | Record a `UGX 2,000` advance with `UGX 500` returned | Net advance `UGX 1,500`; expected cash and delivery contribution both reflect the net amount |
 | 27 | Digest idempotency | Run the generator twice for the same business date | One `daily_digests` row remains `SENT`; second run skips; exactly one SMS/email is sent |
@@ -435,7 +435,7 @@ Use a fixed test date and synthetic fixtures. Do not copy production totals into
 | 31 | Failure and retry | Make SMTP and SMS provider fail | `daily_digests.status = FAILED` with `error`; one retry after 5 minutes; escalation follows; no successful duplicate send |
 | 32 | WhatsApp disabled by default | Leave `OWNER_WHATSAPP_ENABLED=false` | No WhatsApp API call is attempted; SMS and email still send |
 | 33 | WhatsApp fallback | Enable WhatsApp and make the Cloud API return an error | SMS fallback is sent; failure is logged; no customer-facing WhatsApp message is generated |
-| 34 | Clearance accounting | Log 4 discounted, 2 staff-meal, and 1 waste portion | Digest reports the three resolutions separately; no â€œrevenue recoveredâ€ double count; estimated value is labelled as an estimate |
+| 34 | Clearance accounting | Log 4 discounted, 2 staff-meal, and 1 waste portion | Digest reports the three resolutions separately; no “revenue recovered” double count; estimated value is labelled as an estimate |
 | 35 | Signed report link | Request the full report without a session and with an expired signature | Access is denied; a valid unexpired link opens the report; the URL contains no customer data |
 | 36 | PII exclusion | Inspect `daily_digests.payload_json`, the SMS, and the email | No customer name, phone number, delivery note, or GPS coordinate appears |
 | 37 | Manual dry run | Run `npm run digest -- --date=YYYY-MM-DD --dry-run` | Report renders to stdout/files without sending SMS, email, or WhatsApp and without marking the digest `SENT` |
@@ -454,7 +454,7 @@ These extra seed rows let you test the **FOH Dispatch Queue**, the **Manager Aud
 ### 5.1 Delivery Handoff Seed Rows
 
 ```typescript
-// â”€â”€â”€ DELIVERY HANDOFF FIXTURES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── DELIVERY HANDOFF FIXTURES ────────────────────────────────────────────────
 // Requires: at least 2 PHONE_DELIVERY orders already seeded (order1, order2)
 // and a WAITER_FOH user (prossy) in the users table.
 
@@ -483,11 +483,11 @@ const handoff2 = await prisma.delivery_handoffs.create({
     dispatched_by:              prossy.id,
     dispatch_method:            'WHATSAPP',
     rider_advance_ugx:          2000,
-    rider_advance_returned_ugx: 2000,       // full advance returned â€” customer refused delivery
+    rider_advance_returned_ugx: 2000,       // full advance returned — customer refused delivery
     dispatched_at:              new Date(new Date().setHours(14, 5, 0, 0)),
     delivered_at:               null,
     outcome:                    'FAILED_UNREACHABLE',
-    reviewed:                   false,       // manager must review this â€” will appear as a digest flag
+    reviewed:                   false,       // manager must review this — will appear as a digest flag
     notes:                      'Called x3, WhatsApp x1. No response. Food returned to outlet.',
   },
 });
@@ -496,16 +496,16 @@ console.log(`Seeded ${2} delivery handoff fixtures (1 DELIVERED, 1 FAILED_UNREAC
 ```
 
 > **Test this fixture by:**
-> 1. Opening `/pos/dispatch` as Prossy â€” the `FAILED_UNREACHABLE` order should appear in the "Review" tab
-> 2. Opening `/admin/audit` as Zito â€” the unreviewed failure should appear as a flag
-> 3. Running the digest dry-run â€” the flag count should be â‰¥ 1
+> 1. Opening `/pos/dispatch` as Prossy — the `FAILED_UNREACHABLE` order should appear in the "Review" tab
+> 2. Opening `/admin/audit` as Zito — the unreviewed failure should appear as a flag
+> 3. Running the digest dry-run — the flag count should be ≥ 1
 
 ### 5.2 Daily Digest Fixture Row
 
 This seeds a yesterday's digest row so you can test the `/admin/digest` and `/d/[token]` views without waiting for the 21:30 cron.
 
 ```typescript
-// â”€â”€â”€ DAILY DIGEST FIXTURE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── DAILY DIGEST FIXTURE ─────────────────────────────────────────────────────
 import crypto from 'crypto';
 
 const yesterday = new Date();
@@ -540,12 +540,12 @@ await prisma.daily_digests.create({
   },
 });
 
-console.log(`Seeded daily digest for ${yesterday.toISOString().slice(0, 10)} â€” token: ${sampleLinkToken}`);
+console.log(`Seeded daily digest for ${yesterday.toISOString().slice(0, 10)} — token: ${sampleLinkToken}`);
 console.log(`View report at: http://localhost:3000/d/${sampleLinkToken}`);
 ```
 
 > **Test this fixture by:**
-> 1. Opening `/admin/digest` â€” yesterday's digest should appear with correct gross and flag count
-> 2. Opening `http://localhost:3000/d/<token>` â€” full report page should render
-> 3. Trying an expired or invalid token â€” should return 404 or 403
-> 4. Running the cron for today's date â€” idempotency check should detect no row exists for today and proceed
+> 1. Opening `/admin/digest` — yesterday's digest should appear with correct gross and flag count
+> 2. Opening `http://localhost:3000/d/<token>` — full report page should render
+> 3. Trying an expired or invalid token — should return 404 or 403
+> 4. Running the cron for today's date — idempotency check should detect no row exists for today and proceed

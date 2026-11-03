@@ -3,7 +3,7 @@
 **Target Outlets:** Foodizo (Ham Towers) & Obunuzi Restaurant & Cafe (Opposite YMCA)<br>
 **Location:** Kampala, Uganda<br>
 **Target Environment:** Antigravity IDE + Opencode CLI Repository Scaffold<br>
-**Related Specifications:** `Foundational_Concept.md` Â· `Design_System.md` Â· `User_Flow.md` Â· `User_Profiles_Personas.md` Â· `Delivery_Zones_and_Dispatch.md` Â· `Tech_Stack.md` Â· `Payment_Integration.md` Â· `Seed_Data_and_Testing.md` Â· `Repo_Scaffold_and_Config.md` Â· `Demo_Script_and_Closing_Strategy.md` Â· `Daily_Audit_Digest.md` Â· `Deployment_Runbook.md` Â· `Service_Contract_and_Invoice_Template.md` Â · `build_strategy/Build_Strategy_and_Phases.md`
+**Related Specifications:** `Foundational_Concept.md` · `Design_System.md` · `User_Flow.md` · `User_Profiles_Personas.md` · `Delivery_Zones_and_Dispatch.md` · `Tech_Stack.md` · `Payment_Integration.md` · `Seed_Data_and_Testing.md` · `Repo_Scaffold_and_Config.md` · `Demo_Script_and_Closing_Strategy.md` · `Daily_Audit_Digest.md` · `Deployment_Runbook.md` · `Service_Contract_and_Invoice_Template.md` · `build_strategy/Build_Strategy_and_Phases.md`
 
 ---
 
@@ -140,7 +140,7 @@ export function generateExpoBagLabel(order: {
 - Print the delivery block only when `channel === 'PHONE_DELIVERY'`; `TAKEAWAY_PICKUP` prints a compact bag label with the token and item checklist. `DINE_IN` does not print a packaging chit.
 - The phone number is printed in a bold, readable size so the rider can dial without opening the FOH screen. It is never printed on the KDS.
 - The chit is printed when a `TAKEAWAY_PICKUP` or `PHONE_DELIVERY` order reaches `READY`, so the food is packed and the rider can leave immediately.
-- If the customer did not share a GPS pin, the chit is still complete: zone + room note + phone are sufficient. Do not print â€œno locationâ€ warnings.
+- If the customer did not share a GPS pin, the chit is still complete: zone + room note + phone are sufficient. Do not print “no location” warnings.
 - Do not print the full Google Maps URL in Phase 1; it wraps badly on 80mm paper. The FOH dispatch screen carries the static link.
 - Reprints are initiated only from the FOH dispatch screen and must be audit-logged. Do not expose a reprint button on the KDS.
 - A delivery chit contains personal data. Hand it to the rider with the bag; do not leave it on the packing counter.
@@ -150,7 +150,7 @@ export function generateExpoBagLabel(order: {
 - Customer-controlled text (`customerName`, `deliveryNote`, item names, item notes) must pass through `sanitizeChitText` before interpolation. The helper strips `ESC` (`0x1B`), `GS` (`0x1D`), and all control bytes, collapses whitespace, and caps length.
 - Never build a raw command string from an unsanitized database value. A note such as `hello\x1B@` must print as text, not reset the printer.
 - The printer is on the local LAN. Bind it to the store network only; do not expose port `9100` to the internet.
-- A failed print must not block the KDS or the dispatch queue. Show a â€œPrint failed â€” retryâ€ banner on the Expo/FOH screen and let the order continue to `READY`.
+- A failed print must not block the KDS or the dispatch queue. Show a “Print failed — retry” banner on the Expo/FOH screen and let the order continue to `READY`.
 
 ---
 
@@ -162,9 +162,9 @@ Budget Android phones (Infinix, Tecno) aggressively suspend background browser t
 
 - **Gateway:** Africa's Talking Uganda
 - **Endpoint:** `POST https://api.africastalking.com/version1/messaging`
-- **Trigger:** Order status updates to `READY` where `channel === 'TAKEAWAY_PICKUP'` and `customer_phone` is present. A cash walk-in without a phone has no SMS destination; the token page remains the customerâ€™s status source.
-- **Delivery trigger:** Do **not** send the pickup SMS to `PHONE_DELIVERY` at `READY`. The rider is being assigned from the FOH dispatch queue. An optional â€œYour order is on the wayâ€ SMS may be sent when FOH records the rider handoff; it must not claim live tracking or a precise ETA.
-- **Cost:** ~UGX 25â€“30 per SMS, preventing food from cooling at the counter.
+- **Trigger:** Order status updates to `READY` where `channel === 'TAKEAWAY_PICKUP'` and `customer_phone` is present. A cash walk-in without a phone has no SMS destination; the token page remains the customer’s status source.
+- **Delivery trigger:** Do **not** send the pickup SMS to `PHONE_DELIVERY` at `READY`. The rider is being assigned from the FOH dispatch queue. An optional “Your order is on the way” SMS may be sent when FOH records the rider handoff; it must not claim live tracking or a precise ETA.
+- **Cost:** ~UGX 25–30 per SMS, preventing food from cooling at the counter.
 
 ```typescript
 // sms-service.ts: Africa's Talking Dispatcher
@@ -200,37 +200,37 @@ export async function sendPickupSmsAlert(phone: string, token: string, outletNam
 }
 ```
 
-> **Do not reuse `sendPickupSmsAlert` for other messages.** It builds a pickup-specific body (`TOKEN is READY...`). Extract a generic `sendSms(phone: string, message: string)` helper for the daily digest and operational alerts, and keep `sendPickupSmsAlert` as a thin wrapper around it. The daily digest must use the generic helper; otherwise the owner receives a malformed pickup message. SMS is billed per 160-character segment, so the digest must send a short summary and link to the full report (`Daily_Audit_Digest.md Â§3`).
+> **Do not reuse `sendPickupSmsAlert` for other messages.** It builds a pickup-specific body (`TOKEN is READY...`). Extract a generic `sendSms(phone: string, message: string)` helper for the daily digest and operational alerts, and keep `sendPickupSmsAlert` as a thin wrapper around it. The daily digest must use the generic helper; otherwise the owner receives a malformed pickup message. SMS is billed per 160-character segment, so the digest must send a short summary and link to the full report (`Daily_Audit_Digest.md §3`).
 
 ---
 
 ## 3. Electrical Resilience & Power Outage Protocol (Wandegeya Grid)
 
-Ham Towers and the YMCA corridor experience unexpected power cuts and a 30â€“90 second delay while building generators fire up. The deployment must prevent tablet restarts and network drops.
+Ham Towers and the YMCA corridor experience unexpected power cuts and a 30–90 second delay while building generators fire up. The deployment must prevent tablet restarts and network drops.
 
 ```
 [ UMEME GRID / GENERATOR ]
-            â”‚
-            â”œâ”€â”€â–º 12V DC MINI-UPS â”€â”€â–º Wi-Fi router + network switch
-            â”‚    (UGX 80,000; keeps the LAN alive for hours)
-            â”‚
-            â””â”€â”€â–º 650â€“1000 VA UPS â”€â”€â–º Edge server (mini-PC / Pi 5, SSD)
-                 (15â€“30 min runtime; graceful shutdown if power stays off)
+            │
+            ├──► 12V DC MINI-UPS ──► Wi-Fi router + network switch
+            │    (UGX 80,000; keeps the LAN alive for hours)
+            │
+            └──► 650–1000 VA UPS ──► Edge server (mini-PC / Pi 5, SSD)
+                 (15–30 min runtime; graceful shutdown if power stays off)
 
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚       TABLET HARDWARE POLICY         â”‚
-â”‚   - Battery-backed Android Tablets   â”‚ â—„â”€â”€ Screens never blink or lose state
-â”‚   - Zero desktop monitors on AC-only â”‚     during generator switchover
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+┌──────────────────────────────────────┐
+│       TABLET HARDWARE POLICY         │
+│   - Battery-backed Android Tablets   │ ◄── Screens never blink or lose state
+│   - Zero desktop monitors on AC-only │     during generator switchover
+└──────────────────────────────────────┘
 ```
 
 ### 3.1 Hardware Specifications Checklist
 
 - **Kitchen KDS Displays:** 10.1" Android Tablets (e.g., Lenovo Tab M10 or Teclast P30T) with internal battery. Mounted in heavy-duty silicone cases with acrylic splash protectors.
 - **FOH / Waiter Handhelds:** 6.5" Android smartphones (Tecno Spark / Samsung Galaxy A04) running in PWA standalone fullscreen mode.
-- **Local Edge Server (In-Store Node):** Raspberry Pi 5 (8 GB RAM) with an SSD, or a refurbished Intel NUC (i3 or better, 8â€“16 GB RAM, SSD) running headless Linux (Ubuntu Server), connected directly to the primary Wi-Fi router. A Raspberry Pi 4 with 2 GB is not sufficient for Next.js + PostgreSQL + Redis + Fastify; a 4 GB Pi 4 is a development fallback only, not production. This node runs the API, database, Redis, and print service; it is not a message broker, and Phase 1 has no MQTT layer.
+- **Local Edge Server (In-Store Node):** Raspberry Pi 5 (8 GB RAM) with an SSD, or a refurbished Intel NUC (i3 or better, 8–16 GB RAM, SSD) running headless Linux (Ubuntu Server), connected directly to the primary Wi-Fi router. A Raspberry Pi 4 with 2 GB is not sufficient for Next.js + PostgreSQL + Redis + Fastify; a 4 GB Pi 4 is a development fallback only, not production. This node runs the API, database, Redis, and print service; it is not a message broker, and Phase 1 has no MQTT layer.
 - **Router Power Backup:** 12V Mini-DC UPS connected between the wall socket and the Wi-Fi router (plus switch) to guarantee zero Wi-Fi drops during generator cutovers. This is separate from the edge-server UPS; a 12V router UPS cannot carry a mini-PC.
-- **Edge Server UPS:** 650â€“1000 VA pure-sine UPS for the edge server and its SSD, sized for 15â€“30 minutes. Configure a graceful shutdown before the battery is exhausted. See `Deployment_Runbook.md Â§2`.
+- **Edge Server UPS:** 650–1000 VA pure-sine UPS for the edge server and its SSD, sized for 15–30 minutes. Configure a graceful shutdown before the battery is exhausted. See `Deployment_Runbook.md §2`.
 
 ---
 
@@ -249,11 +249,11 @@ Ham Towers and the YMCA corridor experience unexpected power cuts and a 30â€�
 
 ---
 
-## 5. Print Service API â€” Trigger Route & Fault Handling
+## 5. Print Service API — Trigger Route & Fault Handling
 
 ### 5.1 Print Trigger API Route
 
-Every print job is fired by the backend (never by the KDS frontend directly). When a KDS operator bumps an order to `READY`, the Fastify server calls an internal print job handler before â€” or concurrently with â€” broadcasting the `READY` WebSocket event.
+Every print job is fired by the backend (never by the KDS frontend directly). When a KDS operator bumps an order to `READY`, the Fastify server calls an internal print job handler before — or concurrently with — broadcasting the `READY` WebSocket event.
 
 ```
 POST /api/v1/print/expo-chit
@@ -270,7 +270,7 @@ Request body:
   ],
   // Delivery-only fields (omitted for TAKEAWAY_PICKUP):
   "destination_zone": "YMCA MAIN CAMPUS",
-  "delivery_note":    "Block C, Room 204 â€” call at gate",
+  "delivery_note":    "Block C, Room 204 — call at gate",
   "recipient_phone":  "+25677XXXXXXX"
 }
 
@@ -281,21 +281,21 @@ Failure response (503):
 { "status": "PRINT_FAILED", "error": "TCP connect timeout", "retry_available": true }
 ```
 
-> **Security note:** The `delivery_note`, `recipient_phone`, and `destination_zone` fields are sanitized by `sanitizeChitText()` before being passed to the ESC/POS byte generator. Control characters (ESC, GS, NUL, and all bytes 0x00â€“0x1F and 0x7F) are stripped to prevent printer-command injection. Each field is capped at 160 characters.
+> **Security note:** The `delivery_note`, `recipient_phone`, and `destination_zone` fields are sanitized by `sanitizeChitText()` before being passed to the ESC/POS byte generator. Control characters (ESC, GS, NUL, and all bytes 0x00–0x1F and 0x7F) are stripped to prevent printer-command injection. Each field is capped at 160 characters.
 
 ---
 
-### 5.2 Printer Fault Handling â€” Fail-Open Policy
+### 5.2 Printer Fault Handling — Fail-Open Policy
 
 **The order state (`READY`) is never held hostage to the printer.** A print failure is a hardware incident, not an order exception.
 
 | Scenario | System Behaviour |
 | :--- | :--- |
-| TCP connect to `192.168.1.200:9100` times out (3 s) | Order advances to `READY`; error is logged to `audit_log`; KDS Expo screen shows **âš  Chit print failed â€” Re-print** button |
+| TCP connect to `192.168.1.200:9100` times out (3 s) | Order advances to `READY`; error is logged to `audit_log`; KDS Expo screen shows **⚠ Chit print failed — Re-print** button |
 | Socket refuses connection (printer off) | Same as above |
 | Socket open but no response within 5 s | Same as above; retry once automatically after 10 s |
 | Print job succeeds on auto-retry | Button disappears; `audit_log` records retry success |
-| Expo operator taps **Re-print** manually | `POST /api/v1/print/expo-chit` called again with the same `order_id` â€” idempotent re-trigger |
+| Expo operator taps **Re-print** manually | `POST /api/v1/print/expo-chit` called again with the same `order_id` — idempotent re-trigger |
 | Three consecutive print failures in 15 minutes | SMS alert sent to manager phone via Africa's Talking; hardware-status panel flags the printer as `OFFLINE` |
 | Printer recovers while orders are queued | Admin can trigger a **"Re-print all failed chits"** batch action from `/admin/hardware` |
 
@@ -309,7 +309,7 @@ async function triggerExpoPrint(order: OrderForPrint): Promise<void> {
     await auditLog({ event: 'PRINT_FAILED', orderId: order.id, error: String(err) });
     // Publish to Redis so the KDS screen shows the re-print button
     await redis.publish('KDS_PRINT_FAILED', JSON.stringify({ orderId: order.id }));
-    // Do NOT throw â€” order proceeds to READY regardless
+    // Do NOT throw — order proceeds to READY regardless
   }
 }
 ```

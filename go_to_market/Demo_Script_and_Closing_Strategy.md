@@ -3,7 +3,7 @@
 **Target Stakeholder:** Zito Mbowe (Project Coordinator - MRFSS Project)<br>
 **Location:** Foodizo (Ham Towers) / Obunuzi (Opposite YMCA), Wandegeya<br>
 **Meeting Goal:** Execute a 10-minute live demonstration, prove ROI on food waste and queue walk-aways, and secure agreement on the implementation contract.<br>
-**Related Specifications:** `Foundational_Concept.md` Â· `Design_System.md` Â· `User_Flow.md` Â· `User_Profiles_Personas.md` Â· `Delivery_Zones_and_Dispatch.md` Â· `Tech_Stack.md` Â· `Payment_Integration.md` Â· `Hardware_and_Peripherals.md` Â· `Seed_Data_and_Testing.md` Â· `Repo_Scaffold_and_Config.md` Â· `Daily_Audit_Digest.md` Â· `Deployment_Runbook.md` Â· `Service_Contract_and_Invoice_Template.md` Â · `../build_strategy/Build_Strategy_and_Phases.md`
+**Related Specifications:** `Foundational_Concept.md` · `Design_System.md` · `User_Flow.md` · `User_Profiles_Personas.md` · `Delivery_Zones_and_Dispatch.md` · `Tech_Stack.md` · `Payment_Integration.md` · `Hardware_and_Peripherals.md` · `Seed_Data_and_Testing.md` · `Repo_Scaffold_and_Config.md` · `Daily_Audit_Digest.md` · `Deployment_Runbook.md` · `Service_Contract_and_Invoice_Template.md` · `../build_strategy/Build_Strategy_and_Phases.md`
 
 ---
 
@@ -18,9 +18,9 @@ Before Zito Mbowe arrives, arrange three devices on the table:
 
 ## 2. The 10-Minute Demonstration Script
 
-### Minute 0:00â€“2:00 â€” The Ham Towers Peak Rush Solution
+### Minute 0:00–2:00 — The Ham Towers Peak Rush Solution
 * **What you say:**
-  > *"Zito Mbowe, between 1:00 PM and 3:00 PM at Ham Towers, your biggest loss isn't food costsâ€”it's Makerere students and office tenants who walk past Foodizo because the counter line has 15 people in it. Let me show you how we recover those lost sales."*
+  > *"Zito Mbowe, between 1:00 PM and 3:00 PM at Ham Towers, your biggest loss isn't food costs—it's Makerere students and office tenants who walk past Foodizo because the counter line has 15 people in it. Let me show you how we recover those lost sales."*
 * **What you do:**
   1. Open **Device 1** (Customer PWA).
   2. Select **Foodizo (Ham Towers)** $\rightarrow$ tap `2pc Fried Chicken & Chips` (UGX 14,000) $\rightarrow$ select **Pre-order pickup**.
@@ -32,7 +32,7 @@ Before Zito Mbowe arrives, arrange three devices on the table:
 
 ---
 
-### Minute 2:00â€“4:30 â€” The Obunuzi 60/40 Split & Ticket Collision Fix
+### Minute 2:00–4:30 — The Obunuzi 60/40 Split & Ticket Collision Fix
 * **What you say:**
   > *"Now let's cross the street to Obunuzi. Your biggest headache opposite YMCA is managing sit-down diners while the phone rings with delivery orders from lecturers. Right now, cooks prioritize whoever shouts loudest, and tickets get lost. Here is how we fix it."*
 * **What you do:**
@@ -41,8 +41,8 @@ Before Zito Mbowe arrives, arrange three devices on the table:
      * Ring up: `1x Traditional Beef Luwombo` + `1x Matooke`. Tap **"Send to Kitchen"**.
   2. Switch immediately to the Counter Phone Entry screen:
      * Key in: `Customer: Dr. Okello`, `Phone: 0701 234 567`.
-     * Select zone: `YMCA Main Campus` (shows `UGX 1,500 Â· 5â€“10 min`).
-     * Add note: `Block C, Room 204 â€” call at security gate`.
+     * Select zone: `YMCA Main Campus` (shows `UGX 1,500 · 5–10 min`).
+     * Add note: `Block C, Room 204 — call at security gate`.
      * Add `1x Beef Luwombo (delivery)`. Tap **"Dispatch"**.
      * Point out that the delivery fee is included in the total before payment.
   3. Turn Laptop to Zito Mbowe:
@@ -50,19 +50,19 @@ Before Zito Mbowe arrives, arrange three devices on the table:
        * Ticket A: Blue Badge `[DINE-IN - T-04]`
        * Ticket B: Purple Badge `[PHONE-DELIVERY - TOKEN-043]` with `YMCA MAIN CAMPUS`
        * Station Summary bar reads: **`2x Beef Luwombo Plating Required`**.
-     * The KDS shows **no phone number, room note, or GPS** â€” that data lives on the FOH dispatch screen and the printed delivery chit.
+     * The KDS shows **no phone number, room note, or GPS** — that data lives on the FOH dispatch screen and the printed delivery chit.
   4. When the order is `READY`, open `/pos/dispatch`:
-     * Show the delivery chit: `DESTINATION: YMCA MAIN CAMPUS`, `ROOM/NOTE: BLOCK C, ROOM 204 â€” CALL AT SECURITY GATE`, `PHONE: 0701 234 567`.
+     * Show the delivery chit: `DESTINATION: YMCA MAIN CAMPUS`, `ROOM/NOTE: BLOCK C, ROOM 204 — CALL AT SECURITY GATE`, `PHONE: 0701 234 567`.
      * Tap **CALL** or **WHATSAPP**; then **HANDED TO RIDER** and record the rider name plus the `UGX 1,500` transport advance (matching the YMCA delivery fee).
-     * Say: *â€œNo map pin required. The rider has the hall, the room, the phone number, and a bag with the right token. The cash advance is logged, so it will not show up as a drawer shortage at 9:30 PM.â€*
+     * Say: *“No map pin required. The rider has the hall, the room, the phone number, and a bag with the right token. The cash advance is logged, so it will not show up as a drawer shortage at 9:30 PM.”*
 * **The Punchline:**
   > *"Chef doesn't guess. In one motion, he dishes two Luwombo bowls. T-04 gets served, Dr. Okello's delivery bag is labeled, and zero orders were scribbled on paper chits."*
 
 ---
 
-### Minute 4:30â€“6:30 â€” Automated Recipe Inventory, 7:30 PM Clearance & 9:00 PM Surplus Engine
+### Minute 4:30–6:30 — Automated Recipe Inventory, 7:30 PM Clearance & 9:00 PM Surplus Engine
 * **What you say:**
-  > *"Let's talk about food waste and raw ingredient lossâ€”Mukwano cooking oil, chicken pieces, and unsold Luwombo."*
+  > *"Let's talk about food waste and raw ingredient loss—Mukwano cooking oil, chicken pieces, and unsold Luwombo."*
 * **What you do:**
   1. Open `/admin/inventory` on the Laptop:
      * Show raw stock: Cooking oil automatically decremented by 50 ml, chicken pieces by 2, and stewing beef by **700 g** (two Luwombo portions at 350 g each) based on the demonstration orders.
@@ -72,11 +72,11 @@ Before Zito Mbowe arrives, arrange three devices on the table:
      * Show **Device 1** (Customer PWA): Beef Luwombo reflects the clearance price of `UGX 12,000` (down from `UGX 16,000`) with a red **"Flash Clearance"** badge.
      * At **9:00 PM**, log the remaining unsold portions in the same routine; the log feeds next-day prep targets.
 * **The Punchline:**
-  > *"Six portions at UGX 12,000 is UGX 72,000 of sales that would otherwise be zero, but that is revenue, not profit. At an illustrative 30% contribution margin, it is about UGX 21,600 on a clearance night. The UGX 350,000 monthly retainer would need roughly 17 such nights to cover on clearance alone. The business case is the combined effect of recovered queue sales, fewer unrecorded staff meals, and lower over-prep â€” measured during the pilot, not promised in the demo."*
+  > *"Six portions at UGX 12,000 is UGX 72,000 of sales that would otherwise be zero, but that is revenue, not profit. At an illustrative 30% contribution margin, it is about UGX 21,600 on a clearance night. The UGX 350,000 monthly retainer would need roughly 17 such nights to cover on clearance alone. The business case is the combined effect of recovered queue sales, fewer unrecorded staff meals, and lower over-prep — measured during the pilot, not promised in the demo."*
 
 ---
 
-### Minute 6:30â€“8:00 â€” Financial Reconciliation (Zero Leakage)
+### Minute 6:30–8:00 — Financial Reconciliation (Zero Leakage)
 * **What you say:**
   > *"At 9:30 PM, you need to balance the books between Ham Towers and YMCA without spending two hours auditing paper receipts."*
 * **What you do:**
@@ -95,7 +95,7 @@ Before Zito Mbowe arrives, arrange three devices on the table:
 
 ---
 
-### Minute 8:00â€“10:00 â€” The Commercial Proposal & Close
+### Minute 8:00–10:00 — The Commercial Proposal & Close
 * **What you say:**
   > *"Zito Mbowe, this system is built specifically for your two locations. It targets Foodizo's rush-hour walk-aways and reduces Obunuzi's evening food waste. Here is how we roll this out:"*
 
@@ -104,16 +104,16 @@ Before Zito Mbowe arrives, arrange three devices on the table:
 | COMMERCIAL IMPLEMENTATION PROPOSAL                                       |
 +--------------------------------------------------------------------------+
 | 1. ONE-TIME IMPLEMENTATION & DEPLOYMENT SETUP FEE: UGX 2,500,000         |
-| â€¢ In-store Local Edge Node setup (LAN resilience during fiber cuts)      |
-| â€¢ Multi-station KDS deployment & tablet mounting                         |
-| â€¢ Delivery zones, dispatch queue & thermal rider chits (no map fees)     |
-| â€¢ Full Recipe BOM configuration (Cooking oil, poultry, Luwombo)          |
-| â€¢ FOH & Kitchen Staff on-site training across Ham Towers & YMCA          |
+| • In-store Local Edge Node setup (LAN resilience during fiber cuts)      |
+| • Multi-station KDS deployment & tablet mounting                         |
+| • Delivery zones, dispatch queue & thermal rider chits (no map fees)     |
+| • Full Recipe BOM configuration (Cooking oil, poultry, Luwombo)          |
+| • FOH & Kitchen Staff on-site training across Ham Towers & YMCA          |
 +--------------------------------------------------------------------------+
 | 2. MONTHLY SYSTEM LICENSE & MAINTENANCE: UGX 350,000 / month             |
-| â€¢ Edge-node maintenance, backup verification & Redis Pub/Sub health      |
-| â€¢ MTN & Airtel MoMo API maintenance & webhook monitoring                 |
-| â€¢ 07:00â€“22:00 EAT priority local support (45-min critical response)     |
+| • Edge-node maintenance, backup verification & Redis Pub/Sub health      |
+| • MTN & Airtel MoMo API maintenance & webhook monitoring                 |
+| • 07:00–22:00 EAT priority local support (45-min critical response)     |
 +--------------------------------------------------------------------------+
 ```
 
@@ -128,13 +128,13 @@ Before Zito Mbowe arrives, arrange three devices on the table:
 * **Response:** *"The system is built edge-first. If fiber cuts or 4G drops, the in-store mini-server keeps tickets moving between your waiters and kitchen screens over local Wi-Fi. Its PostgreSQL database is the source of truth, not a cloud copy. When the internet returns, mobile-money confirmations and the owner digest resume; no table order waits for a cloud round trip."*
 
 ### Objection 2: *"What if kitchen staff find tablets hard to use with wet or greasy hands?"*
-* **Response:** *"We specifically eliminated small buttons and complex menus. The bump buttons are 68px tallâ€”full card width. Cooks can bump tickets with the heel of their palm or a single tap. We also support external hardware bump bars if they prefer physical buttons."*
+* **Response:** *"We specifically eliminated small buttons and complex menus. The bump buttons are 68px tall—full card width. Cooks can bump tickets with the heel of their palm or a single tap. We also support external hardware bump bars if they prefer physical buttons."*
 
 ### Objection 3: *"What if a customer claims they paid via MoMo, but the system hasn't confirmed it?"*
 * **Response:** *"Our system has a built-in 45-second polling fallback that actively queries the telecom network. Even if the telecom network experiences severe lag, the cashier has a 'Verify MoMo' button to enter the telecom SMS transaction ID, verify it instantly, and release the order."*
 
 ### Objection 4: *"Why doesn't the app show a live map like Uber?"*
-* **Response:** *"Because a live map would not solve your actual delivery problem. Uber tracks a driver on a road; your rider is trying to find Block C, Room 204 at YMCA or Mary Stuart Hall. A GPS pin lands on a roof or the wrong gate, and a live map adds API fees, battery drain, and a screen your freelance riders will not use. We use what works on the ground: a zone/landmark dropdown, an exact room note, a phone number the rider can call, and a printed chit. If you later hire 5+ full-time riders and exceed 100 deliveries a day outside campus, we can add live tracking with free open-source maps â€” without rebuilding this workflow."*
+* **Response:** *"Because a live map would not solve your actual delivery problem. Uber tracks a driver on a road; your rider is trying to find Block C, Room 204 at YMCA or Mary Stuart Hall. A GPS pin lands on a roof or the wrong gate, and a live map adds API fees, battery drain, and a screen your freelance riders will not use. We use what works on the ground: a zone/landmark dropdown, an exact room note, a phone number the rider can call, and a printed chit. If you later hire 5+ full-time riders and exceed 100 deliveries a day outside campus, we can add live tracking with free open-source maps — without rebuilding this workflow."*
 
 ---
 
@@ -156,4 +156,4 @@ Before Zito Mbowe arrives, arrange three devices on the table:
 | **`Daily_Audit_Digest.md`** | 21:30 EAT owner SMS/email digest, real cash-variance rules, inventory/exception flags, and idempotency. |
 | **`Deployment_Runbook.md`** | Edge-first Docker Compose stack, LAN/router topology, Cloudflare Tunnel, backups, and restore tests. |
 | **`Service_Contract_and_Invoice_Template.md`** | Milestone-based service agreement and UGX invoice template for legal review; not legal advice. |
-| ** · `../build_strategy/Build_Strategy_and_Phases.md`** | Stage 0â€“6 delivery sequence, coding build order (C0â€“C10), evidence-based gates, RACI, dependencies, change control, and Phase 2 hand-off. |
+| ** · `../build_strategy/Build_Strategy_and_Phases.md`** | Stage 0–6 delivery sequence, coding build order (C0–C10), evidence-based gates, RACI, dependencies, change control, and Phase 2 hand-off. |
