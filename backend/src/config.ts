@@ -22,7 +22,12 @@ const envSchema = z.object({
   AIRTEL_MONEY_CLIENT_ID: z.string().default('sandbox_client_id'),
   AIRTEL_MONEY_CLIENT_SECRET: z.string().default('sandbox_secret'),
   AIRTEL_MONEY_ENV: z.string().default('sandbox'),
-  
+
+  // Telco callbacks. Set PAYMENTS_WEBHOOK_SECRET in production; when it is
+  // empty the route only accepts unsigned callbacks in development/test and
+  // refuses to process them in production (secure default).
+  PAYMENTS_WEBHOOK_SECRET: z.string().default(''),
+
   AFRICASTALKING_USERNAME: z.string().default('sandbox'),
   AFRICASTALKING_API_KEY: z.string().default('sandbox_key'),
   SMS_SENDER_ID: z.string().default('FOODIZO'),
@@ -35,7 +40,15 @@ const envSchema = z.object({
   // Nightly Digest
   DIGEST_CRON_SCHEDULE: z.string().default('30 21 * * *'),
   DIGEST_RECIPIENT_PHONE: z.string().default('+256772000000'),
-  DIGEST_RECIPIENT_EMAIL: z.string().default('zito.mbowe@foodizo.ug')
+  DIGEST_RECIPIENT_EMAIL: z.string().default('zito.mbowe@foodizo.ug'),
+  DIGEST_APP_URL: z.string().default('http://localhost:3000'),
+  // Phase 1 has no SMTP transport in this repo. Keep the channel honest:
+  // "NOT_CONFIGURED" is reported until a real mailer is wired.
+  // z.coerce.boolean() treats the string "false" as true, so parse explicitly.
+  DIGEST_EMAIL_ENABLED: z
+    .enum(['true', 'false', '1', '0'])
+    .default('false')
+    .transform((value) => value === 'true' || value === '1')
 });
 
 export const config = envSchema.parse(process.env);

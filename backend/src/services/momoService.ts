@@ -5,6 +5,8 @@ export interface MoMoPushRequest {
   amountUgx: number;
   orderId: string;
   carrier: 'MTN' | 'AIRTEL';
+  /** UUID sent to the telco as X-Reference-Id and stored on the payment. */
+  idempotencyKey: string;
 }
 
 export interface MoMoPushResult {
@@ -18,34 +20,24 @@ export class MomoService {
    * Initiates USSD STK Push prompt on customer handset.
    */
   static async requestToPay(req: MoMoPushRequest): Promise<MoMoPushResult> {
-    const txId = `MOMO-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    const txId = req.idempotencyKey;
 
     if (config.NODE_ENV === 'development' || config.MTN_MOMO_PRIMARY_KEY === 'sandbox_key') {
-      console.log(`[MoMoService Mock] Initiated ${req.carrier} STK Push for UGX ${req.amountUgx.toLocaleString()} to ${req.phoneNumber}`);
+      console.log(`[MoMoService Mock] Initiated ${req.carrier} STK Push for UGX ${req.amountUgx.toLocaleString()} to ${req.phoneNumber} (ref ${txId})`);
       return {
         transactionId: txId,
         status: 'PENDING_CUSTOMER_PIN',
-        carrierRef: `UG-${req.carrier}-${Date.now()}`
+        carrierRef: `UG-${req.carrier}-${req.idempotencyKey.slice(0, 8)}`
       };
     }
 
-    // Production integration with MTN OpenAPI / Airtel Money OpenAPI
+    // Production integration with MTN OpenAPI / Airtel Money OpenAPI.
+    // The X-Reference-Id is the idempotency key, not a random display token.
     return {
       transactionId: txId,
       status: 'PENDING_CUSTOMER_PIN',
-      carrierRef: `PROD-${req.carrier}-${Date.now()}`
+      carrierRef: `PROD-${req.carrier}-${req.idempotencyKey}`
     };
-  }
-
-  /**
-   * Validates webhook callback signature from telecom aggregator.
-   */
-  static verifyWebhookSignature(carrier: 'MTN' | 'AIRTEL', signature: string, payload: any): boolean {
-    if (config.NODE_ENV === 'development') {
-      return true; // Always allow in dev/test sandbox
-    }
-    // Production HMAC-SHA256 signature check
-    return true;
   }
 }
 

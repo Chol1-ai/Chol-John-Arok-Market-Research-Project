@@ -1,162 +1,273 @@
 import { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { SmsService } from '../services/smsService.js';
-import { AssignRiderInput } from '../types/index.js';
+import {
+  assignRiderToOrder,
+  completeOrderDelivery,
+  HandoffError
+} from '../services/handoffService.js';
+import { AssignRiderInput, OutletLocation } from '../types/index.js';
 
 const assignRiderSchema = z.object({
-  riderName: z.string().min(2),
-  riderPhone: z.string().min(9),
-  bodaPlateNumber: z.string().optional(),
-  bodaStage: z.string().optional(),
-  advanceCashUgx: z.number().default(0)
+  riderName: z.string().trim().min(2).max(80),
+  riderPhone: z.string().min(9).max(20),
+  bodaPlateNumber: z.string().trim().max(20).optional(),
+  bodaStage: z.string().trim().max(80).optional(),
+  advanceCashUgx: z.number().nonnegative().default(0),
+  dispatchMethod: z.enum(['CALL', 'WHATSAPP', 'COUNTER_HANDOFF']).optional()
 });
 
+const queueQuerySchema = z.object({
+  outlet: z.enum(['FOODIZO_HAM_TOWERS', 'OBUNUZI_YMCA']).optional(),
+  state: z.enum(['active', 'review']).default('active')
+});
+
+const completeSchema = z.object({
+  outcome: z
+    .enum(['DELIVERED', 'FAILED_UNREACHABLE', 'REFUSED', 'RETURNED'])
+    .default('DELIVERED'),
+  riderAdvanceReturnedUgx: z.number().nonnegative().optional()
+});
+
+function resolveOutlet(
+  actorOutlet: OutletLocation | null,
+  requested: OutletLocation | undefined
+): { outlet?: OutletLocation; error?: string } {
+  if (actorOutlet) {
+    if (requested && requested !== actorOutlet) {
+      return { error: `This account is scoped to ${actorOutlet}.` };
+    }
+    return { outlet: actorOutlet };
+  }
+  return { outlet: requested };
+}
+
+function mapHandoffError(error: unknown, reply: any) {
+  if (error instanceof HandoffError) {
+    return reply.status(error.statusCode).send({
+      statusCode: error.statusCode,
+      error: error.name,
+      code: error.code,
+      message: error.message
+    });
+  }
+  throw error;
+}
+
 export const dispatchRoutes: FastifyPluginAsync = async (fastify) => {
-  // GET /api/v1/dispatch/queue (List all READY delivery orders)
-  fastify.get('/queue', async (request, reply) => {
-    const queue = await fastify.prisma.orders.findMany({
-      where: {
-        channel: 'PHONE_DELIVERY',
-        status: { in: ['READY', 'PREPARING'] }
-      },
-      include: {
-        delivery_zone: true,
-        order_items: { include: { menu_item: true } },
-        handoffs: true
-      },
-      orderBy: { created_at: 'asc' }
-    });
+  // GET /api/v1/dispatch/queue?outlet=...&state=active|review
+  fastify.get(
+    '/queue',
+    { preHandler: [fastify.requireRole(['WAITER_FOH', 'MANAGER_ADMIN'])] },
+    async (request, reply) => {
+      const query = queueQuerySchema.parse(request.query);
+      const { outlet, error } = resolveOutlet(request.user!.outlet, query.outlet);
+      if (error) {
+        return reply.status(403).send({
+          statusCode: 403,
+          error: 'Forbidden',
+          code: 'OUTLET_FORBIDDEN',
+          message: error
+        });
+      }
 
-    const now = Date.now();
-    return reply.send({
-      success: true,
-      activeCount: queue.length,
-      queue: queue.map((o) => ({
-        id: o.id,
-        orderNumber: o.public_ref,
-        tokenNumber: o.digital_token,
-        status: o.status,
-        customerName: o.customer_name,
-        customerPhone: o.customer_phone,
-        destinationZone: o.delivery_zone?.display_name,
-        landmarkHint: o.delivery_zone?.landmark_hint,
-        roomNote: o.delivery_note,
-        gpsLatitude: o.delivery_lat ? Number(o.delivery_lat) : null,
-        gpsLongitude: o.delivery_lng ? Number(o.delivery_lng) : null,
-        totalUgx: Number(o.total_amount_ugx),
-        elapsedMinutes: Math.floor((now - new Date(o.created_at).getTime()) / 60000),
-        items: o.order_items.map((oi) => ({
-          name: oi.menu_item.name,
-          quantity: oi.quantity,
-          notes: oi.special_notes
-        })),
-        handoff: o.handoffs[0] || null
-      }))
-    });
-  });
+      if (query.state === 'review') {
+        const failed = await fastify.prisma.delivery_handoffs.findMany({
+          where: {
+            outcome: { in: ['FAILED_UNREACHABLE', 'REFUSED', 'RETURNED'] },
+            reviewed: false,
+            ...(outlet && { order: { outlet } })
+          },
+          include: {
+            order: {
+              include: {
+                delivery_zone: true,
+                order_items: true
+              }
+            },
+            dispatcher: { select: { id: true, full_name: true } }
+          },
+          orderBy: { dispatched_at: 'desc' },
+          take: 50
+        });
 
-  // POST /api/v1/dispatch/:id/assign-rider
+        return reply.send({
+          success: true,
+          state: 'review',
+          count: failed.length,
+          queue: failed.map((handoff) => ({
+            handoffId: handoff.id,
+            orderId: handoff.order_id,
+            orderNumber: handoff.order.public_ref,
+            tokenNumber: handoff.order.digital_token,
+            outcome: handoff.outcome,
+            notes: handoff.notes,
+            riderName: handoff.rider_name,
+            riderPhone: handoff.rider_phone,
+            dispatchedBy: handoff.dispatcher.full_name,
+            dispatchedAt: handoff.dispatched_at,
+            customerName: handoff.order.customer_name,
+            customerPhone: handoff.order.customer_phone,
+            destinationZone: handoff.order.delivery_zone?.display_name || null
+          }))
+        });
+      }
+
+      const queue = await fastify.prisma.orders.findMany({
+        where: {
+          channel: 'PHONE_DELIVERY',
+          status: 'READY',
+          ...(outlet && { outlet }),
+          OR: [
+            { handoffs: { none: {} } },
+            { handoffs: { some: { outcome: 'PENDING' } } }
+          ]
+        },
+        include: {
+          delivery_zone: true,
+          order_items: true,
+          handoffs: { orderBy: { dispatched_at: 'desc' } }
+        },
+        orderBy: { created_at: 'asc' }
+      });
+
+      const now = Date.now();
+      return reply.send({
+        success: true,
+        state: 'active',
+        count: queue.length,
+        queue: queue.map((order) => {
+          const openHandoff = order.handoffs.find((handoff) => handoff.outcome === 'PENDING');
+          const lat = order.delivery_lat ? Number(order.delivery_lat) : null;
+          const lng = order.delivery_lng ? Number(order.delivery_lng) : null;
+
+          return {
+            id: order.id,
+            orderNumber: order.public_ref,
+            tokenNumber: order.digital_token,
+            status: order.status,
+            outlet: order.outlet,
+            handoffState: openHandoff ? 'ON_THE_WAY' : 'AWAITING_RIDER',
+            customerName: order.customer_name,
+            customerPhone: order.customer_phone,
+            callLink: order.customer_phone ? `tel:+${order.customer_phone}` : null,
+            destinationZone: order.delivery_zone?.display_name,
+            landmarkHint: order.delivery_zone?.landmark_hint,
+            roomNote: order.delivery_note,
+            gpsLatitude: lat,
+            gpsLongitude: lng,
+            mapLink: lat !== null && lng !== null
+              ? `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
+              : null,
+            totalUgx: Number(order.total_amount_ugx),
+            elapsedMinutes: Math.floor((now - new Date(order.created_at).getTime()) / 60000),
+            items: order.order_items.map((item) => ({
+              name: item.menu_item_name,
+              quantity: item.quantity,
+              notes: item.special_notes
+            })),
+            handoff: openHandoff
+              ? {
+                  id: openHandoff.id,
+                  riderName: openHandoff.rider_name,
+                  riderPhone: openHandoff.rider_phone,
+                  riderAdvanceUgx: Number(openHandoff.rider_advance_ugx),
+                  dispatchedAt: openHandoff.dispatched_at,
+                  outcome: openHandoff.outcome
+                }
+              : null
+          };
+        })
+      });
+    }
+  );
+
+  // POST /api/v1/dispatch/:id/assign-rider — legacy alias for the documented
+  // order-level handoff endpoint.
   fastify.post<{ Params: { id: string }; Body: AssignRiderInput }>(
     '/:id/assign-rider',
     { preHandler: [fastify.requireRole(['WAITER_FOH', 'MANAGER_ADMIN'])] },
     async (request, reply) => {
-      const { id } = request.params;
       const data = assignRiderSchema.parse(request.body);
 
-      const order = await fastify.prisma.orders.findUnique({
-        where: { id }
-      });
-
-      if (!order) {
-        return reply.status(404).send({
-          statusCode: 404,
-          error: 'Not Found',
-          message: `Order ${id} not found`
+      try {
+        const handoff = await assignRiderToOrder(fastify.prisma, request.params.id, data, request.user!);
+        const order = await fastify.prisma.orders.findUniqueOrThrow({
+          where: { id: request.params.id }
         });
-      }
 
-      const notesArr = [];
-      if (data.bodaStage) notesArr.push(`Stage: ${data.bodaStage}`);
-      if (data.bodaPlateNumber) notesArr.push(`Plate: ${data.bodaPlateNumber}`);
-
-      // Record delivery handoff
-      const handoff = await fastify.prisma.delivery_handoffs.create({
-        data: {
-          order_id: order.id,
-          dispatched_by: request.user!.userId,
-          rider_name: data.riderName,
-          rider_phone: data.riderPhone,
-          rider_advance_ugx: data.advanceCashUgx,
-          outcome: 'PENDING',
-          notes: notesArr.length > 0 ? notesArr.join(' • ') : null
+        let smsResult = null;
+        if (order.customer_phone) {
+          smsResult = await SmsService.sendDispatchAlert(
+            order.customer_phone,
+            order.public_ref,
+            data.riderName,
+            data.riderPhone
+          );
         }
-      });
 
-      // Send Customer Dispatch SMS
-      if (order.customer_phone) {
-        SmsService.sendDispatchAlert(order.customer_phone, order.public_ref, data.riderName, data.riderPhone)
-          .catch((err) => fastify.log.warn({ err }, 'Customer dispatch SMS failed'));
+        return reply.send({
+          success: true,
+          message: `Boda rider ${data.riderName} assigned to order ${order.public_ref}.`,
+          handoff,
+          smsSent: smsResult?.success ?? false,
+          smsMode: smsResult?.mode ?? null,
+          smsDetail: smsResult?.detail ?? null
+        });
+      } catch (error) {
+        return mapHandoffError(error, reply);
       }
-
-      return reply.send({
-        success: true,
-        message: `Boda rider ${data.riderName} assigned to order ${order.public_ref}`,
-        handoff
-      });
     }
   );
 
-  // POST /api/v1/dispatch/:id/complete
-  fastify.post<{ Params: { id: string } }>(
+  // POST /api/v1/dispatch/:id/complete — legacy alias. Accepts an outcome so a
+  // failed delivery is not silently recorded as delivered.
+  fastify.post<{ Params: { id: string }; Body: { outcome?: string; riderAdvanceReturnedUgx?: number } }>(
     '/:id/complete',
     { preHandler: [fastify.requireRole(['WAITER_FOH', 'MANAGER_ADMIN'])] },
     async (request, reply) => {
-      const { id } = request.params;
-
-      const order = await fastify.prisma.orders.findUnique({
-        where: { id },
-        include: { handoffs: true }
-      });
-
-      if (!order) {
-        return reply.status(404).send({
-          statusCode: 404,
-          error: 'Not Found',
-          message: `Order ${id} not found`
-        });
-      }
-
-      if (order.handoffs.length === 0) {
+      const parsed = completeSchema.safeParse(request.body || {});
+      if (!parsed.success) {
         return reply.status(400).send({
           statusCode: 400,
           error: 'Bad Request',
-          message: 'DELIVERY_COMPLETION_REQUIRES_HANDOFF: Order cannot be marked complete without a recorded boda handoff.'
+          code: 'INVALID_DELIVERY_OUTCOME',
+          message: 'Outcome must be DELIVERED, FAILED_UNREACHABLE, REFUSED, or RETURNED.'
         });
       }
 
-      await fastify.prisma.$transaction(async (tx) => {
-        await tx.delivery_handoffs.updateMany({
-          where: { order_id: order.id },
+      try {
+        const result = await completeOrderDelivery(
+          fastify.prisma,
+          request.params.id,
+          request.user!,
+          parsed.data
+        );
+
+        fastify.broadcastWs({
+          event: 'DELIVERY_UPDATED',
+          outlet: result.order.outlet,
           data: {
-            outcome: 'DELIVERED',
-            delivered_at: new Date()
+            orderId: result.order.id,
+            orderNumber: result.order.public_ref,
+            outcome: result.outcome,
+            status: result.order.status
           }
         });
 
-        await tx.orders.update({
-          where: { id: order.id },
-          data: {
-            status: 'COMPLETED',
-            completed_at: new Date()
-          }
+        return reply.send({
+          success: true,
+          message:
+            result.outcome === 'DELIVERED'
+              ? `Order ${result.order.public_ref} delivery marked complete.`
+              : `Order ${result.order.public_ref} handoff recorded as ${result.outcome}.`,
+          orderId: result.order.id,
+          outcome: result.outcome,
+          orderStatus: result.order.status
         });
-      });
-
-      return reply.send({
-        success: true,
-        message: `Order ${order.public_ref} delivery marked complete`
-      });
+      } catch (error) {
+        return mapHandoffError(error, reply);
+      }
     }
   );
 };
-

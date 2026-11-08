@@ -31,6 +31,8 @@ export type PaymentStatus =
   | 'REFUNDED';
 
 export interface AuthUserPayload {
+  /** Unique JWT ID, so two logins in the same second never share a token hash. */
+  jti?: string;
   userId: string;
   fullName: string;
   phoneNumber: string;
@@ -82,5 +84,6 @@ export interface AssignRiderInput {
   bodaPlateNumber?: string;
   bodaStage?: string;
   advanceCashUgx?: number;
+  dispatchMethod?: 'CALL' | 'WHATSAPP' | 'COUNTER_HANDOFF';
 }
 

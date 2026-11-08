@@ -7,6 +7,8 @@
 **Target Environment:** Antigravity IDE + Opencode CLI Repository Scaffold<br>
 **Related Specifications:** `Design_System.md` · `User_Flow.md` · `User_Profiles_Personas.md` · `Delivery_Zones_and_Dispatch.md` · `Tech_Stack.md` · `Payment_Integration.md` · `Hardware_and_Peripherals.md` · `Seed_Data_and_Testing.md` · `Repo_Scaffold_and_Config.md` · `Demo_Script_and_Closing_Strategy.md` · `Daily_Audit_Digest.md` · `Deployment_Runbook.md` · `Service_Contract_and_Invoice_Template.md` · `build_strategy/Build_Strategy_and_Phases.md`
 
+> **Implementation status:** The live staff surfaces are `/login`, `/pos`, `/kds`, `/dispatch`, and `/admin`. The customer ordering, checkout, token, and tracker screens are static design prototypes under `/prototype/*`; staff key live orders on the POS. MTN/Airtel STK initiation is a stub (`MomoService.requestToPay()` does not call the telco), while signed webhook settlement, cash/manual-MoMo settlement, refunds, and digest queries are implemented. SMS is real only with production Africa's Talking credentials; email is not implemented.
+
 ---
 
 ## 1. Executive Summary & Purpose
@@ -24,10 +26,10 @@ This system solves four mission-critical operational challenges for Foodizo and 
 
 | User Role | Target Users | Core Responsibilities & Permissions |
 | :--- | :--- | :--- |
-| **Customer** | Makerere/YMCA students, Ham Towers corporate workers, walk-ins | • Browse digital menus, modifier choices, and daily specials.<br>• Place pre-orders for pickup or delivery to bypass counter lines.<br>• For delivery, select an outlet-scoped zone/landmark, enter an exact room/office/gate note, and provide a rider-callable phone number.<br>• Optionally attach a one-shot GPS pin; declining it never blocks checkout.<br>• Pay via MTN MoMo (`25677/78/76`) and Airtel Money (`25670/75/74`) — see `Payment_Integration.md`.<br>• Receive a digital token and an SMS or in-page status update when the order is ready. |
-| **Waiter / FOH** | Floor staff, order takers, counter cashiers | • Input and modify table-side dine-in orders.<br>• View live visual table occupancy grid (`VACANT`, `OCCUPIED`, `BILL_REQUESTED`, `NEEDS_CLEARING`).<br>• Capture delivery zone, room/office note, recipient name, and phone on the phone-entry screen.<br>• Dispatch delivery orders from the FOH queue: print/verify chit, call or WhatsApp the customer, and record the rider handoff.<br>• Settle an open table tab in one transaction: cash, manual MoMo, or a MoMo/Airtel STK prompt to the guest. Split checks, split tender, and table transfers are Phase 2. |
-| **Kitchen Staff (KDS Operator)** | Chefs, station cooks, kitchen supervisors | • View incoming real-time orders on station-routed KDS monitors.<br>• Filter/toggle queues by channel (`DINE_IN` vs. `TAKEAWAY_PICKUP` vs. `PHONE_DELIVERY`).<br>• Advance order/item states: `PENDING` → `PREPARING` → `READY`.<br>• Delivery tickets show the destination zone only; customer name, phone, room notes, and GPS coordinates never appear on the KDS. |
-| **Manager / Admin (Zito Mbowe)** | Store owners, operations coordinators, auditors | • Monitor cross-outlet live ticket queues and kitchen turnaround metrics.<br>• Audit automated stock tracking for poultry, cooking oil, and beef.<br>• Maintain delivery zones, fees, ETAs, and active/inactive Phase 2 areas.<br>• Audit delivery handoffs, failed deliveries, and chit reprints.<br>• Authorise voids/cancellations and close `REFUND_PENDING` MoMo payments after the external reversal.<br>• Manage menu pricing, RBAC user accounts, and end-of-day surplus/waste logs.<br>• Review daily financial reconciliation (MTN, Airtel, Manual MoMo, Cash); delivery fees are a memo component of the paid total, not a separate payment channel — see `Payment_Integration.md §9`. |
+| **Customer** | Makerere/YMCA students, Ham Towers corporate workers, walk-ins | • Browse digital menus, modifier choices, and daily specials (Phase 1 customer screens are static prototypes under `/prototype/*`; staff key live orders on the POS).<br>• Place pre-orders for pickup or delivery to bypass counter lines.<br>• For delivery, select an outlet-scoped zone/landmark, enter an exact room/office/gate note, and provide a rider-callable phone number.<br>• Optionally attach a one-shot GPS pin; declining it never blocks checkout.<br>• Pay via MTN MoMo (`25677/78/76`) and Airtel Money (`25670/75/74`) — see `Payment_Integration.md`.<br>• Receive a digital token on the chit and an SMS when the order is ready when Africa's Talking is configured; there is no live customer status page in Phase 1. |
+| **Waiter / FOH** | Floor staff, order takers, counter cashiers | • Input and modify table-side dine-in orders.<br>• View live visual table occupancy grid (`VACANT`, `OCCUPIED`, `BILL_REQUESTED`, `NEEDS_CLEARING`).<br>• Capture delivery zone, room/office note, recipient name, and phone on the phone-order flow.<br>• Dispatch delivery orders from `/dispatch`: assign the rider, call the customer, and record the handoff outcome.<br>• Settle an open table tab in one transaction: cash, manual MoMo, or a MoMo/Airtel STK prompt to the guest. Split checks, split tender, and table transfers are Phase 2. Cancellation is manager-only. |
+| **Kitchen Staff (KDS Operator)** | Chefs, station cooks, kitchen supervisors | • View incoming real-time orders on the KDS.<br>• Filter/toggle queues by channel (`DINE_IN` vs. `TAKEAWAY_PICKUP` vs. `PHONE_DELIVERY`).<br>• Advance order/item states: `PENDING` → `PREPARING` → `READY`; claiming an order deducts its recipe BOM.<br>• Delivery tickets show the destination zone only; customer name, phone, room notes, and GPS coordinates never appear on the KDS. |
+| **Manager / Admin (Zito Mbowe)** | Store owners, operations coordinators, auditors | • Monitor cross-outlet live ticket queues and kitchen turnaround metrics on `/admin`; an outlet-scoped manager sees one outlet.<br>• Review low-stock flags produced by recipe-BOM deduction; stock thresholds are database-managed in Phase 1.<br>• Review seeded delivery zones, fees, and ETAs; there is no zone-maintenance UI in Phase 1.<br>• Audit delivery handoffs, failed deliveries, and chit reprints.<br>• Cancel orders with a required reason and close `REFUND_PENDING` MoMo payments after the external reversal.<br>• Toggle menu availability; item names, prices, and staff accounts are seed/database-managed in Phase 1.<br>• Review daily financial reconciliation (MTN, Airtel, Manual MoMo, Cash); delivery fees are a memo component of the paid total, not a separate payment channel — see `Payment_Integration.md §9`. |
 
 ---
 
@@ -60,10 +62,10 @@ This system solves four mission-critical operational challenges for Foodizo and 
 > Full specification: **`Payment_Integration.md`**
 
 1. **Carrier Detection:** Customer phone prefix is normalised to E.164 and routed to MTN MoMo or Airtel Money API automatically.
-2. **USSD STK Push:** A non-blocking push is dispatched to the customer's handset; the system starts a 45-second countdown with a polling fallback at 30 seconds.
-3. **Webhook Settlement:** On `SUCCESSFUL` callback, the idempotency engine promotes the order to `PENDING` and fires it to the KDS — preventing any duplicate tickets on webhook retry.
-4. **Manual Fallback:** If telecom APIs are down, cashiers can accept USSD counter payments via merchant codes (`*165*3*242424#` / `*185*9*121212#`) and manually verify the transaction ID.
-5. **Shift-Close Reconciliation:** At 9:30 PM, Zito Mbowe reviews an auto-generated report reconciling MTN, Airtel, Manual MoMo, and cash collections across both outlets. Delivery fees are shown as a memo component of the paid total, not as a fifth payment channel. The same figures produce the 21:30 SMS/email digest (`Daily_Audit_Digest.md`); if the drawer has not been counted, the report flags `CASH_COUNT_MISSING` instead of printing a zero.
+2. **USSD STK Push:** The API creates a non-blocking `PENDING_CUSTOMER_PIN` payment attempt. `MomoService.requestToPay()` is currently a stub that does not call the telco; production go-live must wire the MTN/Airtel clients behind that interface.
+3. **Webhook Settlement:** On a signed `SUCCESSFUL` callback, the idempotency engine promotes the order to `PENDING` and fires it to the KDS — preventing duplicate tickets on webhook retry.
+4. **Manual Fallback:** If telecom APIs are down, cashiers can accept USSD counter payments via merchant codes (`*165*3*242424#` / `*185*9*121212#`) and record a verified `MANUAL_MOMO` reference at settlement.
+5. **Shift-Close Reconciliation:** At 9:30 PM, Zito Mbowe reviews the computed report on `/admin`, reconciling MTN, Airtel, Manual MoMo, and cash collections for the selected outlet. Delivery fees are a memo component of the paid total, not a fifth payment channel. The 21:30 EAT job sends an SMS digest when Africa's Talking is configured; email reports `NOT_CONFIGURED` (`Daily_Audit_Digest.md`). If the drawer has not been counted, the report flags `CASH_COUNT_MISSING` instead of printing a zero.
 
 ### 3.5 Zone & Landmark Delivery Dispatch Workflow
 
@@ -76,7 +78,7 @@ This system solves four mission-critical operational challenges for Foodizo and 
 5. **Fee & Payment:** The server recomputes the zone fee and includes it in the MoMo/Airtel amount. The client-supplied fee is never trusted.
 6. **KDS:** The paid order enters the KDS as `PENDING` with the purple `PHONE_DELIVERY` channel. The KDS shows the destination zone but never the customer phone, room note, or GPS coordinates.
 7. **Pack & Print:** When the kitchen bumps the order to `READY`, the Expo printer fires an ESC/POS delivery chit containing token, destination, room note, phone, and instructions.
-8. **Dispatch:** The FOH Dispatch Queue shows the `READY` delivery order with **CALL**, **WHATSAPP**, and **PRINT CHIT** actions. The rider takes the bag; FOH records the rider name, phone (optional), dispatch method, and any cash transport advance.
+8. **Dispatch:** The FOH Dispatch Queue shows the `READY` delivery order with **ASSIGN BODA RIDER**, **CALL CUSTOMER**, and **OPEN MAP** actions. The rider takes the bag; FOH records the rider name, phone, dispatch method, and any cash transport advance. The chit itself prints internally when the kitchen bumps the order to `READY`; reprinting is a POS action.
 9. **Completion:** On delivery, FOH marks the order `COMPLETED`, records the handoff outcome and any returned advance. If the customer is unreachable, the manager follows the failed-delivery routine; the order is not falsely marked complete.
 
 ---
@@ -123,7 +125,7 @@ This system solves four mission-critical operational challenges for Foodizo and 
 | **Automated daily prep-quantity forecasting** | ❌ Phase 2 | Phase 1 records closing surplus; the manager sets next-day prep targets manually |
 | **Phase 2 delivery zones (areas beyond the campus corridor)** | ❌ Phase 2 | See `Delivery_Zones_and_Dispatch.md §11` for Phase 2 zone triggers |
 | **Leaflet / OpenStreetMap interactive map** | ❌ Phase 2 | Requires a tile provider with a real usage policy; not needed for the zone/landmark model |
-| **Telegram bot / any third automated channel beyond SMS + email** | ❌ Phase 2 | Africa's Talking SMS + SMTP email cover the owner digest; no additional bot channels |
+| **Telegram bot / any third automated channel beyond SMS** | ❌ Phase 2 | Africa's Talking SMS covers the owner digest in Phase 1; email is not implemented |
 
 ---
 
@@ -141,8 +143,8 @@ This system solves four mission-critical operational challenges for Foodizo and 
 | `Hardware_and_Peripherals.md` | ESC/POS packaging and delivery chits, SMS gateway, power resilience |
 | `Seed_Data_and_Testing.md` | Menu, delivery zones, BOM conversions, rush-hour simulation, E2E checklist |
 | `Repo_Scaffold_and_Config.md` | Directory tree, dependencies, environment variables, bootstrap |
-| `Daily_Audit_Digest.md` | 21:30 owner SMS/email digest, cash-variance rules, idempotency, security |
-| `Deployment_Runbook.md` | Edge-node Compose deployment, LAN topology, backups, restore, rollback |
+| `Daily_Audit_Digest.md` | 21:30 EAT owner SMS digest, cash-variance rules, idempotency, security; email `NOT_CONFIGURED` |
+| `Deployment_Runbook.md` | Host Node + systemd + PostgreSQL deployment, LAN topology, backups, restore, rollback |
 |  · `build_strategy/Build_Strategy_and_Phases.md` | Stage 0–6 delivery sequence, gate evidence, RACI, dependencies, Phase 2 hand-off |
 | `build_strategy/Build_Strategy_and_Phases.md` | C0–C10 engineering build pipeline — developer execution blueprint |
 | `build_strategy/Dashboard_Build_Progression.md` | Screen-by-screen UI build order (Login → Customer PWA → KDS → Admin) |

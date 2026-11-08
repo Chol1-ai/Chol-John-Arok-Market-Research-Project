@@ -7,6 +7,8 @@
 **Project:** MRFSS — Multi-Restaurant Food Service System (Foodizo × Obunuzi)  
 **Project lead:** Zito Mbowe
 
+> **Status:** This audit grades the pre-coding specification set. It is not a description of the shipped repository. The implementation uses static HTML/CSS/JS (not Next.js) and an in-process WebSocket bus (not Redis); see `docs/Repo_Scaffold_and_Config.md` and `docs/Tech_Stack.md`.
+
 > [!IMPORTANT]
 > **Strict Quality Threshold (≥ 90%):** The project standard requires **every individual specification file to score 90% or above** before production coding commences. Following thorough architectural enhancement and gap remediation across all modules, **100% of the active specification files meet or exceed 90%** (ranging from 90% to 98%), establishing a combined overall project readiness rating of **94.5 / 100**. All duplicate roadmaps have been eliminated, leaving a clean, verified single source of truth.
 
@@ -207,7 +209,7 @@ These are the files developers actively reference while writing code. Graded for
 
 | Criterion | Score | Max | Notes |
 | :--- | :---: | :---: | :--- |
-| Completeness | 28 | 30 | All 15 models and 13 enums present with synchronized fields (`is_high_turnover`, `reviewed`, `link_token`, `sent_at`, `sms_status`, `email_status`), relations, and query indexes. |
+| Completeness | 28 | 30 | All 17 models and 13 enums present with synchronized fields (`is_high_turnover`, `reviewed`, `link_token`, `sent_at`, `sms_status`, `email_status`), relations, and query indexes. |
 | Implementability | 29 | 30 | Valid Prisma DSL with clean standalone comment syntax, explicit `@@map`, and native PostgreSQL types (`Decimal(10,2)`, `Uuid`, `Timestamptz`). |
 | Internal Consistency | 25 | 25 | Authoritative database source of truth governing all documentation, seed scripts, and queries. |
 | Test Coverage Defined | 11 | 15 | Directly verified via `prisma/seed.ts` integration fixtures and Prisma ORM client generation. |
@@ -263,7 +265,7 @@ The specification suite consists of **15 active core files** (12 in `docs/`, 2 i
 | 10 | `docs/Repo_Scaffold_and_Config.md` | **95%** | ✅ Ready (≥90%) | §6 added with multi-stage `Dockerfile.client`, `Dockerfile.server`, and production `docker-compose.yml` |
 | 11 | `docs/Daily_Audit_Digest.md` | **90%** | ✅ Ready (≥90%) | §10 added with 7 Prisma/SQL digest queries, link token generator, and idempotency guard |
 | 12 | `docs/Deployment_Runbook.md` | **91%** | ✅ Ready (≥90%) | §0 added with 21-step first-boot technician checklist for new edge node installations |
-| 13 | `prisma/schema.prisma` | **93%** | ✅ Ready (≥90%) | All 15 models, 13 enums, relations, and indexes aligned; inline comment syntax fixed |
+| 13 | `prisma/schema.prisma` | **93%** | ✅ Ready (≥90%) | All 17 models, 13 enums, relations, and indexes aligned; inline comment syntax fixed |
 | 14 | `build_strategy/Build_Strategy_and_Phases.md` | **98%** | ✅ Ready (≥90%) | Developer hours/calendar estimates (§3.0) and full Client Delivery Staging & RACI (§6) integrated |
 | 15 | `build_strategy/Dashboard_Build_Progression.md` | **97%** | ✅ Ready (≥90%) | §4 added with Touch Ergonomics Matrix (48px, 56px, 68px, 64px), TypeScript wire interfaces & E2E journey test spec |
 | — | *`docs/Implementation_Phases.md`* | *Merged* | 🔄 Consolidated | *Retired and deleted; Stages 0–6 & RACI merged into `Build_Strategy_and_Phases.md §6`* |

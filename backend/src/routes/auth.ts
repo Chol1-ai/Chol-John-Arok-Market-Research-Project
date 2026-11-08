@@ -1,104 +1,225 @@
+import { randomUUID } from 'crypto';
 import { FastifyPluginAsync } from 'fastify';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
-import { PinLoginInput } from '../types/index.js';
+import { PinLoginInput, UserRole } from '../types/index.js';
+import { config } from '../config.js';
+import { hashSessionToken, SESSION_COOKIE } from '../plugins/auth.js';
+import { normalizeUgandanPhone } from '../utils/phone.js';
 
-const loginSchema = z.object({
-  phoneNumber: z.string().min(9),
-  pin: z.string().length(4)
+const loginSchema = z
+  .object({
+    phoneNumber: z.string().min(9).optional(),
+    staffId: z.string().uuid().optional(),
+    pin: z.string().regex(/^\d{4}$/, 'PIN must be exactly four digits')
+  })
+  .refine((value) => Boolean(value.phoneNumber || value.staffId), {
+    message: 'Either phoneNumber or staffId is required',
+    path: ['phoneNumber']
+  });
+
+const directoryQuerySchema = z.object({
+  outlet: z.enum(['FOODIZO_HAM_TOWERS', 'OBUNUZI_YMCA']).optional()
 });
 
+const ROLE_LABELS: Record<UserRole, string> = {
+  CUSTOMER: 'Customer',
+  WAITER_FOH: 'Waiter / FOH',
+  KITCHEN_STAFF: 'Kitchen Staff',
+  MANAGER_ADMIN: 'Manager / Admin'
+};
+
+const ROLE_HOME: Record<UserRole, string> = {
+  CUSTOMER: '/',
+  WAITER_FOH: '/pos',
+  KITCHEN_STAFF: '/kds',
+  MANAGER_ADMIN: '/admin'
+};
+
 export const authRoutes: FastifyPluginAsync = async (fastify) => {
+  // Shared terminal directory. This deliberately exposes only display data —
+  // never phone numbers, PIN hashes, failed-login counters, or session state.
+  fastify.get(
+    '/terminal-staff',
+    { config: { rateLimit: { max: 30, timeWindow: '1 minute' } } },
+    async (request, reply) => {
+      const { outlet } = directoryQuerySchema.parse(request.query);
+
+      const users = await fastify.prisma.users.findMany({
+        where: {
+          is_active: true,
+          role: { in: ['WAITER_FOH', 'KITCHEN_STAFF', 'MANAGER_ADMIN'] },
+          ...(outlet && { outlet })
+        },
+        select: {
+          id: true,
+          full_name: true,
+          role: true,
+          outlet: true
+        },
+        orderBy: [{ role: 'asc' }, { full_name: 'asc' }]
+      });
+
+      reply.header('Cache-Control', 'no-store');
+      return reply.send({
+        success: true,
+        staff: users.map((user) => ({
+          id: user.id,
+          fullName: user.full_name,
+          role: user.role,
+          roleLabel: ROLE_LABELS[user.role],
+          outlet: user.outlet,
+          initials: user.full_name
+            .split(/\s+/)
+            .filter(Boolean)
+            .slice(0, 2)
+            .map((part) => part[0]?.toUpperCase())
+            .join('')
+        }))
+      });
+    }
+  );
+
   // Staff PIN Gateway: POST /api/v1/auth/pin
-  fastify.post<{ Body: PinLoginInput }>('/pin', async (request, reply) => {
-    const { phoneNumber, pin } = loginSchema.parse(request.body);
+  fastify.post<{ Body: PinLoginInput & { staffId?: string } }>(
+    '/pin',
+    { config: { rateLimit: { max: 10, timeWindow: '1 minute' } } },
+    async (request, reply) => {
+      const { phoneNumber, staffId, pin } = loginSchema.parse(request.body);
 
-    const user = await fastify.prisma.users.findUnique({
-      where: { phone_number: phoneNumber }
-    });
-
-    if (!user || !user.is_active) {
-      return reply.status(401).send({
-        statusCode: 401,
-        error: 'Unauthorized',
-        message: 'Invalid phone number or staff account inactive'
+      const user = await fastify.prisma.users.findUnique({
+        where: staffId
+          ? { id: staffId }
+          : { phone_number: normalizeUgandanPhone(phoneNumber!) }
       });
-    }
 
-    // Check account lockout
-    if (user.locked_until && user.locked_until > new Date()) {
-      return reply.status(423).send({
-        statusCode: 423,
-        error: 'Locked',
-        message: `Account is locked until ${user.locked_until.toISOString()} due to excessive PIN failures`
-      });
-    }
+      if (!user || !user.is_active) {
+        return reply.status(401).send({
+          statusCode: 401,
+          error: 'Unauthorized',
+          message: 'Invalid staff account or account inactive'
+        });
+      }
 
-    // Verify 4-digit PIN against bcrypt hash
-    const isPinValid = await bcrypt.compare(pin, user.pin_hash);
+      if (user.locked_until && user.locked_until > new Date()) {
+        return reply.status(423).send({
+          statusCode: 423,
+          error: 'Locked',
+          message: `Account is locked until ${user.locked_until.toISOString()} due to excessive PIN failures`
+        });
+      }
 
-    if (!isPinValid) {
-      const failedCount = user.failed_login_count + 1;
-      const lockedUntil = failedCount >= 5 ? new Date(Date.now() + 15 * 60 * 1000) : null;
+      const isPinValid = await bcrypt.compare(pin, user.pin_hash);
 
+      if (!isPinValid) {
+        const failedCount = user.failed_login_count + 1;
+        const lockedUntil = failedCount >= 5 ? new Date(Date.now() + 15 * 60 * 1000) : null;
+
+        await fastify.prisma.users.update({
+          where: { id: user.id },
+          data: {
+            failed_login_count: failedCount,
+            locked_until: lockedUntil
+          }
+        });
+
+        return reply.status(401).send({
+          statusCode: 401,
+          error: 'Unauthorized',
+          message: lockedUntil
+            ? 'Incorrect PIN. Account locked for 15 minutes after five failed attempts.'
+            : 'Incorrect 4-digit staff PIN',
+          attemptsRemaining: Math.max(0, 5 - failedCount)
+        });
+      }
+
+      // Opening a new session also clears the failed-attempt counter.
       await fastify.prisma.users.update({
         where: { id: user.id },
         data: {
-          failed_login_count: failedCount,
-          locked_until: lockedUntil
+          failed_login_count: 0,
+          locked_until: null,
+          last_login_at: new Date()
         }
       });
 
-      return reply.status(401).send({
-        statusCode: 401,
-        error: 'Unauthorized',
-        message: 'Incorrect 4-digit staff PIN'
-      });
-    }
-
-    // Reset failed attempts & record login
-    await fastify.prisma.users.update({
-      where: { id: user.id },
-      data: {
-        failed_login_count: 0,
-        locked_until: null,
-        last_login_at: new Date()
-      }
-    });
-
-    const token = fastify.jwt.sign({
-      userId: user.id,
-      fullName: user.full_name,
-      phoneNumber: user.phone_number,
-      role: user.role,
-      outlet: user.outlet
-    });
-
-    return reply.send({
-      success: true,
-      token,
-      user: {
-        id: user.id,
+      const token = fastify.jwt.sign({
+        // A unique claim per login keeps quick re-logins from producing the same
+        // signed token (JWTs are deterministic within the same `iat` second),
+        // which would collide on user_sessions.token_hash.
+        jti: randomUUID(),
+        userId: user.id,
         fullName: user.full_name,
+        phoneNumber: user.phone_number,
         role: user.role,
         outlet: user.outlet
-      }
-    });
-  });
+      });
+
+      const expiresAt = new Date(Date.now() + config.JWT_EXPIRATION_HOURS * 60 * 60 * 1000);
+      await fastify.prisma.user_sessions.create({
+        data: {
+          user_id: user.id,
+          token_hash: hashSessionToken(token),
+          expires_at: expiresAt,
+          ip_address: request.ip,
+          user_agent: request.headers['user-agent'] || null
+        }
+      });
+
+      reply.setCookie(SESSION_COOKIE, token, {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: config.NODE_ENV === 'production',
+        path: '/',
+        maxAge: config.JWT_EXPIRATION_HOURS * 60 * 60
+      });
+
+      return reply.send({
+        success: true,
+        token,
+        expiresAt,
+        user: {
+          id: user.id,
+          fullName: user.full_name,
+          phoneNumber: user.phone_number,
+          role: user.role,
+          roleLabel: ROLE_LABELS[user.role],
+          outlet: user.outlet,
+          homePath: ROLE_HOME[user.role]
+        }
+      });
+    }
+  );
 
   // GET /api/v1/auth/me
   fastify.get('/me', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+    const role = request.user!.role;
     return reply.send({
-      user: request.user
+      success: true,
+      user: {
+        ...request.user,
+        roleLabel: ROLE_LABELS[role],
+        homePath: ROLE_HOME[role]
+      }
     });
   });
 
   // POST /api/v1/auth/logout
   fastify.post('/logout', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+    if (request.authToken) {
+      await fastify.prisma.user_sessions.updateMany({
+        where: {
+          token_hash: hashSessionToken(request.authToken),
+          revoked_at: null
+        },
+        data: { revoked_at: new Date() }
+      });
+    }
+
+    reply.clearCookie(SESSION_COOKIE, { path: '/' });
     return reply.send({
       success: true,
       message: 'Logged out successfully'
     });
   });
 };
-

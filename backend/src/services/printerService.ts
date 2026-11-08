@@ -11,9 +11,23 @@ export interface ChitData {
   deliveryNotes?: string;
   items: Array<{ name: string; quantity: number; notes?: string }>;
   totalUgx: number;
+  reprint?: boolean;
 }
 
 export class PrinterService {
+  /**
+   * Strips ESC/POS control bytes from operator/customer text and caps the
+   * field length. Text is never allowed to inject printer commands.
+   */
+  static sanitizeText(value: string | undefined, maxLength = 160): string {
+    if (!value) return '';
+    return value
+      .replace(/[\u0000-\u001F\u007F]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .slice(0, maxLength);
+  }
+
   /**
    * Generates ESC/POS formatted byte buffer for an 80mm thermal receipt printer.
    */
@@ -32,30 +46,43 @@ export class PrinterService {
       for (const b of buf) commands.push(b);
     };
 
-    appendText(`TOKEN ${data.tokenNumber}`);
+    appendText(`TOKEN ${this.sanitizeText(data.tokenNumber, 32)}`);
+    if (data.reprint) {
+      appendText('*** REPRINT ***');
+    }
     
     // Normal text, left align
     commands.push(GS, 0x21, 0x00);
     commands.push(ESC, 0x61, 0x00);
     
     appendText('------------------------------------------');
-    appendText(`Channel: ${data.channel} | Ref: ${data.orderNumber.substring(0, 8)}`);
+    appendText(
+      `Channel: ${this.sanitizeText(data.channel, 40)} | Ref: ${this.sanitizeText(
+        data.orderNumber,
+        40
+      ).substring(0, 8)}`
+    );
     if (data.tableOrZone) {
-      appendText(`Destination: ${data.tableOrZone}`);
+      appendText(`Destination: ${this.sanitizeText(data.tableOrZone)}`);
     }
     if (data.customerName) {
-      appendText(`Guest: ${data.customerName} (${data.customerPhone || 'No Phone'})`);
+      appendText(
+        `Guest: ${this.sanitizeText(data.customerName, 80)} (${this.sanitizeText(
+          data.customerPhone,
+          24
+        ) || 'No Phone'})`
+      );
     }
     if (data.deliveryNotes) {
-      appendText(`Notes: ${data.deliveryNotes}`);
+      appendText(`Notes: ${this.sanitizeText(data.deliveryNotes)}`);
     }
     appendText('------------------------------------------');
 
     // Items
     for (const item of data.items) {
-      appendText(`${item.quantity}x ${item.name}`);
+      appendText(`${item.quantity}x ${this.sanitizeText(item.name)}`);
       if (item.notes) {
-        appendText(`   * ${item.notes}`);
+        appendText(`   * ${this.sanitizeText(item.notes)}`);
       }
     }
 
@@ -73,6 +100,38 @@ export class PrinterService {
    * Sends raw print bytes to network thermal printer.
    * Fail-open: Never throws uncaught error if printer is offline.
    */
+  /**
+   * Sends the ESC/POS drawer-kick pulse (ESC p 0 25 250). Returns the real
+   * socket outcome, never a simulated "release confirmed".
+   */
+  static async kickDrawer(): Promise<boolean> {
+    const pulse = Buffer.from([0x1b, 0x70, 0x00, 0x19, 0xfa]);
+
+    return new Promise((resolve) => {
+      const client = new net.Socket();
+      client.setTimeout(2500);
+
+      client.connect(config.EXPO_PRINTER_PORT, config.EXPO_PRINTER_IP, () => {
+        client.write(pulse, () => {
+          client.end();
+          resolve(true);
+        });
+      });
+
+      client.on('error', (err) => {
+        console.warn(`[PrinterService] Drawer kick failed (${config.EXPO_PRINTER_IP}): ${err.message}`);
+        client.destroy();
+        resolve(false);
+      });
+
+      client.on('timeout', () => {
+        console.warn(`[PrinterService] Drawer kick timed out (${config.EXPO_PRINTER_IP}).`);
+        client.destroy();
+        resolve(false);
+      });
+    });
+  }
+
   static async printChit(data: ChitData): Promise<boolean> {
     const chitBuffer = this.formatChit(data);
 

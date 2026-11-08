@@ -7,6 +7,8 @@
 **Target Environment:** Antigravity IDE + Opencode CLI Repository Scaffold<br>
 **Related Files:** `Foundational_Concept.md` · `Design_System.md` · `User_Flow.md` · `User_Profiles_Personas.md` · `Delivery_Zones_and_Dispatch.md` · `Tech_Stack.md` · `Hardware_and_Peripherals.md` · `Seed_Data_and_Testing.md` · `Repo_Scaffold_and_Config.md` · `Demo_Script_and_Closing_Strategy.md` · `Daily_Audit_Digest.md` · `Deployment_Runbook.md` · `Service_Contract_and_Invoice_Template.md` · `build_strategy/Build_Strategy_and_Phases.md`
 
+> **Implementation status (read this first):** The repository implements the order/payment rows, signed webhook settlement, `payment_events` idempotency, cash and `MANUAL_MOMO` settlement, refund closure, and reconciliation/digest queries. **`MomoService.requestToPay()` is a stub:** it returns `PENDING_CUSTOMER_PIN` without calling the MTN or Airtel API, in both development and production. There is no polling fallback and no live telco client in this repository. A production go-live must wire the telco clients behind the same `MomoService` interface; signed webhook delivery can already be tested. There is no payment-TTL auto-cancel: an unpaid order stays `AWAITING_PAYMENT` until a manager cancels it. There is no Redis; post-commit events use the in-process WebSocket bus (`fastify.broadcastWs`). There is no email transport.
+
 ---
 
 ## 1. Overview & Payment Landscape
@@ -26,7 +28,7 @@ This module manages the end-to-end payment lifecycle:
 - Generating verified financial receipts **before** firing tickets to the KDS
 - Charging the server-computed delivery fee as part of the order total for `PHONE_DELIVERY`
 
-> **Payment gate:** A prepaid request to `POST /api/v1/orders` creates the order as `AWAITING_PAYMENT` and a payment row as `INITIATED`. The order becomes `PENDING` — the first state visible to the KDS — **only** after a verified `SUCCESSFUL` payment. A failed or timed-out payment leaves the order in `AWAITING_PAYMENT` for a retry and is auto-cancelled after the payment TTL. The single exception is an authenticated FOH dine-in **POSTPAY** tab, which enters `PENDING` immediately and is settled at bill close; this exception is not available to customer-app, QR, or delivery orders. See `User_Flow.md §2 Flow A` and `Payment_Integration.md §6` for the promotion handler; `Tech_Stack.md §5` shows the downstream KDS status handler.
+> **Payment gate:** A prepaid request to `POST /api/v1/orders` creates the order as `AWAITING_PAYMENT` and a payment row as `INITIATED`. The order becomes `PENDING` — the first state visible to the KDS — **only** after a verified `SUCCESSFUL` payment. A failed or timed-out payment leaves the order in `AWAITING_PAYMENT` for a retry; Phase 1 has no payment-TTL auto-cancel, so a stale order stays there until a manager cancels it with a reason. The single exception is an authenticated FOH dine-in **POSTPAY** tab, which enters `PENDING` immediately and is settled at bill close; this exception is not available to customer-app, QR, or delivery orders. See `User_Flow.md §2 Flow A` and `§6` for the promotion handler; `Tech_Stack.md §5` shows the downstream KDS status handler.
 
 > **Delivery fee rule:** For delivery orders, `amountUgx` is `subtotal + delivery_fee_ugx`, where the fee is resolved from the active `delivery_zones` row on the server. The client never supplies a trusted fee. Zone, room note, recipient name, and rider-callable phone must validate **before** the order and payment record are created. See `Delivery_Zones_and_Dispatch.md §4` and `Tech_Stack.md §4`.
 
@@ -81,7 +83,7 @@ This module manages the end-to-end payment lifecycle:
        │       PAYMENT SETTLED       │
        │  payment.status → SUCCESSFUL│
        │  order.status:              │
-       │    AWAITING_PAYMENT → PENDING│ ←── Fires to KDS via Redis
+       │    AWAITING_PAYMENT → PENDING│ ←── Fires to KDS via WebSocket
        │  display token already      │
        │  reserved at order creation │
        └─────────────────────────────┘
@@ -139,7 +141,7 @@ export function parseUgandanMsisdn(rawInput: string): {
       ▼
 [ PENDING_CUSTOMER_PIN ] ◄─────────────────────┐
       │                  │                      │
-(Webhook: SUCCESS)  (30s → Poll Telco API)  (45s Timeout)
+(Webhook: SUCCESS)  (no poll in Phase 1)   (45s UI target)
       │                  │                      │
       ▼                  └──────────────────────┘
 [ SUCCESSFUL ]                  │
@@ -148,17 +150,17 @@ export function parseUgandanMsisdn(rawInput: string): {
  → PENDING → KDS)               │
                                 ▼
                          [ FAILED / CANCELLED ]
-                         (Order stays AWAITING_PAYMENT
-                          for retry, then auto-cancels)
+                         (Order stays AWAITING_PAYMENT;
+                          manager cancels with a reason)
 ```
 
-**Order-state rule:** payment status and order status are separate. A failed or timed-out payment does **not** cancel the order immediately; the customer may retry with a new payment attempt. The order remains `AWAITING_PAYMENT` until a success promotes it to `PENDING`, or until the payment TTL expires and a cleanup job marks it `CANCELLED` with `cancellation_reason = 'PAYMENT_TIMEOUT'`. A late success after cancellation must be flagged for refund, never silently pushed to the KDS. For a customer-app `TAKEAWAY_PICKUP`, the payer MSISDN is stored as `orders.customer_phone` at creation so the READY SMS has a destination; a cash walk-in without a phone has no number and no SMS.
+**Order-state rule:** payment status and order status are separate. A failed or timed-out payment does **not** cancel the order immediately; the customer may retry with a new payment attempt. The order remains `AWAITING_PAYMENT` until a success promotes it to `PENDING`. Phase 1 has **no payment-TTL cleanup job**; a manager closes a stale order with `POST /api/v1/orders/:id/cancel` and a required reason. A late success after cancellation must be flagged for refund, never silently pushed to the KDS. For a customer-app `TAKEAWAY_PICKUP`, the payer MSISDN is stored as `orders.customer_phone` at creation so the READY SMS has a destination; a cash walk-in without a phone has no number and no SMS.
 
 ### The 45-Second Rule & Polling Fallback
 
-In Kampala, USSD network congestion causes pushes to take **10–25 seconds** to appear on handsets, and webhook callbacks can experience brief carrier delays.
+The 45-second countdown and polling fallback below are a **design target, not implemented**. The current POS settlement dialog sends the STK request (a stub outside tests) and waits for a signed provider webhook; there is no background poller and no customer-facing countdown in Phase 1.
 
-| Time | System Action |
+| Time | Design-target action (not shipped) |
 | :--- | :--- |
 | `T+0s` | STK push dispatched; frontend shows 45-second countdown: *"Check your phone to enter your PIN"* |
 | `T+30s` | If no webhook received, backend polls: `GET /collection/v1_0/requesttopay/{referenceId}` |
@@ -167,6 +169,8 @@ In Kampala, USSD network congestion causes pushes to take **10–25 seconds** to
 ---
 
 ## 5. API Implementation Contracts
+
+> **Shipped implementation:** `backend/src/services/momoService.ts` exposes `requestToPay()` and returns `PENDING_CUSTOMER_PIN` with a deterministic carrier reference. It does **not** call either telco. The contracts below are the go-live reference for wiring the real clients, not code that runs today.
 
 ### 5.1 MTN MoMo Open API (Collection v1.0)
 
@@ -177,8 +181,8 @@ In Kampala, USSD network congestion causes pushes to take **10–25 seconds** to
 | `/collection/v1_0/requesttopay/{X-Reference-Id}` | `GET` | Poll transaction status |
 
 ```typescript
-// Service: MTN MoMo STK Push
-// Location: src/server/services/momo-service.ts
+// Reference only: the shipped MomoService.requestToPay() is a stub.
+// Location: backend/src/services/momoService.ts
 
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
@@ -251,11 +255,11 @@ Telcos may retry webhook deliveries. The idempotency guard prevents duplicate ti
 
 ```typescript
 // Fastify Route: POST /api/v1/payments/webhook
-// Location: src/server/routes/payments.ts
+// Legacy alias: POST /api/v1/payments/momo/webhook
+// Location: backend/src/routes/payments.ts
 
 import type { FastifyRequest, FastifyReply } from 'fastify';
 import { prisma } from '../plugins/prisma';
-import { redisPublisher } from '../plugins/redis';
 
 type PaymentWebhookPayload = {
   provider: 'MTN' | 'AIRTEL';
@@ -488,14 +492,14 @@ export async function handlePaymentWebhook(
     result = 'ACKNOWLEDGED';
   });
 
-  // Broadcast only after the transaction commits. Redis is a latency
-  // optimization: the KDS also loads PENDING orders on reconnect, so a failed
-  // publish must not cause the telco to retry a payment that already settled.
+  // Broadcast only after the transaction commits. The in-process WebSocket bus
+  // is a latency optimization: the KDS also loads PENDING orders on reconnect,
+  // so a failed broadcast must not cause the telco to retry a settled payment.
   if (broadcastOrder) {
     try {
-      await redisPublisher.publish('KDS_NEW_ORDER', JSON.stringify(broadcastOrder));
+      request.server.broadcastWs({ event: 'TICKET_CREATED', data: broadcastOrder });
     } catch (error) {
-      request.log.error({ error, orderId: broadcastOrder.orderId }, 'KDS publish failed');
+      request.log.error({ error, orderId: broadcastOrder.orderId }, 'KDS broadcast failed');
     }
   }
 
@@ -631,9 +635,9 @@ When telecom APIs experience downtime or signal drops inside Ham Towers basement
 
 **Step 2 — Cashier manual verification:**
 1. Customer shows the telco SMS receipt at the counter.
-2. Cashier taps **"Verify MoMo Transaction"** on their terminal.
-3. Cashier enters the **full transaction ID** (or, if the receipt truncates it, the last **six** characters) plus the amount and payer phone. Four digits alone are not sufficient; they collide too easily and invite fraud.
-4. The service checks the receipt against the order's `public_ref`, amount, and phone, creates a `payments` row with `carrier = 'MANUAL_MOMO'`, `status = 'SUCCESSFUL'`, the payer MSISDN, the full (or last-six) transaction ID, `manual_verified_by`, `manual_verified_at`, and `audit_flag = 'VERIFIED_MANUAL_MOMO'`. If the order is `AWAITING_PAYMENT`, it promotes the order to `PENDING`; if the order is already `PENDING` or later (a POSTPAY tab), it leaves kitchen status unchanged. If the order already has a `SUCCESSFUL` payment, the verified manual payment becomes `REFUND_PENDING` with `audit_flag = 'DUPLICATE_SUCCESS_REQUIRES_REFUND'` instead of creating a second success. The verification is audit-logged.
+2. Cashier opens the settle dialog, chooses `MANUAL_MOMO`, and enters the provider transaction reference.
+3. The reference must be at least 3 characters; four digits alone are not sufficient because they collide too easily and invite fraud. Payer phone is optional in the current API.
+4. The service checks the reference and amount, creates a `payments` row with `carrier = 'MANUAL_MOMO'`, `status = 'SUCCESSFUL'`, the full provider transaction reference, `manual_verified_by`, `manual_verified_at`, and `audit_flag = 'VERIFIED_MANUAL_MOMO'`. If the order is `AWAITING_PAYMENT`, it promotes the order to `PENDING`; if the order is already `PENDING` or later (a POSTPAY tab), it leaves kitchen status unchanged. If the order already has a `SUCCESSFUL` payment, the verified manual payment becomes `REFUND_PENDING` with `audit_flag = 'DUPLICATE_SUCCESS_REQUIRES_REFUND'` instead of creating a second success. The verification is audit-logged.
 
 | Merchant Code | Outlet | Carrier |
 | :--- | :--- | :--- |
@@ -648,15 +652,14 @@ A cash sale is a real payment method, not a missing payment. Use `POST /api/v1/o
 
 ```json
 {
-  "carrier": "CASH",
+  "paymentMethod": "CASH",
   "amountUgx": 18000,
-  "customerMsisdn": null,
-  "externalTransactionId": null
+  "tenderedCashUgx": 20000
 }
 ```
 
-- `CASH` and `MANUAL_MOMO` settle immediately as `SUCCESSFUL`; `MANUAL_MOMO` requires the transaction ID, amount, and payer phone from §8.
-- `MTN` and `AIRTEL` create a new payment attempt and dispatch an STK push to `customerMsisdn`; the verified webhook completes it. Use this for a table tab that the guest wants to pay by mobile money at bill close.
+- `CASH` and `MANUAL_MOMO` settle immediately as `SUCCESSFUL`; `MANUAL_MOMO` requires a provider transaction reference of at least 3 characters in `externalTransactionId` (or `transactionReference`). Payer phone is optional in the current API.
+- `MTN` and `AIRTEL` create a new payment attempt and call `MomoService.requestToPay()`; the current service is a stub that returns `PENDING_CUSTOMER_PIN`, and the verified webhook completes the payment. Use this for a table tab that the guest wants to pay by mobile money at bill close.
 - The endpoint never changes kitchen status. A tab that is already `PENDING`, `PREPARING`, `READY`, or `COMPLETED` stays there.
 - One `SUCCESSFUL` payment is allowed per order. A second success becomes `REFUND_PENDING`; it is not a second ticket.
 - Every settlement writes an `audit_log` row naming the staff user and the carrier.
@@ -694,7 +697,7 @@ A failed delivery is settled as `CANCELLED` by the manager; if the delivery was 
 
 ## 9. Manager Shift-Close Reconciliation Report
 
-At **9:30 PM**, Zito Mbowe reviews the daily financial reconciliation across both outlets. The figures below are illustrative; the report must compute every value, and “balanced” is valid only after a cash count:
+At **9:30 PM**, Zito Mbowe reviews the daily financial reconciliation on `/admin`; the digest scheduler runs at 21:30 EAT by default. The figures below are illustrative; the report must compute every value, and “balanced” is valid only after a cash count:
 
 ```
 +-------------------------------------------------------------------------+
@@ -724,9 +727,9 @@ At **9:30 PM**, Zito Mbowe reviews the daily financial reconciliation across bot
 +-------------------------------------------------------------------------+
 ```
 
-> The reconciliation report is generated automatically from the `payments`, `delivery_handoffs`, and `cash_counts` tables at 9:30 PM and pushed to Zito Mbowe's admin dashboard and email. Delivery fees are included in the MTN/Airtel totals; the report may show a **Delivery Fees (memo)** line for audit, but it is not a separate collection channel and must never be collected as an untracked cash top-up.
+> The reconciliation report is computed from the `payments`, `delivery_handoffs`, and `cash_counts` tables and rendered on `/admin` on demand. The scheduled/on-demand digest sends an SMS summary when Africa's Talking is configured; there is no email transport. Delivery fees are included in the MTN/Airtel totals; the report may show a **Delivery Fees (memo)** line for audit, but it is not a separate collection channel and must never be collected as an untracked cash top-up.
 
-> **Daily digest:** The same figures feed the 21:30 owner SMS/email digest in `Daily_Audit_Digest.md`. The digest must read `cash_counts.variance_ugx`; if the cash count is missing, it must say so instead of printing a zero. `REFUND_PENDING` payments are not gross collections; list them separately with the reason (`LATE_PAYMENT_AFTER_CANCEL`, `DUPLICATE_SUCCESS_REQUIRES_REFUND`, `CANCELLED_AFTER_PAYMENT`, or `FAILED_DELIVERY`) until a manager closes the reversal as `REFUNDED` through §8.2. Closed refunds stay out of gross and move to a memo count.
+> **Daily digest:** The same figures feed the 21:30 owner SMS digest in `Daily_Audit_Digest.md`; email reports `NOT_CONFIGURED`. The digest must read `cash_counts.variance_ugx`; if the cash count is missing, it must say so instead of printing a zero. `REFUND_PENDING` payments are not gross collections; list them separately with the reason (`LATE_PAYMENT_AFTER_CANCEL`, `DUPLICATE_SUCCESS_REQUIRES_REFUND`, `CANCELLED_AFTER_PAYMENT`, or `FAILED_DELIVERY`) until a manager closes the reversal as `REFUNDED` through §8.2. Closed refunds stay out of gross and move to a memo count.
 
 > **Rider advance rule:** If the outlet pays the rider from the cash drawer, the handoff must record `rider_advance_ugx` and any returned change. The cash drawer count is reconciled against cash sales **minus net rider advances**. An unrecorded UGX 2,000 handoff appears as a UGX 2,000 drawer variance even though the money was spent correctly. The delivery fee is revenue; the rider advance is an operating cost. Report the net contribution, not just the fee collected.
 
@@ -737,9 +740,9 @@ At **9:30 PM**, Zito Mbowe reviews the daily financial reconciliation across bot
 | Control | Implementation |
 | :--- | :--- |
 | **No PIN Handling** | Customer MoMo PINs are entered exclusively on the telco SIM card level — never passed through or stored by this app |
-| **Idempotency Keys** | Every payment attempt uses a cryptographically generated `UUIDv4` sent as `X-Reference-Id`; `payment_events(provider, event_id)` dedupes webhook retries |
-| **Webhook Validation** | Verify the provider callback credential (shared secret or API key where the provider supports one) and enforce the provider’s published source IP ranges. Add an HMAC check only if the provider actually signs callbacks; do not claim HMAC support that the telco does not offer. |
-| **Transport Security** | TLS is required for every internet-facing hop (telco APIs, Cloudflare Tunnel, SMTP). The in-store LAN is HTTP on a restricted staff SSID; do not expose it to the WAN |
+| **Idempotency Keys** | Every payment attempt uses a cryptographically generated `randomUUID()` stored as `payments.idempotency_key`; `payment_events(provider, event_id)` dedupes webhook retries |
+| **Webhook Validation** | When `PAYMENTS_WEBHOOK_SECRET` is set, the route verifies `X-Foodizo-Signature` as an HMAC-SHA256 of the JSON payload. Without a secret, unsigned callbacks are accepted only in development/test and rejected with `401 INVALID_WEBHOOK_SIGNATURE` in production |
+| **Transport Security** | TLS is required for every internet-facing hop (telco APIs and Cloudflare Tunnel). The in-store LAN is HTTP on a restricted staff SSID; do not expose it to the WAN. There is no SMTP transport in Phase 1 |
 | **Environment Isolation** | `MOMO_TARGET_ENV=sandbox` for development; `production` flag requires explicit deployment approval |
 | **PCI Scope Reduction** | No card data is stored or processed — system is MoMo-only, reducing PCI DSS scope to SAQ A |
 
@@ -775,11 +778,12 @@ curl -X POST "https://sandbox.momodeveloper.mtn.com/v1_0/apiuser/${API_USER_UUID
 
 #### Step 2: Configure `.env`
 ```bash
-MOMO_TARGET_ENV="sandbox"
-MOMO_COLLECTION_SUBSCRIPTION_KEY="your_collection_primary_key"
-MOMO_API_USER="<generated-uuid-from-above>"
-MOMO_API_KEY="<generated-api-key-from-above>"
-MOMO_CALLBACK_URL="http://192.168.1.100:4000/api/v1/webhooks/momo"
+MTN_MOMO_TARGET_ENV="sandbox"
+MTN_MOMO_PRIMARY_KEY="your_collection_primary_key"
+MTN_MOMO_USER_ID="<generated-uuid-from-above>"
+MTN_MOMO_API_KEY="<generated-api-key-from-above>"
+MTN_MOMO_CALLBACK_HOST="https://your-public-host"
+# Provider callback path: /api/v1/payments/webhook
 ```
 
 #### Step 3: Test MSISDNs & Simulation Rules (Sandbox)
@@ -795,20 +799,17 @@ MOMO_CALLBACK_URL="http://192.168.1.100:4000/api/v1/webhooks/momo"
 Airtel Money operates through their partner integration portal (`https://openapiportal.airtel.africa`).
 
 #### Step 1: Credentials Required
-* `AIRTEL_CLIENT_ID`: Issued upon application creation.
-* `AIRTEL_CLIENT_SECRET`: Paired secret for OAuth token generation.
-* `AIRTEL_MERCHANT_PIN`: 4-digit PIN for merchant collections.
-* `AIRTEL_COUNTRY_CODE`: `UG`.
-* `AIRTEL_CURRENCY`: `UGX`.
+* `AIRTEL_MONEY_CLIENT_ID`: Issued upon application creation.
+* `AIRTEL_MONEY_CLIENT_SECRET`: Paired secret for OAuth token generation.
+* `AIRTEL_MONEY_ENV`: `sandbox` or `production`.
+* Outlet/country: Uganda (`UG`), currency `UGX`.
 
 #### Step 2: Configure `.env`
 ```bash
-AIRTEL_BASE_URL="https://openapi.airtel.africa/auth/v1/token"
-AIRTEL_PAYMENT_URL="https://openapi.airtel.africa/merchant/v2/payments/"
-AIRTEL_CLIENT_ID="your_airtel_client_id"
-AIRTEL_CLIENT_SECRET="your_airtel_client_secret"
-AIRTEL_MERCHANT_ID="FOODIZO_UG"
-AIRTEL_CALLBACK_URL="http://192.168.1.100:4000/api/v1/webhooks/airtel"
+AIRTEL_MONEY_CLIENT_ID="your_airtel_client_id"
+AIRTEL_MONEY_CLIENT_SECRET="your_airtel_client_secret"
+AIRTEL_MONEY_ENV="sandbox"
+# Provider callback path: /api/v1/payments/webhook
 ```
 
 #### Step 3: Test MSISDNs (Sandbox)

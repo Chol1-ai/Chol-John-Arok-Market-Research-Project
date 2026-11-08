@@ -12,38 +12,30 @@
 ## 1. System Architecture Diagram
 
 ```
-[ Customer PWA ]   [ Waiter Handhelds + FOH Dispatch ]   [ KDS Screens ]   [ Admin Dashboard ]
-       │                   │                    │                    │
-       └───────────────────┼────────────────────┴────────────────────┘
-                           │
-                   HTTPS / Secure WebSockets
-                           │
-                           ▼
-            ┌──────────────────────────────────┐
-            │      FASTIFY APPLICATION API      │
-            │    Node.js (TypeScript) Backend   │
-            └────────────────┬─────────────────┘
-                             │
-               ┌─────────────┴──────────────┐
-               ▼                            ▼
-┌──────────────────────────────┐  ┌──────────────────────────────┐
-│    POSTGRESQL 16 DATABASE    │  │    REDIS 7 PUB/SUB BROKER    │
-│  - BOM Inventory Engine      │  │  - Instant Station Routing   │
-│  - Order & Token Registers   │  │  - KDS Status Synchronization│
-│  - Payments Register         │  │  - Auto-86 Out-of-Stock Bus  │
-│  - Cash Counts & Digests     │  │  - KDS_NEW_ORDER pub channel │
-│  - Closing Surplus Audit Log │  │                              │
-└──────────────────────────────┘  └──────────────────────────────┘
-                             │
-                             ▼
-      ┌────────────────────────────────────────────────────┐
-      │         PAYMENT GATEWAY INTEGRATION ENGINE         │
-      │  - MTN Mobile Money API (Collections v1.0)         │
-      │  - Airtel Money OpenAPI (Merchant Pay v2.0)        │
-      └────────────────────────────────────────────────────┘
+[ /login ]  [ /pos ]  [ /kds ]  [ /dispatch ]  [ /admin ]
+      │          │        │           │            │
+      └──────────┴────────┴───────────┴────────────┘
+                          │
+                 static HTML/CSS/JS
+                          │
+                          ▼
+          Node HTTP server :3000 (server.js)
+          - serves live pages and /prototype/*
+          - reverse-proxies /api/v1/* and /ws/events
+                          │
+                          ▼
+          FASTIFY APPLICATION API :4000
+          Node.js + TypeScript + Prisma
+                          │
+          ┌───────────────┼────────────────┐
+          ▼               ▼                ▼
+   PostgreSQL 16+   MTN / Airtel APIs   LAN printer :9100
+   (tested on 17)   Africa's Talking    cash-drawer kick
 ```
 
-An in-process `node-cron` job runs at **21:30 EAT**, reads `payments`, `delivery_handoffs`, `cash_counts`, and inventory tables, writes the idempotent `daily_digests` row, and sends the owner SMS/email. See `Daily_Audit_Digest.md`.
+Real-time KDS updates use an in-process WebSocket bus at `/ws/events` (`fastify.broadcastWs`); Phase 1 does not run Redis. The customer screens under `/prototype/*` are static design previews and do not call this API.
+
+The audit digest is scheduled inside the API process at **21:30 EAT** by default (`DIGEST_CRON_SCHEDULE`, `Africa/Kampala`) and can also be dispatched on demand with `POST /api/v1/digest/dispatch-now`. SMS is mocked outside production unless Africa's Talking credentials are configured; email reports `NOT_CONFIGURED` because no SMTP transport is implemented. A digest is persisted once per business date with a 72-hour read-only link at `/d/:token`. See `Daily_Audit_Digest.md`.
 
 > **Delivery location note:** The only location service in Phase 1 is the browser's one-shot `navigator.geolocation.getCurrentPosition`, called after an explicit customer tap. There is **no map tile provider, no Google Maps SDK, and no map API key**. FOH dispatch uses a static Google Maps link (`https://www.google.com/maps/search/?api=1&query=lat,lng`), `tel:` links, and `wa.me` links. See `Delivery_Zones_and_Dispatch.md`.
 
@@ -53,22 +45,21 @@ An in-process `node-cron` job runs at **21:30 EAT**, reads `payments`, `delivery
 
 | Layer | Technology | Version | Purpose |
 | :--- | :--- | :--- | :--- |
-| **Backend Framework** | Fastify (Node.js) | v4.x | High-performance REST API & WebSocket server |
-| **Language** | TypeScript | v5.x | Type-safe server and shared schema definitions |
+| **Backend Framework** | Fastify (Node.js) | v4.x | REST API and WebSocket server |
+| **Language** | TypeScript | v5.x | Type-safe server and shared contract types |
 | **ORM** | Prisma | v5.x | PostgreSQL schema management and query builder |
-| **Primary Database** | PostgreSQL | v16 | Orders, inventory, tokens, payments, surplus logs |
-| **Pub/Sub Broker** | Redis | v7 | Real-time KDS event streaming and cache |
-| **Customer Frontend** | Next.js PWA (App Router) | v14 | Mobile-first progressive web app |
+| **Primary Database** | PostgreSQL | 16+ (tested 17) | Orders, inventory, tokens, payments, surplus logs |
+| **Real-Time Bus** | In-process WebSocket (`/ws/events`) | Fastify plugin | KDS ticket creation, bumps, and table status events; no Redis in Phase 1 |
+| **Frontend Server** | Native Node.js HTTP server (`server.js`) | Node 18+ | Serves live HTML/CSS/JS, the launch hub, and `/prototype/*`; proxies `/api/v1/*` and `/ws/events` |
+| **Staff UI** | Static HTML + vanilla ES modules | — | Live login, POS, KDS, dispatch, and manager screens |
+| **Customer UI** | Static HTML prototypes | — | Layout review only; no live ordering, payment, or tracking |
 | **Delivery Location** | HTML5 Geolocation API | Browser-native | Optional one-shot drop-off pin; no `watchPosition`, no background tracking |
 | **Maps** | Static Google Maps universal link | — | Opens only on tap; no JS SDK, Places, Directions, Geocoding, or API key |
 | **Dispatch Contact** | `tel:` + `wa.me` links | — | FOH/rider calls or WhatsApps the customer from the dispatch queue or printed chit |
-| **Waiter / FOH UI** | Next.js 14 client | v14 | Handheld table grid, order entry, delivery dispatch queue |
-| **KDS UI** | Next.js 14 client | v14 | Wall-mounted kitchen display |
-| **Admin Dashboard** | Next.js 14 client | v14 | Cross-outlet management portal |
-| **Customer Alerts** | Africa's Talking SMS API | v1 | SMS pickup alerts; no browser push in Phase 1 |
-| **Payment — MTN** | MTN MoMo API | Collections v1.0 | USSD STK push for MTN subscribers (see `Payment_Integration.md §5.1`) |
-| **Payment — Airtel** | Airtel Money OpenAPI | Merchant Pay v2.0 | Airtel merchant payment flow (see `Payment_Integration.md §5.2`) |
-| **MSISDN Utils** | Custom lib (`msisdn.ts`) | — | E.164 normalisation & carrier detection for Ugandan prefixes |
+| **Customer Alerts** | Africa's Talking SMS API | v1 | Pickup and dispatch SMS; development mode returns `MOCK` and sends nothing |
+| **Payment — MTN** | MTN MoMo API (go-live reference) | Collections v1.0 | `MomoService.requestToPay()` is a stub: it returns `PENDING_CUSTOMER_PIN` without calling the telco. Signed webhook settlement is implemented (see `Payment_Integration.md §5.1`) |
+| **Payment — Airtel** | Airtel Money OpenAPI (go-live reference) | Merchant Pay v2.0 | Same stub as MTN; the Airtel client is not implemented. Signed webhook settlement is implemented (see `Payment_Integration.md §5.2`) |
+| **MSISDN Utils** | `backend/src/utils/phone.ts` | — | E.164-style Ugandan MSISDN normalization for `2567XXXXXXXX` |
 
 ---
 
@@ -639,7 +630,7 @@ CREATE TABLE daily_digests (
 );
 
 COMMENT ON TABLE daily_digests IS
-    'Idempotency and audit trail for the 21:30 EAT consolidated owner digest. One row per business date; unique digest_date prevents duplicate sends.';
+    'Idempotency and audit trail for the consolidated owner audit digest. One row per business date; unique digest_date prevents duplicate sends. The API schedules a 21:30 EAT run by default and also supports an on-demand dispatch.';
 COMMENT ON COLUMN daily_digests.payload_json IS
     'Aggregate business data only, with a per-outlet breakdown. Must contain no customer name, phone number, delivery note, or GPS coordinate.';
 COMMENT ON COLUMN daily_digests.status IS
@@ -674,12 +665,14 @@ Full behavioural contract: **`Delivery_Zones_and_Dispatch.md`**. This section de
 
 | Endpoint | Method | Behaviour |
 | :--- | :--- | :--- |
-| `/api/v1/delivery-zones?outlet=FOODIZO_HAM_TOWERS` | `GET` | Returns active zones for the outlet, ordered by `display_order`, with `fee_ugx`, ETA range, and `landmark_hint` |
-| `/api/v1/admin/delivery-zones` | `GET/POST/PATCH` | Manager-only zone/fee/ETA maintenance; writes to the audit log |
-| `/api/v1/orders` | `POST` | Validates items against `menu_items`, recomputes all prices and the delivery fee, allocates a daily token, then either creates a prepaid order as `AWAITING_PAYMENT` or an authenticated FOH dine-in POSTPAY tab as `PENDING` |
-| `/api/v1/dispatch/queue?outlet=...&state=active\|review` | `GET` | `active` (default) returns `READY` + `PHONE_DELIVERY` orders with no handoff or an open `PENDING` handoff; a `PENDING` handoff is displayed as **ON THE WAY**. `review` returns failed handoffs for manager resolution. Both include zone, note, recipient, phone, and an optional static map link. |
+| `/api/v1/menu-items?outlet=FOODIZO_HAM_TOWERS` | `GET` | Returns active, non-86 menu items with server-owned UGX prices; public |
+| `/api/v1/orders` | `POST` | Validates items against `menu_items`, recomputes all prices and the delivery fee, allocates a daily token, then either creates a prepaid order as `AWAITING_PAYMENT` or an authenticated FOH dine-in POSTPAY tab as `PENDING`. Delivery orders require an active `deliveryZoneId`; zones are seeded and currently have no public catalogue endpoint. |
+| `/api/v1/orders/token/:token` | `GET` | Public, sanitized takeaway status lookup by `TOKEN-NNN`; add `?outlet=` when the same token exists at both outlets |
+| `/api/v1/orders/:id` | `GET` | Staff order detail with items, table, zone, payments, and handoffs; outlet-scoped |
+| `/api/v1/orders/:id/settle` | `POST` | Records the full bill settlement by cash, verified manual MoMo, or a telco push; never rewinds kitchen state |
+| `/api/v1/dispatch/queue?outlet=...&state=active\|review` | `GET` | `active` (default) returns `READY` + `PHONE_DELIVERY` orders with no handoff or an open `PENDING` handoff; a `PENDING` handoff is displayed as **ON THE WAY**. `review` returns failed handoffs for manager resolution. |
 | `/api/v1/orders/:id/dispatch` | `POST` | Records the rider handoff, cash transport advance, and optionally sends an “on the way” SMS |
-| `/api/v1/orders/:id/delivery-complete` | `POST` | Sets `delivered_at`, records `DELIVERED` and any returned advance, moves the order to `COMPLETED` |
+| `/api/v1/orders/:id/delivery-complete` | `POST` | Records `DELIVERED`, `FAILED_UNREACHABLE`, `REFUSED`, or `RETURNED`; `DELIVERED` moves the order to `COMPLETED` and stores `delivered_at` |
 | `/api/v1/orders/:id/reprint-chit` | `POST` | Re-fires the ESC/POS chit and writes an audit row |
 
 ```typescript
@@ -734,7 +727,7 @@ export function whatsAppLink(e164: string, message: string): string {
 }
 ```
 
-**Order-creation rule:** validate the active menu items and all delivery fields **before** creating the order or payment row. For `DINE_IN`, validate that the `table_id` exists, is active, belongs to the same outlet, and has no open `DINE_IN` tab; return `TABLE_ALREADY_OCCUPIED` rather than opening a second tab. Resolve every price and the delivery fee on the server; ignore client-supplied totals. If validation fails, return the specific error code from `Delivery_Zones_and_Dispatch.md §9`; do not allocate a token, create an order, or initiate an STK push. For a customer-app `TAKEAWAY_PICKUP`, persist the payer MSISDN as `orders.customer_phone` so the READY SMS has a destination; a walk-in cash takeaway without a phone stores `NULL` and simply receives no SMS. A prepaid order is created as `AWAITING_PAYMENT`; only a verified payment promotes it to `PENDING` for the KDS. A failed or timed-out payment leaves the order in `AWAITING_PAYMENT` for a retry and is auto-cancelled after the payment TTL. The only exception is an authenticated FOH dine-in **POSTPAY** tab, which is created as `PENDING` because the guest settles at bill close; a POSTPAY request that is not `DINE_IN` or lacks a valid staff session is rejected.
+**Order-creation rule:** validate the active menu items and all delivery fields **before** creating the order or payment row. For `DINE_IN`, validate that the `table_id` exists, is active, belongs to the same outlet, and has no open `DINE_IN` tab; return `TABLE_ALREADY_OCCUPIED` rather than opening a second tab. Resolve every price and the delivery fee on the server; ignore client-supplied totals. If validation fails, return the specific error code from `Delivery_Zones_and_Dispatch.md §9`; do not allocate a token, create an order, or initiate an STK push. For a customer-app `TAKEAWAY_PICKUP`, persist the payer MSISDN as `orders.customer_phone` so the READY SMS has a destination; a walk-in cash takeaway without a phone stores `NULL` and simply receives no SMS. A prepaid order is created as `AWAITING_PAYMENT`; only a verified payment promotes it to `PENDING` for the KDS. A failed or timed-out payment leaves the order in `AWAITING_PAYMENT` for a retry. Phase 1 has no payment-TTL cleanup job, so a stale unpaid order stays there until a manager cancels it with a reason. The only exception is an authenticated FOH dine-in **POSTPAY** tab, which is created as `PENDING` because the guest settles at bill close; a POSTPAY request that is not `DINE_IN` or lacks a valid staff session is rejected.
 
 ### 4.2 Dispatch handoff service
 
@@ -799,7 +792,7 @@ export async function completeDelivery(input: {
 
 ### 4.3 KDS privacy boundary
 
-The Redis broadcast for delivery orders includes `deliveryZone` (display name) but **never** `customer_name`, `customer_phone`, `delivery_note`, `delivery_lat`, `delivery_lng`, or `delivery_accuracy_m`. The `PATCH /api/v1/orders/:id/status` response is also sanitized to the same KDS-safe fields; the KDS client never receives the contact block. The FOH dispatch endpoint is role-guarded and is the only API that returns the full delivery contact block.
+The WebSocket broadcast for delivery orders includes `deliveryZone` (display name) but **never** `customer_name`, `customer_phone`, `delivery_note`, `delivery_lat`, `delivery_lng`, or `delivery_accuracy_m`. The KDS status response is also sanitized to the same KDS-safe fields; the KDS client never receives the contact block. The FOH dispatch endpoint is role-guarded and is the only API that returns the full delivery contact block.
 
 ### 4.4 Notification behaviour
 
@@ -815,18 +808,16 @@ The Redis broadcast for delivery orders includes `deliveryZone` (display name) b
 ## 5. Real-Time KDS Event Handler
 
 ```typescript
-// Fastify Handler: PATCH /api/v1/orders/:id/status
+// Fastify Handler: POST /api/v1/orders/:id/status and POST /api/v1/kds/:id/bump
 // Advances an order through the PRD-normalised ticket lifecycle.
-// Payment webhook route:  src/server/routes/payments.ts
-// MTN payment service:    src/server/services/momo-service.ts
-// Airtel payment service: src/server/services/airtel-service.ts
+// Payment webhook route:  backend/src/routes/payments.ts
+// MTN/Airtel payment client: backend/src/services/momoService.ts
 // See Payment_Integration.md §5–6 for implementation.
 import type { FastifyRequest, FastifyReply } from 'fastify';
 import { prisma } from '../plugins/prisma';
-import { redisPublisher } from '../plugins/redis';
-import { deductOrderInventory } from '../services/inventory-service';
-import { sendPickupSmsAlert } from '../services/sms-service';
-import { printExpoBagLabel } from '../services/printer-service';
+import { deductOrderInventory } from '../services/bomService';
+import { SmsService } from '../services/smsService';
+import { PrinterService } from '../services/printerService';
 
 type StatusTransition = 'PREPARING' | 'READY' | 'COMPLETED';
 
@@ -889,16 +880,21 @@ export async function updateOrderStatus(
   });
 
   // ── 2. Broadcast after commit, never inside the transaction. ────────────
-  // A rollback must not leave a phantom ticket on the KDS.
+  // A rollback must not leave a phantom ticket on the KDS. The current
+  // implementation uses the in-process WebSocket decorator, not Redis.
   try {
-    await redisPublisher.publish('ORDER_STATUS_CHANNEL', JSON.stringify({
-      orderId:      updatedOrder.id,
-      digitalToken: updatedOrder.digital_token,
-      channel:      updatedOrder.channel,
-      status:       updatedOrder.status,
-      table:        updatedOrder.table?.table_label ?? null,
-      deliveryZone: updatedOrder.delivery_zone?.display_name ?? null,
-    }));
+    request.server.broadcastWs({
+      event: 'TICKET_UPDATED',
+      outlet: updatedOrder.outlet,
+      data: {
+        orderId:      updatedOrder.id,
+        tokenNumber:  updatedOrder.digital_token,
+        channel:      updatedOrder.channel,
+        status:       updatedOrder.status,
+        table:        updatedOrder.table?.table_label ?? null,
+        deliveryZone: updatedOrder.delivery_zone?.display_name ?? null,
+      },
+    });
   } catch (err) {
     // The status change is already durable. Clients recover on reconnect or
     // poll; log the failure and do not ask the cook to bump again.
@@ -912,7 +908,7 @@ export async function updateOrderStatus(
     updatedOrder.customer_phone
   ) {
     try {
-      await sendPickupSmsAlert(
+      await SmsService.sendPickupAlert(
         updatedOrder.customer_phone,
         updatedOrder.digital_token,
         updatedOrder.outlet === 'FOODIZO_HAM_TOWERS' ? 'Foodizo' : 'Obunuzi'
@@ -925,7 +921,7 @@ export async function updateOrderStatus(
 
   // ── 4. Takeaway and delivery: print the packaging chit. ────────────────
   // Dine-in food is plated, so it does not produce a bag label. Do not send
-  // phone/room/GPS data over Redis. The dispatch queue reads the role-guarded
+  // phone/room/GPS data over the WebSocket. The dispatch queue reads the role-guarded
   // /dispatch/queue endpoint; the chit printer receives the full contact block
   // through its own service call.
   if (
@@ -933,7 +929,7 @@ export async function updateOrderStatus(
     (updatedOrder.channel === 'TAKEAWAY_PICKUP' || updatedOrder.channel === 'PHONE_DELIVERY')
   ) {
     try {
-      await printExpoBagLabel(updatedOrder.id);
+      await PrinterService.printOrderChit(updatedOrder.id);
     } catch (err) {
       // A printer failure must not block the KDS bump. The Expo/FOH screen
       // exposes PRINT CHIT so staff can retry without bumping again.
@@ -963,41 +959,47 @@ Phase 1 uses **staff login only**. Customers browse and order without an account
 
 ### 6.1 Login and session contract
 
-- **Credentials:** E.164 phone number + a 4–6 digit PIN. The PIN is hashed with bcrypt (cost 12) or argon2id; the plaintext PIN is never stored, logged, or returned.
-- **Endpoints:** `POST /api/v1/auth/login`, `POST /api/v1/auth/logout`, `GET /api/v1/auth/me`.
-- **Cookie:** `foodizo_session`, an opaque 32-byte random token. `HttpOnly`, `SameSite=Lax`, `Path=/`, and `Secure` whenever the app is served over HTTPS. On a plain-HTTP LAN, `Secure` must be off and the Wi-Fi must be restricted to staff devices; use HTTPS through the tunnel for remote access.
-- **Server-side session:** only the SHA-256 hash is stored in `user_sessions.token_hash`. Sessions expire after `SESSION_TTL_HOURS` (default 12), and are revoked on logout, PIN reset, role change, or deactivation.
-- **Brute-force control:** rate-limit login by IP and phone; lock the account after `LOGIN_MAX_ATTEMPTS` failures for `LOGIN_LOCK_MINUTES`. Record failures in `audit_log` without the attempted PIN.
-- **CSRF:** `SameSite=Lax` plus an `Origin`/`Referer` check on every mutating request. No state-changing GET. Do not rely on a client-supplied `data-role`.
-- **Destructive-action approval:** a `WAITER_FOH` cannot cancel or void directly. The UI opens an approval prompt; a `MANAGER_ADMIN` enters their phone and PIN, which the API verifies through the same login service and outlet guard. A manager who is already signed in may approve with their own session. Record both the requesting user and the approving manager in `audit_log`. There is no separate shared override PIN.
-- **Audit:** login success/failure, logout, user create/update/deactivate, role change, price change, zone change, void, manual MoMo verification, cash count, chit reprint, and surplus log.
+- **Credentials:** staff directory ID (`staffId`) or Ugandan phone number plus a 4-digit PIN. The PIN is bcrypt-hashed; the plaintext is never stored, logged, or returned.
+- **Endpoints:** `GET /api/v1/auth/terminal-staff` (public display directory), `POST /api/v1/auth/pin`, `POST /api/v1/auth/logout`, and `GET /api/v1/auth/me`.
+- **Cookie:** `foodizo_session`, a signed JWT in an `HttpOnly`, `SameSite=Lax`, `Path=/` cookie; `Secure` is enabled when `NODE_ENV=production`. API clients may instead send `Authorization: Bearer <token>`.
+- **Server-side session:** only the SHA-256 hash is stored in `user_sessions.token_hash`. Sessions expire after `JWT_EXPIRATION_HOURS` (default 12) and are revoked on logout. Each login includes a unique `jti` so rapid re-logins cannot collide.
+- **Brute-force control:** the PIN endpoint is limited to 10 requests/minute per IP. Five failed attempts lock the account for 15 minutes; a successful login clears the counter. The public directory exposes no phone numbers, PIN hashes, lock state, or session data.
+- **CSRF:** the session cookie is `SameSite=Lax`; state-changing operations are `POST`/`PATCH`, never GET. The API CORS origin is restricted by `CORS_ORIGIN`. Do not treat a client-supplied role as authorization.
+- **Destructive actions:** cancellation is `MANAGER_ADMIN`-only. There is no shared override PIN and no waiter-initiated cancellation flow. The manager's own authenticated session is recorded in `audit_log`.
+- **Audit:** settlement, cancellation, refunds, cash counts, surplus logs, rider handoffs, and chit reprints write audit rows where implemented. Authorization is enforced in Fastify route guards, not by hiding buttons.
 
 ### 6.2 Route and surface matrix
 
-| Surface | Allowed roles |
+| Surface / Endpoint | Allowed roles / access |
 | :--- | :--- |
-| `/`, `/cart`, `/checkout`, `/token/[token]` | Public; `CUSTOMER` if customer login is enabled |
-| `/pos/*` | `WAITER_FOH`, `MANAGER_ADMIN` |
-| `/kds/*` | `KITCHEN_STAFF`, `MANAGER_ADMIN` |
-| `/admin/*` | `MANAGER_ADMIN` |
-| `GET /api/v1/menu?outlet=...` | Public; active, non-86 items with server-owned prices |
-| `GET /api/v1/delivery-zones?outlet=...` | Public; active zones for the outlet |
-| `POST /api/v1/orders` | Public customer checkout (prepaid only); `WAITER_FOH` or `MANAGER_ADMIN` for phone entry and `DINE_IN` POSTPAY tabs |
-| `POST /api/v1/orders/:id/settle` | `WAITER_FOH`, `MANAGER_ADMIN`; records cash, verified manual MoMo, or initiates a telco payment against an existing tab |
-| `POST /api/v1/orders/:id/cancel` | `MANAGER_ADMIN`; `WAITER_FOH` only with manager approval |
-| `POST /api/v1/payments/:id/refund` | `MANAGER_ADMIN`; closes a `REFUND_PENDING` payment as `REFUNDED` after the external reversal, with an audit-logged reference |
-| `PATCH /api/v1/orders/:id/status` | `KITCHEN_STAFF`, `MANAGER_ADMIN` |
-| `PATCH /api/v1/tables/:id/status` | `WAITER_FOH`, `MANAGER_ADMIN` |
-| `/api/v1/dispatch/*` | `WAITER_FOH`, `MANAGER_ADMIN` |
-| `POST /api/v1/orders/:id/dispatch` | `WAITER_FOH`, `MANAGER_ADMIN`; records the rider handoff and advance |
-| `POST /api/v1/orders/:id/delivery-complete` | `WAITER_FOH`, `MANAGER_ADMIN`; records the delivered outcome and closes the order |
-| `POST /api/v1/orders/:id/reprint-chit` | `WAITER_FOH`, `MANAGER_ADMIN`; audit-logged reprint |
-| `POST /api/v1/payments/webhook` | Provider-authenticated public callback; no staff session |
-| `/api/v1/admin/*` | `MANAGER_ADMIN` |
-| `/api/v1/auth/login` | Public |
-| `/api/v1/auth/logout`, `/api/v1/auth/me` | Any authenticated user |
+| `/login`, `/` | Public; `/login` reads the display-only staff directory |
+| `/prototype/*` | Public static design previews; no live API behaviour |
+| `/pos` | `WAITER_FOH`, `MANAGER_ADMIN` |
+| `/kds` | `KITCHEN_STAFF`, `MANAGER_ADMIN` |
+| `/dispatch` | `WAITER_FOH`, `MANAGER_ADMIN` |
+| `/admin` | `MANAGER_ADMIN` |
+| `GET /api/v1/auth/terminal-staff`, `POST /api/v1/auth/pin` | Public (rate-limited) |
+| `GET /api/v1/auth/me`, `POST /api/v1/auth/logout` | Any authenticated staff |
+| `GET /api/v1/menu-items?outlet=...` | Public; active, non-86 items with server-owned prices |
+| `GET /api/v1/categories?outlet=...` | Public |
+| `GET /api/v1/tables`, `PATCH /api/v1/tables/:id/status` | `WAITER_FOH`, `MANAGER_ADMIN` |
+| `POST /api/v1/orders` | Public for prepaid takeaway/delivery; `WAITER_FOH` or `MANAGER_ADMIN` for `DINE_IN` POSTPAY tabs |
+| `GET /api/v1/orders/token/:token` | Public, sanitized token status |
+| `GET /api/v1/orders/:id`, `POST /api/v1/orders/:id/items` | `WAITER_FOH`, `MANAGER_ADMIN`; outlet-scoped |
+| `POST /api/v1/orders/:id/settle` | `WAITER_FOH`, `MANAGER_ADMIN`; full bill, cash/manual MoMo/telco push |
+| `POST /api/v1/orders/:id/cancel` | `MANAGER_ADMIN` only |
+| `POST /api/v1/orders/:id/status` | `WAITER_FOH`, `KITCHEN_STAFF`, `MANAGER_ADMIN` |
+| `GET /api/v1/kds/tickets`, `POST /api/v1/kds/:id/claim`, `POST /api/v1/kds/:id/bump` | `KITCHEN_STAFF`, `MANAGER_ADMIN` |
+| `GET /api/v1/dispatch/queue` | `WAITER_FOH`, `MANAGER_ADMIN` |
+| `POST /api/v1/orders/:id/dispatch`, `POST /api/v1/orders/:id/delivery-complete`, `POST /api/v1/orders/:id/reprint-chit` | `WAITER_FOH`, `MANAGER_ADMIN` |
+| `POST /api/v1/payments/momo/push` | `WAITER_FOH`, `MANAGER_ADMIN` |
+| `POST /api/v1/payments/webhook`, `POST /api/v1/payments/momo/webhook` | Public provider callback; HMAC signature required |
+| `POST /api/v1/payments/:id/refund` | `MANAGER_ADMIN`; closes a `REFUND_PENDING` payment with the external reference |
+| `GET /api/v1/surplus`, `POST /api/v1/surplus/log` | `MANAGER_ADMIN` |
+| `GET /api/v1/digest/preview`, `GET /api/v1/digest/overview`, `POST /api/v1/digest/reconcile-cash`, `POST /api/v1/digest/dispatch-now` | `MANAGER_ADMIN` |
+| `GET /api/v1/digest/view/:token` | Public read-only link, valid for 72 hours |
 
-`POST /api/v1/orders` treats `channel = DINE_IN` as the postpay table tab: it requires an authenticated `WAITER_FOH` or `MANAGER_ADMIN` session and a valid `table_id`. The order is created as `PENDING` and never enters `AWAITING_PAYMENT`. A public request that asks for `DINE_IN` is rejected with `POSTPAY_REQUIRES_STAFF`. Every other channel is prepaid: it is created as `AWAITING_PAYMENT` and enters `PENDING` only through a verified payment. `POST /api/v1/orders/:id/settle` never changes kitchen status; it only records money against the tab.
+`POST /api/v1/orders` treats `channel = DINE_IN` as the postpay table tab: it requires an authenticated `WAITER_FOH` or `MANAGER_ADMIN` session and a valid `table_id`. The order is created as `PENDING` and never enters `AWAITING_PAYMENT`. A public request that asks for `DINE_IN` is rejected with `POSTPAY_REQUIRES_STAFF`. Every other channel is prepaid: it is created as `AWAITING_PAYMENT`. A cash/manual settlement promotes only `AWAITING_PAYMENT` to `PENDING`; a verified MoMo webhook does the same. Settlement never rewinds an order already `PREPARING`, `READY`, or `COMPLETED`. When a fully paid `READY`/`COMPLETED` dine-in tab is settled, its table moves to `NEEDS_CLEARING`.
 
 **Order and status error codes**
 
@@ -1012,28 +1014,36 @@ Authorization is enforced in Fastify route guards and repeated in the service la
 
 ---
 
-## 7. Repository Scaffold (Recommended Directory Structure)
+## 7. Repository Scaffold (Implemented Structure)
 
-The canonical, exact scaffold is `Repo_Scaffold_and_Config.md §1`. This is the same tree in summary form; do not create a second monorepo layout:
+The canonical scaffold is the repository itself; `Repo_Scaffold_and_Config.md` retains the longer deployment notes.
 
 ```
 foodizo-obunuzi-kds/
-├── Dockerfile.client / Dockerfile.server / docker-compose.yml
-├── prisma/
-│   ├── schema.prisma            # Mirrors the DDL above + payments table
-│   └── seed.ts
-├── scripts/
-│   ├── run-daily-digest.ts      # Manual digest run / dry-run
-│   └── simulate-rush-hour.ts
-├── src/
-│   ├── app/                     # Next.js 14 App Router: customer PWA, FOH POS, KDS, admin
-│   ├── components/              # Shared UI, delivery, KDS, POS components
-│   ├── lib/                     # Client-side helpers (audio, geolocation, websocket)
-│   └── server/                  # Fastify API: jobs, plugins, routes, services, utils
-├── deploy/
-│   ├── backup.sh
-│   └── cloudflared.yml
-├── docs/                        # This 15-file specification package
-├── .env.example                 # MoMo/Airtel/AT/SMTP config; NO Google Maps API key
-└── package.json                 # Single Next.js + Fastify application
+├── backend/
+│   ├── Dockerfile
+│   ├── prisma/
+│   │   ├── schema.prisma        # Canonical 15-model schema
+│   │   └── seed.ts              # 7 staff, 16 tables/outlet, menu, BOM, fixtures
+│   ├── src/
+│   │   ├── app.ts               # Fastify app and route registration
+│   │   ├── index.ts             # Server entrypoint (:4000)
+│   │   ├── config.ts            # Zod-validated environment
+│   │   ├── plugins/             # Prisma, auth, WebSocket, error handler
+│   │   ├── routes/              # Auth, menu, tables, orders, KDS, payments, dispatch, surplus, digest
+│   │   ├── services/            # Token, BOM, printer, SMS, MoMo, handoff, digest
+│   │   ├── utils/               # Phone normalization, business date
+│   │   └── types/
+│   └── tests/                   # Vitest unit + integration suites
+├── frontend/
+│   ├── live/                    # API-backed POS, KDS, dispatch, admin HTML
+│   ├── js/                      # Shared fetch client + surface controllers
+│   ├── html/                    # Live PIN login, launch hub, static design prototypes
+│   ├── css/                     # theme_tokens.css, live_surfaces.css, companion CSS
+│   ├── images/                  # Screen previews
+│   └── design_tokens_kampala_fast_casual.md
+├── docs/                        # This specification package
+├── server.js                    # Native Node static server + API/WebSocket proxy (:3000)
+├── package.json                 # Frontend/server scripts and Puppeteer-free runtime
+└── README.md
 ```

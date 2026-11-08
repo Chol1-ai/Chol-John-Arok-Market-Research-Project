@@ -1,608 +1,253 @@
-﻿# Daily Audit & Owner Digest Engine
+﻿# Daily Audit & Owner Digest
 
-**Status:** Phase 1 specification — owner reporting, not customer messaging.<br>
-**Target Recipient:** Zito Mbowe (Project Coordinator — MRFSS Project)<br>
-**Scheduled Execution:** Daily at **21:30 EAT** (after kitchen close and cash count)<br>
-**Primary Channels:** Africa's Talking **SMS** (short summary) + **email** (full report)<br>
-**Optional Channel:** WhatsApp Cloud API utility template (owner only; see §3.3)<br>
-**Related Specifications:** `Foundational_Concept.md` · `Design_System.md` · `User_Flow.md` · `User_Profiles_Personas.md` · `Delivery_Zones_and_Dispatch.md` · `Tech_Stack.md` · `Payment_Integration.md` · `Hardware_and_Peripherals.md` · `Seed_Data_and_Testing.md` · `Repo_Scaffold_and_Config.md` · `Demo_Script_and_Closing_Strategy.md` · `Deployment_Runbook.md` · `Service_Contract_and_Invoice_Template.md` · `build_strategy/Build_Strategy_and_Phases.md`
+**Status:** Implemented in Phase 1 — scheduled and on-demand owner reporting.<br>
+**Recipient:** Owner/manager on duty (`DIGEST_RECIPIENT_PHONE`).<br>
+**Schedule:** `DIGEST_CRON_SCHEDULE`, default `30 21 * * *` in `Africa/Kampala`.<br>
+**Primary channel:** Africa's Talking SMS (short summary).<br>
+**Email:** Not implemented. The API reports `emailStatus: NOT_CONFIGURED`; no SMTP transport exists in this repository.<br>
+**WhatsApp:** Not implemented and not planned for Phase 1.
+
+**Canonical source:** `backend/src/services/digestService.ts` · **Scheduler:** `backend/src/index.ts` · **Routes:** `backend/src/routes/digest.ts`
 
 ---
 
-## 1. Why This Exists
+## 1. Purpose
 
-A restaurant coordinator will not reliably open an admin dashboard at 10:00 PM after a 14-hour operating day. The system already records the data; the digest sends the few numbers that matter to the owner's phone:
+The owner should not have to open the manager dashboard after a long shift. The digest delivers the few numbers that matter to a phone:
 
-- What was collected, by channel.
-- Whether the cash drawer balanced after rider advances.
-- What high-turnover stock was used and what is left.
-- What was cleared, staff-fed, or wasted.
+- What was collected, by payment channel.
+- Whether the physical cash drawer balanced after rider advances.
+- What surplus was cleared, staff-fed, or wasted.
 - Which exceptions need a human decision.
 
-The digest is a **notification layer**. It does not replace the `/admin/reconcile`, `/admin/inventory`, or `/admin/audit` screens; it links to them.
+The digest is a **notification layer**. It does not replace the `/admin` manager console; it links back to the read-only report.
 
-> **Rule:** Never hard-code a zero variance. If the cash count is missing, the digest must say **“cash count not submitted”** and flag it. A false “BALANCED” message is worse than no message.
-
----
-
-## 2. Channel Strategy (Important Correction)
-
-The original proposal made WhatsApp Business API the primary channel. That is not the right Phase 1 default for this project.
-
-| Channel | Phase 1 decision | Why |
-| :--- | :--- | :--- |
-| **SMS — Africa's Talking** | **Primary** | Already integrated for pickup alerts; no new vendor; works on any phone; ~UGX 25–30 per segment |
-| **Email** | **Primary for the full report** | Free/cheap, printable, no message-length limit, good for the audit trail |
-| **WhatsApp Cloud API** | **Optional, owner-only, Phase 1.5** | Requires Meta Business verification, a dedicated number, an approved utility template, a permanent token, and per-message fees. It also conflicts with the customer-facing “no WhatsApp Business API” decision unless scoped carefully |
-| **WhatsApp `wa.me` link** | **Not a notification channel** | It opens a chat; it cannot push an automated 21:30 message |
-| **Telegram bot** | Not adopted | Another app for the owner to install; SMS/email already work |
-
-The existing `Delivery_Zones_and_Dispatch.md §3` rule remains: **no customer-facing WhatsApp Business API in Phase 1**. The owner digest is a separate, internal notification. If WhatsApp is enabled for the owner, it must be behind `OWNER_WHATSAPP_ENABLED=false` by default.
-
-**SMS length:** Africa's Talking bills per 160-character segment. The digest must send a **2-segment maximum** summary, not the full report. The full report goes by email (and optionally WhatsApp).
+> **Rule:** Never fabricate a zero variance. If a cash count is missing, the digest reports `CASH_COUNT_MISSING` and leaves the variance `null`. A false “BALANCED” message is worse than no message.
 
 ---
 
-## 3. Digest Content
+## 2. What Is Actually Implemented
 
-### 3.1 SMS summary (maximum 2 segments)
+| Capability | Status |
+| :--- | :--- |
+| Automatic schedule at 21:30 EAT | **Implemented** via `node-cron` in the API process; configurable with `DIGEST_CRON_SCHEDULE` |
+| On-demand dispatch from `/admin` | **Implemented** as `POST /api/v1/digest/dispatch-now` (manager only) |
+| SMS summary | **Implemented** through `SmsService.sendOwnerDigest`; development returns `MOCK`, production requires Africa's Talking credentials |
+| Email report | **Not implemented**; always reports `NOT_CONFIGURED` unless `DIGEST_EMAIL_ENABLED=true`, which reports `FAILED_NOT_IMPLEMENTED` |
+| WhatsApp / Telegram | **Not implemented** |
+| Automatic retry of a failed digest | **Not implemented**; the scheduler skips overlapping ticks and logs failures |
+| Redis-based distributed lock | **Not used**; the edge deployment runs a single API process with an in-process `digestRunning` guard |
+| 72-hour read-only report link | **Implemented** as an API payload and `/d/:token` page |
+| Cash count | **Implemented** through `POST /api/v1/digest/reconcile-cash` and the `/admin` form |
+
+The scheduler is registered only when `NODE_ENV !== 'test'` and `cron.validate(DIGEST_CRON_SCHEDULE)` passes. If the expression is invalid, the API logs `DIGEST_CRON_SCHEDULE is invalid; scheduled digest disabled` and continues serving.
+
+---
+
+## 3. Schedule and Idempotency
+
+- The default expression is `30 21 * * *`, interpreted in `Africa/Kampala`, not the host timezone.
+- A single API process runs the job. A boolean `digestRunning` guard skips a tick if the previous digest is still running.
+- The digest is persisted in `daily_digests`, one row per business date. Re-running the same date updates that row and reuses its existing `link_token`; it does not insert a duplicate.
+- Phase 1 has **no retry queue**. A failed SMS is recorded with `status: FAILED` and the provider detail in `error`; the manager can run `POST /api/v1/digest/dispatch-now` again.
+- There is no Redis lock because there is no Redis and no multi-replica API in Phase 1. If the API is ever replicated, add a documented distributed lock before enabling the scheduler on more than one instance.
+
+---
+
+## 4. Digest Content
+
+### 4.1 SMS summary
+
+The service builds a short consolidated message and caps it at 320 characters:
 
 ```text
-FOODIZO+OBUNUZI 28/10: Gross UGX 2,744,000.
+FOODIZO+OBUNUZI 2026-11-07: Gross UGX 2,744,000.
 Cash variance UGX 0. 2 flags.
 Full: https://admin.foodizo.ug/d/7f3c2a
 ```
 
-If cash count is missing for one or both outlets:
+If either outlet has not submitted a cash count:
 
 ```text
-FOODIZO+OBUNUZI 28/10: Gross UGX 2,744,000.
-CASH COUNT MISSING - drawer not verified.
+FOODIZO+OBUNUZI 2026-11-07: Gross UGX 2,744,000.
+CASH COUNT MISSING - drawer not verified. 1 flags.
 Full: https://admin.foodizo.ug/d/7f3c2a
 ```
 
-The SMS is always the **consolidated** figure. Per-outlet detail belongs in the email and the report page; do not label a consolidated total “FOODIZO.”
+The SMS is always the **consolidated** figure. Per-outlet detail is in the report payload and the `/admin` console.
 
-### 3.2 Full email report (illustrative)
+### 4.2 Report payload
 
-```text
-FOODIZO & OBUNUZI — DAILY AUDIT
-Date: Wednesday, 28 October 2026 | Generated: 21:30 EAT
-Status: CLOSED | Prepared by: automated digest
+The persisted `payload_json` and the `/d/:token` page include:
 
-FINANCIAL SETTLEMENT
-  MTN MoMo (API verified)       UGX 1,596,000   (114)
-  Airtel Money (API verified)   UGX   672,000   ( 48)
-  Manual MoMo (USSD verified)   UGX   168,000   ( 12)
-  Cash in drawers               UGX   308,000   ( 22)
-  -------------------------------------------------
-  Gross collected               UGX 2,744,000   (196)
-  Outlet split: Foodizo UGX 1,780,000 (129); Obunuzi UGX 964,000 (67)
-  Refund pending (not gross)    UGX         0   (  0)
+| Section | Fields |
+| :--- | :--- |
+| Consolidated | `grossUgx`, `mtnUgx`, `airtelUgx`, `manualMomoUgx`, `cashUgx`, `paymentCount`, `totalOrders` |
+| Cash | `expectedCashUgx`, `countedCashUgx`, `cashVarianceUgx`, `cashCountStatus` (`SUBMITTED` or `MISSING`) |
+| Delivery | `deliveryFeesUgx`, `riderAdvancesNetUgx`, `netDeliveryContributionUgx`, `failedDeliveryCount` |
+| Refunds | `refundPendingUgx`, `refundPendingCount`, `refundedUgx`, `refundedCount` |
+| Payments | `failedPaymentCount` |
+| Surplus | `clearancePortions`, `staffMealPortions`, `wastePortions` |
+| Risk | `lowStock[]`, `staleOrderCount` |
+| Per outlet | Every field above for `FOODIZO_HAM_TOWERS` and `OBUNUZI_YMCA` |
+| Meta | `digestDate`, `generatedAt`, `flags[]`, `flagCount`, `smsSummary`, `linkToken`, `link` |
 
-DELIVERY CONTRIBUTION (MEMO)
-  Delivery fees collected       UGX    84,000
-  Less rider advances (net)     UGX   (62,000)
-  Net delivery contribution     UGX    22,000
-
-CASH RECONCILIATION
-  Expected cash in drawer       UGX   246,000
-  Counted cash                  UGX   246,000
-  Variance                      UGX         0   BALANCED
-
-HIGH-TURNOVER STOCK
-  Foodizo — Mukwano cooking oil 25.8 L remaining | 14.2 L BOM usage today
-  Foodizo — Broiler chicken     18 pcs remaining | 68 pcs sold
-  Foodizo — Farm eggs           36 eggs remaining | 142 used (71 Rolexes)
-  Obunuzi — Stewing beef        18.2 kg remaining | 6.8 kg BOM usage today
-
-SURPLUS RESOLUTIONS
-  Obunuzi — Beef Luwombo        6 portions cleared | 2 staff meals | 1 waste
-
-EXCEPTIONS
-  - 1 voided ticket (T-02, waiter error, manager phone + PIN approved)
-  - Rolex 86'd at 20:45 (eggs finished)
-  - 0 failed deliveries
-  - 0 failed payments
-
-LINKS
-  Reconciliation: https://admin.foodizo.ug/admin/reconcile
-  Inventory:      https://admin.foodizo.ug/admin/inventory
-  Audit log:      https://admin.foodizo.ug/admin/audit
-```
-
-All numbers above are illustrative. The generator must compute every value from the database.
-
-### 3.3 Optional WhatsApp Cloud API message
-
-If the owner explicitly opts in:
-
-- Use a **utility template** named `daily_audit_digest` with variables for date, gross, variance, flags, and link.
-- Send to the owner's verified WhatsApp number only.
-- Keep the same content as the email, but cap it at 4,000 characters.
-- Fall back to SMS if the Cloud API returns an error or the 24-hour window/template rules reject the message.
-- Do not use the WhatsApp Cloud API for customer order updates in Phase 1.
-
-Setup burden to document before enabling: Meta Business Portfolio, phone number verification, display name approval, template approval, permanent system-user token, webhook verification, and per-message billing. This is why it is optional.
+The report contains **no customer name, phone number, delivery note, or GPS coordinate**.
 
 ---
 
-## 4. Data Sources & Formulas
+## 5. Data Sources & Formulas
 
-The canonical schema is in `Tech_Stack.md §3` and `Payment_Integration.md §7`. The digest requires two supporting tables, also defined in `Tech_Stack.md §3`:
+The business day starts at **05:00 EAT** and ends at **04:59:59.999 EAT** the next calendar day. `business_date` is stored as UTC midnight of the Kampala calendar date.
 
-- `cash_counts` — the FOH/manager cash count at close, one row per outlet per business date.
-- `daily_digests` — the generated payload, send status (`GENERATED`, `PARTIAL`, `SENT`, `FAILED`), and idempotency key.
-
-### 4.1 Financial settlement
-
-For business date `D` (00:00–23:59 EAT):
+### 5.1 Financial settlement
 
 | Line | Formula |
 | :--- | :--- |
-| MTN | `SUM(payments.amount_ugx)` where `carrier = 'MTN'`, `status = 'SUCCESSFUL'`, `completed_at` in `D` |
-| Airtel | same, `carrier = 'AIRTEL'` |
-| Manual MoMo | same, `carrier = 'MANUAL_MOMO'` |
-| Cash | same, `carrier = 'CASH'` |
-| Gross collected | sum of the four lines; `REFUND_PENDING` and `REFUNDED` are excluded |
-| Refund pending (memo) | `SUM(payments.amount_ugx)` where `status = 'REFUND_PENDING'`, listed separately with `audit_flag` |
-| Refunds completed (memo) | `SUM(payments.amount_ugx)` where `status = 'REFUNDED'` and `refunded_at` in `D`; never added to gross |
-| Delivery fees (memo) | `SUM(orders.delivery_fee_ugx)` for paid `PHONE_DELIVERY` orders in `D` |
-| Rider advances (net) | `SUM(delivery_handoffs.rider_advance_ugx - rider_advance_returned_ugx)` for handoffs in `D` |
-| Net delivery contribution | delivery fees − net rider advances |
+| MTN | `SUM(payments.amount_ugx)` where `carrier = 'MTN'`, `status = 'SUCCESSFUL'`, `completed_at` inside the business day |
+| Airtel | Same, `carrier = 'AIRTEL'` |
+| Manual MoMo | Same, `carrier = 'MANUAL_MOMO'` |
+| Cash | Same, `carrier = 'CASH'` |
+| Gross collected | Sum of the four lines; `REFUND_PENDING` and `REFUNDED` are excluded |
+| Refund pending (memo) | `SUM(payments.amount_ugx)` where `status = 'REFUND_PENDING'`, with no date filter because it is an open liability |
+| Refunds completed (memo) | `SUM(payments.amount_ugx)` where `status = 'REFUNDED'` and `refunded_at` is inside the business day |
+| Delivery fees (memo) | `SUM(orders.delivery_fee_ugx)` for paid `PHONE_DELIVERY` orders in the day |
+| Rider advances (net) | `SUM(delivery_handoffs.rider_advance_ugx - rider_advance_returned_ugx)` for handoffs dispatched in the day |
+| Net delivery contribution | Delivery fees − net rider advances |
 
-`MANUAL_MOMO` must be included. The original sample showed it but the proposed code omitted it. Every financial line is computed per outlet and then summed; the consolidated total is never labelled with one outlet's name.
+Per-outlet figures are computed separately and then consolidated. The consolidated total is never labelled with one outlet's name.
 
-### 4.2 Cash reconciliation
+### 5.2 Cash reconciliation
 
 | Line | Formula |
 | :--- | :--- |
-| Expected cash | `cash payments − net rider advances` (Phase 1 has no cash refunds; do not subtract an assumed zero silently) |
-| Counted cash | `SUM(cash_counts.counted_cash_ugx)` for `D` |
+| Expected cash | `cash payments − net rider advances` |
+| Counted cash | `cash_counts.counted_cash_ugx` for the outlet and business date |
 | Variance | `counted cash − expected cash` |
 
-If no `cash_counts` row exists for an outlet, set `variance = null`, add the flag `CASH_COUNT_MISSING`, and do not print a zero. Cash refunds out of the drawer are not implemented in Phase 1; the digest must state that the formula excludes them rather than implying they were considered.
+If no `cash_counts` row exists, `countedCashUgx` and `cashVarianceUgx` remain `null`, `cashCountStatus` is `MISSING`, and the `CASH_COUNT_MISSING` flag is raised. Cash refunds out of the drawer are not implemented in Phase 1; the formula excludes them and does not pretend otherwise.
 
-### 4.3 Inventory
+### 5.3 Surplus and inventory
 
-The digest reports three things separately:
+- `closing_surplus_logs` grouped by `resolution`: `DISCOUNTED_CLEARANCE`, `STAFF_MEAL`, `WASTE_DISCARDED`.
+- Low-stock items are `raw_inventory` rows where `current_stock <= alert_threshold`.
+- The digest reports current stock and the low-stock list. It does **not** claim a usage or variance figure that requires an opening count the system does not capture.
 
-1. **Current stock** from `raw_inventory.current_stock` for high-turnover items.
-2. **Theoretical BOM usage** from `order_items` × `recipe_bom.quantity_deducted` for completed orders in `D`.
-3. **Variance** only if an opening/closing count exists. Without both counts, print `N/A — count not submitted`; never fabricate a variance.
+### 5.4 Flags
 
-The original proposal's “Variance: +0.2L - OK” had no data source. Do not ship that. Add a closing stock count to the manager routine if variance is required; otherwise report stock remaining and BOM usage.
+| Code | Trigger |
+| :--- | :--- |
+| `CASH_COUNT_MISSING` | At least one requested outlet has no submitted cash count |
+| `CASH_VARIANCE` | Absolute consolidated variance above UGX 5,000 |
+| `REFUND_PENDING` | One or more payments are awaiting an external refund |
+| `FAILED_PAYMENTS` | One or more `FAILED` or `TIMED_OUT` payment attempts in the day |
+| `FAILED_DELIVERIES` | One or more `FAILED_UNREACHABLE`, `REFUSED`, or `RETURNED` handoffs in the day |
+| `STALE_ORDERS` | One or more `PENDING`, `PREPARING`, or `READY` orders older than 45 minutes |
+| `LOW_STOCK` | One or more inventory items at or below the alert threshold |
 
-### 4.4 Clearance and waste
-
-Use `closing_surplus_logs` grouped by `resolution`:
-
-- `DISCOUNTED_CLEARANCE` — portions sold at clearance; actual revenue is already in gross sales.
-- `STAFF_MEAL` — portions consumed by staff.
-- `WASTE_DISCARDED` — portions discarded.
-
-Do **not** label `leftover_portions × clearance price` as “revenue recovered.” It is an estimate at best, and it double-counts revenue already in the sales total. If an estimate is useful, label it **“estimated clearance value, not additional revenue.”**
-
-### 4.5 Exceptions and flags
-
-The digest should flag, at minimum:
-
-- `CASH_COUNT_MISSING` — no cash count for one or both outlets.
-- `CASH_VARIANCE` — absolute variance above `CASH_VARIANCE_ALERT_UGX` (default `UGX 5,000`).
-- `FAILED_PAYMENTS` — count of `FAILED` / `TIMED_OUT` payments.
-- `REFUND_PENDING` — count and value of successful payments awaiting refund (late/duplicate successes and paid orders cancelled after payment, including failed deliveries); excluded from gross. A manager closes the reversal as `REFUNDED` through `Payment_Integration.md §8.2`; closed refunds move to the memo count and are no longer flagged pending.
-- `CASH_REFUND_EXCEPTION` — a `CANCELLED` order still has a `SUCCESSFUL` `CASH` payment. Phase 1 has no cash-refund ledger, so the digest names the order and amount and asks the manager to confirm the drawer adjustment; it must not imply the system refunded it.
-- `FAILED_DELIVERIES` — count of `FAILED_UNREACHABLE` / `REFUSED` / `RETURNED` handoffs.
-- `LOW_STOCK` — `raw_inventory.current_stock <= alert_threshold`.
-- `STALE_ORDERS` — `PENDING` / `PREPARING` / `READY` orders older than 45 minutes at close.
-- `DIGEST_RETRY` — previous day's digest failed or was not sent.
-- `PRINTER_OFFLINE` — only if the printer health check is stored; otherwise omit.
-- `VOIDS` — only if the audit log has a void event; otherwise show “void tracking not available.”
-
-Flags are actionable, not decorative. The email lists them; the SMS says only the count.
+Flags are actionable, not decorative. The SMS contains only the count; the report and `/admin` show the detail.
 
 ---
 
-## 5. Implementation Contract
+## 6. Channel Behaviour
 
-### 5.1 Service interface
+### 6.1 SMS
 
-```ts
-// src/server/services/daily-digest-service.ts
-export type DigestChannel = 'SMS' | 'EMAIL' | 'WHATSAPP';
+- Uses `SmsService.sendOwnerDigest(to, message)`.
+- In `development` and `test`, returns `{ success: true, mode: 'MOCK' }`, logs the message, and sends nothing. The digest response reports `smsStatus: MOCK` and `channelsSent: ["SMS_MOCK"]`.
+- In `production`, requires a real `AFRICASTALKING_API_KEY`. If it still has the sandbox placeholder, returns `FAILED` with detail `AFRICASTALKING_API_KEY is not configured.`
+- A live provider HTTP failure returns `FAILED`; the digest status is `FAILED`.
+- `sent_at` is set only for a **LIVE** SMS. A mocked digest leaves `sent_at` null.
 
-export type DailyDigestPayload = {
-  digestDate: string;              // YYYY-MM-DD, Africa/Kampala
-  generatedAt: string;             // ISO timestamp
-  outlets: Array<{
-    outlet: 'FOODIZO_HAM_TOWERS' | 'OBUNUZI_YMCA';
-    grossUgx: number;
-    mtnUgx: number;
-    airtelUgx: number;
-    manualMomoUgx: number;
-    cashUgx: number;
-    deliveryFeesUgx: number;
-    riderAdvancesNetUgx: number;
-    expectedCashUgx: number | null;
-    countedCashUgx: number | null;
-    cashVarianceUgx: number | null;
-    refundPendingUgx: number;
-    refundPendingCount: number;
-    refundedUgx: number;
-    refundedCount: number;
-  }>;
-  refundPending: Array<{
-    outlet: 'FOODIZO_HAM_TOWERS' | 'OBUNUZI_YMCA';
-    carrier: 'MTN' | 'AIRTEL' | 'CASH' | 'MANUAL_MOMO';
-    amountUgx: number;
-    reason: string | null;
-  }>;
-  flags: Array<{ code: string; severity: 'INFO' | 'WARN' | 'CRITICAL'; message: string }>;
-  links: { fullReport: string; reconcile: string; inventory: string; audit: string };
-};
+### 6.2 Email
 
-export type DigestSendResult = {
-  status: 'SENT' | 'PARTIAL' | 'FAILED';
-  sent: DigestChannel[];
-  failed: Array<{ channel: DigestChannel; error: string }>;
-};
+- No SMTP client, template, or mail transport exists in this repository.
+- `DIGEST_EMAIL_ENABLED=false` (default): `emailStatus: NOT_CONFIGURED`.
+- `DIGEST_EMAIL_ENABLED=true`: `emailStatus: FAILED_NOT_IMPLEMENTED`.
+- `DIGEST_RECIPIENT_EMAIL` is stored for future use only. Do not describe email as delivered.
 
-export async function generateDailyDigest(date: string): Promise<DailyDigestPayload>;
-export async function renderSmsSummary(payload: DailyDigestPayload): string;
-export async function renderEmailReport(payload: DailyDigestPayload): { subject: string; text: string; html: string };
-export async function sendDailyDigest(
-  payload: DailyDigestPayload,
-  channels: DigestChannel[],
-  alreadySent?: DigestChannel[]
-): Promise<DigestSendResult>;
-```
+### 6.3 Digest status
 
-### 5.2 Prisma queries (field names aligned to the schema)
+| Status | Meaning in Phase 1 |
+| :--- | :--- |
+| `PARTIAL` | The digest was generated and the SMS was sent live **or** simulated as `MOCK`; email is not configured. This is the normal result. |
+| `FAILED` | The SMS dispatch failed. The report row is still persisted with the error. |
+| `SENT` | Reserved for a future implementation where every requested channel succeeds. Phase 1 does not produce it because email is unavailable. |
 
-```ts
-// src/server/services/daily-digest-service.ts
-import { prisma } from '../plugins/prisma';
-
-const start = new Date(`${date}T00:00:00+03:00`);
-const end = new Date(`${date}T23:59:59.999+03:00`);
-
-const payments = await prisma.payments.findMany({
-  where: { status: 'SUCCESSFUL', completed_at: { gte: start, lte: end } },
-  select: {
-    carrier: true,
-    amount_ugx: true,
-    audit_flag: true,
-    order_id: true,
-    order: { select: { outlet: true } },
-  },
-});
-
-const byCarrier = (
-  outlet: 'FOODIZO_HAM_TOWERS' | 'OBUNUZI_YMCA',
-  carrier: 'MTN' | 'AIRTEL' | 'MANUAL_MOMO' | 'CASH'
-) =>
-  payments
-    .filter((p) => p.order.outlet === outlet && p.carrier === carrier)
-    .reduce((sum, p) => sum + Number(p.amount_ugx), 0);
-
-const refundPending = await prisma.payments.findMany({
-  // Open liability: no date filter, because a payment that became refundable
-  // yesterday is still owed today. The manager closes each row explicitly.
-  where: { status: 'REFUND_PENDING' },
-  select: {
-    amount_ugx: true,
-    audit_flag: true,
-    carrier: true,
-    order: { select: { outlet: true } },
-  },
-});
-
-const refunded = await prisma.payments.findMany({
-  where: { status: 'REFUNDED', refunded_at: { gte: start, lte: end } },
-  select: {
-    amount_ugx: true,
-    carrier: true,
-    order: { select: { outlet: true } },
-  },
-});
-
-const handoffs = await prisma.delivery_handoffs.findMany({
-  where: { dispatched_at: { gte: start, lte: end } },
-  select: {
-    rider_advance_ugx: true,
-    rider_advance_returned_ugx: true,
-    order: { select: { outlet: true } },
-  },
-});
-
-const riderAdvancesNetUgx = (outlet: 'FOODIZO_HAM_TOWERS' | 'OBUNUZI_YMCA') =>
-  handoffs
-    .filter((h) => h.order.outlet === outlet)
-    .reduce(
-      (sum, h) =>
-        sum + Number(h.rider_advance_ugx) - Number(h.rider_advance_returned_ugx),
-      0
-    );
-
-const refundedTotals = (outlet: 'FOODIZO_HAM_TOWERS' | 'OBUNUZI_YMCA') => {
-  const rows = refunded.filter((p) => p.order.outlet === outlet);
-  return {
-    amountUgx: rows.reduce((sum, p) => sum + Number(p.amount_ugx), 0),
-    count: rows.length,
-  };
-};
-
-const cashCounts = await prisma.cash_counts.findMany({
-  where: { business_date: new Date(date) },
-  select: { outlet: true, counted_cash_ugx: true, expected_cash_ugx: true, variance_ugx: true },
-});
-
-const refundPendingTotals = (outlet: 'FOODIZO_HAM_TOWERS' | 'OBUNUZI_YMCA') => {
-  const rows = refundPending.filter((p) => p.order.outlet === outlet);
-  return {
-    amountUgx: rows.reduce((sum, p) => sum + Number(p.amount_ugx), 0),
-    count: rows.length,
-  };
-};
-
-const outletTotals = (outlet: 'FOODIZO_HAM_TOWERS' | 'OBUNUZI_YMCA') => {
-  const pending = refundPendingTotals(outlet);
-  const refunds = refundedTotals(outlet);
-  const carriers = ['MTN', 'AIRTEL', 'MANUAL_MOMO', 'CASH'] as const;
-
-  return {
-    grossUgx: carriers.reduce((sum, carrier) => sum + byCarrier(outlet, carrier), 0),
-    refundPendingUgx: pending.amountUgx,
-    refundPendingCount: pending.count,
-    refundedUgx: refunds.amountUgx,
-    refundedCount: refunds.count,
-  };
-};
-
-// If a cash count is absent, set variance to null and add CASH_COUNT_MISSING.
-// Do not default to zero.
-```
-
-**Notes:**
-
-- `payments.carrier` is the actual column; the proposal's `payments.method` would not compile.
-- `payments.completed_at` exists in `Payment_Integration.md §7`.
-- `cash_counts` is defined in `Tech_Stack.md §3`.
-- Per-outlet figures must join `orders.outlet`; neither `payments` nor `delivery_handoffs` carries the outlet directly. Do not silently sum both outlets into one and call it “Foodizo,” and do not label a consolidated figure as one outlet.
-- `REFUND_PENDING` payments are reported separately and never added to gross collections. The query has no date filter because the memo is an open liability; a refundable payment stays visible until a manager closes it with `POST /api/v1/payments/:id/refund`. `REFUNDED` payments are excluded from gross and appear only in the completed-refund memo for the day they were closed (`refunded_at`).
-- A cancelled order with a `SUCCESSFUL` `CASH` payment is not moved automatically; raise `CASH_REFUND_EXCEPTION` and require a manager to reconcile the drawer, because Phase 1 has no cash-refund ledger.
-- Use `Prisma.Decimal` or integer UGX; never use JavaScript floating point for money beyond display.
-
-### 5.3 Cron and idempotency
-
-```ts
-// src/server/jobs/daily-digest-cron.ts
-import cron from 'node-cron';
-import { redis } from '../plugins/redis';
-import { runDailyDigest } from '../services/daily-digest-service';
-
-export function startDailyDigestCron() {
-  cron.schedule(
-    '30 21 * * *', // 21:30 Africa/Kampala
-    async () => {
-      const date = new Intl.DateTimeFormat('en-CA', {
-        timeZone: 'Africa/Kampala',
-      }).format(new Date());
-
-      const lockKey = `lock:daily-digest:${date}`;
-      const acquired = await redis.set(lockKey, '1', 'EX', 3600, 'NX');
-      if (!acquired) {
-        console.log(`[digest] ${date} already running or sent; skipping`);
-        return;
-      }
-
-      try {
-        await runDailyDigest(date);
-      } catch (error) {
-        console.error('[digest] failed', error);
-        // Release the lock so the retry job can reacquire it, then schedule
-        // exactly one retry after five minutes. The retry job reads
-        // daily_digests.channels_sent and resends only the missing channel(s).
-        await redis.del(lockKey);
-      }
-    },
-    { timezone: 'Africa/Kampala' }
-  );
-}
-```
-
-**Rules:**
-
-- Run **after** the cash count deadline. If the manager has not submitted the count by 21:30, send the digest with `CASH_COUNT_MISSING`; do not wait indefinitely.
-- Use `daily_digests.digest_date` as the idempotency key. If the row is `SENT`, skip every channel. If it is `GENERATED` or `PARTIAL`, send only the channels not already present in `channels_sent`. If it is `FAILED`, allow the documented retry.
-- Status meaning: `SENT` = every requested channel succeeded; `PARTIAL` = at least one succeeded and at least one failed; `FAILED` = none succeeded. A retry that completes the missing channel updates `PARTIAL` to `SENT` without resending the successful channel.
-- A single scheduler instance per edge node. If the API ever runs multiple replicas, the Redis lock prevents duplicate sends.
-- Set `TZ=Africa/Kampala` in the container and still pass the explicit timezone to `node-cron`; do not trust the host clock.
-- The cron must not block API requests. Run it in the API process only if the deployment has one instance; otherwise use a separate worker container.
-
-### 5.4 Rendering and sending
-
-- **SMS:** use a generic `sendSms(phone, message)` helper. Do not reuse `sendPickupSmsAlert`; it prepends a pickup token and outlet name.
-- **Email:** use SMTP (`nodemailer`) with `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`. Send both plain text and HTML.
-- **WhatsApp:** optional adapter behind `OWNER_WHATSAPP_ENABLED`; use the approved template, not free-form text for a business-initiated message.
-- **Recipient:** `OWNER_PHONE` and `OWNER_EMAIL` from environment. Never hard-code `256700000000`.
-- **Signed link:** generate a short-lived signed URL (7 days) to the full report using `DIGEST_REPORT_BASE_URL` and `DIGEST_LINK_SECRET`. Do not put a raw database ID or customer data in the URL.
-- **Retry:** SMS/email failures are recorded in `daily_digests.error`, `status` becomes `PARTIAL` or `FAILED`, and `channels_sent` records what actually arrived. Retry once after 5 minutes for missing channels only, then alert the owner and the developer. Never resend a channel already in `channels_sent`.
+A `PARTIAL` status is **not** a claim that email was delivered.
 
 ---
 
-## 6. Security, Privacy & Cost
+## 7. Report Link
 
-- **No customer PII:** the digest contains aggregate sales, stock, and exception counts. It must not include customer names, phone numbers, delivery notes, or GPS coordinates.
-- **Recipient verification:** the owner's phone/email are configured by the developer and confirmed by the owner. Changing them requires a manager login or a signed change request.
-- **Secrets:** SMTP password, Africa's Talking API key, and WhatsApp token live in `.env`/secret storage, never in the repository.
-- **Link access:** the full report requires an authenticated manager session or a signed URL; do not expose an unauthenticated `/audit` endpoint.
-- **Logging:** mask phone numbers (`2567***567`) and never log the full digest payload at `info`.
-- **Cost:** SMS is ~UGX 25–30 per 160-character segment. A 2-segment daily SMS is ~UGX 50–60/day (~UGX 1,500–1,800/month). Email is effectively free. WhatsApp utility pricing is separate and market-dependent; do not promise “free WhatsApp.”
-- **Retention:** keep `daily_digests.payload_json` for 12 months, then archive or delete; it contains business data, not customer PII.
-
----
-
-## 7. Acceptance Criteria
-
-- [ ] The digest runs at **21:30 EAT** and uses `Africa/Kampala`, not the server's local timezone.
-- [ ] A second run for the same date does not send a duplicate SMS/email.
-- [ ] Cash variance is computed from `cash_counts`; a missing count produces `CASH_COUNT_MISSING`, not `UGX 0`.
-- [ ] `MANUAL_MOMO` payments are included in the gross total.
-- [ ] Per-outlet figures are shown separately and the consolidated total is labelled “Foodizo + Obunuzi,” not “Foodizo.”
-- [ ] `REFUND_PENDING` payments are listed outside gross collections with their reason; a manager-closed `REFUNDED` payment leaves the pending memo, remains outside gross, and appears in the completed-refund memo.
-- [ ] A partial send is recorded as `PARTIAL`; the retry sends only the missing channel(s) and never duplicates a delivered SMS/email.
-- [ ] Rider advances are netted out of expected cash and shown as a separate delivery-contribution line.
-- [ ] The SMS is at most 2 segments and contains the gross total, cash variance/flag, flag count, and full-report link.
-- [ ] The email contains the full report and links to reconcile/inventory/audit.
-- [ ] The digest contains no customer name, phone number, delivery note, or GPS coordinate.
-- [ ] A failed SMS/email is recorded, retried once, and escalated; it is never silently dropped.
-- [ ] The full-report link expires and requires authentication.
-- [ ] The digest can be generated manually with `npm run digest -- --date=YYYY-MM-DD --dry-run` for testing; dry-run sends nothing and does not mark the digest `SENT`.
-- [ ] The WhatsApp channel is disabled by default and, when enabled, uses an approved utility template.
+- Each digest row stores a random 8-hex-character `link_token`.
+- The SMS link is `${DIGEST_APP_URL}/d/<token>`.
+- `/d/:token` is a public, read-only page that calls `GET /api/v1/digest/view/:token` and renders the persisted payload.
+- The API rejects an unknown token or a token older than **72 hours** with `404 DIGEST_LINK_EXPIRED`.
+- The link exposes aggregate business data only. It grants no mutation endpoint and no staff session.
+- Regenerating the same business date reuses the original token, so a previously sent link keeps working until it expires.
 
 ---
 
-## 8. Related Specifications
+## 8. API Reference
+
+| Method | Endpoint | Access | Purpose |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/v1/digest/preview?outlet=...` | Manager | Compute the current digest without persisting or sending |
+| `GET` | `/api/v1/digest/overview?outlet=...` | Manager | Dashboard payload: summary, recent orders, table counts, active staff, surplus logs |
+| `POST` | `/api/v1/digest/reconcile-cash` | Manager | Upsert the physical cash count and variance for the business date |
+| `POST` | `/api/v1/digest/dispatch-now` | Manager | Generate, persist, and send the digest; reports real channel outcomes |
+| `GET` | `/api/v1/digest/view/:token` | Public link token | Read-only 72-hour digest payload |
+
+An outlet-scoped manager can request only their own outlet. A cross-outlet manager may pass `outlet` or omit it for the consolidated view.
+
+---
+
+## 9. Security and Privacy
+
+- **No customer PII:** the payload is aggregate sales, stock, surplus, and exception data. Customer names, phones, delivery notes, and GPS coordinates are excluded.
+- **Recipient control:** `DIGEST_RECIPIENT_PHONE` is configured by the developer/owner. Changing it requires access to the server environment, not a public API.
+- **Secrets:** the Africa's Talking key, telco secrets, and `JWT_SECRET` live in `backend/.env` with restricted permissions, never in the repository.
+- **Link access:** the report link is a bearer capability valid for 72 hours. Treat it as sensitive business data; do not post it publicly.
+- **Logging:** the API logs digest status and channel outcomes, not customer PII. SMS phone numbers are masked in operational logs where practical.
+- **Cost:** SMS is billed per segment by Africa's Talking. The summary is capped at 320 characters (two segments); it is not a full report.
+
+---
+
+## 10. Operational Checks
+
+1. Confirm the API starts with `Daily digest cron registered` and the configured schedule in `journalctl -u foodizo-api`.
+2. Submit a cash count from `/admin`; confirm the variance is computed from successful cash minus net rider advances.
+3. Log surplus with clearance, staff-meal, and waste resolutions; confirm the digest payload groups them separately.
+4. Press **Dispatch digest** on `/admin`; confirm `digestStatus: PARTIAL`, `smsStatus: MOCK` in development, and `emailStatus: NOT_CONFIGURED`.
+5. Open the returned `/d/<token>` link; confirm it is read-only and shows the persisted payload.
+6. Wait past 72 hours or use a stale fixture; confirm the link returns `DIGEST_LINK_EXPIRED`.
+7. Confirm no customer name, phone, delivery note, or GPS coordinate appears anywhere in the digest payload or SMS.
+
+---
+
+## 11. Deferred Work
+
+These are not Phase 1 claims:
+
+- SMTP/email delivery and templates.
+- WhatsApp Cloud API or Telegram delivery.
+- Automatic retry of failed channels.
+- Distributed scheduling locks for multi-replica deployments.
+- Opening/closing stock counts and a true inventory usage variance.
+- Customer-facing digest or notification channels.
+
+---
+
+## 12. Related Specifications
 
 | File | Scope |
 | :--- | :--- |
-| `Foundational_Concept.md` | Business scope, four-role RBAC, executive problem statement |
-| `Design_System.md` | Role styling, status badges, and admin dashboard surfaces |
-| `User_Flow.md` | Channel flows, order state machine, and closing surplus routine |
-| `User_Profiles_Personas.md` | Operational personas and owner requirements |
+| `Foundational_Concept.md` | Business scope and four-role RBAC |
+| `Design_System.md` | Manager dashboard styling and status badges |
+| `User_Flow.md` | Order lifecycle and closing surplus routine |
+| `Payment_Integration.md` | Payment statuses, carriers, refunds, and reconciliation |
 | `Delivery_Zones_and_Dispatch.md` | Rider advances, delivery fees, and delivery contribution |
-| `Tech_Stack.md` | Canonical DDL (`cash_counts`, `daily_digests`), service placement, and Redis |
-| `Payment_Integration.md` | Payment statuses, carriers, reconciliation formulas, and refund ledger |
-| `Hardware_and_Peripherals.md` | Africa's Talking SMS gateway, printer health, and power resilience |
-| `Seed_Data_and_Testing.md` | Digest test cases, sample dates, and fixture runner |
-| `Repo_Scaffold_and_Config.md` | Repository structure, cron job placement, and environment variables |
-| `Demo_Script_and_Closing_Strategy.md` | Demonstration flow for reconciliation and owner reporting |
-| `Deployment_Runbook.md` | Cron, timezone (`Africa/Kampala`), SMTP, and backup configuration |
-| `Service_Contract_and_Invoice_Template.md` | Commercial SLA, reporting milestones, and support hours |
-|  · `build_strategy/Build_Strategy_and_Phases.md` | Delivery Stage 3 / Coding Phase C7 digest acceptance criteria |
-
-
----
-
-## 10. Digest Query Specification
-
-This section defines the exact database queries that power each line of the 21:30 digest. Developers must implement these queries in `scripts/run-daily-digest.ts` (or the equivalent Fastify service).
-
-> All queries are scoped to a single calendar date (`digest_date`) in the **Africa/Kampala** timezone (UTC+3). The cron job passes `new Date()` rounded down to the business day boundary (midnight EAT).
-
-### 10.1 Gross Revenue (MTN + Airtel + Manual MoMo + Cash)
-
-```typescript
-// Gross = sum of all SUCCESSFUL payments for the day, across both outlets
-// Delivery fees are included in the payment amount; they are a memo component, not a separate channel
-const grossResult = await prisma.payments.aggregate({
-  where: {
-    status: 'SUCCESSFUL',
-    created_at: { gte: startOfDayEAT, lt: endOfDayEAT },
-  },
-  _sum: { amount_ugx: true },
-});
-const grossUgx = grossResult._sum.amount_ugx ?? 0;
-```
-
-### 10.2 Revenue by Carrier Channel
-
-```typescript
-// Breakdown: MTN / AIRTEL / CASH / MANUAL_MOMO
-const byCarrier = await prisma.payments.groupBy({
-  by: ['carrier'],
-  where: {
-    status: 'SUCCESSFUL',
-    created_at: { gte: startOfDayEAT, lt: endOfDayEAT },
-  },
-  _sum: { amount_ugx: true },
-});
-// Result: [{ carrier: 'MTN', _sum: { amount_ugx: 1_200_000 } }, ...]
-```
-
-### 10.3 Cash Variance
-
-```typescript
-// For each outlet: variance = cash_counts.cash_counted_ugx - expected_cash_ugx
-// expected_cash_ugx = sum of CASH payments + sum of rider advances returned
-const cashCounts = await prisma.cash_counts.findMany({
-  where: {
-    business_date: digestDate,
-  },
-});
-
-// If no cash_count row exists for an outlet → digest flag = CASH_COUNT_MISSING
-// If count exists → variance = cash_counted_ugx - expected_cash_ugx
-// Never fabricate a 0 variance when the count is missing
-```
-
-### 10.4 Active Flags (Exceptions Needing Review)
-
-```typescript
-// Count of items that require manager action tonight
-const refundPending = await prisma.payments.count({
-  where: { status: 'REFUND_PENDING' },
-});
-
-const failedDeliveries = await prisma.delivery_handoffs.count({
-  where: {
-    outcome: 'FAILED_UNREACHABLE',
-    created_at: { gte: startOfDayEAT, lt: endOfDayEAT },
-    reviewed: false,
-  },
-});
-
-const missingCashCounts = cashCounts.filter(c => c.cash_counted_ugx === null).length;
-
-const totalFlags = refundPending + failedDeliveries + missingCashCounts;
-// SMS line: "2 flags." — links to admin for details
-```
-
-### 10.5 Inventory Summary (High-Turnover Items)
-
-```typescript
-// For each high-turnover ingredient: opening - used = closing (or "not submitted")
-// Used = sum of BOM decrements recorded during the day for this ingredient
-const inventorySummary = await prisma.recipe_bom.findMany({
-  where: { is_high_turnover: true },
-  include: { ingredient: true },
-});
-// If opening_count or closing_count is null → show "count not submitted" in the digest
-// Never compute a variance from null values
-```
-
-### 10.6 Deep-Link Token for the Secure Report URL
-
-```typescript
-// Generate a short token for the secure admin report link
-// Token is 4 random bytes → 8 hex chars (e.g., "7f3c2a1b")
-// Stored in daily_digests.link_token; expires 72 hours after creation
-import crypto from 'crypto';
-const linkToken = crypto.randomBytes(4).toString('hex');
-// Report URL: https://admin.foodizo.ug/d/{linkToken}
-// The /d/[token] route validates the token and expiry before showing the report
-// Token is single-use or read-only; it does not expose mutation endpoints
-```
-
-### 10.7 Idempotency — Prevent Double-Send
-
-```typescript
-// Before running any queries or sending anything, check if today's digest already exists
-const existing = await prisma.daily_digests.findUnique({
-  where: { business_date: digestDate },
-});
-
-if (existing && existing.sent_at !== null) {
-  console.log(`Digest for ${digestDate} already sent at ${existing.sent_at}. Skipping.`);
-  return;
-}
-
-// After all queries succeed, write the digest row atomically BEFORE sending
-// This prevents a partial send where SMS goes but email fails → digest row marks only what was sent
-await prisma.daily_digests.upsert({
-  where: { business_date: digestDate },
-  create: { business_date: digestDate, gross_ugx: grossUgx, flags: totalFlags, link_token: linkToken, sent_at: new Date() },
-  update: { gross_ugx: grossUgx, flags: totalFlags, link_token: linkToken, sent_at: new Date() },
-});
-```
+| `Hardware_and_Peripherals.md` | SMS gateway and printer operations |
+| `Seed_Data_and_Testing.md` | Digest fixtures and verification checklist |
+| `Deployment_Runbook.md` | Scheduler, timezone, backup, and environment configuration |

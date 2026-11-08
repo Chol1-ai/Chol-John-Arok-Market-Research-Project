@@ -7,6 +7,8 @@
 
 > **Authority:** This file is the visual contract for all four surfaces. If another document disagrees on a visual value, this file wins. If another document disagrees on a role permission, the RBAC matrix in `Foundational_Concept.md` wins.
 
+> **Implementation status:** The live, API-backed staff surfaces are `/login`, `/pos`, `/kds`, `/dispatch`, and `/admin`; `/` is the launch hub. Customer screens under `/prototype/*` (landing, menu, checkout, token, tracker) are static design prototypes and do not call the live API. Route paths in this document name the live surface wherever one exists; customer routes describe the design prototype unless explicitly marked Phase 2. The stack is static HTML, CSS, and vanilla JS served by the Node `server.js` process, with Tailwind CSS for the login surface — not Next.js.
+
 ---
 
 ## 0. Canonical Values (Resolve Conflicts Here)
@@ -39,7 +41,7 @@ A student on a 20-minute lecture break, a waiter carrying eight table tabs, a co
 
 | Dimension | 1. Customer PWA | 2. Waiter / FOH | 3. Kitchen / KDS | 4. Manager / Admin |
 | :--- | :--- | :--- | :--- | :--- |
-| **Route scope** | `/`, `/cart`, `/checkout`, `/token/[token]` | `/pos`, `/pos/tables`, `/pos/phone-entry`, `/pos/dispatch` | `/kds/steam`, `/kds/fryer`, `/kds/rolex`, `/kds/expo` | `/admin/*` |
+| **Route scope** | `/prototype/*` (static design screens) | `/pos`, `/dispatch` | `/kds` | `/admin` |
 | **Design mood** | Warm street craft | Tactical service terminal | Industrial machinery HUD | Executive ledger |
 | **Surface** | Warm cream `#FAF8F5` | Utilitarian slate `#F1F5F9` | Carbon matte `#050811` | Obsidian `#0B0F17` |
 | **Primary accent** | Chili `#C2410C` | Cobalt `#1E3A8A` | Phosphor `#059669` | Brass `#C8A96A` |
@@ -70,7 +72,7 @@ Status, channel, and payment colours are **global semantics**. They must not be 
 | `READY` | `#047857` | `#FFFFFF` | Plated / ready for pickup |
 | `OVERDUE` (>10 min) | `#DC2626` | `#FFFFFF` | Display flag only; does not alter state |
 | `COMPLETED` | `#334155` | `#FFFFFF` | Handed over |
-| `CANCELLED` | `#7F1D1D` | `#FFFFFF` | Manager phone + PIN approval, or payment-TTL expiry |
+| `CANCELLED` | `#7F1D1D` | `#FFFFFF` | Manager session plus a reason of at least 3 characters; no automatic payment-TTL cancellation |
 
 **Fulfilment channel**
 
@@ -271,10 +273,9 @@ All quantitative data runs on a **Monospace Engine**. All narrative text runs on
 
 ### 3.3 Font Loading & Offline Resilience
 
-- **Next.js path:** use `next/font/local` with self-hosted WOFF2 files, or `next/font/google` at build time. Do not depend on a runtime Google Fonts request.
-- **Non-Next.js fallback:** self-host `@fontsource/plus-jakarta-sans` and `@fontsource/jetbrains-mono` in the bundle.
-- **Why:** the Ham Towers / YMCA edge node must render correctly during a fiber cut or UMEME load-shedding event.
-- Set `font-display: swap` and preload only the 700/800 display weights plus the 700 mono weight.
+- **Phase 1 implementation:** `frontend/css/live_surfaces.css` and the prototype HTML load Plus Jakarta Sans and Material Symbols from Google Fonts at runtime. The fonts are not bundled in the repository.
+- **Deployment note:** for a fiber cut or long UMEME outage, cache the font files at the edge or self-host WOFF2 files; a runtime Google Fonts request is a known dependency, not an offline guarantee.
+- Set `font-display: swap` and preload only the 700/800 display weights plus the 700 mono weight when self-hosting.
 - Keep the fallback stack metric-compatible: `Plus Jakarta Sans → Inter → system-ui → sans-serif`; `JetBrains Mono → Consolas → monospace`.
 - Expose the loaded families as CSS variables so the Tailwind config resolves:
 
@@ -285,7 +286,7 @@ All quantitative data runs on a **Monospace Engine**. All narrative text runs on
 }
 ```
 
-With `next/font`, pass `variable: '--font-display'` and `variable: '--font-mono'`, then apply both variables to the root `<body>` element. In a non-Next.js build, declare the variables directly in `:root`.
+In the static build, declare the variables directly in `:root`; there is no `next/font` pipeline.
 
 ---
 
@@ -410,9 +411,9 @@ The floor screen is a dispatch board, not a card gallery. Tiles are dense, high-
 - Never show kitchen bump controls or recipe/BOM data on the FOH surface.
 - Settlement panel: one order total with a single carrier choice (cash, manual MoMo, or a MoMo/Airtel STK prompt). The entered amount must equal the order total before “Close Table” enables. Split checks, split tender, and table transfers are deferred to Phase 2.
 
-**Delivery dispatch queue (`/pos/dispatch`)**
+**Delivery dispatch queue (`/dispatch`)**
 
-The dispatch queue is a FOH tab, not a fifth role. The active queue lists only `PHONE_DELIVERY` orders that are `READY` with no handoff row, plus orders whose handoff is still `PENDING`, which display as **ON THE WAY**; newest first. Failed handoffs move to a separate manager review lane (`state=review`).
+The dispatch queue is a FOH surface, not a fifth role. The active queue lists only `PHONE_DELIVERY` orders that are `READY` with no handoff row, plus orders whose handoff is still open, which display as **ON THE WAY**; newest first. Failed handoffs move to a separate manager review lane (`state=review`) and leave the order `READY`.
 
 ```text
 +--------------------------------------------------------+
@@ -420,18 +421,16 @@ The dispatch queue is a FOH tab, not a fifth role. The active queue lists only `
 |  DESTINATION: YMCA MAIN CAMPUS                         |
 |  ROOM/NOTE: BLOCK C, ROOM 204 - CALL AT SECURITY GATE  |
 |  Dr. Okello - 0701 234 567                             |
-|  [ CALL ]   [ WHATSAPP ]   [ PRINT CHIT ]              |
-|  GPS: +/-18 m  [ OPEN PIN ]                            |
-|  [ HANDED TO RIDER ]                                   |
+|  [ CALL CUSTOMER ]   [ OPEN MAP ]                      |
+|  [ ASSIGN BODA RIDER ]                                 |
 +--------------------------------------------------------+
 ```
 
 - Card uses the FOH white card, 2px ink border, `3px 3px 0 #0F172A` shadow, and a purple `PHONE_DELIVERY` channel strip.
-- **CALL** and **WHATSAPP** are 56px buttons. `tel:+2567XXXXXXXX` and `https://wa.me/2567XXXXXXXX?text=...`; no WhatsApp Business API and no embedded map.
-- **OPEN PIN** opens the static Google Maps link in a new tab. It is a text link/button, not a map tile.
-- **PRINT CHIT** re-fires the ESC/POS job. Every reprint is audit-logged.
-- **HANDED TO RIDER** opens a compact modal: rider name (required), rider phone (optional), dispatch method (`CALL` / `WHATSAPP` / `COUNTER_HANDOFF`), rider transport advance in UGX (optional, default `0`), optional note. Confirm is 56px. If an advance is entered, show the delivery fee minus the advance as **Delivery contribution** before confirming; negative values are allowed and displayed in red.
-- The queue must show the room/office note and phone because the rider needs them. It must **not** show prices, BOM data, or kitchen preparation details.
+- **CALL CUSTOMER** is a `tel:` link. **OPEN MAP** opens the static maps link returned by the API when a zone or GPS hint exists; there is no embedded map, live rider marker, or route line.
+- **ASSIGN BODA RIDER** opens the handoff modal: rider name (required), rider phone (required), boda plate and stage (optional), dispatch method (`CALL` / `WHATSAPP` / `COUNTER_HANDOFF`), and advance cash in UGX (optional, default `0`).
+- **COMPLETE DELIVERY** records the real outcome: `DELIVERED` completes the order; `FAILED_UNREACHABLE`, `REFUSED`, or `RETURNED` leaves it `READY` and sends it to the review lane. The UI does not offer a print-chit button on the dispatch card; reprinting is a POS action (`POST /api/v1/orders/:id/reprint-chit`).
+- The queue must show the room/office note and phone because the rider needs them. It shows the order total so FOH can collect cash on delivery, but it must **not** show BOM data or kitchen preparation details.
 - The queue refreshes over the existing WebSocket connection. If the socket drops, show a visible “Reconnecting — use CALL from the last known card” banner; do not silently stale the list.
 - No live rider marker, route line, or map panel in Phase 1.
 
@@ -484,10 +483,10 @@ The admin surface is a financial instrument, not a dashboard of rounded cards. I
 
 - Primary commit: Brass `#C8A96A`, `#0B0F17` text, 2px radius, 40px height, no shadow. Hover `#D9BC80`; active `#8C6D2F` + white text.
 - Secondary/threshold override: Pine `#047857`, white text, 1px `#10B981` border. Hover `#065F46`; active `#064E3B`.
-- Destructive void: brass outline with Light Crimson `#F87171` text; requires manager phone + PIN approval and writes to the append-only audit log. A signed-in manager may approve with their own session. No separate shared override PIN and no one-click red delete button.
+- Destructive void: brass outline with Light Crimson `#F87171` text. A signed-in `MANAGER_ADMIN` may cancel with a required reason of at least 3 characters; the action writes to the append-only audit log. There is no separate shared override PIN and no one-click red delete button.
 - Multi-outlet switch: segmented control with a 2px brass underline. Do not use a generic dropdown for the primary outlet context.
-- Audit trail: every void, comp, price change, and stock adjustment shows actor, timestamp, before/after values, and reason. No “delete” affordance exists in the UI.
-- Shift close: the “Close Shift” action stays disabled until physical cash count is entered and the variance is acknowledged.
+- Audit trail: recorded actions such as settlement, cancellation, chit reprint, surplus log, and cash count store actor, timestamp, and before/after values where applicable. No “delete” affordance exists in the UI.
+- Cash reconciliation: the count form requires physical counted cash before the variance is recorded; there is no separate “Close Shift” button in Phase 1.
 
 ---
 
@@ -510,7 +509,7 @@ The admin surface is a financial instrument, not a dashboard of rounded cards. I
 | FOH menu tiles | **56×56px** |
 | Delivery zone select / note field | **56px** height |
 | GPS pin / Clear pin controls | **48px** height |
-| FOH CALL / WHATSAPP buttons | **56px** height |
+| FOH CALL CUSTOMER / OPEN MAP buttons | **56px** height |
 | Handoff confirm | **56px** height, full width |
 | Token verification button | **48px** height |
 | Pay Now / Retry Push | **56px** height, full width |
@@ -539,7 +538,7 @@ The admin surface is a financial instrument, not a dashboard of rounded cards. I
 - Admin tables: semantic `<table>` with `<th scope="col">`; sortable headers expose `aria-sort`.
 - Delivery zone select: real `<label for>`, `<optgroup>` labels, `aria-describedby` for fee/ETA/error text. Do not use a div-based dropdown.
 - GPS button: user-initiated only; announce `Requesting pin`, `Pin captured with ±18 m accuracy`, and `No pin added` through a polite live region. Denial is a neutral state, not an error.
-- Dispatch queue: CALL and WHATSAPP buttons have visible text labels and `aria-label` including the recipient name. The phone number is rendered as text, not an image. The handoff modal traps focus and returns focus to the card on close.
+- Dispatch queue: CALL CUSTOMER and OPEN MAP links have visible text labels and `aria-label` including the recipient name. The phone number is rendered as text, not an image. The handoff and completion modals trap focus and return focus to the card on close.
 - All icon-only controls require an `aria-label`. Decorative icons use `aria-hidden="true"`.
 
 ### 5.6 Local Environment
@@ -744,7 +743,7 @@ Set `data-role` on the authenticated layout wrapper, never on individual buttons
 
 The project uses Tailwind CSS 3.4 (see `Repo_Scaffold_and_Config.md`). Add the role tokens and the tactile shadows to `tailwind.config.ts`.
 
-> **Framework note:** All surfaces use the Next.js 14 client specified in `Repo_Scaffold_and_Config.md` and `Tech_Stack.md`. This visual contract is framework-agnostic; if a surface is ever split into a separate app, declare the same `data-role` CSS variables there and do not fork the palette.
+> **Framework note:** All surfaces are static HTML, CSS, and vanilla JS served by the Node `server.js` process; the login surface uses Tailwind CSS. This visual contract is framework-agnostic; if a surface is ever split into a separate app, declare the same `data-role` CSS variables there and do not fork the palette.
 
 ```ts
 import type { Config } from 'tailwindcss';
@@ -936,7 +935,7 @@ export default config;
 | Give the waiter a table grid with explicit status labels and one-tap claim. | Make the waiter drill through a generic list view to find a table. |
 | Capture delivery as zone + exact room/office/gate note + callable phone. | Use a free-text “address” box or a “near campus” note. |
 | Make the GPS pin optional, user-initiated, and one-shot. | Auto-request location on page load or block payment when permission is denied. |
-| Give FOH large CALL and WHATSAPP buttons plus a printable chit. | Embed a live map, rider marker, or route line in the Phase 1 dispatch screen. |
+| Give FOH large CALL CUSTOMER and OPEN MAP links plus a POS reprint action for the chit. | Embed a live map, rider marker, or route line in the Phase 1 dispatch screen. |
 | Keep room notes, phone numbers, and GPS coordinates on the FOH/chit only. | Print customer personal data on the KDS. |
 
 ### 8.4 Data, Currency & Localisation
@@ -1005,15 +1004,15 @@ Run this checklist before any UI review or demo:
 - [ ] Web Audio requires an explicit “Arm Sound” gesture and has a visible mute control.
 - [ ] Fonts and icons load from the local bundle with the network offline.
 - [ ] Admin actions write an audit entry and expose actor, timestamp, before/after, and reason.
-- [ ] Shift close is blocked until the physical cash count is entered.
-- [ ] Keyboard focus is visible on KDS, FOH, and Admin; the token status is announced by a screen reader.
+- [ ] Cash reconciliation blocks the variance record until the physical cash count is entered.
+- [ ] Keyboard focus is visible on KDS, FOH, and Admin; prototype token status uses an accessible live region.
 - [ ] A delivery order can be completed with the GPS pin denied or unavailable.
 - [ ] The zone select is a labelled 56px control, scoped to the selected outlet, with fee and ETA visible.
 - [ ] The delivery fee shown at checkout matches the server-computed zone fee and is included in the payment total.
 - [ ] No Google Maps SDK, embedded tiles, Places, Directions, or Geocoding request loads at checkout.
-- [ ] The FOH dispatch queue exposes 56px CALL, WHATSAPP, PRINT CHIT, and HANDED TO RIDER actions.
+- [ ] The FOH dispatch queue exposes 56px CALL CUSTOMER, OPEN MAP, ASSIGN BODA RIDER, and COMPLETE DELIVERY actions.
 - [ ] The KDS shows the delivery destination zone but no phone number, room note, or GPS coordinates.
-- [ ] Playwright visual snapshots exist for Customer, FOH, KDS, and Admin at 360px, 768px, 1280px, and 1920px.
+- [ ] Manual visual review covers Customer prototypes, FOH, KDS, and Admin at 360px, 768px, 1280px, and 1920px; Playwright snapshots are a Phase 2 target, not a shipped check.
 
 ---
 
@@ -1026,7 +1025,7 @@ Run this checklist before any UI review or demo:
 | `Delivery_Zones_and_Dispatch.md` | Zone/landmark checkout, optional GPS pin, dispatch queue, chit, privacy |
 | `Payment_Integration.md` | MoMo/Airtel checkout states, delivery-fee inclusion, USSD fallback, reconciliation |
 | `User_Profiles_Personas.md` | Brian K., Prossy N., Chef Juma, Zito Mbowe, rider actor |
-| `Tech_Stack.md` | Fastify, PostgreSQL DDL, Redis pub/sub, delivery services, KDS event handler |
+| `Tech_Stack.md` | Fastify, PostgreSQL DDL, in-process WebSocket bus, delivery services, KDS event handler |
 | `Repo_Scaffold_and_Config.md` | Directory tree, dependencies, environment variables |
 | `Hardware_and_Peripherals.md` | ESC/POS printers, SMS gateway, power resilience |
 | `Seed_Data_and_Testing.md` | Menu seed, BOM conversions, rush-hour simulation |
@@ -1041,10 +1040,10 @@ Run this checklist before any UI review or demo:
 
 | Surface | Target Devices | Primary Resolution | Layout Structure | Responsive Breakpoint Policy |
 | :--- | :--- | :--- | :--- | :--- |
-| **Customer PWA** (`/`, `/cart`, `/checkout`, `/token/*`) | Tecno Camon, Infinix, Samsung A-series, iPhones | 375px – 430px width (portrait) | Single-column fluid stack; sticky bottom checkout drawer (`z-50`); max container width `480px` centered on wider screens | Mobile-only lock; if opened on desktop, constrain to 480px centered card with neutral background |
-| **Waiter / FOH POS** (`/pos`, `/pos/tables`, `/pos/dispatch`) | 6.5" Android handheld terminals, 8" counter tablets | 360px – 412px (handheld) / 800px (tablet) | 2-column table grid; 3-column menu tile grid; persistent bottom status strip; touch target floor `56px` | Adaptive 2-col handheld to 4-col tablet; zero horizontal scrolling |
-| **Kitchen KDS HUD** (`/kds/steam`, `/kds/fryer`, `/kds/expo`) | 10"–15" wall-mounted touchscreen monitors | 1280×800 (16:10) / 1920×1080 (16:9) | 4-column horizontal ticket feed (1280px) or 5-column (1920px); top channel summary bar; bottom 68px bump button | Fixed landscape layout; auto-scales ticket column width (`minmax(280px, 320px)`); zero modal overlays |
-| **Manager Admin Portal** (`/admin/*`) | 13"–16" Laptops, Desktop Monitors | 1280px – 2560px width | Collapsible 240px sidebar; dense metric stat cards; hairline ledger tables; dual-pane detail inspection drawer | Desktop-first; collapses sidebar to icon strip at `<1024px`; tables support horizontal scroll on narrow viewports |
+| **Customer PWA** (`/prototype/*` static design screens) | Tecno Camon, Infinix, Samsung A-series, iPhones | 375px – 430px width (portrait) | Single-column fluid stack; sticky bottom checkout drawer (`z-50`); max container width `480px` centered on wider screens | Mobile-only lock; if opened on desktop, constrain to 480px centered card with neutral background |
+| **Waiter / FOH POS** (`/pos`, `/dispatch`) | 6.5" Android handheld terminals, 8" counter tablets | 360px – 412px (handheld) / 800px (tablet) | 2-column table grid; 3-column menu tile grid; persistent bottom status strip; touch target floor `56px` | Adaptive 2-col handheld to 4-col tablet; zero horizontal scrolling |
+| **Kitchen KDS HUD** (`/kds`) | 10"–15" wall-mounted touchscreen monitors | 1280×800 (16:10) / 1920×1080 (16:9) | 4-column horizontal ticket feed (1280px) or 5-column (1920px); top channel summary bar; bottom 68px bump button | Fixed landscape layout; auto-scales ticket column width (`minmax(280px, 320px)`); zero modal overlays |
+| **Manager Admin Portal** (`/admin`) | 13"–16" Laptops, Desktop Monitors | 1280px – 2560px width | Collapsible 240px sidebar; dense metric stat cards; hairline ledger tables; dual-pane detail inspection drawer | Desktop-first; collapses sidebar to icon strip at `<1024px`; tables support horizontal scroll on narrow viewports |
 
 ---
 
@@ -1163,9 +1162,9 @@ export default config;
 
 ---
 
-### 11.4 Automated Visual Snapshot & Contrast Testing Specification
+### 11.4 Visual Snapshot & Contrast Testing Specification
 
-To guarantee zero regression across screens, the automated testing harness incorporates Playwright visual snapshot tests:
+Phase 1 does **not** ship Playwright visual snapshots. The repository's automated checks are Vitest unit tests (`backend/tests/`) plus the external Puppeteer browser E2E harness; visual review is manual. The Playwright spec below is a future target and is not part of `npm test`.
 
 ```typescript
 // tests/e2e/visual-regression.spec.ts
@@ -1174,19 +1173,19 @@ import { test, expect } from '@playwright/test';
 test.describe('Role Surface Tactile Visual Integrity', () => {
   test('Customer PWA renders warm street craft identity', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 }); // iPhone 12/13/14
-    await page.goto('/');
+    await page.goto('/prototype');
     await expect(page).toHaveScreenshot('customer-pwa-home.png', { maxDiffPixelRatio: 0.02 });
   });
 
   test('Waiter POS renders high-contrast table grid on handheld', async ({ page }) => {
     await page.setViewportSize({ width: 412, height: 915 }); // Pixel 7
-    await page.goto('/pos/tables');
+    await page.goto('/pos');
     await expect(page).toHaveScreenshot('foh-tables-grid.png', { maxDiffPixelRatio: 0.02 });
   });
 
   test('Kitchen KDS HUD bump buttons meet 68px requirement', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 }); // 10" Tablet Landscape
-    await page.goto('/kds/fryer');
+    await page.goto('/kds');
     const bumpBtn = page.locator('.btn-kds-bump').first();
     const box = await bumpBtn.boundingBox();
     expect(box?.height).toBeGreaterThanOrEqual(68);
@@ -1195,7 +1194,7 @@ test.describe('Role Surface Tactile Visual Integrity', () => {
 
   test('Admin Executive Portal maintains obsidian brass palette', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto('/admin/dashboard');
+    await page.goto('/admin');
     await expect(page).toHaveScreenshot('admin-ledger-dashboard.png', { maxDiffPixelRatio: 0.02 });
   });
 });

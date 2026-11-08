@@ -3,6 +3,8 @@
 **Reference:** PRD Section 2 (User Roles & Permissions Matrix)<br>
 **Related Files:** `Foundational_Concept.md` (roles matrix) · `Design_System.md` (role styling) · `User_Flow.md` (lifecycle state machine) · `Delivery_Zones_and_Dispatch.md` (zone, pin & dispatch model) · `Tech_Stack.md` (DDL & RBAC) · `Payment_Integration.md` (MoMo payment flows by persona) · `Hardware_and_Peripherals.md` (printers & SMS) · `Seed_Data_and_Testing.md` (fixtures & test checklist) · `Repo_Scaffold_and_Config.md` (scaffold & env) · `Demo_Script_and_Closing_Strategy.md` (live demo) · `Daily_Audit_Digest.md` (owner reporting) · `Deployment_Runbook.md` (edge/offline operation) · `Service_Contract_and_Invoice_Template.md` (commercials) · `build_strategy/Build_Strategy_and_Phases.md` (delivery gates)
 
+> **Implementation status:** The live, API-backed surfaces are `/login`, `/pos`, `/kds`, `/dispatch`, and `/admin`. Customer pages under `/prototype/*` (landing, menu, checkout, token, tracker) are static design prototypes and do not call the live API. The customer persona below describes the intended product flow; today the customer order is keyed by staff on the POS, and staff confirm its status. SMS is `MOCK` outside production unless Africa's Talking credentials are configured, and there is no email transport.
+
 ---
 
 ## 1. Customer Persona: The Campus Pre-Orderer
@@ -23,8 +25,8 @@
 | Optional GPS Pin | Tap once to attach a one-shot location pin; decline without losing the order |
 | MoMo Checkout | Approve USSD STK push on handset within the 45-second countdown window |
 | USSD Fallback | Use merchant dial codes (`*165*3*242424#` / `*185*9*121212#`) if the STK push fails |
-| Token Access | Access Digital Pickup Token and receive live order progress alerts |
-| Notification Opt-In | Receive SMS pickup alerts and live in-page status updates; no browser push in Phase 1 |
+| Token Access | Receive the digital token on the printed chit and in the pickup SMS; **Phase 1 has no live customer status page** — `/prototype/token` is a static design prototype, and staff confirm readiness at the counter |
+| Notification Opt-In | Receive an SMS pickup alert when Africa's Talking is configured in production; development runs report `MOCK`. No browser push and no live in-page status feed in Phase 1 |
 
 ### Pain Points
 
@@ -49,7 +51,7 @@ Orders from class  →  approves MoMo STK push  →  receives TOKEN-042
 - **Role Category:** `WAITER_FOH`
 - **Device:** 6.5" Android Handheld Terminal / Tablet
 
-> *"I manage 8 tables at once while people call for deliveries. If the kitchen misses a modification, the customer blames me."*
+> *"I manage a 16-table floor while people call for deliveries. If the kitchen misses a modification, the customer blames me."*
 
 ### Permissions & Access
 
@@ -58,10 +60,10 @@ Orders from class  →  approves MoMo STK push  →  receives TOKEN-042
 | Table Occupancy Grid | View and update the live Visual Table Occupancy Grid |
 | Order Management | Create and modify table orders; send tickets to KDS |
 | Delivery Capture | On phone orders, select the outlet-scoped zone, enter the room/office/gate note, recipient name, and rider-callable phone |
-| Dispatch Queue | Open `/pos/dispatch`, verify the chit, call/WhatsApp the customer, and record the rider handoff plus any cash transport advance |
-| Payment Handling | Collect cash, request customer MoMo STK prompts at tables, and issue USSD merchant codes when signal is poor |
-| Manual Verification | Tap **"Verify MoMo Transaction"** and enter the full telco transaction ID (or the receipt's last six characters), amount, and payer phone; four digits alone are not accepted (see `Payment_Integration.md §8`) |
-| Bill Management | Close one table tab with a single settlement transaction; split checks and table transfers are Phase 2 |
+| Dispatch Queue | Open `/dispatch`, confirm the customer details and chit state, call the customer from the card, assign the boda rider, and record the handoff outcome plus any cash transport advance |
+| Payment Handling | Collect cash, trigger an MTN/Airtel STK prompt from the settle dialog, or record a verified manual MoMo reference when the customer has already paid |
+| Manual Verification | Choose `MANUAL_MOMO` at settlement and enter the full provider transaction reference (at least 3 characters); four digits alone are not accepted (see `Payment_Integration.md §8`) |
+| Bill Management | Close one table tab with a single settlement transaction (`POST /api/v1/orders/:id/settle`); split checks and table transfers are Phase 2. Cancellation is manager-only |
 
 ### Pain Points
 
@@ -69,6 +71,7 @@ Orders from class  →  approves MoMo STK push  →  receives TOKEN-042
 - Hand-written paper slips getting oily or misplaced on the kitchen pass.
 - Vague delivery notes (“near YMCA”, “Makerere”) forcing repeated rider calls while the food cools.
 - Not knowing which rider took which bag when two deliveries leave at the same time; the dispatch queue and handoff log fix this.
+- Failed or refused handoffs need manager review; the order stays `READY` instead of silently completing.
 
 ### Success Scenario
 
@@ -123,15 +126,15 @@ Reads high-contrast KDS ticket  →  taps PREPARING  →  cooks food
 
 | Permission | Description |
 | :--- | :--- |
-| Cross-Outlet Oversight | Full real-time view of multi-channel ticket queues at both outlets |
-| Inventory Monitoring | Real-time stock levels, threshold management, and BOM audit |
-| Delivery Zones | Maintain outlet-scoped zones, delivery fees, ETAs, and active/inactive Phase 2 areas |
-| Dispatch Audit | Review rider handoffs, failed/unreachable deliveries, and chit reprints |
-| User Management | RBAC user account creation, role assignments, and deactivation |
-| Menu & Pricing | Update menu item names, prices, and availability |
-| Surplus & Waste Logs | Review and export end-of-day surplus logs and next-day prep-review data |
-| Payment Reconciliation | Review the auto-generated daily financial report (MTN, Airtel, Manual MoMo, Cash; delivery fees as a memo line) at 9:30 PM and receive the 21:30 SMS/email digest — see `Payment_Integration.md §9` and `Daily_Audit_Digest.md` |
-| Exception & Refund Control | Approve voids/cancellations with phone + PIN; close a `REFUND_PENDING` payment as `REFUNDED` after completing the external reversal and recording the reference (see `Payment_Integration.md §8.3`) |
+| Cross-Outlet Oversight | Full real-time view of orders, tables, dispatch, staff, and digest data for an unscoped manager account such as Zito; an outlet-scoped manager sees only their assigned outlet |
+| Stock & 86 Control | Mark menu items 86/unavailable; the KDS claim deducts recipe-BOM quantities and the digest flags items at or below their alert threshold. Phase 1 has no inventory-management UI, stock-count screen, or automatic low-stock SMS |
+| Delivery Zones | Outlet-scoped zones, fees, and ETAs are seeded configuration enforced when a delivery order is created; there is no zone-editing UI or API in Phase 1 |
+| Dispatch Audit | Review rider handoffs and failed deliveries on `/dispatch`; reprint a chit from the POS after a printer failure |
+| Staff Roster | View the active staff roster on `/admin`; seeded accounts are managed in `backend/prisma/seed.ts`, and there is no user CRUD UI in Phase 1 |
+| Menu Availability | Toggle an item's 86/unavailable state; item names and prices are seeded configuration, not editable from `/admin` |
+| Surplus & Waste Logs | Record and review end-of-day surplus as clearance, staff meal, or waste, with the next-day prep-review data |
+| Payment Reconciliation | Review the computed daily report on `/admin` (MTN, Airtel, manual MoMo, cash; delivery fees as a memo line). The scheduled/on-demand digest is sent by SMS when Africa's Talking is configured; email is not implemented (`emailStatus: NOT_CONFIGURED`) — see `Payment_Integration.md §9` and `Daily_Audit_Digest.md` |
+| Exception & Refund Control | Cancel an order with a required reason of at least 3 characters (manager session only; no phone/PIN second factor). `REFUND_PENDING` payments appear on `/admin`; close one with `POST /api/v1/payments/:id/refund` after completing the external reversal and recording the reference (see `Payment_Integration.md §8.3`) |
 
 ### Pain Points
 
@@ -141,10 +144,14 @@ Reads high-contrast KDS ticket  →  taps PREPARING  →  cooks food
 ### Success Scenario
 
 ```
-Receives low-oil alert on phone  →  logs into Manager Portal
+Receives a low-oil operational alert (manual observation in Phase 1)
+→  logs into the manager dashboard
 →  reviews end-of-day surplus logs  →  adjusts next-day batch prep targets
-→  reviews daily payment reconciliation and the 21:30 digest (sample gross UGX 2,744,000; variance computed from the cash count)
-→  sees a computed inventory variance only when opening and closing counts exist; otherwise the screen says “count not submitted.”
+→  reviews daily payment reconciliation and the 21:30 EAT scheduled digest
+   (sample gross UGX 2,744,000; variance computed from the cash count)
+→  sees a computed inventory variance only when opening and closing counts exist;
+   Phase 1 does not ship an inventory-count screen, so the digest reports no
+   inventory figure rather than inventing one.
 ```
 
 ---
@@ -190,8 +197,8 @@ Rider receives bag + chit  →  reads YMCA MAIN CAMPUS, BLOCK C, ROOM 204
 
 | Persona | Role Enum | Primary Device | Peak Usage Window | Session / Auth Timeout |
 | :--- | :--- | :--- | :--- | :--- |
-| Brian K. | `CUSTOMER` | Android Mobile (PWA) | 12:30 PM - 2:30 PM | Cart: 30 min idle; no account login in Phase 1 |
-| Prossy N. | `WAITER_FOH` | 6.5in Android Handheld | 12:00 PM - 9:30 PM | 8-hour shift session; re-PIN after 30 min idle |
-| Chef Juma | `KITCHEN_STAFF` | 15in Wall-Mount Touchscreen | 11:30 AM - 9:00 PM | Never auto-logout on KDS; PIN re-auth after >4 hours inactivity |
-| Zito Mbowe | `MANAGER_ADMIN` | Laptop + Smartphone | 8:00 AM - 10:00 PM | 8-hour session; re-PIN always required for void/cancel |
+| Brian K. | `CUSTOMER` | Android Mobile (PWA prototype) | 12:30 PM - 2:30 PM | No customer login in Phase 1; `/prototype/*` screens are static |
+| Prossy N. | `WAITER_FOH` | 6.5in Android Handheld | 12:00 PM - 9:30 PM | JWT session expires after 12 hours; logout revokes the row in `user_sessions`; no idle auto-logout |
+| Chef Juma | `KITCHEN_STAFF` | 15in Wall-Mount Touchscreen | 11:30 AM - 9:00 PM | JWT session expires after 12 hours; logout revokes the row in `user_sessions`; no idle auto-logout |
+| Zito Mbowe | `MANAGER_ADMIN` | Laptop + Smartphone | 8:00 AM - 10:00 PM | JWT session expires after 12 hours; cancellation needs only the manager session plus a reason |
 | Delivery Rider | -- (non-system actor) | Own Android phone + printed chit | 12:00 PM - 9:00 PM | No login; not a system user |

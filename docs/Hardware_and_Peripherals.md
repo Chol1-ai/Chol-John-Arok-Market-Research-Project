@@ -156,51 +156,26 @@ export function generateExpoBagLabel(order: {
 
 ## 2. Notification Delivery: Africa's Talking SMS Gateway
 
-Budget Android phones (Infinix, Tecno) aggressively suspend background browser tabs, so an in-page alert is not reliable once the customer has walked away from the screen. SMS does not depend on the browser staying open. We integrate Africa's Talking SMS API to dispatch an automated SMS when a takeaway order reaches `READY`; the token page remains the source of truth when the customer keeps the tab open.
+Budget Android phones (Infinix, Tecno) aggressively suspend background browser tabs, so an in-page alert is not reliable once the customer has walked away from the screen. SMS does not depend on the browser staying open. We integrate Africa's Talking SMS API to dispatch an automated SMS when a takeaway order reaches `READY`. In Phase 1 the live status source is the staff POS/KDS; `/prototype/token` is a static design prototype, not a live customer status page.
 
 ### 2.1 SMS Notification Contract
 
 - **Gateway:** Africa's Talking Uganda
 - **Endpoint:** `POST https://api.africastalking.com/version1/messaging`
-- **Trigger:** Order status updates to `READY` where `channel === 'TAKEAWAY_PICKUP'` and `customer_phone` is present. A cash walk-in without a phone has no SMS destination; the token page remains the customer’s status source.
+- **Trigger:** Order status updates to `READY` where `channel === 'TAKEAWAY_PICKUP'` and `customer_phone` is present. A cash walk-in without a phone has no SMS destination; staff confirm status on the POS/KDS.
 - **Delivery trigger:** Do **not** send the pickup SMS to `PHONE_DELIVERY` at `READY`. The rider is being assigned from the FOH dispatch queue. An optional “Your order is on the way” SMS may be sent when FOH records the rider handoff; it must not claim live tracking or a precise ETA.
 - **Cost:** ~UGX 25–30 per SMS, preventing food from cooling at the counter.
 
 ```typescript
-// sms-service.ts: Africa's Talking Dispatcher
-import axios from 'axios';
-import querystring from 'querystring';
-
-export async function sendPickupSmsAlert(phone: string, token: string, outletName: string) {
-  const payload = {
-    username: process.env.AT_USERNAME, // e.g., 'sandbox' or registered business ID
-    to: phone, // E.164 without '+', e.g., '256772000000'
-    message: `${outletName}: ${token} is READY for pickup at the Express Counter! Please show this token.`,
-    from: process.env.AT_SENDER_ID // Shortcode or approved Alphanumeric ID
-  };
-
-  try {
-    const response = await axios.post(
-      'https://api.africastalking.com/version1/messaging',
-      querystring.stringify(payload),
-      {
-        headers: {
-          'apiKey': process.env.AT_API_KEY,
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Accept': 'application/json'
-        }
-      }
-    );
-    return response.data;
-  } catch (error) {
-    console.error(`Failed to send SMS to ${phone}`, error);
-    // Non-blocking error: system keeps operating even if SMS credits expire
-    return null;
-  }
-}
+// backend/src/services/smsService.ts (actual implementation)
+// All three helpers delegate to dispatchSms, which returns:
+//   { success: boolean; mode: 'MOCK' | 'LIVE' | 'FAILED'; detail?: string }
+SmsService.sendPickupAlert(phone, token, outletName);
+SmsService.sendDispatchAlert(phone, orderRef, riderName, riderPhone);
+SmsService.sendOwnerDigest(phone, digestMessage);
 ```
 
-> **Do not reuse `sendPickupSmsAlert` for other messages.** It builds a pickup-specific body (`TOKEN is READY...`). Extract a generic `sendSms(phone: string, message: string)` helper for the daily digest and operational alerts, and keep `sendPickupSmsAlert` as a thin wrapper around it. The daily digest must use the generic helper; otherwise the owner receives a malformed pickup message. SMS is billed per 160-character segment, so the digest must send a short summary and link to the full report (`Daily_Audit_Digest.md §3`).
+> **Channel honesty:** `dispatchSms` returns `MOCK` in development/test and contacts no carrier; production requires a real `AFRICASTALKING_API_KEY`. There is **no email digest transport** in Phase 1, so the digest reports `emailStatus: NOT_CONFIGURED`. SMS is billed per 160-character segment; the digest summary is capped at 320 characters and links to the full report at `/d/:token` (`Daily_Audit_Digest.md §6`).
 
 ---
 
@@ -228,7 +203,7 @@ Ham Towers and the YMCA corridor experience unexpected power cuts and a 30–90 
 
 - **Kitchen KDS Displays:** 10.1" Android Tablets (e.g., Lenovo Tab M10 or Teclast P30T) with internal battery. Mounted in heavy-duty silicone cases with acrylic splash protectors.
 - **FOH / Waiter Handhelds:** 6.5" Android smartphones (Tecno Spark / Samsung Galaxy A04) running in PWA standalone fullscreen mode.
-- **Local Edge Server (In-Store Node):** Raspberry Pi 5 (8 GB RAM) with an SSD, or a refurbished Intel NUC (i3 or better, 8–16 GB RAM, SSD) running headless Linux (Ubuntu Server), connected directly to the primary Wi-Fi router. A Raspberry Pi 4 with 2 GB is not sufficient for Next.js + PostgreSQL + Redis + Fastify; a 4 GB Pi 4 is a development fallback only, not production. This node runs the API, database, Redis, and print service; it is not a message broker, and Phase 1 has no MQTT layer.
+- **Local Edge Server (In-Store Node):** Raspberry Pi 5 (8 GB RAM) with an SSD, or a refurbished Intel NUC (i3 or better, 8–16 GB RAM, SSD) running headless Linux (Ubuntu Server), connected directly to the primary Wi-Fi router. A Raspberry Pi 4 with 2 GB is not sufficient for PostgreSQL + Fastify + static file serving; a 4 GB Pi 4 is a development fallback only, not production. This node runs the API, PostgreSQL, and the static frontend server; it does not run Redis or Next.js, and Phase 1 has no MQTT layer.
 - **Router Power Backup:** 12V Mini-DC UPS connected between the wall socket and the Wi-Fi router (plus switch) to guarantee zero Wi-Fi drops during generator cutovers. This is separate from the edge-server UPS; a 12V router UPS cannot carry a mini-PC.
 - **Edge Server UPS:** 650–1000 VA pure-sine UPS for the edge server and its SSD, sized for 15–30 minutes. Configure a graceful shutdown before the battery is exhausted. See `Deployment_Runbook.md §2`.
 
@@ -251,37 +226,21 @@ Ham Towers and the YMCA corridor experience unexpected power cuts and a 30–90 
 
 ## 5. Print Service API — Trigger Route & Fault Handling
 
-### 5.1 Print Trigger API Route
+### 5.1 Print Trigger — Actual Implementation
 
-Every print job is fired by the backend (never by the KDS frontend directly). When a KDS operator bumps an order to `READY`, the Fastify server calls an internal print job handler before — or concurrently with — broadcasting the `READY` WebSocket event.
+There is **no** public `/api/v1/print/expo-chit` endpoint and no external print-service token. Printing is internal and best-effort:
 
-```
-POST /api/v1/print/expo-chit
-Authorization: Internal service token (not customer-facing)
+| Trigger | Code path | Behaviour |
+| :--- | :--- | :--- |
+| KDS bump to `READY` | `backend/src/routes/kds.ts` calls `PrinterService.printChit(...)` | Fire-and-forget; a failure is logged as `Printer chit print failed`; the order still advances |
+| Manual reprint | `POST /api/v1/orders/:id/reprint-chit` (`WAITER_FOH` / `MANAGER_ADMIN`) | Builds the same chit with `reprint: true`, writes `CHIT_REPRINTED` to `audit_log`, and returns `{ success, printed, message }` |
+| Cash drawer kick | `POST /api/v1/tables/drawer/kick` (`WAITER_FOH` / `MANAGER_ADMIN`) | Sends `ESC p 0 25 250`; returns the real socket outcome and writes `CASH_DRAWER_KICK_TRIGGERED` to `audit_log` |
 
-Request body:
-{
-  "order_id": "uuid",
-  "token":    "TOKEN-088",
-  "channel":  "TAKEAWAY_PICKUP" | "PHONE_DELIVERY",
-  "outlet":   "FOODIZO_HAM_TOWERS" | "OBUNUZI_YMCA",
-  "items": [
-    { "name": "2pc Fried Chicken & Chips", "quantity": 1, "notes": "Extra hot" }
-  ],
-  // Delivery-only fields (omitted for TAKEAWAY_PICKUP):
-  "destination_zone": "YMCA MAIN CAMPUS",
-  "delivery_note":    "Block C, Room 204 — call at gate",
-  "recipient_phone":  "+25677XXXXXXX"
-}
+`PrinterService` connects to `EXPO_PRINTER_IP:EXPO_PRINTER_PORT` (default `192.168.1.200:9100`) with a 2.5-second timeout. There is **no persistent print queue and no automatic retry**; if the printer is offline, the order still proceeds and staff must reprint after fixing the printer.
 
-Success response (200):
-{ "status": "PRINTED", "printer_ip": "192.168.1.200", "job_id": "..." }
+The chit contains the token, channel, order reference, destination/table, guest name and phone, delivery note, line items, total, and a partial cut (`GS V 66 0`).
 
-Failure response (503):
-{ "status": "PRINT_FAILED", "error": "TCP connect timeout", "retry_available": true }
-```
-
-> **Security note:** The `delivery_note`, `recipient_phone`, and `destination_zone` fields are sanitized by `sanitizeChitText()` before being passed to the ESC/POS byte generator. Control characters (ESC, GS, NUL, and all bytes 0x00–0x1F and 0x7F) are stripped to prevent printer-command injection. Each field is capped at 160 characters.
+> **Security note:** `PrinterService.sanitizeText()` strips all bytes `0x00–0x1F` and `0x7F`, collapses whitespace, and caps each field (160 characters for notes and item text, 80 for names, 24–40 for phone/token/reference fields) before the ESC/POS byte generator runs. Customer text can never inject a printer command.
 
 ---
 
@@ -291,159 +250,54 @@ Failure response (503):
 
 | Scenario | System Behaviour |
 | :--- | :--- |
-| TCP connect to `192.168.1.200:9100` times out (3 s) | Order advances to `READY`; error is logged to `audit_log`; KDS Expo screen shows **⚠ Chit print failed — Re-print** button |
+| TCP connect to `EXPO_PRINTER_IP:EXPO_PRINTER_PORT` times out (2.5 s) | `printChit` resolves `false`; the API logs a warning; the order still advances to `READY` |
 | Socket refuses connection (printer off) | Same as above |
-| Socket open but no response within 5 s | Same as above; retry once automatically after 10 s |
-| Print job succeeds on auto-retry | Button disappears; `audit_log` records retry success |
-| Expo operator taps **Re-print** manually | `POST /api/v1/print/expo-chit` called again with the same `order_id` — idempotent re-trigger |
-| Three consecutive print failures in 15 minutes | SMS alert sent to manager phone via Africa's Talking; hardware-status panel flags the printer as `OFFLINE` |
-| Printer recovers while orders are queued | Admin can trigger a **"Re-print all failed chits"** batch action from `/admin/hardware` |
+| Socket accepts the write | `printChit` resolves `true`; this means the bytes reached the socket, not that paper physically came out |
+| KDS print failure | There is no KDS reprint button and no automatic retry; staff fix the printer and call the reprint endpoint |
+| Manual reprint | `POST /api/v1/orders/:id/reprint-chit` writes `CHIT_REPRINTED` to `audit_log` and returns the printer outcome |
+| Repeated printer failures | Operational issue; Phase 1 has no hardware-status panel, no batch reprint, and no automatic printer SMS alert |
 
 ```typescript
-// Pseudo-code: print job with fail-open
-async function triggerExpoPrint(order: OrderForPrint): Promise<void> {
-  try {
-    const result = await printExpoChit(order); // TCP to 192.168.1.200:9100
-    await auditLog({ event: 'PRINT_SUCCESS', orderId: order.id });
-  } catch (err) {
-    await auditLog({ event: 'PRINT_FAILED', orderId: order.id, error: String(err) });
-    // Publish to Redis so the KDS screen shows the re-print button
-    await redis.publish('KDS_PRINT_FAILED', JSON.stringify({ orderId: order.id }));
-    // Do NOT throw — order proceeds to READY regardless
-  }
-}
+// Actual KDS behaviour: fire-and-forget, fail-open.
+PrinterService.printChit(chit).catch((err) =>
+  fastify.log.warn({ err }, 'Printer chit print failed')
+);
+// The order status update is not rolled back when printing fails.
 ```
 
 ---
 
 ### 5.3 SMS Gateway Fault Handling
 
-**Africa's Talking SMS** is used for pickup alerts (`TOKEN-088 is ready!`) and the 21:30 owner digest summary. It is an **external network service** and may be unreachable during internet outages.
+**Africa's Talking SMS** is used for pickup alerts (`TOKEN-088 is ready!`), an optional "on the way" dispatch alert, and the scheduled/on-demand owner digest. It is an **external network service** and may be unreachable during internet outages.
 
 | Scenario | System Behaviour |
 | :--- | :--- |
-| Africa's Talking API returns 5xx or times out | Retry up to 3 times with exponential backoff (2 s, 4 s, 8 s) |
-| All retries fail | Log `SMS_DELIVERY_FAILED` to `audit_log`; order proceeds normally; customer sees in-page status instead |
-| Digest SMS fails | Flag in `daily_digests.sms_status = FAILED`; email digest is sent independently; manager can retry from `/admin/digest` |
-| Internet is completely down (LAN-only mode) | SMS is impossible; in-page status is the fallback for customers on the local Wi-Fi; owner is notified on reconnect |
+| Development or test mode | `SmsService` returns `{ success: true, mode: 'MOCK' }`; it logs the message and contacts no carrier |
+| Production without a real API key | Returns `{ success: false, mode: 'FAILED', detail: 'AFRICASTALKING_API_KEY is not configured.' }` |
+| Africa's Talking returns 5xx or times out | `dispatchSms` returns `FAILED` with the provider detail; there is **no automatic retry** in Phase 1 |
+| Pickup or dispatch SMS fails | The caller logs a warning; the order and KDS flow proceed normally |
+| Digest SMS fails | `daily_digests.sms_status = FAILED` and the digest status is `FAILED`; the manager can retry with `POST /api/v1/digest/dispatch-now` from `/admin` |
+| Internet is completely down (LAN-only mode) | SMS is impossible; staff see order state on the POS/KDS. There is no live customer status page in Phase 1 — `/prototype/token` is a static design prototype and does not call the API |
 
-> **Rule:** SMS failure must never block an order from advancing to `COMPLETED`. The in-page token status page (`/token/[token]`) is the authoritative customer view; SMS is a convenience notification only.
+> **Rule:** SMS failure must never block an order from advancing to `COMPLETED`. SMS is a convenience notification only. Do not describe a `MOCK` result as a delivered message, and do not claim a live customer tracking page that does not exist.
 
-
----
-
-## 6. Hardware Automated Testing Harness & Mock Printer Simulator
-
-To test the ESC/POS printing engine without requiring a physical 80mm thermal printer on developer machines or in automated CI, developers execute tests against the built-in TCP socket simulator:
-
-### 6.1 Mock Printer Socket Simulator (`tests/hardware/mock-printer.ts`)
-
-```typescript
-import net from 'net';
-
-export class MockEscPosPrinter {
-  private server: net.Server;
-  public receivedBuffers: Buffer[] = [];
-  public shouldTimeout = false;
-  public shouldRefuse = false;
-
-  constructor(public port = 9100) {
-    this.server = net.createServer((socket) => {
-      if (this.shouldTimeout) {
-        // Hold socket open without acknowledging data to simulate hung printer
-        return;
-      }
-
-      socket.on('data', (data) => {
-        this.receivedBuffers.push(data);
-      });
-
-      socket.on('end', () => {
-        socket.end();
-      });
-    });
-  }
-
-  async start(): Promise<void> {
-    if (this.shouldRefuse) return;
-    return new Promise((resolve) => {
-      this.server.listen(this.port, '127.0.0.1', () => resolve());
-    });
-  }
-
-  async stop(): Promise<void> {
-    return new Promise((resolve) => {
-      this.server.close(() => resolve());
-    });
-  }
-
-  clear(): void {
-    this.receivedBuffers = [];
-  }
-}
-```
 
 ---
 
-### 6.2 Printer Integration & Fail-Open Verification Test (`tests/integration/printer.test.ts`)
+## 6. Printing Tests & Verification
 
-```typescript
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { MockEscPosPrinter } from '../hardware/mock-printer';
-import { generateExpoBagLabel } from '../../src/server/services/escpos-generator';
-import { sendRawEscPosToPrinter } from '../../src/server/services/printer-client';
+The repository does **not** ship a TCP mock-printer harness. The automated ESC/POS coverage lives in `backend/tests/printer.test.ts` and calls `PrinterService.formatChit()` directly, so it needs no hardware.
 
-describe('ESC/POS Thermal Printing & Fail-Open Harness', () => {
-  let printer: MockEscPosPrinter;
+| Check | Assertion |
+| :--- | :--- |
+| Chit formatting | The buffer contains the token, guest name, item lines, notes, total, and the trailing `GS V 66 0` partial cut |
+| Command sanitization | Control bytes `0x00–0x1F` and `0x7F` are removed from customer/item text; a crafted note cannot add an `ESC @` reset; fields are capped |
 
-  beforeEach(async () => {
-    printer = new MockEscPosPrinter(9100);
-    await printer.start();
-  });
+Manual hardware check:
 
-  afterEach(async () => {
-    await printer.stop();
-  });
-
-  it('generates valid ESC/POS byte sequence with initialization and paper cut', () => {
-    const chit = generateExpoBagLabel({
-      digitalToken: 'TOKEN-088',
-      customerName: 'Brian K.',
-      channel: 'PHONE_DELIVERY',
-      destinationZone: 'YMCA MAIN CAMPUS',
-      deliveryNote: 'Block C, Room 204',
-      customerPhone: '+256772123456',
-      items: [{ name: '2pc Fried Chicken & Chips', quantity: 1 }],
-      timestamp: '2026-10-30 13:15 EAT',
-    });
-
-    const rawHex = chit.toString('hex');
-    expect(rawHex).toContain('1b40'); // ESC @ (Initialize)
-    expect(rawHex).toContain('544f4b454e2d303838'); // "TOKEN-088" ASCII
-    expect(rawHex).toContain('1d564200'); // GS V 66 0 (Cut Paper)
-  });
-
-  it('prints successfully to LAN printer socket under normal conditions', async () => {
-    const chit = generateExpoBagLabel({
-      digitalToken: 'TOKEN-088',
-      customerName: 'Brian K.',
-      channel: 'TAKEAWAY_PICKUP',
-      items: [{ name: 'Rolex (2 Eggs)', quantity: 2 }],
-      timestamp: '2026-10-30 13:15 EAT',
-    });
-
-    const success = await sendRawEscPosToPrinter('127.0.0.1', 9100, chit, 3000);
-    expect(success).toBe(true);
-    expect(printer.receivedBuffers.length).toBeGreaterThan(0);
-  });
-
-  it('enforces fail-open: returns false on timeout without throwing unhandled exceptions', async () => {
-    printer.shouldTimeout = true;
-    const chit = Buffer.from('TEST');
-
-    // Attempt print with 500ms timeout
-    const result = await sendRawEscPosToPrinter('127.0.0.1', 9100, chit, 500);
-    expect(result).toBe(false); // Handled gracefully; order proceeds to READY
-  });
-});
-```
+1. Reserve `192.168.1.200` for the printer MAC and connect it over Ethernet.
+2. From the edge server, run `nc -vz 192.168.1.200 9100`.
+3. Bump a test order to `READY`; confirm a chit prints.
+4. Stop the printer and bump another order; confirm the order still reaches `READY` and the API logs `Printer chit print failed`.
+5. Restart the printer and call `POST /api/v1/orders/:id/reprint-chit`; confirm the chit and the `CHIT_REPRINTED` audit row.

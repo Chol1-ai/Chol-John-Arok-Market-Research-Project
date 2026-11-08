@@ -6,6 +6,8 @@
 **Locations:** Foodizo (Ham Towers) & Obunuzi Restaurant & Cafe (Opposite YMCA), Kampala, Uganda  
 **Related Specifications:** `build_strategy/Build_Strategy_and_Phases.md` · `docs/Design_System.md` · `docs/User_Flow.md` · `docs/Tech_Stack.md` · `docs/Payment_Integration.md` · `docs/Delivery_Zones_and_Dispatch.md` · `go_to_market/Go_To_Market_Strategy.md`
 
+> **Implementation status:** This is a historical screen-by-screen plan, not a description of the shipped app. The repository uses static HTML/CSS/JS, not Next.js. The live staff surfaces are `/login`, `/pos`, `/kds`, `/dispatch`, `/admin`, plus the public `/d/:token` digest. Customer screens under `/prototype/*` are static design prototypes. The KDS is one live screen with channel filters, not four station routes. Manager functions are consolidated on `/admin`. There is no Redis and no inventory-management screen. See `docs/Repo_Scaffold_and_Config.md` for the actual scaffold.
+
 ---
 
 ## 1. Executive Implementation Vision: The Surface Build Chain

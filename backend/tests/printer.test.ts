@@ -34,5 +34,25 @@ describe('PrinterService (ESC/POS 80mm Chit Formatting)', () => {
     expect(buffer[len - 2]).toBe(0x42); // 66
     expect(buffer[len - 1]).toBe(0x00); // 0
   });
+
+  it('strips ESC/POS control bytes from customer and item text', () => {
+    const sanitized = PrinterService.sanitizeText('Chicken\u001B@\u0007\u007F  extra');
+    expect(sanitized).not.toMatch(/[\u0000-\u001F\u007F]/);
+    expect(sanitized).toContain('Chicken');
+    expect(sanitized).toContain('extra');
+    expect(PrinterService.sanitizeText('x'.repeat(200))).toHaveLength(160);
+
+    const buffer = PrinterService.formatChit({
+      orderNumber: 'ORD-999999',
+      tokenNumber: 'TOKEN-099',
+      channel: 'PHONE_DELIVERY',
+      deliveryNotes: 'Gate\u001B@\u0007 code 4',
+      items: [{ name: 'Rolex', quantity: 1, notes: 'hot\u001B\u0007' }],
+      totalUgx: 9000
+    });
+    const rendered = buffer.toString('latin1');
+    expect(rendered.match(/\u001B@/g)).toHaveLength(1); // only the init command
+    expect(rendered).toContain('Gate @ code 4');
+  });
 });
 

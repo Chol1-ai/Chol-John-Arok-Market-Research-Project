@@ -25,6 +25,16 @@
     "makerere"
   ],
   "author": "Chol John Arok",
-  "license": "ISC"
+  "license": "ISC",
+  "directories": {
+    "doc": "docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Chol1-ai/Chol-John-Arok-Market-Research-Project.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Chol1-ai/Chol-John-Arok-Market-Research-Project/issues"
+  },
+  "homepage": "https://github.com/Chol1-ai/Chol-John-Arok-Market-Research-Project#readme"
 }
-

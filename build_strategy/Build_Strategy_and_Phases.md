@@ -7,6 +7,8 @@
 **Target Locations:** Foodizo (Ham Towers) & Obunuzi Restaurant & Cafe (Opposite YMCA), Kampala, Uganda  
 **Related Specifications:** `build_strategy/Dashboard_Build_Progression.md` · `docs/Tech_Stack.md` · `docs/Repo_Scaffold_and_Config.md` · `docs/Payment_Integration.md` · `docs/Delivery_Zones_and_Dispatch.md` · `docs/Hardware_and_Peripherals.md` · `docs/Seed_Data_and_Testing.md` · `docs/Deployment_Runbook.md` · `go_to_market/Go_To_Market_Strategy.md`
 
+> **Implementation status:** This is the original planning blueprint, kept for delivery history. The shipped repository does **not** use Next.js, React, Redis, Docker Compose, or a separate worker. It is static HTML/CSS/JS served by `server.js`, a Fastify + Prisma + PostgreSQL backend, an in-process WebSocket bus, and an in-process `node-cron` digest scheduler. Route names and station splits below are the plan; the live surfaces are `/login`, `/pos`, `/kds`, `/dispatch`, `/admin`, and `/d/:token`. For the actual scaffold and dependencies, read `docs/Repo_Scaffold_and_Config.md`. For current test results, read `docs/Seed_Data_and_Testing.md`.
+
 ---
 
 ## 0. Screen-by-Screen Dashboard Build Chain
@@ -133,7 +135,7 @@ flowchart TD
 
 * **Objective:** Implement the canonical relational database schema in PostgreSQL via Prisma ORM, enforce staff phone + PIN authentication, session management, and append-only auditing.
 * **Key Tasks:**
-  1. Deploy `prisma/schema.prisma` containing all 15 models (`users`, `user_sessions`, `audit_log`, `delivery_zones`, `restaurant_tables`, `menu_items`, `orders`, `order_items`, `raw_inventory`, `recipe_bom`, `closing_surplus_logs`, `delivery_handoffs`, `cash_counts`, `daily_digests`, `token_counters`, `payments`, `payment_events`) and 13 enums.
+  1. Deploy `prisma/schema.prisma` containing all 17 models (`users`, `user_sessions`, `audit_log`, `delivery_zones`, `restaurant_tables`, `menu_items`, `orders`, `order_items`, `raw_inventory`, `recipe_bom`, `closing_surplus_logs`, `delivery_handoffs`, `cash_counts`, `daily_digests`, `token_counters`, `payments`, `payment_events`) and 13 enums.
   2. Generate initial Prisma migration: `npx prisma migrate dev --name init_canonical_schema`.
   3. Implement PostgreSQL append-only trigger on `audit_log` preventing `UPDATE` or `DELETE` actions.
   4. Build password utility (`src/server/utils/password.ts`) with bcrypt cost 12 hashing for 4–6 digit staff PINs.
