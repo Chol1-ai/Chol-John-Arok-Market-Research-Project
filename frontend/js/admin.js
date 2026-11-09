@@ -16,6 +16,7 @@
     outletWrap: document.getElementById('admin-outlet-wrap'),
     outletFilter: document.getElementById('admin-outlet-filter'),
     refresh: document.getElementById('admin-refresh'),
+    updated: document.getElementById('admin-updated'),
     live: document.getElementById('admin-live'),
     liveText: document.getElementById('admin-live-text'),
     gross: document.getElementById('admin-gross'),
@@ -213,11 +214,11 @@
     const total = rows.reduce((sum, row) => sum + row.count, 0);
     els.tables.innerHTML = `
       <div style="display:flex;flex-wrap:wrap;gap:7px">
-        <span class="ls-chip" style="cursor:default">All tables (${total})</span>
+        <span class="ls-chip ls-chip--static">All tables (${total})</span>
         ${rows
           .map(
             (row) =>
-              `<span class="ls-chip" style="cursor:default">${F.escapeHtml(
+              `<span class="ls-chip ls-chip--static">${F.escapeHtml(
                 F.statusLabel(row.status)
               )} (${row.count})</span>`
           )
@@ -283,6 +284,11 @@
     }
   }
 
+  function markUpdated() {
+    if (!els.updated) return;
+    els.updated.textContent = `Updated ${F.formatTime(new Date().toISOString())} · auto 60s`;
+  }
+
   function renderAll() {
     renderKpis();
     renderOutlets();
@@ -291,6 +297,7 @@
     renderTables();
     renderStaff();
     renderSurplusLogs();
+    markUpdated();
     updateCashExpected(false).catch(() => {});
   }
 

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 
 <html lang="en">
 
@@ -26,6 +26,15 @@
 
       body {
         overscroll-behavior: none;
+      }
+
+      .ui-ico {
+        flex: none;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
       }
 
       main>:first-child {
@@ -58,7 +67,7 @@
             class="font-headline-md text-headline-md text-secondary tracking-tight">Obunuzi</span></div>
         <div class="h-5 w-px bg-surface-container-highest hidden sm:block"></div>
         <div class="hidden sm:flex items-center gap-space-xs px-space-sm py-space-xs rounded-full bg-surface-container">
-          <span class="material-symbols-outlined text-primary text-[16px]">store</span><span
+          <svg class="ui-ico text-primary" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v10h16V10"/><path d="M3 10l1.8-5h14.4L21 10"/><path d="M9 20v-6h6v6"/></svg><span
             class="font-label-md text-label-md text-on-surface">Ham Towers / YMCA</span>
         </div>
         <div class="flex items-center gap-space-xs px-space-sm py-space-xs rounded-full bg-tertiary-fixed/30"><span
@@ -79,11 +88,9 @@
           data-path="manager-auth" href="/admin">Duty Manager</a></nav>
       <div class="flex items-center gap-space-sm"><a
           class="flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-error-container text-on-error-container hover:bg-error hover:text-on-error transition-colors"
-          data-path="emergency-dispatch" href="#"><span
-            class="material-symbols-outlined text-[16px]">fmd_bad</span><span
+          data-path="emergency-dispatch" href="/dispatch"><svg class="ui-ico" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2.5 20h19L12 3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg><span
             class="font-label-sm text-label-sm hidden sm:inline">Emergency Dispatch</span></a>
-        <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span
-            class="material-symbols-outlined text-on-primary text-[18px]">person</span></div>
+        <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><svg class="ui-ico text-on-primary" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/></svg></div>
       </div>
     </div>
   </header>
@@ -95,12 +102,12 @@
           <div class="flex items-center gap-space-sm flex-wrap">
             <span
               class="inline-flex items-center gap-space-xs px-space-sm py-space-xs rounded-full bg-primary-container text-on-primary-container font-label-md text-label-md">
-              <span class="material-symbols-outlined text-[16px]">point_of_sale</span>
+              <svg class="ui-ico" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16l-1 12H5L4 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/><path d="M8 12h8"/></svg>
               Kampala Staff Terminal · Live Directory
             </span>
             <span
               class="inline-flex items-center gap-space-xs px-space-sm py-space-xs rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-md text-label-md">
-              <span class="material-symbols-outlined text-[16px]">schedule</span>
+              <svg class="ui-ico" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
               <span id="login-business-day">Business day resets 05:00 EAT</span>
             </span>
             <span
@@ -111,13 +118,13 @@
           </div>
           <div class="flex items-center gap-space-md font-label-sm text-label-sm text-on-surface-variant">
             <span class="hidden sm:inline-flex items-center gap-space-xs">
-              <span class="material-symbols-outlined text-[16px] text-tertiary">print</span>
-              ESC/POS Receipt Kitchen Bus OK
+              <svg class="ui-ico text-tertiary" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 8V3h10v5"/><path d="M5 8h14a2 2 0 0 1 2 2v6h-4v5H7v-5H3v-6a2 2 0 0 1 2-2Z"/><path d="M7 16h10"/></svg>
+              ESC/POS chits enabled
             </span>
-            <span class="text-outline-variant font-bold hidden sm:inline">•</span>
+            <span class="text-outline-variant font-bold hidden sm:inline">&#x2022;</span>
             <span class="flex items-center gap-space-xs text-primary font-bold">
-              <span class="material-symbols-outlined text-[16px]">lock</span>
-              Drawer Lock Engaged
+              <svg class="ui-ico" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+              Drawer kick authenticated
             </span>
           </div>
         </div>
@@ -141,7 +148,7 @@
                     console.</p>
                 </div>
                 <span class="p-space-sm bg-surface-container rounded-lg text-primary flex items-center justify-center">
-                  <span class="material-symbols-outlined text-[28px]">badge</span>
+                  <svg class="ui-ico" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M6 17a3 3 0 0 1 6 0"/><path d="M14 10h4"/><path d="M14 14h4"/></svg>
                 </span>
               </div>
               <div
@@ -176,7 +183,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-space-sm pt-space-xs">
               <div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex items-center gap-space-sm text-left">
                 <span class="p-space-xs rounded-lg bg-surface-container-high text-primary flex-shrink-0">
-                  <span class="material-symbols-outlined text-[22px]">alt_route</span>
+                  <svg class="ui-ico" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="20" r="2"/><path d="M6 18V9a4 4 0 0 1 4-4h9"/><path d="m16 2 3 3-3 3"/></svg>
                 </span>
                 <div class="min-w-0">
                   <p class="font-label-md text-label-md text-on-surface truncate">Role routing</p>
@@ -185,7 +192,7 @@
               </div>
               <div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex items-center gap-space-sm text-left">
                 <span class="p-space-xs rounded-lg bg-surface-container-high text-secondary flex-shrink-0">
-                  <span class="material-symbols-outlined text-[22px]">database</span>
+                  <svg class="ui-ico" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>
                 </span>
                 <div class="min-w-0">
                   <p class="font-label-md text-label-md text-on-surface truncate">Live directory</p>
@@ -194,7 +201,7 @@
               </div>
               <div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex items-center gap-space-sm text-left">
                 <span class="p-space-xs rounded-lg bg-error-container text-on-error-container flex-shrink-0">
-                  <span class="material-symbols-outlined text-[22px]">lock</span>
+                  <svg class="ui-ico" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><path d="M12 14v2"/></svg>
                 </span>
                 <div class="min-w-0">
                   <p class="font-label-md text-label-md text-on-surface truncate">PIN lockout</p>
@@ -204,12 +211,11 @@
             </div>
             <!-- Security Lock Banner & ESC/POS Note -->
             <div class="p-space-md rounded-xl bg-surface-container flex items-start gap-space-sm">
-              <span class="material-symbols-outlined text-primary text-[24px] flex-shrink-0 mt-0.5">lock_clock</span>
+              <svg class="ui-ico text-primary mt-0.5" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="10" width="12" height="10" rx="2"/><path d="M6 10V7a4 4 0 0 1 8 0v3"/><circle cx="18" cy="16" r="4"/><path d="M18 14v2l1.5 1"/></svg>
               <div class="font-body-sm text-body-sm text-on-surface-variant">
-                <span class="font-label-md text-label-md text-on-surface block mb-0.5">Security Hardware Interlock
-                  Engaged</span>
-                Cash drawer auto-lock engaged. 4-digit staff PIN is strictly required to open the Table Order Pad,
-                release drawer latch, and trigger ESC/POS print commands.
+                <span class="font-label-md text-label-md text-on-surface block mb-0.5">PIN-protected cash drawer</span>
+                A 4-digit staff PIN opens the Table Order Pad. Drawer kicks and ESC/POS chits are sent through the
+                station printer and recorded against the signed-in staff account.
               </div>
             </div>
           </div>
@@ -312,7 +318,7 @@
                 <button
                   class="h-16 rounded-xl bg-surface-container hover:bg-surface-container-high active:bg-surface-container-highest text-on-surface font-label-lg text-label-lg flex items-center justify-center shadow-sm active:translate-y-0.5 transition-all"
                   id="pin-backspace" type="button">
-                  <span class="material-symbols-outlined text-[24px]">backspace</span>
+                  <svg class="ui-ico" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5h11a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H9L3 12l6-7Z"/><path d="m11 9 5 6"/><path d="m16 9-5 6"/></svg>
                 </button>
               </div>
               <!-- Big Action Button (Unlock Floor POS) -->
@@ -320,7 +326,7 @@
                 <button
                   class="w-full h-14 rounded-full bg-primary-container text-on-primary-container font-label-lg text-label-lg shadow-md hover:brightness-105 active:scale-[0.98] transition-all flex items-center justify-center gap-space-sm"
                   id="btn-unlock-pos" type="button">
-                  <span class="material-symbols-outlined text-[22px]">login</span>
+                  <svg class="ui-ico" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M3 12h12"/><path d="m10 7 5 5-5 5"/></svg>
                   <span>Sign in to staff surface</span>
                 </button>
                 <p
@@ -338,15 +344,15 @@
               <div class="grid grid-cols-3 gap-space-xs text-center">
                 <div class="bg-surface-container-low p-space-sm rounded-lg">
                   <span class="font-label-sm text-label-sm text-on-surface-variant block">Active staff</span>
-                  <span class="font-currency-display text-currency-display text-primary block mt-0.5" id="metric-staff">—</span>
+                  <span class="font-currency-display text-currency-display text-primary block mt-0.5" id="metric-staff">&mdash;</span>
                 </div>
                 <div class="bg-surface-container-low p-space-sm rounded-lg">
                   <span class="font-label-sm text-label-sm text-on-surface-variant block">Outlets</span>
-                  <span class="font-currency-display text-currency-display text-secondary block mt-0.5" id="metric-outlets">—</span>
+                  <span class="font-currency-display text-currency-display text-secondary block mt-0.5" id="metric-outlets">&mdash;</span>
                 </div>
                 <div class="bg-surface-container-low p-space-sm rounded-lg">
                   <span class="font-label-sm text-label-sm text-on-surface-variant block">API health</span>
-                  <span class="font-currency-display text-currency-display text-tertiary block mt-0.5" id="metric-api">—</span>
+                  <span class="font-currency-display text-currency-display text-tertiary block mt-0.5" id="metric-api">&mdash;</span>
                 </div>
               </div>
             </div>
@@ -361,11 +367,16 @@
   <footer class="w-full bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)] py-space-md">
     <div class="max-w-7xl mx-auto px-margin flex flex-col sm:flex-row items-center justify-between gap-space-sm">
       <div class="flex items-center gap-space-sm text-on-surface-variant font-body-sm text-body-sm"><span
-          class="font-label-md text-label-md text-on-surface">Wandegeya District Node</span><span>•</span><span>Live API session</span><span>•</span><span>Cookie + Bearer fallback</span>
+          class="font-label-md text-label-md text-on-surface">Wandegeya District Node</span><span>&#x2022;</span><span>Live API session</span><span>&#x2022;</span><span>Cookie + Bearer fallback</span>
       </div>
-      <div class="flex items-center gap-space-md font-label-sm text-label-sm text-on-surface-variant"><span
-          class="flex items-center gap-space-xs"><span
-            class="material-symbols-outlined text-[14px] text-tertiary">wifi</span>Live DB connected</span><span>©
+      <div class="flex items-center gap-space-md font-label-sm text-label-sm text-on-surface-variant"><button
+          type="button" data-action="check-health"
+          class="flex items-center gap-space-xs min-h-[44px] hover:text-primary transition-colors"
+          title="Check the live API status"><svg
+            class="text-tertiary shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+            aria-hidden="true"><path d="M3 12h4l2.4-6 4.2 12 2.1-6H21" /></svg><span
+            data-health-label>Check API status</span></button><span>©
           2026 Foodizo &amp; Obunuzi</span></div>
     </div>
   </footer>

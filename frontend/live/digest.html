@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="/css/live_surfaces.css" />
 </head>
 <body class="ls-body" data-surface="admin">
+  <a class="ls-skip" href="#main-content">Skip to main content</a>
   <header class="ls-topbar">
     <div class="ls-brand">
       <div class="ls-brand-mark">D</div>
@@ -26,7 +27,7 @@
     </div>
   </header>
 
-  <main class="ls-main digest-main">
+  <main class="ls-main digest-main" id="main-content">
     <div class="ls-page-head">
       <div>
         <div class="ls-eyebrow">Owner report</div>
@@ -146,6 +147,46 @@
       </p>
     </div>
   </main>
+
+  <footer class="ls-footer" aria-label="Site footer">
+    <div class="ls-footer-inner">
+      <div class="ls-footer-brand">
+        <span class="ls-footer-mark" aria-hidden="true">D</span>
+        <div>
+          <strong>Foodizo &amp; Obunuzi</strong>
+          <span>Wandegeya dining corridor · Kampala</span>
+        </div>
+      </div>
+      <nav class="ls-footer-nav" aria-label="Outlet locations">
+        <a href="https://www.google.com/maps/search/?api=1&amp;query=Ham+Towers+Wandegeya+Kampala" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+          Foodizo · Ham Towers
+        </a>
+        <a href="https://www.google.com/maps/search/?api=1&amp;query=YMCA+Wandegeya+Kampala" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+          Obunuzi · Opp. YMCA
+        </a>
+      </nav>
+      <div class="ls-footer-actions">
+        <button class="ls-footer-action" type="button" data-action="check-health" title="Check the live API health">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l2.4-6 4.2 12 2.1-6H21"/></svg>
+          <span data-health-label>API status</span>
+        </button>
+        <button class="ls-footer-action" type="button" data-action="scroll-top" title="Back to top">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
+          <span>Top</span>
+        </button>
+        <a class="ls-footer-action" href="/admin" title="Open the manager console">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/></svg>
+          <span>Manager sign-in</span>
+        </a>
+      </div>
+    </div>
+    <div class="ls-footer-meta">
+      <span>Read-only digest · expires 72 hours after generation</span>
+      <span>© 2026 Foodizo &amp; Obunuzi</span>
+    </div>
+  </footer>
 
   <script src="/js/api.js"></script>
   <script src="/js/digest.js"></script>

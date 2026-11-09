@@ -4,10 +4,15 @@
   const F = window.Foodizo;
   const ROLE_ORDER = { MANAGER_ADMIN: 0, WAITER_FOH: 1, KITCHEN_STAFF: 2 };
   const ROLE_ICON = {
-    MANAGER_ADMIN: 'shield_person',
-    WAITER_FOH: 'room_service',
-    KITCHEN_STAFF: 'skillet'
+    MANAGER_ADMIN:
+      '<svg class="ui-ico" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 7.7-7 9-4-1.3-7-4.5-7-9V6l7-3Z"/><path d="m9 11 2 2 4-4"/></svg>',
+    WAITER_FOH:
+      '<svg class="ui-ico" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 17h16"/><path d="M5 17a7 7 0 0 1 14 0"/><path d="M12 8V6"/><path d="M9 6h6"/></svg>',
+    KITCHEN_STAFF:
+      '<svg class="ui-ico" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 13a3 3 0 1 1 1.2-5.7A4 4 0 0 1 16 7a3 3 0 1 1 1 6v5H7v-5Z"/><path d="M7 18h10"/></svg>'
   };
+  const ROLE_ICON_FALLBACK =
+    '<svg class="ui-ico" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>';
   const ROLE_AVATAR = {
     MANAGER_ADMIN: 'bg-secondary-container text-on-secondary-container',
     WAITER_FOH: 'bg-primary-container text-on-primary-container',
@@ -168,7 +173,7 @@
               </div>
             </div>
             <div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-primary-container group-hover:text-on-primary-container transition-colors flex-shrink-0">
-              <span class="material-symbols-outlined text-[20px]">${ROLE_ICON[member.role] || 'chevron_right'}</span>
+              ${ROLE_ICON[member.role] || ROLE_ICON_FALLBACK}
             </div>
           </button>`;
       })
@@ -216,18 +221,30 @@
     return STATE.staff;
   }
 
+  function setFooterHealth(text, state) {
+    document.querySelectorAll('[data-health-label]').forEach((node) => {
+      node.textContent = text;
+    });
+    document.querySelectorAll('[data-action="check-health"]').forEach((button) => {
+      button.dataset.healthState = state;
+    });
+  }
+
   async function checkHealth() {
     const started = performance.now();
     try {
       const health = await F.request('/api/v1/health', { skipAuthRedirect: true });
       const latency = Math.max(1, Math.round(performance.now() - started));
+      const state = health.status === 'UP' ? 'UP' : 'DOWN';
       els.apiMetric.textContent = health.status === 'UP' ? 'UP' : health.status || '—';
       els.apiLatency.textContent = `API: ${latency}ms`;
       els.apiState.textContent = `Live API connected · ${latency}ms`;
+      setFooterHealth(`${state} · ${latency}ms`, state);
     } catch (_error) {
       els.apiMetric.textContent = 'DOWN';
       els.apiLatency.textContent = 'API: unreachable';
       els.apiState.textContent = 'Live API unreachable';
+      setFooterHealth('API unreachable', 'DOWN');
     }
   }
 

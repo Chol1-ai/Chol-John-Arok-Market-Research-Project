@@ -17,6 +17,7 @@
     activeSub: document.getElementById('dispatch-active-sub'),
     reviewSub: document.getElementById('dispatch-review-sub'),
     refresh: document.getElementById('dispatch-refresh'),
+    updated: document.getElementById('dispatch-updated'),
     live: document.getElementById('dispatch-live'),
     liveText: document.getElementById('dispatch-live-text'),
     awaiting: document.getElementById('dispatch-awaiting'),
@@ -177,6 +178,9 @@
     renderSummary();
     renderActive();
     renderReview();
+    if (els.updated) {
+      els.updated.textContent = `Updated ${F.formatTime(new Date().toISOString())} · auto 60s`;
+    }
   }
 
   function scheduleRefresh() {

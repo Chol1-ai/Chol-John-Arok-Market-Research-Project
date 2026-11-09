@@ -12,14 +12,15 @@
   <link rel="stylesheet" href="/css/live_surfaces.css" />
 </head>
 <body class="ls-body" data-surface="dispatch">
+  <a class="ls-skip" href="#main-content">Skip to main content</a>
   <header class="ls-topbar">
-    <div class="ls-brand">
+    <a class="ls-brand" href="/dispatch" data-session-home aria-label="Go to my home surface">
       <div class="ls-brand-mark">BD</div>
       <div>
         <div class="ls-brand-title">Boda Dispatch</div>
         <div class="ls-brand-sub">Ready queue · rider handoff · failed-delivery review</div>
       </div>
-    </div>
+    </a>
     <nav class="ls-topnav" aria-label="Staff surfaces">
       <a href="/pos">Floor POS</a>
       <a href="/kds">Kitchen</a>
@@ -36,7 +37,7 @@
     </div>
   </header>
 
-  <main class="ls-main">
+  <main class="ls-main" id="main-content">
     <div class="ls-page-head">
       <div>
         <div class="ls-eyebrow">Phone delivery handoff</div>
@@ -45,6 +46,7 @@
       </div>
       <div class="ls-head-actions">
         <span class="ls-live" id="dispatch-live" data-state="connecting"><span class="ls-live-dot"></span><span id="dispatch-live-text">Connecting live bus</span></span>
+        <span class="ls-updated" id="dispatch-updated" aria-live="polite">Not loaded</span>
         <button class="ls-btn ls-btn--ghost ls-btn--small" type="button" id="dispatch-refresh">Refresh queues</button>
       </div>
     </div>
@@ -52,22 +54,22 @@
     <section class="admin-kpis" aria-label="Dispatch summary">
       <div class="admin-kpi">
         <div class="admin-kpi-label">Awaiting rider</div>
-        <div class="admin-kpi-value" id="dispatch-awaiting">0</div>
+        <div class="admin-kpi-value" id="dispatch-awaiting">—</div>
         <div class="admin-kpi-note">READY delivery orders</div>
       </div>
       <div class="admin-kpi">
         <div class="admin-kpi-label">On the way</div>
-        <div class="admin-kpi-value" id="dispatch-transit">0</div>
+        <div class="admin-kpi-value" id="dispatch-transit">—</div>
         <div class="admin-kpi-note">Open rider handoffs</div>
       </div>
       <div class="admin-kpi">
         <div class="admin-kpi-label">Needs review</div>
-        <div class="admin-kpi-value" id="dispatch-review-count">0</div>
+        <div class="admin-kpi-value" id="dispatch-review-count">—</div>
         <div class="admin-kpi-note">Failed or refused handoffs</div>
       </div>
       <div class="admin-kpi">
         <div class="admin-kpi-label">Queue value</div>
-        <div class="admin-kpi-value" id="dispatch-value">UGX 0</div>
+        <div class="admin-kpi-value" id="dispatch-value">—</div>
         <div class="admin-kpi-note">Active delivery order totals</div>
       </div>
     </section>
@@ -163,6 +165,46 @@
       </div>
     </div>
   </div>
+
+  <footer class="ls-footer" aria-label="Site footer">
+    <div class="ls-footer-inner">
+      <div class="ls-footer-brand">
+        <span class="ls-footer-mark" aria-hidden="true">BD</span>
+        <div>
+          <strong>Foodizo &amp; Obunuzi</strong>
+          <span>Wandegeya dining corridor · Kampala</span>
+        </div>
+      </div>
+      <nav class="ls-footer-nav" aria-label="Outlet locations">
+        <a href="https://www.google.com/maps/search/?api=1&amp;query=Ham+Towers+Wandegeya+Kampala" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+          Foodizo · Ham Towers
+        </a>
+        <a href="https://www.google.com/maps/search/?api=1&amp;query=YMCA+Wandegeya+Kampala" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+          Obunuzi · Opp. YMCA
+        </a>
+      </nav>
+      <div class="ls-footer-actions">
+        <button class="ls-footer-action" type="button" data-action="check-health" title="Check the live API health">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l2.4-6 4.2 12 2.1-6H21"/></svg>
+          <span data-health-label>API status</span>
+        </button>
+        <button class="ls-footer-action" type="button" data-action="scroll-top" title="Back to top">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
+          <span>Top</span>
+        </button>
+        <button class="ls-footer-action" type="button" data-action="logout" title="End this staff session">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>
+          <span>Log out</span>
+        </button>
+      </div>
+    </div>
+    <div class="ls-footer-meta">
+      <span>Business date rolls over at 05:00 EAT · auto-refresh every 60 seconds</span>
+      <span>© 2026 Foodizo &amp; Obunuzi</span>
+    </div>
+  </footer>
 
   <script src="/js/api.js"></script>
   <script src="/js/dispatch.js"></script>

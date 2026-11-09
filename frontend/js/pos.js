@@ -25,6 +25,7 @@
     live: document.getElementById('pos-live'),
     liveText: document.getElementById('pos-live-text'),
     refresh: document.getElementById('pos-refresh'),
+    updated: document.getElementById('pos-updated'),
     floor: document.getElementById('pos-floor'),
     floorSub: document.getElementById('pos-floor-sub'),
     menu: document.getElementById('pos-menu'),
@@ -354,6 +355,9 @@
       await loadSelectedOrder();
     }
     renderAll();
+    if (els.updated) {
+      els.updated.textContent = `Updated ${F.formatTime(new Date().toISOString())} · auto 60s`;
+    }
     if (opts.toastOnError !== false) {
       // Errors are surfaced by the caller; this branch only keeps the linter
       // from treating the option as unused.
@@ -785,6 +789,11 @@
       F.toast(error.message || 'Could not load the POS data.', 'error');
     }
     startEvents();
+    window.setInterval(() => {
+      if (!STATE.refreshTimer && !STATE.busy) {
+        refreshAll().catch(() => {});
+      }
+    }, 60000);
   }
 
   init().catch((error) => {

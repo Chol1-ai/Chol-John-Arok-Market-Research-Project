@@ -10,13 +10,33 @@
   <link rel="stylesheet" href="../css/theme_tokens.css" />
   <style>
     body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+    .footer-icon {
+      width: 14px;
+      height: 14px;
+      flex: none;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    footer a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 36px;
+    }
+    @media (max-width: 640px) {
+      footer a {
+        min-height: 44px;
+      }
+    }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased">
+<body id="top" class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased">
   <!-- Top Navigation Bar -->
   <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-      <div class="flex items-center gap-3">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3 min-w-0">
         <div class="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center font-extrabold text-xl shadow-lg shadow-red-600/30">
           KLA
         </div>
@@ -28,7 +48,7 @@
           <p class="text-xs text-slate-400">Ham Towers &bull; Opposite YMCA &bull; Wandegeya Corridor &bull; Currency: <strong class="text-amber-400 font-bold">UGX</strong></p>
         </div>
       </div>
-      <div class="flex items-center gap-3">
+      <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
         <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700/80 text-xs">
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
           <span class="text-slate-300">Fastify Edge Engine:</span>
@@ -76,7 +96,7 @@
             <span class="material-symbols-outlined text-red-400">smartphone</span>
             Customer PWA Design Prototypes (Surfaces 2A &ndash; 2E)
           </h3>
-          <p class="text-xs text-slate-400">Static design previews for layout review — not connected to live ordering, payment, or tracking APIs</p>
+          <p class="text-xs text-slate-400">Static design previews for layout review &mdash; not connected to live ordering, payment, or tracking APIs</p>
         </div>
         <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">5 Static Prototypes</span>
       </div>
@@ -264,15 +284,30 @@
   <!-- Footer -->
   <footer class="border-t border-slate-800 bg-slate-900/60 py-6 mt-8">
     <div class="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
-      <div>
-        <span>Foodizo (Ham Towers) &amp; Obunuzi Restaurant (Opp. YMCA)</span>
-        <span class="mx-2">&bull;</span>
+      <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+        <a class="flex items-center gap-1.5 hover:text-white transition-colors" href="https://www.google.com/maps/search/?api=1&amp;query=Ham+Towers+Wandegeya+Kampala" target="_blank" rel="noopener">
+          <svg class="footer-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+          Foodizo · Ham Towers
+        </a>
+        <a class="flex items-center gap-1.5 hover:text-white transition-colors" href="https://www.google.com/maps/search/?api=1&amp;query=YMCA+Wandegeya+Kampala" target="_blank" rel="noopener">
+          <svg class="footer-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+          Obunuzi · Opp. YMCA
+        </a>
+        <span class="text-slate-600 hidden sm:inline">&bull;</span>
         <span>Makerere University Dining Corridor</span>
       </div>
-      <div class="flex items-center gap-4">
+      <div class="flex flex-wrap items-center justify-center gap-3">
         <span>Currency: <strong class="text-amber-400 font-bold">UGX</strong></span>
-        <span>&bull;</span>
-        <span>Node.js Universal Server Port 3000</span>
+        <span class="text-slate-600">&bull;</span>
+        <a class="flex items-center gap-1.5 hover:text-white transition-colors" href="/api/v1/health" target="_blank" rel="noopener" title="Open the live API health response">
+          <svg class="footer-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l2.4-6 4.2 12 2.1-6H21"/></svg>
+          API health
+        </a>
+        <span class="text-slate-600">&bull;</span>
+        <a class="flex items-center gap-1.5 hover:text-white transition-colors" href="#top" title="Back to top">
+          <svg class="footer-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
+          Top
+        </a>
       </div>
     </div>
   </footer>

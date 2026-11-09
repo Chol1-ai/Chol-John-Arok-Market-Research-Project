@@ -438,4 +438,46 @@
       logout();
     });
   });
+
+  document.querySelectorAll('[data-action="scroll-top"]').forEach((button) => {
+    button.addEventListener('click', (event) => {
+      event.preventDefault();
+      const reduceMotion =
+        typeof global.matchMedia === 'function' &&
+        global.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      global.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+    });
+  });
+
+  document.querySelectorAll('[data-action="check-health"]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      if (button.dataset.busy === 'true') return;
+      const label = button.querySelector('[data-health-label]');
+      const previous = label ? label.textContent : '';
+      button.dataset.busy = 'true';
+      button.disabled = true;
+      if (label) label.textContent = 'Checking…';
+
+      try {
+        const started = global.performance ? global.performance.now() : Date.now();
+        const health = await request('/api/v1/health', { skipAuthRedirect: true });
+        const finished = global.performance ? global.performance.now() : Date.now();
+        const latency = Math.max(1, Math.round(finished - started));
+        const state = (health.status || 'UP').toUpperCase();
+        button.dataset.healthState = state === 'UP' ? 'UP' : 'DOWN';
+        if (label) label.textContent = `${state} · ${latency}ms`;
+        toast(`API ${state} · ${latency}ms · ${health.service || 'Foodizo'}`, state === 'UP' ? 'success' : 'error');
+      } catch (error) {
+        button.dataset.healthState = 'DOWN';
+        if (label) label.textContent = 'API unreachable';
+        toast(error.message || 'API health check failed.', 'error');
+      } finally {
+        button.dataset.busy = 'false';
+        button.disabled = false;
+        if (label && previous && label.textContent === 'Checking…') {
+          label.textContent = previous;
+        }
+      }
+    });
+  });
 })(window);

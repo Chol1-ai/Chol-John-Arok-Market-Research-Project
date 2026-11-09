@@ -14,6 +14,7 @@
   const els = {
     board: document.getElementById('kds-board'),
     refresh: document.getElementById('kds-refresh'),
+    updated: document.getElementById('kds-updated'),
     filters: document.getElementById('kds-filters'),
     live: document.getElementById('kds-live'),
     liveText: document.getElementById('kds-live-text'),
@@ -130,6 +131,9 @@
     STATE.tickets = data.tickets || [];
     renderSummary();
     renderBoard();
+    if (els.updated) {
+      els.updated.textContent = `Updated ${F.formatTime(new Date().toISOString())} · auto 60s`;
+    }
   }
 
   function scheduleRefresh() {
