@@ -5,6 +5,10 @@ import { TokenService, getKampalaBusinessDate } from '../services/tokenService.j
 import { PrinterService } from '../services/printerService.js';
 import { MomoService } from '../services/momoService.js';
 import { assignRiderToOrder, completeOrderDelivery, HandoffError } from '../services/handoffService.js';
+import {
+  findInventoryShortages,
+  inventoryAvailabilityReason
+} from '../services/inventoryAvailability.js';
 import { normalizeUgandanPhone } from '../utils/phone.js';
 import { CreateOrderInput, OrderStatus, SettleOrderInput } from '../types/index.js';
 
@@ -16,7 +20,7 @@ const createOrderSchema = z
     customerName: z.string().trim().min(2).max(80).optional(),
     customerPhone: z.string().min(9).max(20).optional(),
     deliveryZoneId: z.string().uuid().optional(),
-    deliveryAddressNote: z.string().trim().max(160).optional(),
+    deliveryAddressNote: z.string().trim().min(3).max(160).optional(),
     gpsLatitude: z.number().min(-90).max(90).optional(),
     gpsLongitude: z.number().min(-180).max(180).optional(),
     items: z
@@ -58,6 +62,13 @@ const createOrderSchema = z
           code: z.ZodIssueCode.custom,
           path: ['customerName'],
           message: 'customerName is required for PHONE_DELIVERY orders'
+        });
+      }
+      if (!value.deliveryAddressNote) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['deliveryAddressNote'],
+          message: 'A room, office, gate, or landmark note is required for delivery.'
         });
       }
     }
@@ -105,7 +116,8 @@ const deliveryCompleteSchema = z.object({
   outcome: z
     .enum(['DELIVERED', 'FAILED_UNREACHABLE', 'REFUSED', 'RETURNED'])
     .default('DELIVERED'),
-  riderAdvanceReturnedUgx: z.number().nonnegative().optional()
+  riderAdvanceReturnedUgx: z.number().nonnegative().optional(),
+  cashTenderedUgx: z.number().positive().optional()
 });
 
 const tokenLookupSchema = z.object({
@@ -159,6 +171,31 @@ function orderResponse(order: any) {
 }
 
 export const orderRoutes: FastifyPluginAsync = async (fastify) => {
+  fastify.get('/delivery-zones', async (request, reply) => {
+    const { outlet } = z.object({
+      outlet: z.enum(['FOODIZO_HAM_TOWERS', 'OBUNUZI_YMCA'])
+    }).parse(request.query);
+    const zones = await fastify.prisma.delivery_zones.findMany({
+      where: { outlet, is_active: true },
+      orderBy: [{ display_order: 'asc' }, { display_name: 'asc' }]
+    });
+
+    return reply.send({
+      success: true,
+      zones: zones.map((zone) => ({
+        id: zone.id,
+        outlet: zone.outlet,
+        code: zone.zone_code,
+        name: zone.display_name,
+        landmarkGroup: zone.landmark_group,
+        landmarkHint: zone.landmark_hint,
+        feeUgx: Number(zone.fee_ugx),
+        etaMinMinutes: zone.eta_min_minutes,
+        etaMaxMinutes: zone.eta_max_minutes
+      }))
+    });
+  });
+
   // POST /api/v1/orders
   fastify.post<{ Body: CreateOrderInput }>('/', async (request, reply) => {
     const data = createOrderSchema.parse(request.body);
@@ -178,6 +215,19 @@ export const orderRoutes: FastifyPluginAsync = async (fastify) => {
       }
     }
 
+    if (
+      !actor &&
+      data.channel === 'TAKEAWAY_PICKUP' &&
+      (!data.customerName || !data.customerPhone)
+    ) {
+      return reply.status(400).send({
+        statusCode: 400,
+        error: 'Bad Request',
+        code: 'CUSTOMER_DETAILS_REQUIRED',
+        message: 'A customer name and mobile number are required for pickup orders.'
+      });
+    }
+
     if (actor?.outlet && actor.outlet !== data.outlet) {
       return reply.status(403).send({
         statusCode: 403,
@@ -189,7 +239,8 @@ export const orderRoutes: FastifyPluginAsync = async (fastify) => {
 
     const uniqueItemIds = [...new Set(data.items.map((item) => item.menuItemId))];
     const menuItems = await fastify.prisma.menu_items.findMany({
-      where: { id: { in: uniqueItemIds } }
+      where: { id: { in: uniqueItemIds } },
+      include: { recipe_boms: { include: { raw_material: true } } }
     });
 
     if (menuItems.length !== uniqueItemIds.length) {
@@ -211,6 +262,28 @@ export const orderRoutes: FastifyPluginAsync = async (fastify) => {
         code: 'MENU_ITEM_UNAVAILABLE',
         message: `${unavailable.name} is not available at ${data.outlet}.`,
         menuItemId: unavailable.id
+      });
+    }
+
+    const requestedQuantities = new Map<string, number>();
+    for (const item of data.items) {
+      requestedQuantities.set(
+        item.menuItemId,
+        (requestedQuantities.get(item.menuItemId) || 0) + item.quantity
+      );
+    }
+    const shortages = findInventoryShortages(
+      menuItems,
+      requestedQuantities,
+      data.outlet
+    );
+    if (shortages.length) {
+      return reply.status(409).send({
+        statusCode: 409,
+        error: 'Conflict',
+        code: 'INSUFFICIENT_INGREDIENT_STOCK',
+        message: inventoryAvailabilityReason(shortages),
+        shortages
       });
     }
 
@@ -294,7 +367,9 @@ export const orderRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     const totalAmountUgx = foodTotalUgx + deliveryFeeUgx;
-    const initialStatus: OrderStatus = data.channel === 'DINE_IN' ? 'PENDING' : 'AWAITING_PAYMENT';
+    const customerCashOnDelivery = !actor && data.channel === 'PHONE_DELIVERY';
+    const initialStatus: OrderStatus =
+      data.channel === 'DINE_IN' || customerCashOnDelivery ? 'PENDING' : 'AWAITING_PAYMENT';
     const businessDate = getKampalaBusinessDate();
     const token = await TokenService.getNextToken(fastify.prisma, data.outlet, businessDate);
 
@@ -365,6 +440,43 @@ export const orderRoutes: FastifyPluginAsync = async (fastify) => {
       order: orderResponse(order)
     });
   });
+
+  fastify.get(
+    '/awaiting-payment',
+    { preHandler: [fastify.requireRole(['WAITER_FOH', 'MANAGER_ADMIN'])] },
+    async (request, reply) => {
+      const { outlet } = tokenLookupSchema.parse(request.query);
+      if (request.user!.outlet && outlet && request.user!.outlet !== outlet) {
+        return reply.status(403).send({
+          statusCode: 403,
+          error: 'Forbidden',
+          code: 'OUTLET_FORBIDDEN',
+          message: 'This account cannot view orders from another outlet.'
+        });
+      }
+
+      const scopedOutlet = request.user!.outlet || outlet;
+      const orders = await fastify.prisma.orders.findMany({
+        where: {
+          status: 'AWAITING_PAYMENT',
+          channel: 'TAKEAWAY_PICKUP',
+          ...(scopedOutlet && { outlet: scopedOutlet })
+        },
+        include: { order_items: true },
+        orderBy: { created_at: 'asc' },
+        take: 50
+      });
+
+      return reply.send({
+        success: true,
+        orders: orders.map((order) => ({
+          ...orderResponse(order),
+          customerName: order.customer_name,
+          customerPhone: order.customer_phone
+        }))
+      });
+    }
+  );
 
   // GET /api/v1/orders/token/:token — public, sanitized status screen.
   fastify.get<{ Params: { token: string } }>('/token/:token', async (request, reply) => {
@@ -511,7 +623,8 @@ export const orderRoutes: FastifyPluginAsync = async (fastify) => {
 
       const uniqueItemIds = [...new Set(items.map((item) => item.menuItemId))];
       const menuItems = await fastify.prisma.menu_items.findMany({
-        where: { id: { in: uniqueItemIds } }
+        where: { id: { in: uniqueItemIds } },
+        include: { recipe_boms: { include: { raw_material: true } } }
       });
       if (menuItems.length !== uniqueItemIds.length) {
         return reply.status(400).send({
@@ -531,6 +644,28 @@ export const orderRoutes: FastifyPluginAsync = async (fastify) => {
           error: 'Conflict',
           code: 'MENU_ITEM_UNAVAILABLE',
           message: `${unavailable.name} is not available.`
+        });
+      }
+
+      const requestedQuantities = new Map<string, number>();
+      for (const item of items) {
+        requestedQuantities.set(
+          item.menuItemId,
+          (requestedQuantities.get(item.menuItemId) || 0) + item.quantity
+        );
+      }
+      const shortages = findInventoryShortages(
+        menuItems,
+        requestedQuantities,
+        order.outlet
+      );
+      if (shortages.length) {
+        return reply.status(409).send({
+          statusCode: 409,
+          error: 'Conflict',
+          code: 'INSUFFICIENT_INGREDIENT_STOCK',
+          message: inventoryAvailabilityReason(shortages),
+          shortages
         });
       }
 
@@ -1226,7 +1361,7 @@ export const orderRoutes: FastifyPluginAsync = async (fastify) => {
   // successful delivery.
   fastify.post<{
     Params: { id: string };
-    Body: { outcome?: string; riderAdvanceReturnedUgx?: number };
+    Body: { outcome?: string; riderAdvanceReturnedUgx?: number; cashTenderedUgx?: number };
   }>(
     '/:id/delivery-complete',
     { preHandler: [fastify.requireRole(['WAITER_FOH', 'MANAGER_ADMIN'])] },
@@ -1262,7 +1397,10 @@ export const orderRoutes: FastifyPluginAsync = async (fastify) => {
               : `Order ${result.order.public_ref} handoff recorded as ${result.outcome}.`,
           orderId: result.order.id,
           outcome: result.outcome,
-          orderStatus: result.order.status
+          orderStatus: result.order.status,
+          alreadyCompleted: result.alreadyCompleted,
+          cashCollectedUgx: result.cashCollectedUgx || 0,
+          changeUgx: result.changeUgx || 0
         });
       } catch (error) {
         if (error instanceof HandoffError) {

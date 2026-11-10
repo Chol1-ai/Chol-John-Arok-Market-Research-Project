@@ -4,7 +4,7 @@
 <head>
   <title>Manager Admin &amp; EOD Surplus Audit Digest | Foodizo &amp; Obunuzi</title>
   <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"><link rel="icon" type="image/svg+xml" href="../images/foodizo-brand-mark.svg"/>
   <meta content="web_standard" name="shell-type">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap"
     rel="stylesheet">
@@ -43,15 +43,15 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script
     id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "surface": "#f9f9ff", "primary-container": "#dc2626", "tertiary-fixed-dim": "#62df7d", "on-primary-fixed": "#410002", "on-error": "#ffffff", "secondary": "#855300", "surface-dim": "#d3daef", "on-primary-fixed-variant": "#93000b", "on-tertiary-fixed-variant": "#005320", "inverse-primary": "#ffb4ab", "on-background": "#141b2b", "on-surface": "#141b2b", "primary-fixed": "#ffdad6", "primary-fixed-dim": "#ffb4ab", "on-tertiary-fixed": "#002109", "on-error-container": "#93000a", "tertiary-container": "#008438", "background": "#f9f9ff", "error": "#ba1a1a", "surface-tint": "#bf0715", "surface-container-high": "#e1e8fd", "on-secondary": "#ffffff", "on-tertiary": "#ffffff", "tertiary-fixed": "#7ffc97", "outline-variant": "#e6bdb8", "primary": "#b70011", "on-primary-container": "#fff6f5", "surface-container": "#e9edff", "on-secondary-fixed-variant": "#653e00", "surface-bright": "#f9f9ff", "on-primary": "#ffffff", "outline": "#916f6b", "surface-container-lowest": "#ffffff", "inverse-surface": "#293040", "secondary-fixed": "#ffddb8", "on-tertiary-container": "#e7ffe4", "on-secondary-container": "#684000", "error-container": "#ffdad6", "secondary-container": "#fea619", "surface-container-low": "#f1f3ff", "inverse-on-surface": "#edf0ff", "on-secondary-fixed": "#2a1700", "surface-container-highest": "#dce2f7", "on-surface-variant": "#5c403c", "tertiary": "#00682b", "secondary-fixed-dim": "#ffb95f", "surface-variant": "#dce2f7" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "space-sm": "0.5rem", "gutter-sm": "0.75rem", "margin-sm": "0.75rem", "gutter": "1rem", "space-md": "1rem", "space-xs": "0.25rem", "margin-lg": "1.5rem", "space-xl": "2rem", "space-lg": "1.5rem", "margin": "1rem" }, fontFamily: { "headline-sm": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "headline-xl-mobile": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "headline-xl": ["Plus Jakarta Sans"], "currency-display": ["Plus Jakarta Sans"] }, fontSize: { "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }], "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }], "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "700" }], "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.03em", "fontWeight": "600" }], "headline-md": ["20px", { "lineHeight": "26px", "fontWeight": "700" }], "headline-xl-mobile": ["28px", { "lineHeight": "34px", "letterSpacing": "-0.02em", "fontWeight": "800" }], "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }], "label-lg": ["14px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "700" }], "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "headline-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "800" }], "currency-display": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "800" }] } } } };</script>
+  <link rel="stylesheet" href="../css/manager_admin_eod_surplus_audit_digest.css">
+
 </head>
 
 <body class="bg-surface font-body-md text-on-surface antialiased">
   <header class="fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
     <div class="h-16 w-full px-gutter flex items-center justify-between gap-space-md">
       <div class="flex items-center gap-space-md">
-        <div class="flex items-center gap-space-xs"><span
-            class="material-symbols-outlined text-primary text-[24px]">local_dining</span><span
-            class="font-headline-sm text-headline-sm text-primary tracking-tight">KLA RESTAURANT SUITE</span></div>
+        <img class="h-9 w-auto object-contain" src="../images/foodizo-obunuzi-logo.svg" alt="Foodizo and Obunuzi"/>
         <div class="hidden sm:flex items-center bg-surface-container-high rounded-full p-space-xs"><button
             class="px-space-sm py-space-xs rounded-full bg-surface-container-lowest text-on-surface font-label-sm text-label-sm shadow-[0_1px_4px_rgba(0,0,0,0.04)]"
             type="button">Foodizo (Ham Towers)</button><button
@@ -128,8 +128,7 @@
           id="actionToast">
           <div class="flex items-center gap-space-sm">
             <span class="material-symbols-outlined text-[20px]">check_circle</span>
-            <span class="font-label-lg text-label-lg" id="toastMsg">Nightly digest preview pushed to Cyrus &amp; Mubiru
-              Mahad (WhatsApp &amp; SMS queues).</span>
+            <span class="font-label-lg text-label-lg" id="toastMsg">Action status appears here.</span>
           </div>
           <button class="text-on-tertiary-container hover:opacity-80"
             onclick="document.getElementById('actionToast').classList.add('hidden')">
@@ -255,7 +254,7 @@
                 </div>
                 <span role="status"
                   class="px-space-sm py-1 bg-error-container/20 border border-error-container rounded-full text-error font-label-sm text-label-sm font-bold flex items-center gap-space-xs animate-pulse"><span
-                    class="material-symbols-outlined text-[16px]">warning</span><span class="">🚨 2 Low-Stock Alerts
+                    class="material-symbols-outlined text-[16px]">warning</span><span class="">2 Low-Stock Alerts
                     (Supplier Action Required)</span></span><span
                   class="font-label-sm text-label-sm bg-surface-container px-space-sm py-0.5 rounded-full text-on-surface">Updated
                   21:12 EAT</span>
@@ -285,7 +284,7 @@
                     class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm pt-1">
                     <span class="">Mukwano Supplier PO</span>
                     <button class="text-primary font-bold hover:underline"
-                      onclick="alert('Supplier PO drafted for 20L Cooking Oil via Mukwano distributor.')">Re-order</button>
+                      onclick="showManagerInfo('Supplier ordering is not connected here. No purchase order was created.')">Re-order</button>
                   </div>
                 </div>
                 <!-- Item 2: Smoked Banana Leaves (WARNING) -->
@@ -532,7 +531,7 @@
                       class="material-symbols-outlined text-[16px]">add_circle</span><span class="">+ Add Discard
                       Entry</span></button>
                 </div>
-                <div class="bg-surface-container-low rounded-lg p-space-sm divide-y divide-surface-container">
+                <div class="bg-surface-container-low rounded-lg p-space-sm divide-y divide-surface-container" id="discard-log-list">
                   <div class="flex items-center justify-between py-space-xs text-body-sm font-body-sm">
                     <div class="flex items-center gap-space-xs">
                       <span class="w-2 h-2 rounded-full bg-error"></span>
@@ -628,19 +627,19 @@
                 </div>
                 <div
                   class="p-space-sm bg-surface-container-lowest rounded-lg font-mono text-xs sm:text-sm text-on-surface leading-relaxed shadow-sm">
-                  <div class="font-bold text-primary">📊 FOODIZO HAM TOWERS - EOD AUDIT</div>
-                  <div class="">📅 Sun, 18 May 2025 • Shift: Full Day</div>
+                  <div class="font-bold text-primary"><span class="material-symbols-outlined align-middle text-[14px]" aria-hidden="true">monitoring</span> FOODIZO HAM TOWERS - EOD AUDIT</div>
+                  <div class=""><span class="material-symbols-outlined align-middle text-[14px]" aria-hidden="true">calendar_month</span> Sun, 18 May 2025 • Shift: Full Day</div>
                   <div class="my-1">──────────────────────</div>
-                  <div class="">💰 <strong>GROSS SALES:</strong> UGX 3,420,000 (168 chits)</div>
-                  <div class="">📱 <strong>MoMo:</strong> UGX 2,180,000 (MTN 1.42M / Air 760K)</div>
-                  <div class="">💵 <strong>CASH:</strong> UGX 1,240,000 (Safe Bag #BAG-992)</div>
-                  <div class="">⚖️ <strong>VARIANCE:</strong> +UGX 0 (Perfect Match)</div>
+                  <div class=""><span class="material-symbols-outlined align-middle text-[14px]" aria-hidden="true">payments</span> <strong>GROSS SALES:</strong> UGX 3,420,000 (168 chits)</div>
+                  <div class=""><span class="material-symbols-outlined align-middle text-[14px]" aria-hidden="true">phone_android</span> <strong>MoMo:</strong> UGX 2,180,000 (MTN 1.42M / Air 760K)</div>
+                  <div class=""><span class="material-symbols-outlined align-middle text-[14px]" aria-hidden="true">account_balance_wallet</span> <strong>CASH:</strong> UGX 1,240,000 (Safe Bag #BAG-992)</div>
+                  <div class=""><span class="material-symbols-outlined align-middle text-[14px]" aria-hidden="true">balance</span> <strong>VARIANCE:</strong> +UGX 0 (Perfect Match)</div>
                   <div class="my-1">──────────────────────</div>
-                  <div class="">🛵 <strong>Rider Advances:</strong> UGX 42,500 settled</div>
-                  <div class="">🥘 <strong>Surplus Left:</strong> 3 Katogo, 2 Luwombo, 5 Chkn</div>
-                  <div class="">🏷️ <strong>Clearance Chit:</strong> 30% triggered at 21:14</div>
-                  <div class="">🗑️ <strong>Spoilage Total:</strong> UGX 2,300 (0.06%)</div>
-                  <div class="">📶 <strong>Edge LAN Sync:</strong> 100% (4ms latency)</div>
+                  <div class=""><span class="material-symbols-outlined align-middle text-[14px]" aria-hidden="true">two_wheeler</span> <strong>Rider Advances:</strong> UGX 42,500 settled</div>
+                  <div class=""><span class="material-symbols-outlined align-middle text-[14px]" aria-hidden="true">soup_kitchen</span> <strong>Surplus Left:</strong> 3 Katogo, 2 Luwombo, 5 Chkn</div>
+                  <div class=""><span class="material-symbols-outlined align-middle text-[14px]" aria-hidden="true">sell</span> <strong>Clearance Chit:</strong> 30% triggered at 21:14</div>
+                  <div class=""><span class="material-symbols-outlined align-middle text-[14px]" aria-hidden="true">delete</span> <strong>Spoilage Total:</strong> UGX 2,300 (0.06%)</div>
+                  <div class=""><span class="material-symbols-outlined align-middle text-[14px]" aria-hidden="true">sync</span> <strong>Edge LAN Sync:</strong> 100% (4ms latency)</div>
                   <div class="my-1">──────────────────────</div>
                   <div class="text-on-surface-variant text-xs">Approved by Supervisor: PIN #4290 (Sarah N.)</div>
                 </div>
@@ -746,19 +745,20 @@
 
         if (triggerClearance) {
           triggerClearance.addEventListener('click', () => {
-            triggerClearance.disabled = true;
-            triggerClearance.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">refresh</span><span>Broadcasting Chit...</span>';
-            setTimeout(() => {
-              triggerClearance.innerHTML = '<span class="material-symbols-outlined text-[18px]">done_all</span><span>Chit Broadcasted (-30%)</span>';
-              triggerClearance.classList.remove('bg-secondary');
-              triggerClearance.classList.add('bg-tertiary');
-              showNotification('Late-Evening 30% Discount Chit live! Broadcasted to 142 nearby Makerere PWA customers.');
-            }, 800);
+            const active = triggerClearance.getAttribute('aria-pressed') !== 'true';
+            triggerClearance.setAttribute('aria-pressed', String(active));
+            triggerClearance.querySelector('span:last-child').textContent =
+              active ? 'Clearance Selected (Screen Only)' : 'Trigger 30% Clearance Chit';
+            showNotification(
+              active
+                ? 'Clearance action selected on this screen only. No prices changed and no customers were notified.'
+                : 'Clearance selection cleared. No live promotion was sent.'
+            );
           });
         }
 
         function handleDigestDispatch() {
-          showNotification('Nightly 21:30 EAT Audit Digest immediately pushed to Mr. Cyrus & Mr. Mubiru Mahad via WhatsApp API and SMS gateway.');
+          showNotification('Digest delivery is not connected on this page. No WhatsApp or SMS message was sent.');
         }
 
         if (sendDigestBtn) sendDigestBtn.addEventListener('click', handleDigestDispatch);
@@ -766,7 +766,25 @@
 
         if (exportCsvBtn) {
           exportCsvBtn.addEventListener('click', () => {
-            showNotification('Generating shift ledger CSV: Foodizo_HamTowers_EOD_2025-05-18.csv downloaded.');
+            const labels = ['Gross Revenue', 'MoMo Aggregate', 'Cash Drawer', 'Boda Fuel Advances', 'Audited Variance'];
+            const rows = [['Metric', 'Displayed value']];
+            const values = [...document.querySelectorAll('.font-currency-display')].slice(0, labels.length);
+            labels.forEach((label, index) => {
+              const value = values[index]?.textContent.trim();
+              if (value) rows.push([label, value]);
+            });
+            const csv = rows.map((row) =>
+              row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(',')
+            ).join('\r\n');
+            const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'Foodizo_HamTowers_EOD_snapshot.csv';
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+            showNotification('Downloaded a CSV of the metrics currently displayed on this page.');
           });
         }
       })();
@@ -889,17 +907,17 @@
           class="p-space-md bg-surface-container-low border-t border-surface-container flex flex-col sm:flex-row items-center justify-between gap-space-sm shrink-0">
           <div
             class="flex items-center gap-space-xs text-on-surface-variant font-body-sm text-body-sm text-center sm:text-left">
-            <span class="material-symbols-outlined text-[16px] text-secondary">info</span><span class="">Decrements
-              kitchen ledger and updates 21:30 EAT WhatsApp payload.</span>
+            <span class="material-symbols-outlined text-[16px] text-secondary">info</span><span class="">This page does
+              not write to inventory or send the nightly digest.</span>
           </div>
           <div class="flex items-center gap-space-sm w-full sm:w-auto"><button
               class="w-1/2 sm:w-auto px-space-md py-space-sm rounded-full bg-surface-container text-on-surface font-label-md hover:bg-surface-container-high transition-colors"
               onclick="document.getElementById('discardModal').classList.add('hidden')"
               type="button">Cancel</button><button
               class="w-1/2 sm:w-auto px-space-lg py-space-sm rounded-full bg-primary-container text-on-primary-container font-label-md font-bold shadow-md hover:bg-primary transition-all flex items-center justify-center gap-1 active:translate-y-px whitespace-nowrap"
-              onclick="document.getElementById('discardModal').classList.add('hidden');if(typeof showNotification==='function'){showNotification('Waste logged: UGX 4,200 written down and reflected in 21:30 EAT WhatsApp digest.');}else{const t=document.getElementById('toastMsg');if(t){t.textContent='Waste logged: UGX 4,200 written down and reflected in 21:30 EAT WhatsApp digest.';document.getElementById('actionToast').classList.remove('hidden');}}"
-              type="button"><span class="material-symbols-outlined text-[18px]">save</span><span class="">Record Discard
-                &amp; Update Inventory</span></button></div>
+              onclick="recordDiscardEntry()"
+              type="button"><span class="material-symbols-outlined text-[18px]">save</span><span class="">Add Discard
+                Entry</span></button></div>
         </div>
       </div>
     </div>
@@ -941,6 +959,7 @@
 
 
 
+  <script src="../js/manager_dashboard_controls.js"></script>
 </body>
 
 </html>

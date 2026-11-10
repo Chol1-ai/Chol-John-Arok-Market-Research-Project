@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { PrismaClient } from '@prisma/client';
 import { AssignRiderInput, AuthUserPayload } from '../types/index.js';
 
@@ -97,12 +98,19 @@ export async function completeOrderDelivery(
   prisma: PrismaClient,
   orderId: string,
   actor: AuthUserPayload,
-  options: { outcome?: DeliveryOutcome; riderAdvanceReturnedUgx?: number } = {}
+  options: {
+    outcome?: DeliveryOutcome;
+    riderAdvanceReturnedUgx?: number;
+    cashTenderedUgx?: number;
+  } = {}
 ) {
   const outcome = options.outcome || 'DELIVERED';
   const order = await prisma.orders.findUnique({
     where: { id: orderId },
     include: {
+      payments: {
+        where: { status: 'SUCCESSFUL' }
+      },
       handoffs: {
         orderBy: { dispatched_at: 'desc' }
       }
@@ -124,7 +132,13 @@ export async function completeOrderDelivery(
   }
 
   if (order.status === 'COMPLETED') {
-    return { order, alreadyCompleted: true, outcome };
+    return {
+      order,
+      alreadyCompleted: true,
+      outcome,
+      cashCollectedUgx: 0,
+      changeUgx: 0
+    };
   }
 
   const openHandoff = order.handoffs.find((handoff) => handoff.outcome === 'PENDING');
@@ -136,9 +150,28 @@ export async function completeOrderDelivery(
     );
   }
 
+  const cashOnDelivery = order.payments.length === 0;
+  const orderTotalUgx = Number(order.total_amount_ugx);
+  if (outcome === 'DELIVERED' && cashOnDelivery) {
+    if (options.cashTenderedUgx === undefined) {
+      throw new HandoffError(
+        400,
+        'DELIVERY_CASH_REQUIRED',
+        'Enter the cash collected from the customer before completing this delivery.'
+      );
+    }
+    if (options.cashTenderedUgx < orderTotalUgx) {
+      throw new HandoffError(
+        400,
+        'INSUFFICIENT_DELIVERY_CASH',
+        `Cash collected must cover the delivery total of UGX ${orderTotalUgx.toLocaleString()}.`
+      );
+    }
+  }
+
   return prisma.$transaction(async (tx) => {
-    await tx.delivery_handoffs.update({
-      where: { id: openHandoff.id },
+    const closedHandoff = await tx.delivery_handoffs.updateMany({
+      where: { id: openHandoff.id, outcome: 'PENDING' },
       data: {
         outcome,
         delivered_at: outcome === 'DELIVERED' ? new Date() : null,
@@ -147,22 +180,76 @@ export async function completeOrderDelivery(
         })
       }
     });
+    if (closedHandoff.count !== 1) {
+      throw new HandoffError(409, 'HANDOFF_ALREADY_CLOSED', 'This rider handoff has already been completed.');
+    }
 
     if (outcome !== 'DELIVERED') {
       // Leave the READY order in place for manager review/retry. The failed
       // handoff is visible in the dispatch review queue and the daily digest.
       const current = await tx.orders.findUniqueOrThrow({ where: { id: order.id } });
-      return { order: current, alreadyCompleted: false, outcome };
+      return {
+        order: current,
+        alreadyCompleted: false,
+        outcome,
+        cashCollectedUgx: 0,
+        changeUgx: 0
+      };
     }
 
-    const updated = await tx.orders.update({
-      where: { id: order.id },
+    if (cashOnDelivery) {
+      const completedAt = new Date();
+      const payment = await tx.payments.create({
+        data: {
+          order_id: order.id,
+          idempotency_key: randomUUID(),
+          carrier: 'CASH',
+          amount_ugx: order.total_amount_ugx,
+          status: 'SUCCESSFUL',
+          external_transaction_id: `COD-${order.public_ref}`,
+          audit_flag: 'CASH_ON_DELIVERY',
+          recorded_by: actor.userId,
+          completed_at: completedAt
+        }
+      });
+
+      await tx.audit_log.create({
+        data: {
+          actor_user_id: actor.userId,
+          actor_role: actor.role,
+          outlet: order.outlet,
+          action: 'DELIVERY_CASH_COLLECTED',
+          entity_type: 'ORDER',
+          entity_id: order.id,
+          after_json: {
+            paymentId: payment.id,
+            paymentMethod: 'CASH',
+            amountUgx: orderTotalUgx,
+            tenderedCashUgx: options.cashTenderedUgx,
+            changeUgx: (options.cashTenderedUgx || 0) - orderTotalUgx
+          }
+        }
+      });
+    }
+
+    const updated = await tx.orders.updateMany({
+      where: { id: order.id, status: 'READY' },
       data: {
         status: 'COMPLETED',
         completed_at: new Date()
       }
     });
+    if (updated.count !== 1) {
+      throw new HandoffError(409, 'ORDER_NOT_READY', 'The order status changed before delivery could be completed.');
+    }
 
-    return { order: updated, alreadyCompleted: false, outcome };
+    const completedOrder = await tx.orders.findUniqueOrThrow({ where: { id: order.id } });
+    return {
+      order: completedOrder,
+      alreadyCompleted: false,
+      outcome,
+      cashCollectedUgx: cashOnDelivery ? orderTotalUgx : 0,
+      changeUgx: cashOnDelivery ? (options.cashTenderedUgx || 0) - orderTotalUgx : 0
+    };
   });
 }

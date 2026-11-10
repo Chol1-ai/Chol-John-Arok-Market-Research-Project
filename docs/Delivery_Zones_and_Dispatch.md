@@ -116,8 +116,8 @@ The existing `channel_type` enum keeps `PHONE_DELIVERY` for backward compatibili
 5. Customer enters recipient name and the phone number the rider should call.
 6. Customer may tap **“Use my current GPS pin (optional)”**. If permission is denied, checkout continues normally.
 7. The order summary shows `Subtotal + Delivery fee = Total`. The fee comes from the server, not the client.
-8. Payment is initiated only after all required delivery fields pass validation. The normal MoMo/Airtel flow in `Payment_Integration.md` is unchanged.
-9. After payment succeeds, the order enters the KDS as `PENDING` with the purple `PHONE_DELIVERY` channel and the destination zone on the ticket.
+8. The customer submits the order with cash-on-delivery terms. The server validates all required fields and calculates the delivery fee from the selected zone; the fee is included in the total due at handoff.
+9. The unpaid COD order enters the KDS as `PENDING` with the purple `PHONE_DELIVERY` channel and the destination zone on the ticket.
 
 ### 4.3 Checkout wireframe
 
@@ -153,7 +153,7 @@ The layout uses the existing Customer PWA tokens from `Design_System.md`: warm c
 
 ### 4.4 Zone dropdown behaviour
 
-- **Source:** Phase 1 has **no public delivery-zone catalogue endpoint**. Zones are seeded into `delivery_zones` and referenced by `deliveryZoneId` when an order is created. The customer checkout screen is a static prototype; it does not call the live API. A future zone endpoint can group active zones by area without changing the order contract.
+- **Source:** The public `GET /api/v1/orders/delivery-zones?outlet=...` endpoint returns active zones for the selected outlet. Zones are seeded into `delivery_zones` and referenced by `deliveryZoneId` when an order is created; customer checkout loads this catalogue from the live API.
 - **Grouping:** native `<optgroup>` by area (Makerere Campus, YMCA, Wandegeya, Phase 2). If an outlet ever exceeds 20 zones, replace the native select with an accessible searchable combobox; keep the same server contract.
 - **Option label:** `Makerere University — Lumumba Hall · UGX 2,000 · 10–15 min`.
 - **No “Other / type your own” option in Phase 1.** If the customer’s location is not listed, show the outlet phone number and the message “Call us to confirm delivery.” This keeps zone data clean and prevents surprise fees.
@@ -233,7 +233,7 @@ Outlet numbers are configured in `.env` as `FOODIZO_WHATSAPP_NUMBER` and `OBUNUZ
 ### 4.7 Delivery fee and ETA display
 
 - Fee and ETA come from `delivery_zones.fee_ugx`, `eta_min_minutes`, and `eta_max_minutes`.
-- The fee is part of `orders.total_amount_ugx` and therefore part of the MoMo/Airtel amount. It must appear in the payment reconciliation as a delivery component, not as an untracked cash top-up.
+- The fee is part of `orders.total_amount_ugx` and therefore part of the COD amount collected by the rider. It must appear in payment reconciliation as a delivery component, not as an untracked cash top-up.
 - The ETA is a range, not a promise. Do not display a single-minute countdown for delivery.
 - Free-delivery promotions are configured by changing the seeded zone fee to `0` (database/seed); there is no Phase 1 admin UI for zone maintenance. Never hard-code a promotion in the client.
 
@@ -264,7 +264,7 @@ The live `/dispatch` card renders the order total for cash collection, but no BO
 | **ASSIGN BODA RIDER** | Opens the handoff modal: rider name (required), rider phone (required), boda plate and stage (optional), dispatch method (`CALL` / `WHATSAPP` / `COUNTER_HANDOFF`), and advance cash in UGX (optional, default `0`). |
 | **CALL CUSTOMER** | Opens the `tel:` link returned by the API. The FOH phone or a rider’s phone dials the customer. |
 | **OPEN MAP** | Opens the static Google Maps link returned by the API when a zone or GPS hint exists. It never embeds a map, rider marker, or route line. |
-| **COMPLETE DELIVERY** | Appears on an **ON THE WAY** card. Records `DELIVERED`, `FAILED_UNREACHABLE`, `REFUSED`, or `RETURNED` plus any returned advance. |
+| **COMPLETE DELIVERY** | Appears on an **ON THE WAY** card. For COD, requires cash tendered at least equal to the order total; records the cash payment, any change, handoff outcome, and order completion atomically. Failed outcomes (`FAILED_UNREACHABLE`, `REFUSED`, or `RETURNED`) remain open for review and do not request customer cash. |
 
 There is no print-chit button on the dispatch card. Printing happens internally when the KDS bumps the order to `READY`; a failed print is retried from the POS with `POST /api/v1/orders/:id/reprint-chit`.
 
@@ -275,7 +275,7 @@ There is no print-chit button on the dispatch card. Printing happens internally 
 - Do not confuse the rider advance with the delivery fee. The customer pays the delivery fee; the outlet pays the rider. The difference is the delivery contribution, which can be positive or negative.
 - On handoff, write a `delivery_handoffs` row with `dispatched_at`, the FOH user, the dispatch method, and the rider advance fields.
 - The active queue (`state=active`, default) lists `READY` delivery orders that have no handoff row yet, plus orders whose handoff outcome is still `PENDING`; the latter display as **ON THE WAY**. Failed handoffs (`FAILED_UNREACHABLE`, `REFUSED`, `RETURNED`) move to the manager review lane (`state=review`) instead of remaining in the active queue.
-- The order remains `READY` while the rider is on the way. Delivering the food moves the order to `COMPLETED` and sets `delivery_handoffs.delivered_at`.
+- The order remains `READY` while the rider is on the way. For an unpaid COD delivery, completion requires cash tendered at least equal to the full order total (including the delivery fee); the service records payment and audit data in the same transaction that marks the order `COMPLETED` and sets `delivery_handoffs.delivered_at`.
 - If the customer is unreachable: call twice, wait five minutes, notify the manager, and record the outcome. Do not mark the order `COMPLETED` if the food was not handed over.
 - Undelivered food follows the closing surplus/waste routine in `User_Flow.md §2 Flow C3` and is logged with a reason.
 - An optional SMS can be sent when the rider is dispatched (“Your order is on the way”). It must not claim live tracking or a precise arrival minute.
@@ -433,14 +433,15 @@ The existing Expo ESC/POS printer fires the packaging chit when the kitchen bump
 
 | Endpoint | Method | Purpose |
 | :--- | :--- | :--- |
-| `/api/v1/orders` | `POST` | Create order; validate the selected zone, recompute the delivery fee from `delivery_zones.fee_ugx`, and allocate a daily token |
+| `/api/v1/orders/delivery-zones?outlet=...` | `GET` | List active outlet zones with delivery fee, landmark hint, and ETA |
+| `/api/v1/orders` | `POST` | Create order; validate the selected zone, recompute the delivery fee from `delivery_zones.fee_ugx`, and allocate a daily token. Public COD delivery starts at `PENDING`; pickup starts at `AWAITING_PAYMENT`. |
 | `/api/v1/dispatch/queue?outlet=...&state=active\|review` | `GET` | `active` (default): `READY` delivery orders with no handoff or an open `PENDING` handoff, displayed as **ON THE WAY**. `review`: failed handoffs for manager resolution. Both include zone, landmark hint, room note, customer name/phone, `tel:` link, and an optional static map link. |
 | `/api/v1/orders/:id/dispatch` | `POST` | Record rider name/phone, dispatch method, transport advance, and optional “on the way” SMS |
-| `/api/v1/orders/:id/delivery-complete` | `POST` | Record `DELIVERED`, `FAILED_UNREACHABLE`, `REFUSED`, or `RETURNED`; only `DELIVERED` completes the order and sets `delivered_at` |
+| `/api/v1/orders/:id/delivery-complete` | `POST` | Record `DELIVERED`, `FAILED_UNREACHABLE`, `REFUSED`, or `RETURNED`; successful COD delivery requires `cashTenderedUgx`, then records cash payment, audit, and completion atomically |
 | `/api/v1/orders/:id/reprint-chit` | `POST` | Re-fire the delivery chit; audit-logged |
 | `/api/v1/dispatch/:id/assign-rider`, `/api/v1/dispatch/:id/complete` | `POST` | Compatibility aliases for the order-level handoff and completion routes |
 
-There is **no public delivery-zone catalogue endpoint** and **no zone-maintenance admin API** in Phase 1. Zones are seeded into `delivery_zones`; changing a fee, ETA, or active flag is seed/database maintenance. The customer checkout screen is a static prototype under `/prototype/checkout`.
+There is a public read-only delivery-zone catalogue endpoint, but **no zone-maintenance admin API** in Phase 1. Zones are seeded into `delivery_zones`; changing a fee, ETA, or active flag is seed/database maintenance. Live customer pickup and delivery ordering is available at `/order`.
 
 **Validation and order-creation errors**
 
@@ -450,22 +451,22 @@ There is **no public delivery-zone catalogue endpoint** and **no zone-maintenanc
 | *(Zod validation error)* | `400` | A required delivery field is missing or malformed: `deliveryZoneId`, `customerName`, `customerPhone`, or the items array. The response identifies the failing field. |
 | `POSTPAY_REQUIRES_STAFF` | `403` | A public request tried to open a `DINE_IN` POSTPAY tab |
 
-A missing or invalid zone is rejected before any MoMo/Airtel STK push is initiated. Delivery orders require a callable phone, a recipient name, and a zone from the selected outlet.
+A missing or invalid zone is rejected before an order is created. Delivery orders require a callable phone, a recipient name, a zone from the selected outlet, and a landmark note.
 
 ### 9.1 Zone Deactivated Between Selection and Submission
 
-A delivery order can be composed from a zone that becomes inactive before `POST /api/v1/orders` is submitted. Phase 1 has no live customer checkout or zone-admin UI, so this applies to API clients, seeded demo tooling, and any future customer surface; zone changes are made through the seed or a direct database update.
+A delivery order can be composed from a zone that becomes inactive before `POST /api/v1/orders` is submitted. Zone changes are made through the seed or a direct database update; the server revalidates the zone when the live customer checkout is submitted.
 
 | Step | Actor | Action |
 | :--- | :--- | :--- |
-| 1 | Client | Selects `YMCA_MAIN_CAMPUS` (active, fee UGX 2,000) and prepares the delivery fields |
+| 1 | Client | Selects an active YMCA delivery zone and prepares the delivery fields |
 | 2 | Operator | Runs seed/database maintenance and sets `is_active = false` on that zone (e.g., riders unavailable for the evening) |
 | 3 | System | `POST /api/v1/orders` re-reads `delivery_zones` at creation time |
 | 4 | System | The zone is missing, inactive, or from another outlet → `400 INVALID_DELIVERY_ZONE` |
 | 5 | Client | Shows the zone error and asks the customer to choose another zone or switch to pickup |
-| 6 | Client | Retries with a valid active zone — no payment was initiated |
+| 6 | Client | Retries with a valid active zone — the invalid request created no order |
 
-> **Rule:** Zone validation and fee recomputation happen at `POST /api/v1/orders` — **before** the STK push is dispatched. The client-side zone selection is advisory only; the server always re-reads `delivery_zones.is_active` and `delivery_zones.fee_ugx` from the database. Never trust or compare a client-supplied fee.
+> **Rule:** Zone validation and fee recomputation happen at `POST /api/v1/orders`. The client-side zone selection is advisory only; the server always re-reads `delivery_zones.is_active` and `delivery_zones.fee_ugx` from the database. Never trust or compare a client-supplied fee.
 
 ---
 

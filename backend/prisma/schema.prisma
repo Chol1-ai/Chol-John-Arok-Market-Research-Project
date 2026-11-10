@@ -62,6 +62,19 @@ enum uom_type {
   UNITS
 }
 
+enum stock_movement_type {
+  STOCK_COUNT
+  MANUAL_USAGE
+  SALES_USAGE
+  SUPPLIER_RECEIPT
+}
+
+enum supplier_order_status {
+  ORDERED
+  PARTIALLY_RECEIVED
+  RECEIVED
+}
+
 enum surplus_action {
   DISCOUNTED_CLEARANCE
   STAFF_MEAL
@@ -135,6 +148,8 @@ model users {
   cash_counts         cash_counts[]
   recorded_payments   payments[]             @relation("payments_recorded_by")
   verified_payments   payments[]             @relation("payments_manual_verified_by")
+  stock_movements     stock_movements[]
+  supplier_orders     supplier_orders[]
 
   @@map("users")
 }
@@ -234,6 +249,8 @@ model menu_items {
   category   String          @db.VarChar(40)
   price_ugx  Decimal         @db.Decimal(10, 2)
   station    station_type
+  image_url  String?         @db.VarChar(500)
+  image_hidden Boolean       @default(false)
   is_active  Boolean         @default(true)
   is_86      Boolean         @default(false)
   created_at DateTime        @default(now()) @db.Timestamptz(6)
@@ -289,6 +306,7 @@ model orders {
   order_items order_items[]
   handoffs    delivery_handoffs[]
   payments    payments[]
+  stock_movements stock_movements[]
 
   @@unique([outlet, business_date, digital_token], name: "orders_token_unique_per_day")
   @@index([delivery_zone_id], name: "idx_orders_delivery_zone")
@@ -335,10 +353,70 @@ model raw_inventory {
   is_high_turnover Boolean         @default(false)
   updated_at       DateTime?       @default(now()) @updatedAt @db.Timestamptz(6)
 
-  recipe_boms recipe_bom[]
+  recipe_boms        recipe_bom[]
+  stock_movements    stock_movements[]
+  supplier_order_items supplier_order_items[]
 
   @@unique([outlet, item_name], name: "raw_inventory_outlet_name_unique")
   @@map("raw_inventory")
+}
+
+model stock_movements {
+  id                    String               @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  outlet                outlet_location
+  inventory_id          String               @db.Uuid
+  recorded_by           String?              @db.Uuid
+  movement_type         stock_movement_type
+  quantity_change       Decimal              @db.Decimal(10, 2)
+  stock_after           Decimal              @db.Decimal(10, 2)
+  business_date         DateTime             @db.Date
+  note                  String?              @db.VarChar(250)
+  order_id              String?              @db.Uuid
+  supplier_order_id     String?              @db.Uuid
+  created_at            DateTime             @default(now()) @db.Timestamptz(6)
+
+  inventory      raw_inventory  @relation(fields: [inventory_id], references: [id], onDelete: Restrict)
+  user           users?         @relation(fields: [recorded_by], references: [id], onDelete: SetNull)
+  order          orders?        @relation(fields: [order_id], references: [id], onDelete: SetNull)
+  supplier_order supplier_orders? @relation(fields: [supplier_order_id], references: [id], onDelete: SetNull)
+
+  @@index([outlet, created_at(sort: Desc)], name: "idx_stock_movements_outlet_created")
+  @@index([inventory_id, created_at(sort: Desc)], name: "idx_stock_movements_inventory_created")
+  @@unique([order_id, inventory_id], name: "stock_movement_order_inventory_unique")
+  @@map("stock_movements")
+}
+
+model supplier_orders {
+  id            String                 @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  outlet        outlet_location
+  supplier_name String                 @db.VarChar(100)
+  status        supplier_order_status  @default(ORDERED)
+  notes         String?                @db.VarChar(250)
+  created_by    String                 @db.Uuid
+  created_at    DateTime               @default(now()) @db.Timestamptz(6)
+  received_at   DateTime?              @db.Timestamptz(6)
+
+  creator       users                  @relation(fields: [created_by], references: [id], onDelete: Restrict)
+  items         supplier_order_items[]
+  movements     stock_movements[]
+
+  @@index([outlet, status, created_at(sort: Desc)], name: "idx_supplier_orders_outlet_status")
+  @@map("supplier_orders")
+}
+
+model supplier_order_items {
+  id                String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  supplier_order_id String          @db.Uuid
+  inventory_id      String          @db.Uuid
+  quantity_ordered  Decimal         @db.Decimal(10, 2)
+  quantity_received Decimal         @default(0.00) @db.Decimal(10, 2)
+  unit_cost_ugx     Decimal?        @db.Decimal(10, 2)
+
+  supplier_order supplier_orders @relation(fields: [supplier_order_id], references: [id], onDelete: Cascade)
+  inventory      raw_inventory   @relation(fields: [inventory_id], references: [id], onDelete: Restrict)
+
+  @@unique([supplier_order_id, inventory_id], name: "supplier_order_item_unique")
+  @@map("supplier_order_items")
 }
 
 // ============================================================
@@ -517,4 +595,3 @@ model payment_events {
   @@unique([provider, event_id], name: "payment_events_unique")
   @@map("payment_events")
 }
-

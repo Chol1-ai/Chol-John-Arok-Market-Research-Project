@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f8f6f1" />
+  <meta name="description" content="Order campus favourites for pickup at Foodizo or Obunuzi in Wandegeya, Kampala." />
+  <link rel="icon" type="image/svg+xml" href="/images/foodizo-brand-mark.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" />
+  <link rel="stylesheet" href="/css/customer_order.css" />
+  <title>Order for pickup | Foodizo &amp; Obunuzi</title>
+</head>
+<body>
+  <header class="customer-topbar">
+    <a class="customer-brand" href="/" aria-label="Foodizo and Obunuzi home">
+      <img src="/images/foodizo-obunuzi-logo.svg" alt="Foodizo and Obunuzi" />
+    </a>
+    <span class="customer-pickup-label">Pickup &amp; local delivery</span>
+  </header>
+
+  <main class="customer-main" id="main-content">
+    <div id="notice" class="customer-notice" role="status" hidden></div>
+    <section id="order-screen">
+      <div class="customer-intro">
+        <div class="customer-eyebrow">Good food, ready around campus</div>
+        <h1>Order for pickup or delivery</h1>
+        <p>Choose an outlet, see today’s available meals, and place a pickup or local delivery order. Delivery fees are shown before you submit.</p>
+      </div>
+
+      <div class="customer-controls">
+        <label class="customer-field">
+          <span>Restaurant outlet</span>
+          <select id="outlet">
+            <option value="FOODIZO_HAM_TOWERS">Foodizo · Ham Towers</option>
+            <option value="OBUNUZI_YMCA">Obunuzi · Opposite YMCA</option>
+          </select>
+        </label>
+        <label class="customer-field">
+          <span>How would you like your order?</span>
+          <select id="fulfillment">
+            <option value="TAKEAWAY_PICKUP">Pickup · cash at counter</option>
+            <option value="PHONE_DELIVERY">Delivery · cash on delivery</option>
+          </select>
+        </label>
+        <label class="customer-field customer-search">
+          <span>Find a meal</span>
+          <input id="search" type="search" placeholder="Search the live menu" autocomplete="off" />
+        </label>
+      </div>
+      <div class="customer-delivery-fields" id="delivery-fields" hidden>
+        <label class="customer-field">
+          <span>Delivery area and fee</span>
+          <select id="delivery-zone" name="deliveryZoneId" form="checkout-form" disabled>
+            <option value="">Choose your delivery area</option>
+          </select>
+        </label>
+        <label class="customer-field">
+          <span>Room, office, gate, or landmark</span>
+          <input id="delivery-note" name="deliveryAddressNote" form="checkout-form" type="text" minlength="3" maxlength="160" placeholder="e.g. Mary Stuart Hall, Block B, Room 14" />
+        </label>
+        <div class="customer-zone-hint" id="delivery-zone-hint">Choose an area to see the delivery fee and estimated time.</div>
+      </div>
+
+      <div class="customer-layout">
+        <section class="customer-menu">
+          <div class="customer-category-row" id="categories" aria-label="Menu categories"></div>
+          <div class="customer-menu-grid" id="menu" aria-live="polite">
+            <div class="customer-empty">Loading today’s menu…</div>
+          </div>
+        </section>
+
+        <aside class="customer-cart" aria-labelledby="cart-title">
+          <div class="customer-cart-head">
+            <div><span class="customer-eyebrow">Your selection</span><h2 id="cart-title">Pickup bag</h2></div>
+            <span class="customer-cart-count" id="cart-count">0</span>
+          </div>
+          <div id="cart-lines" class="customer-cart-lines"><p class="customer-empty">Your bag is empty.</p></div>
+          <div class="customer-fee-row" id="delivery-fee-row" hidden><span>Delivery fee</span><strong id="delivery-fee">UGX 0</strong></div>
+          <div class="customer-cart-total"><span>Total</span><strong id="cart-total">UGX 0</strong></div>
+          <div class="customer-payment-note" id="payment-note">
+            <strong id="payment-note-title">Cash at the outlet counter</strong>
+            <span id="payment-note-copy">Show your pickup token and pay the full amount. Kitchen preparation starts after staff records your payment.</span>
+          </div>
+          <form id="checkout-form" class="customer-checkout">
+            <label class="customer-field"><span>Your name</span><input name="customerName" type="text" minlength="2" maxlength="80" autocomplete="name" required /></label>
+            <label class="customer-field"><span>Mobile number</span><input name="customerPhone" type="tel" minlength="9" maxlength="20" placeholder="e.g. 0770 555 333" autocomplete="tel" required /></label>
+            <button id="submit-order" class="customer-primary-button" type="submit" disabled>Place pickup order</button>
+            <p class="customer-fine-print">Prices and availability are confirmed by the restaurant when you place the order.</p>
+          </form>
+        </aside>
+      </div>
+    </section>
+
+    <section id="tracking-screen" class="customer-tracking" hidden aria-labelledby="tracking-title">
+      <div class="tracking-card">
+        <div class="customer-eyebrow" id="tracking-channel-label">Pickup order status</div>
+        <h1 id="tracking-title">Your order is in</h1>
+        <p class="tracking-copy" id="tracking-copy"></p>
+        <div class="tracking-token"><span id="tracking-token-label">Pickup token</span><strong id="tracking-token"></strong></div>
+        <div class="tracking-order" id="tracking-order"></div>
+        <div class="tracking-status" id="tracking-status" aria-live="polite"></div>
+        <p class="tracking-cash-note" id="tracking-cash-note"></p>
+        <div class="tracking-actions">
+          <button class="customer-primary-button" id="tracking-refresh" type="button">Refresh status</button>
+          <button class="customer-secondary-button" id="new-order" type="button">Start another order</button>
+        </div>
+        <p class="customer-fine-print">This page refreshes order status automatically. Keep your token handy for staff.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="customer-footer">Foodizo · Ham Towers &nbsp;·&nbsp; Obunuzi · Opposite YMCA &nbsp;·&nbsp; Prices in UGX</footer>
+  <script src="/js/customer-order.js"></script>
+</body>
+</html>

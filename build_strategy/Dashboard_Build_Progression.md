@@ -1,4 +1,4 @@
-﻿# Dashboard-by-Dashboard Build Progression & UI Implementation Roadmap
+# Dashboard-by-Dashboard Build Progression & UI Implementation Roadmap
 
 **Document Type:** Screen-by-Screen Frontend/Backend Build Order & Interface Architecture  
 **Target Environment:** Antigravity IDE + Opencode CLI Repository Scaffold  
@@ -142,7 +142,7 @@ Every screen represents a physical actor in the restaurant service loop: the hun
 
 ```
 ┌────────────────────────────────────────────┐
-│ 📍 Foodizo — Ham Towers         🛒 Cart (2)│
+│  Foodizo — Ham Towers          Cart (2)│
 ├────────────────────────────────────────────┤
 │ [All]  [Rolex]  [Chicken]  [Luwombo]  [Sides]│
 ├────────────────────────────────────────────┤
@@ -185,7 +185,7 @@ Every screen represents a physical actor in the restaurant service loop: the hun
 │ Rider-Callable Phone Number:               │
 │ [ 0772 123 456                           ] │
 │                                            │
-│ [ 📍 Use My Current Location (Optional) ]  │
+│ [  Use My Current Location (Optional) ]  │
 │                                            │
 │ Payment Method: Mobile Money               │
 │ Subtotal:                   UGX 17,500     │
@@ -306,7 +306,7 @@ Every screen represents a physical actor in the restaurant service loop: the hun
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────┐
-│ KDS — STATION 2: GRILL & FRYER   [Active: 3]   [All Channels ▼]   🔊 SOUND │
+│ KDS — STATION 2: GRILL & FRYER   [Active: 3]   [All Channels ▼]    SOUND │
 ├────────────────────────────────────────────────────────────────────────────┤
 │ ┌──────────────────────┐ ┌──────────────────────┐ ┌──────────────────────┐ │
 │ │ TAKEAWAY — TOKEN-042 │ │ DINE-IN — TABLE T-04 │ │ DELIVERY — TOKEN-043 │ │
@@ -360,7 +360,7 @@ Every screen represents a physical actor in the restaurant service loop: the hun
 │ │ Note: Call at security gate. Food in thermal bag.                      │ │
 │ │ Items: 1x Beef Luwombo, 1x Steamed Matooke, 1x Water                   │ │
 │ ├────────────────────────────────────────────────────────────────────────┤ │
-│ │ [ 📞 CALL ]   [ 💬 WHATSAPP ]   [ 📍 OPEN PIN ]   [ 🖨️ REPRINT CHIT ]   │ │
+│ │ [  CALL ]   [  WHATSAPP ]   [  OPEN PIN ]   [  REPRINT CHIT ]   │ │
 │ │                                                                        │ │
 │ │ ┌────────────────────────────────────────────────────────────────────┐ │ │
 │ │ │            ASSIGN RIDER & RECORD CASH ADVANCE (UGX 1,500)          │ │ │
@@ -389,7 +389,7 @@ Every screen represents a physical actor in the restaurant service loop: the hun
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────┐
-│ 🏛️ FOODIZO & OBUNUZI — OPERATIONS AUDIT PORTAL        Logged in: Zito Mbowe│
+│  FOODIZO & OBUNUZI — OPERATIONS AUDIT PORTAL        Logged in: Zito Mbowe│
 ├────────────────────────────────────────────────────────────────────────────┤
 │ [Dashboard]  [Menu/Pricing]  [Inventory/BOM]  [Surplus Log]  [Reconcile]   │
 ├────────────────────────────────────────────────────────────────────────────┤

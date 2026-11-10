@@ -272,6 +272,10 @@ export const kdsRoutes: FastifyPluginAsync = async (fastify) => {
           orderId: updated.id,
           tokenNumber: updated.digital_token,
           channel: updated.channel,
+          destination:
+            order.table?.table_label ||
+            order.delivery_zone?.display_name ||
+            'Takeaway Counter',
           status: 'READY'
         }
       });

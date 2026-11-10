@@ -219,10 +219,10 @@ Technology fails when front-line workers view it as surveillance or extra burden
 ### 5.2 Digital & Community Messaging Templates
 
 **WhatsApp Broadcast for Student Groups:**
-> *"⚡ Makerere Lunch Rush Hack! Don’t waste your 20-minute lecture break standing in the Foodizo line at Ham Towers. Pre-order 2pc Chicken & Chips or a Rolex on your phone right now 👉 https://foodizo.ug. Pay with MoMo, walk straight to the Express Counter, grab your hot food, and head to class on time! 🍗🍟"*
+> *" Makerere Lunch Rush Hack! Don’t waste your 20-minute lecture break standing in the Foodizo line at Ham Towers. Pre-order 2pc Chicken & Chips or a Rolex on your phone right now  https://foodizo.ug. Pay with MoMo, walk straight to the Express Counter, grab your hot food, and head to class on time! "*
 
 **Desk Delivery Message for Ham Towers Offices:**
-> *"🍱 Hot Lunch Delivered to Your Office Desk! Obunuzi & Foodizo now deliver directly inside Ham Towers and YMCA. Order your Beef Luwombo or Chicken wrap online, add your Floor & Office Number, and our runner delivers to your door. No map pins needed. Order here 👉 https://foodizo.ug"*
+> *" Hot Lunch Delivered to Your Office Desk! Obunuzi & Foodizo now deliver directly inside Ham Towers and YMCA. Order your Beef Luwombo or Chicken wrap online, add your Floor & Office Number, and our runner delivers to your door. No map pins needed. Order here  https://foodizo.ug"*
 
 ---
 

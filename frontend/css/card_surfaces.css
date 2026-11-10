@@ -1,0 +1,14 @@
+:where(div, section, article)[class~="rounded-xl"][class~="bg-surface-container-lowest"],
+:where(div, section, article)[class~="rounded-xl"][class~="bg-surface-container-low"],
+:where(div, section, article)[class~="rounded-lg"][class~="bg-surface-container-lowest"],
+:where(div, section, article)[class~="rounded-lg"][class~="bg-surface-container-low"] {
+  border: 1px solid var(--color-border-default);
+  box-shadow: var(--shadow-level-1);
+}
+
+:where(div, section, article)[class~="rounded-xl"][class~="bg-surface-container-lowest"]:hover,
+:where(div, section, article)[class~="rounded-xl"][class~="bg-surface-container-low"]:hover,
+:where(div, section, article)[class~="rounded-lg"][class~="bg-surface-container-lowest"]:hover,
+:where(div, section, article)[class~="rounded-lg"][class~="bg-surface-container-low"]:hover {
+  box-shadow: var(--shadow-level-2);
+}

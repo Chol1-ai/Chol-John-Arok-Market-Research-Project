@@ -5,11 +5,292 @@
  */
 
 @import './theme_tokens.css';
+@import './staff_prototype_header.css';
 
-/* High-Contrast Kitchen Carbon Theme */
+/* Warm, high-contrast kitchen workspace */
 body.kds-body {
-  background-color: #0F172A;
-  color: #F8FAFC;
+  background:
+    radial-gradient(ellipse at 12% 0%, rgba(255, 218, 214, 0.42), transparent 34rem),
+    #f6f3ef;
+  color: #18212b;
+}
+
+body.select-none {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 12% 0%, rgba(255, 218, 214, 0.42), transparent 34rem),
+    #f6f3ef;
+  color: #18212b;
+}
+
+body.select-none > header {
+  border-bottom: 1px solid rgba(20, 27, 43, 0.1);
+  background: #19232f;
+  box-shadow: 0 8px 26px rgba(20, 27, 43, 0.16);
+}
+
+body.select-none > header > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.5rem 1rem;
+  height: auto;
+  min-height: 5rem;
+  padding: 0.75rem clamp(0.75rem, 2.4vw, 2rem);
+}
+
+body.select-none > header > div > div:first-child {
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+body.select-none > header nav {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  min-width: 0;
+}
+
+body.select-none > header > div > div:last-child {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+body.select-none > main {
+  padding-top: 8.5rem;
+  background: transparent;
+}
+
+body.select-none > main > div > section:first-of-type {
+  width: auto;
+  margin: 0 clamp(0.75rem, 2.4vw, 2rem) 1rem;
+  padding: 1rem;
+  border: 1px solid rgba(226, 232, 240, 0.12);
+  border-radius: 1.25rem;
+  background: #202c39;
+  box-shadow: 0 14px 32px rgba(20, 27, 43, 0.13);
+}
+
+body.select-none > main > div > section:nth-of-type(2) {
+  width: auto;
+  margin: 0 clamp(0.75rem, 2.4vw, 2rem) 1.5rem;
+  padding: clamp(0.75rem, 1.8vw, 1.5rem);
+  border: 1px solid rgba(20, 27, 43, 0.08);
+  border-radius: 1.5rem;
+  background:
+    linear-gradient(140deg, rgba(42, 56, 70, 0.98), rgba(24, 35, 47, 0.99)),
+    #19232f;
+  box-shadow: 0 18px 44px rgba(20, 27, 43, 0.18);
+}
+
+body.select-none .ticket-card {
+  min-width: 0;
+  border: 1px solid #e8e2dc;
+  border-radius: 1rem;
+  background: #fffdfa;
+  box-shadow: 0 8px 22px rgba(12, 20, 29, 0.17);
+  animation: none !important;
+  transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+}
+
+body.select-none .ticket-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(12, 20, 29, 0.23);
+}
+
+body.select-none .ticket-card > div:first-child {
+  border-radius: 1rem 1rem 0 0;
+}
+
+body.select-none .ticket-card [onclick="toggleItemCheck(this)"] {
+  min-height: 3.25rem;
+  border-radius: 0.6rem;
+  padding-right: 0.35rem;
+  padding-left: 0.35rem;
+  transition: background-color 140ms ease;
+}
+
+body.select-none .ticket-card [onclick="toggleItemCheck(this)"]:hover {
+  background: #f7f3ed;
+}
+
+body.select-none .ticket-card button {
+  min-height: 2.75rem;
+  border-radius: 0.7rem;
+  transition: filter 140ms ease, transform 140ms ease, box-shadow 140ms ease;
+}
+
+body.select-none .ticket-card button:hover {
+  filter: brightness(1.05);
+  box-shadow: 0 4px 12px rgba(20, 27, 43, 0.12);
+}
+
+body.select-none .ticket-card button:active {
+  transform: translateY(1px);
+}
+
+body.select-none #tickets-container {
+  align-items: stretch;
+}
+
+body.select-none #tickets-container > .ticket-card {
+  height: 100%;
+}
+
+body.select-none .kds-station-view-controls {
+  min-width: 0;
+  max-width: 100%;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+}
+
+body.select-none .kds-surge-banner {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 1.1rem;
+  background: linear-gradient(120deg, #a92c24, #7d2421);
+  box-shadow: 0 14px 30px rgba(47, 15, 17, 0.28);
+  animation: none !important;
+}
+
+body.select-none .kds-surge-banner[data-paused="true"] {
+  background: linear-gradient(120deg, #414a55, #303945);
+}
+
+body.select-none .kds-surge-banner button {
+  min-height: 2.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 0.7rem;
+}
+
+body.select-none #kds-toast {
+  top: 1rem;
+  right: 1rem;
+  z-index: 80;
+  max-width: min(32rem, calc(100vw - 2rem));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 16px 38px rgba(20, 27, 43, 0.28);
+}
+
+body.select-none .kds-action-backdrop {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.64);
+  backdrop-filter: blur(4px);
+}
+
+body.select-none .kds-action-dialog {
+  width: min(100%, 28rem);
+  padding: 1.5rem;
+  border: 1px solid #e8e2dc;
+  border-radius: 1.25rem;
+  background: #fffdfa;
+  box-shadow: 0 24px 72px rgba(15, 23, 42, 0.32);
+  color: #18212b;
+}
+
+body.select-none .kds-action-dialog label {
+  display: block;
+  margin: 1rem 0 0.4rem;
+  font-weight: 700;
+}
+
+body.select-none .kds-action-dialog input {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.75rem;
+  border: 1px solid #d5d0ca;
+  border-radius: 0.65rem;
+  background: #fff;
+  color: #18212b;
+}
+
+body.select-none .kds-action-status {
+  margin-top: 0.65rem;
+  color: #637080;
+  font-size: 0.75rem;
+}
+
+body.select-none .kds-local-state {
+  display: inline-flex;
+  align-items: center;
+  margin: 0.75rem;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid #f0c77c;
+  border-radius: 999px;
+  background: #fff3d8;
+  color: #63420e;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+body.select-none .kds-local-added-item {
+  padding: 0.65rem 0.75rem;
+  background: #fff3d8;
+  color: #63420e;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+body.select-none .kds-notification-panel {
+  position: absolute;
+  top: calc(100% + 0.75rem);
+  right: 1rem;
+  z-index: 90;
+  width: min(22rem, calc(100vw - 2rem));
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 1rem;
+  background: #202c39;
+  color: #f7f5f2;
+  box-shadow: 0 16px 38px rgba(20, 27, 43, 0.28);
+}
+
+body.select-none .kds-notification-panel p {
+  margin: 0.5rem 0 0.85rem;
+  color: #d3dae2;
+  font-size: 0.82rem;
+}
+
+body.select-none .kds-notification-panel button {
+  min-height: 2.5rem;
+  padding: 0.5rem 0.8rem;
+  border-radius: 0.65rem;
+  background: #b70011;
+  color: #fff;
+  font-weight: 700;
+}
+
+body.select-none footer {
+  border-top: 1px solid rgba(20, 27, 43, 0.08);
+}
+
+@media print {
+  body.kds-printing > header,
+  body.kds-printing > footer {
+    display: none !important;
+  }
+
+  body.kds-printing > main * {
+    visibility: hidden !important;
+  }
+
+  body.kds-printing [data-kds-print-target],
+  body.kds-printing [data-kds-print-target] * {
+    visibility: visible !important;
+  }
+
+  body.kds-printing [data-kds-print-target] {
+    position: fixed !important;
+    inset: 0 auto auto 0 !important;
+    width: 80mm !important;
+    max-width: 80mm !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
 }
 
 /* KDS Horizontal Ticket Ribbon */
@@ -63,6 +344,85 @@ body.kds-body {
   to { filter: brightness(1.2); }
 }
 
+@media (min-width: 1280px) {
+  body.select-none > header > div {
+    display: flex;
+    min-height: 5rem;
+    padding-right: clamp(1rem, 2vw, 2rem);
+    padding-left: clamp(1rem, 2vw, 2rem);
+  }
+
+  body.select-none > main {
+    padding-top: 6rem;
+  }
+}
+
+@media (max-width: 1279px) {
+  body.select-none > header > div {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  body.select-none > header > div > div:first-child {
+    order: 1;
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+  }
+
+  body.select-none > header > div > div:last-child {
+    order: 2;
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  body.select-none > header nav {
+    order: 3;
+    width: 100%;
+  }
+
+  body.select-none > main {
+    padding-top: 13rem;
+  }
+}
+
+@media (max-width: 700px) {
+  body.select-none > header > div > div:first-child {
+    gap: 0.5rem;
+  }
+
+  body.select-none > header > div > div:first-child > div:nth-child(2) {
+    display: none;
+  }
+
+  body.select-none > header nav a {
+    padding-right: 0.75rem;
+    padding-left: 0.75rem;
+  }
+
+  body.select-none > main {
+    padding-top: 13rem;
+  }
+
+  body.select-none > main > div > section:first-of-type,
+  body.select-none > main > div > section:nth-of-type(2) {
+    margin-right: 0.5rem;
+    margin-left: 0.5rem;
+    border-radius: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.select-none *,
+  body.select-none *::before,
+  body.select-none *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* Giant 68px Full-Width Bump Button */
 .btn-kds-bump {
   min-height: 68px;
@@ -87,4 +447,3 @@ body.kds-body {
   transform: translateY(2px);
   filter: brightness(0.85);
 }
-

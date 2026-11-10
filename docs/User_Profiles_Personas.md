@@ -116,7 +116,7 @@ Reads high-contrast KDS ticket  →  taps PREPARING  →  cooks food
 
 ## 4. Administrative Persona: The Operations Coordinator
 
-- **Archetype:** **Zito Mbowe** — Operations Lead, MRFSS Project
+- **Archetype:** **Zito Mbowe** — Obunuzi Restaurant & Cafe Manager
 - **Role Category:** `MANAGER_ADMIN`
 - **Device:** Laptop Dashboard (Chrome) + Smartphone for critical alerts
 

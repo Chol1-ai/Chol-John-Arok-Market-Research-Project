@@ -1,0 +1,12 @@
+.pickup-orders-card { margin-top: 18px; }
+.pickup-orders-list { display: grid; gap: 10px; padding: 14px; }
+.pickup-order { display: grid; gap: 11px; padding: 13px; border: 1px solid var(--color-border, #e3e7ed); border-radius: 12px; background: var(--color-surface, #fff); }
+.pickup-order-main { display: flex; justify-content: space-between; gap: 12px; }
+.pickup-order-main > div { min-width: 0; }
+.pickup-order-main strong { font-size: 12px; }
+.pickup-order-main .ls-help { margin-top: 4px; overflow-wrap: anywhere; }
+.pickup-order .ls-btn { justify-self: start; }
+
+@media (max-width: 600px) {
+  .pickup-order-main { flex-direction: column; }
+}

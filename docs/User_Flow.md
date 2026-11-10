@@ -1,9 +1,9 @@
-﻿# End-to-End User Workflows & State Progression
+# End-to-End User Workflows & State Progression
 
 **Reference:** PRD Section 3 (Workflows A, B, and C)<br>
 **Related Files:** `Foundational_Concept.md` · `Design_System.md` · `User_Profiles_Personas.md` · `Delivery_Zones_and_Dispatch.md` · `Tech_Stack.md` (DDL) · `Payment_Integration.md` (checkout & webhook detail) · `Hardware_and_Peripherals.md` · `Seed_Data_and_Testing.md` · `Repo_Scaffold_and_Config.md` · `Demo_Script_and_Closing_Strategy.md` · `Daily_Audit_Digest.md` (shift-close owner report) · `Deployment_Runbook.md` (offline edge operation) · `Service_Contract_and_Invoice_Template.md` · `build_strategy/Build_Strategy_and_Phases.md`
 
-> **Implementation status:** The live, API-backed staff surfaces are `/login`, `/pos`, `/kds`, `/dispatch`, and `/admin`. Customer-facing pages under `/prototype/*` (landing, menu, checkout, token, tracker) are static design prototypes and do not call the live API. Flows A and D describe the intended customer experience; the live flow today is staff-operated POS, KDS, and dispatch.
+> **Implementation status:** The live, API-backed staff surfaces are `/login`, `/pos`, `/kds`, `/dispatch`, and `/admin`. The `/order` and `/customer` pages support API-backed pickup and delivery ordering; customer pickup is paid in cash at the counter, while delivery is paid in cash to the rider at handoff. Mobile-money checkout remains unavailable pending C5 provider integration and verification. Other customer-facing `/prototype/*` pages remain static design prototypes.
 
 ---
 
@@ -13,9 +13,9 @@
 [ CUSTOMER PRE-ORDER ]                  [ DINE-IN TABLE TAB ]
              │                                    │
              ▼                                    ▼
-   POST /orders: AWAITING_PAYMENT       FOH fires tab: PENDING
-   Payment INITIATED                            (postpay;
-   → PENDING_CUSTOMER_PIN                        settled at bill close)
+   Pickup: AWAITING_PAYMENT             FOH fires tab: PENDING
+   Counter cash → PENDING                       (postpay;
+   Delivery COD: PENDING                         settled at bill close)
              │                                    │
    (MoMo/Airtel webhook: SUCCESSFUL)               │
    order.status → PENDING                          │
@@ -53,11 +53,13 @@
 
 > **Normalised State Machine:** Every kitchen ticket — regardless of channel — passes through exactly four KDS states: `PENDING`, `PREPARING`, `READY`, and `COMPLETED`. `AWAITING_PAYMENT` is a pre-kitchen holding state, not a fifth kitchen state; it never appears on the KDS. `CANCELLED` is a terminal exception available from `AWAITING_PAYMENT` or any KDS state, and every cancellation is logged.
 >
-> **Prepaid gate:** Customer-app, QR, and phone-delivery orders are created as `AWAITING_PAYMENT` before the STK push. They enter `PENDING` — and therefore the KDS — **only after** a verified `SUCCESSFUL` payment. A failed or timed-out attempt leaves the order in `AWAITING_PAYMENT` for retry; Phase 1 has no automatic payment-TTL cancellation. A manager can close a stale order with `POST /api/v1/orders/:id/cancel` and a required reason. The idempotency engine in `Payment_Integration.md §6` prevents duplicate tickets when a telco webhook is retried.
+> **Pre-kitchen payment gate:** Pickup orders created by the live customer page (`/order`) are held in `AWAITING_PAYMENT` and appear in the staff POS pickup queue. A waiter records the full cash payment at collection; only then does the order enter `PENDING` and reach the KDS. Customer delivery orders use cash on delivery and enter `PENDING` immediately so the kitchen can start; the rider must record sufficient cash at the final handoff, which creates the successful cash payment and audit record atomically with order completion. Customer-initiated mobile-money payment remains unavailable pending C5 provider integration. Unpaid pickup orders have no automatic TTL cancellation; a manager can close a stale order with `POST /api/v1/orders/:id/cancel` and a required reason. The idempotency engine in `Payment_Integration.md §6` prevents duplicate tickets when a telco webhook is retried.
 >
 > **Postpay exception:** A dine-in table tab fired by an authenticated `WAITER_FOH` or `MANAGER_ADMIN` enters `PENDING` without prepayment. The guest pays at bill close; the payment record is then attached to the tab. This exception never applies to customer-app, QR, or delivery orders.
+
+> **Live C4/C6 customer ordering:** The customer selects an outlet and currently available meals at `/order`, chooses pickup or delivery, and submits the order. The server recomputes prices, checks recipe stock, and returns a daily outlet token. Pickup orders wait in the POS queue until cash is recorded at the counter. Delivery orders require an active outlet-matched zone, recipient name/phone, and landmark note; the server includes the zone fee and sends the unpaid COD order to the kitchen immediately. The rider records cash at the handoff. The public token page polls sanitized status and can be reopened at `/order?token=TOKEN-NNN&outlet=OUTLET_CODE`.
 >
-> **Delivery Pre-Condition:** A `PHONE_DELIVERY` order cannot initiate payment until it has an active outlet-matched zone, a room/office/gate note, a recipient name, and a rider-callable phone number. The optional GPS pin is never a precondition. See `Delivery_Zones_and_Dispatch.md §4` and `§9`.
+> **Delivery Pre-Condition:** A `PHONE_DELIVERY` order requires an active outlet-matched zone, a room/office/gate note, a recipient name, and a rider-callable phone number. The optional GPS pin is never a precondition. Cash on delivery is collected by the rider and recorded at completion. See `Delivery_Zones_and_Dispatch.md §4` and `§9`.
 
 ---
 
@@ -95,15 +97,14 @@
 | 3 | Prossy N. | Taps **"Send to Kitchen"** |
 | 4 | KDS | The authenticated FOH action creates the postpay table tab as `PENDING`; it appears on Station 1 (Steam Line): `DINE_IN — T-04` (blue badge) |
 | 5 | Prossy N. (FOH cashier) | Takes phone order: `1x Beef Luwombo (delivery)` for Dr. Okello. Selects delivery zone `YMCA_MAIN`, enters note `Block C, Room 204 — call at security gate`, recipient `Dr. Okello`, phone `0701 234 567` |
-| 6 | System | Validates the zone is active and belongs to Obunuzi; recomputes menu prices and delivery fee `UGX 1,500`; creates the order as `AWAITING_PAYMENT`; includes the fee in the MoMo/Airtel amount. No payment is initiated if the zone, note, name, or phone is missing |
-| 7 | System | Verified payment promotes the delivery order to `PENDING` |
+| 6 | System | Validates the zone is active and belongs to Obunuzi; recomputes menu prices and delivery fee `UGX 1,500`; creates the unpaid cash-on-delivery order as `PENDING`. No order is created if the zone, note, name, or phone is missing |
 | 8 | KDS | Second ticket appears: `PHONE_DELIVERY — TOKEN-043` (purple badge) with destination `YMCA MAIN CAMPUS`. Customer name, phone, room note, and GPS (if any) are not shown on the KDS |
 | 9 | Cook | KDS shows both tickets chronologically. Cook prepares both Luwombo portions together. |
 | 10 | Cook | Advances both tickets: `PREPARING` → `READY` |
-| 11 | Prossy N. | Tablet shows T-04 order as `READY` → serves plated meal |
+| 11 | System / Prossy N. | `TOKEN_READY` appears as a live in-app alert in the waiter POS with the token and table/zone destination; the floor refreshes and Prossy serves the plated meal |
 | 12 | System | Expo printer fires the delivery chit with token, destination, room/office note, phone, and instructions |
 | 13 | Prossy N. | Opens `/dispatch`, checks the delivery chit and customer details, uses **Call customer** or **Open map** if needed, assigns the rider, and records rider name, dispatch method, and any cash transport advance |
-| 14 | Prossy N. | Records the handoff outcome in `/dispatch`: `DELIVERED` completes the order and records any returned advance; a failed outcome leaves the order `READY` in the review queue for manager resolution |
+| 14 | Prossy N. | Records the handoff outcome in `/dispatch`: for COD, enters the cash tendered; `DELIVERED` records the successful cash payment, change, and completion atomically. A failed outcome leaves the order `READY` in the review queue for manager resolution |
 | 15 | Prossy N. (FOH cashier) | When the T-04 guests leave, settles the table tab by cash, direct MoMo, or verified manual MoMo through `POST /api/v1/orders/:id/settle`, then marks the table `NEEDS_CLEARING` |
 
 **Outcome:** Zero duplicate prep. Table-side and phone channels harmonised in one shared queue. The rider gets a complete landmark/room/phone chit without a live map, and the kitchen never sees customer personal data.
@@ -128,7 +129,7 @@ The same transaction deducts every defined BOM line on the ticket; menu items wi
 
 1. Cooking oil stock drops below **5.0 Liters**.
 2. System sends an SMS and an in-page dashboard alert to **Zito Mbowe**:
-   > *"⚠️ Warning: Mukwano Cooking Oil below reorder point at Ham Towers. Current: 4.7L / Threshold: 5.0L."*
+   > *" Warning: Mukwano Cooking Oil below reorder point at Ham Towers. Current: 4.7L / Threshold: 5.0L."*
 3. Manager can acknowledge and trigger a purchase order from the Manager Portal.
 
 #### C3. Closing Surplus Log — 9:00 PM EOD Routine
@@ -198,11 +199,11 @@ AWAITING_PAYMENT ──(Verified payment)──► PENDING ──(Cook claims)�
 ```
 
 - `AWAITING_PAYMENT` is pre-kitchen and is never returned to a KDS queue.
-- A dine-in table tab fired by authenticated FOH may start at `PENDING` (postpay exception). Every other order starts at `AWAITING_PAYMENT`.
+- A dine-in table tab fired by authenticated FOH may start at `PENDING` (postpay exception). Customer pickup orders start at `AWAITING_PAYMENT`; customer cash-on-delivery orders start at `PENDING` so the kitchen can prepare before payment.
 - `CANCELLED` is available only to `MANAGER_ADMIN` through `POST /api/v1/orders/:id/cancel` with a required reason of at least 3 characters. There is no waiter override PIN, no second-factor phone confirmation, and no automatic payment-TTL cancellation job in Phase 1. Every cancellation writes an `audit_log` row with the actor, reason, and before/after status. If the order already has a `SUCCESSFUL` MTN, Airtel, or manual-MoMo payment, the same transaction moves each payment to `REFUND_PENDING` with `audit_flag = 'CANCELLED_AFTER_PAYMENT'`; cash payments are recorded as a manager exception (`cashRefundException`) because Phase 1 has no cash-refund ledger. A `COMPLETED` order cannot be cancelled; close a refund instead. See `Payment_Integration.md §8.3`.
 - `COMPLETED` is a terminal state; no further transitions are permitted.
 - `OVERDUE` is a **display flag only** (> 10 minutes in `PREPARING`) — it does not alter the state machine.
-- Delivery does **not** add a fifth order status in Phase 1. The rider handoff is recorded in `delivery_handoffs` (`dispatched_at`, `delivered_at`, `outcome`, `rider_advance_ugx`, `rider_advance_returned_ugx`). The order stays `READY` while the rider is on the way, then becomes `COMPLETED` when the handoff outcome is `DELIVERED`. A failed outcome (`FAILED_UNREACHABLE`, `REFUSED`, or `RETURNED`) is recorded on the handoff and the order remains `READY` in the `/dispatch` review queue; a manager may reassign the rider, retry, or cancel the order through the manager-only cancellation route. A failed delivery is never marked `COMPLETED`.
+- Delivery does **not** add a fifth order status in Phase 1. The rider handoff is recorded in `delivery_handoffs` (`dispatched_at`, `delivered_at`, `outcome`, `rider_advance_ugx`, `rider_advance_returned_ugx`). The order stays `READY` while the rider is on the way, then becomes `COMPLETED` when the handoff outcome is `DELIVERED`. For unpaid COD orders, sufficient tendered cash, the successful `CASH` payment, and a `DELIVERY_CASH_COLLECTED` audit record are committed with completion in one transaction. A failed outcome (`FAILED_UNREACHABLE`, `REFUSED`, or `RETURNED`) is recorded on the handoff and the order remains `READY` in the `/dispatch` review queue; a manager may reassign the rider, retry, or cancel the order through the manager-only cancellation route. A failed delivery is never marked `COMPLETED`.
 - **Derived dispatch state:** For UI and reporting, a `READY` delivery order with an open handoff (`outcome = 'PENDING'`) is displayed as **ON THE WAY**, not as “waiting in kitchen.” Any dashboard that counts `READY` orders must apply this rule, or kitchen-readiness metrics will be inflated by bags that already left the building. This is a view rule, not a new `order_status` value.
 
 ## 4. Payment State Reference

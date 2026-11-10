@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="icon" type="image/svg+xml" href="../images/foodizo-brand-mark.svg"/>
   <title>Manager Audit &amp; Daily Digest | Foodizo &amp; Obunuzi</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -79,6 +79,132 @@
         <div class="admin-kpi-label">Open exceptions</div>
         <div class="admin-kpi-value" id="admin-flags">—</div>
         <div class="admin-kpi-note" id="admin-flags-note">Cash, refunds, stock, stale orders</div>
+      </div>
+    </section>
+
+    <section class="ls-card admin-inventory-card" aria-labelledby="admin-inventory-title">
+      <div class="ls-card-head">
+        <div>
+          <div class="ls-card-title" id="admin-inventory-title">Kitchen stock &amp; supplier orders</div>
+          <div class="ls-card-sub">Record the opening count each business day, log kitchen use, and receive supplier deliveries as they arrive. Sales also deduct recipe ingredients automatically.</div>
+        </div>
+        <button class="ls-btn ls-btn--ghost ls-btn--small" type="button" id="admin-inventory-refresh">Refresh stock</button>
+      </div>
+      <div class="admin-inventory-note">Opening counts set the actual quantity on hand; stock carries forward until the next count. An order does not increase stock until its delivery is recorded.</div>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr><th>Product</th><th>Outlet</th><th>On hand</th><th>Reorder at</th><th>Status</th></tr>
+          </thead>
+          <tbody id="admin-inventory-body">
+            <tr><td colspan="5" class="ls-help">Loading kitchen stock…</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="admin-inventory-orders">
+        <h3 class="admin-inventory-form-title">Recent stock activity</h3>
+        <div id="admin-stock-activity" class="admin-log-list">
+          <div class="ls-loading">Loading stock activity…</div>
+        </div>
+      </div>
+      <div class="admin-inventory-forms">
+        <form class="admin-form" id="admin-stock-form">
+          <h3 class="admin-inventory-form-title">Opening count or kitchen use</h3>
+          <label class="ls-field admin-inventory-outlet-wrap">
+            <span>Outlet</span>
+            <select class="ls-select" id="admin-stock-outlet">
+              <option value="FOODIZO_HAM_TOWERS">Foodizo · Ham Towers</option>
+              <option value="OBUNUZI_YMCA">Obunuzi · Opp. YMCA</option>
+            </select>
+          </label>
+          <label class="ls-field">
+            <span>Product</span>
+            <select class="ls-select" id="admin-stock-item" required><option value="">Loading stock…</option></select>
+          </label>
+          <div class="ls-form-grid">
+            <label class="ls-field">
+              <span>Action</span>
+              <select class="ls-select" id="admin-stock-action">
+                <option value="STOCK_COUNT">Set opening / counted stock</option>
+                <option value="MANUAL_USAGE">Record stock taken / used</option>
+              </select>
+            </label>
+            <label class="ls-field">
+              <span id="admin-stock-quantity-label">Counted quantity</span>
+              <input class="ls-input" id="admin-stock-quantity" type="number" min="0" max="99999999" step="0.01" required />
+            </label>
+          </div>
+          <label class="ls-field">
+            <span>Note</span>
+            <input class="ls-input" id="admin-stock-note" type="text" maxlength="250" placeholder="Optional note for this stock change" />
+          </label>
+          <button class="ls-btn" type="submit" id="admin-stock-submit">Save stock update</button>
+          <p class="ls-help" id="admin-stock-status" role="status" aria-live="polite"></p>
+        </form>
+
+        <form class="admin-form" id="admin-inventory-item-form">
+          <h3 class="admin-inventory-form-title">Add a kitchen product</h3>
+          <label class="ls-field admin-inventory-outlet-wrap">
+            <span>Outlet</span>
+            <select class="ls-select" id="admin-item-outlet">
+              <option value="FOODIZO_HAM_TOWERS">Foodizo · Ham Towers</option>
+              <option value="OBUNUZI_YMCA">Obunuzi · Opp. YMCA</option>
+            </select>
+          </label>
+          <label class="ls-field">
+            <span>Product name</span>
+            <input class="ls-input" name="itemName" type="text" maxlength="100" placeholder="e.g. Flour" required />
+          </label>
+          <div class="ls-form-grid">
+            <label class="ls-field">
+              <span>Stock unit</span>
+              <select class="ls-select" name="unitOfMeasure" required>
+                <option value="KILOGRAMS">Kilograms</option>
+                <option value="GRAMS">Grams</option>
+                <option value="LITERS">Litres</option>
+                <option value="MILLILITERS">Millilitres</option>
+                <option value="PIECES">Pieces</option>
+                <option value="UNITS">Units</option>
+                <option value="PORTIONS">Portions</option>
+              </select>
+            </label>
+            <label class="ls-field">
+              <span>Reorder alert at</span>
+              <input class="ls-input" name="alertThreshold" type="number" min="0" step="0.01" value="5" required />
+            </label>
+          </div>
+          <button class="ls-btn" type="submit" id="admin-inventory-item-submit">Add product</button>
+          <p class="ls-help">After adding a product, record its opening count to set the starting stock.</p>
+        </form>
+
+        <form class="admin-form" id="admin-supplier-order-form">
+          <h3 class="admin-inventory-form-title">Create supplier order</h3>
+          <label class="ls-field admin-inventory-outlet-wrap">
+            <span>Outlet</span>
+            <select class="ls-select" id="admin-order-outlet">
+              <option value="FOODIZO_HAM_TOWERS">Foodizo · Ham Towers</option>
+              <option value="OBUNUZI_YMCA">Obunuzi · Opp. YMCA</option>
+            </select>
+          </label>
+          <label class="ls-field">
+            <span>Supplier</span>
+            <input class="ls-input" name="supplierName" type="text" maxlength="100" placeholder="Supplier name" required />
+          </label>
+          <div id="admin-supplier-order-lines" class="admin-order-lines"></div>
+          <button class="ls-btn ls-btn--ghost ls-btn--small" type="button" id="admin-add-order-line">Add another product</button>
+          <label class="ls-field">
+            <span>Order note</span>
+            <input class="ls-input" name="notes" type="text" maxlength="250" placeholder="Optional delivery date or note" />
+          </label>
+          <button class="ls-btn" type="submit" id="admin-supplier-order-submit">Place supplier order</button>
+        </form>
+      </div>
+
+      <div class="admin-inventory-orders">
+        <h3 class="admin-inventory-form-title">Orders awaiting delivery</h3>
+        <div id="admin-supplier-orders" class="admin-log-list">
+          <div class="ls-loading">Loading supplier orders…</div>
+        </div>
       </div>
     </section>
 
@@ -161,6 +287,54 @@
           </div>
         </section>
 
+        <section class="ls-card" aria-labelledby="admin-create-staff-title">
+          <div class="ls-card-head">
+            <div>
+              <div class="ls-card-title" id="admin-create-staff-title">Create staff access</div>
+              <div class="ls-card-sub">Set up a waiter or kitchen staff member with a private 4-digit login PIN.</div>
+            </div>
+          </div>
+          <form class="admin-form" id="admin-create-staff-form">
+            <label class="ls-field">
+              <span>Staff full name</span>
+              <input class="ls-input" name="fullName" type="text" autocomplete="name" minlength="2" maxlength="100" required />
+            </label>
+            <div class="ls-form-grid">
+              <label class="ls-field">
+                <span>Mobile number</span>
+                <input class="ls-input" name="phoneNumber" type="tel" autocomplete="tel" inputmode="tel" placeholder="+256 7XX XXX XXX" minlength="9" maxlength="24" required />
+              </label>
+              <label class="ls-field">
+                <span>Role</span>
+                <select class="ls-select" name="role" required>
+                  <option value="WAITER_FOH">Waiter / FOH</option>
+                  <option value="KITCHEN_STAFF">Kitchen staff</option>
+                </select>
+              </label>
+            </div>
+            <label class="ls-field" id="admin-staff-outlet-wrap">
+              <span>Outlet</span>
+              <select class="ls-select" name="outlet" required>
+                <option value="FOODIZO_HAM_TOWERS">Foodizo · Ham Towers</option>
+                <option value="OBUNUZI_YMCA">Obunuzi · Opp. YMCA</option>
+              </select>
+            </label>
+            <div class="ls-form-grid">
+              <label class="ls-field">
+                <span>4-digit login PIN</span>
+                <input class="ls-input" name="pin" type="password" inputmode="numeric" pattern="[0-9]{4}" minlength="4" maxlength="4" autocomplete="new-password" required />
+              </label>
+              <label class="ls-field">
+                <span>Confirm PIN</span>
+                <input class="ls-input" name="confirmPin" type="password" inputmode="numeric" pattern="[0-9]{4}" minlength="4" maxlength="4" autocomplete="new-password" required />
+              </label>
+            </div>
+            <button class="ls-btn" type="submit" id="admin-create-staff-submit">Create staff account</button>
+            <p class="ls-help">The PIN is saved as a secure hash and is not shown again. Share it directly with the staff member.</p>
+            <p class="ls-help" id="admin-create-staff-status" role="status" aria-live="polite"></p>
+          </form>
+        </section>
+
         <section class="ls-card">
           <div class="ls-card-head">
             <div>
@@ -184,6 +358,59 @@
           </div>
           <div class="admin-flags" id="admin-flags-list">
             <div class="ls-loading">Loading flags…</div>
+          </div>
+        </section>
+
+        <section class="ls-card" aria-labelledby="admin-menu-title">
+          <div class="ls-card-head">
+            <div>
+              <div class="ls-card-title" id="admin-menu-title">Menu &amp; prices</div>
+              <div class="ls-card-sub">Add meals, update prices, and upload menu photos for your outlet.</div>
+            </div>
+          </div>
+          <div class="admin-form">
+            <label class="ls-field" id="admin-menu-outlet-wrap">
+              <span>Outlet</span>
+              <select class="ls-select" id="admin-menu-outlet">
+                <option value="FOODIZO_HAM_TOWERS">Foodizo · Ham Towers</option>
+                <option value="OBUNUZI_YMCA">Obunuzi · Opp. YMCA</option>
+              </select>
+            </label>
+            <form class="admin-form menu-create-form" id="admin-menu-create-form">
+              <label class="ls-field">
+                <span>Meal name</span>
+                <input class="ls-input" name="name" type="text" minlength="1" maxlength="100" required />
+              </label>
+              <div class="ls-form-grid">
+                <label class="ls-field">
+                  <span>Category</span>
+                  <input class="ls-input" name="category" type="text" maxlength="40" placeholder="e.g. Rolex Specials" required />
+                </label>
+                <label class="ls-field">
+                  <span>Price (UGX)</span>
+                  <input class="ls-input" name="priceUgx" type="number" min="1" max="99999999" step="1" required />
+                </label>
+              </div>
+              <label class="ls-field">
+                <span>Kitchen station</span>
+                <select class="ls-select" name="station" required>
+                  <option value="STEAM_LINE">Steam line</option>
+                  <option value="GRILL_FRYER">Grill / fryer</option>
+                  <option value="ROLEX_GRIDDLE">Rolex griddle</option>
+                  <option value="BAR_BEVERAGE">Bar / beverage</option>
+                </select>
+              </label>
+              <label class="ls-field">
+                <span>Meal photo (PNG, JPEG or WebP; up to 2 MB)</span>
+                <input class="ls-input" name="image" type="file" accept="image/png,image/jpeg,image/webp" required />
+              </label>
+              <img class="menu-image-preview" id="admin-menu-create-preview" alt="Selected meal photo preview" hidden />
+              <button class="ls-btn" type="submit" id="admin-menu-create-submit">Add meal to menu</button>
+              <p class="ls-help" id="admin-menu-create-status" role="status" aria-live="polite"></p>
+            </form>
+            <div class="menu-item-list" id="admin-menu-items" aria-live="polite">
+              <div class="ls-loading">Loading menu items…</div>
+            </div>
           </div>
         </section>
 

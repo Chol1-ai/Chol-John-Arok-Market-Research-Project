@@ -41,6 +41,8 @@
     grid: document.getElementById('staff-grid'),
     filters: document.getElementById('staff-filters'),
     count: document.getElementById('staff-count'),
+    layout: document.getElementById('login-layout'),
+    auth: document.getElementById('login-auth'),
     name: document.getElementById('active-user-name'),
     meta: document.getElementById('active-user-meta'),
     initials: document.getElementById('active-user-initials'),
@@ -49,22 +51,9 @@
     unlock: document.getElementById('btn-unlock-pos'),
     clear: document.getElementById('pin-clear'),
     backspace: document.getElementById('pin-backspace'),
-    staffMetric: document.getElementById('metric-staff'),
-    outletMetric: document.getElementById('metric-outlets'),
-    apiMetric: document.getElementById('metric-api'),
-    apiLatency: document.getElementById('metric-api-latency'),
     apiState: document.getElementById('login-api-state'),
-    businessDay: document.getElementById('login-business-day'),
     dots: Array.from(document.querySelectorAll('.pin-dot'))
   };
-
-  function businessDateLabel() {
-    const eat = new Date(Date.now() + 3 * 60 * 60 * 1000);
-    if (eat.getUTCHours() < 5) {
-      eat.setUTCDate(eat.getUTCDate() - 1);
-    }
-    return `Business date ${eat.toISOString().slice(0, 10)} · resets 05:00 EAT`;
-  }
 
   function updateDots() {
     els.dots.forEach((dot, index) => {
@@ -185,6 +174,8 @@
     if (!member) return;
     STATE.selected = member;
     STATE.pin = '';
+    els.auth.hidden = false;
+    els.layout.classList.add('has-selection');
     els.name.textContent = member.fullName;
     els.meta.textContent = `${member.roleLabel} · ${member.outlet ? F.OUTLET_LABEL[member.outlet] : 'Both outlets'}`;
     els.initials.textContent = member.initials;
@@ -198,6 +189,8 @@
   function resetSelection() {
     STATE.selected = null;
     STATE.pin = '';
+    els.auth.hidden = true;
+    els.layout.classList.remove('has-selection');
     els.name.textContent = 'Select staff profile';
     els.meta.textContent = 'Choose a roster card to continue';
     els.initials.textContent = '--';
@@ -213,21 +206,9 @@
       ...member,
       initials: member.initials || F.initials(member.fullName)
     }));
-    els.staffMetric.textContent = String(STATE.staff.length);
-    const outlets = new Set(STATE.staff.map((member) => member.outlet).filter(Boolean));
-    els.outletMetric.textContent = String(outlets.size);
     renderStaff();
     updateDots();
     return STATE.staff;
-  }
-
-  function setFooterHealth(text, state) {
-    document.querySelectorAll('[data-health-label]').forEach((node) => {
-      node.textContent = text;
-    });
-    document.querySelectorAll('[data-action="check-health"]').forEach((button) => {
-      button.dataset.healthState = state;
-    });
   }
 
   async function checkHealth() {
@@ -236,15 +217,11 @@
       const health = await F.request('/api/v1/health', { skipAuthRedirect: true });
       const latency = Math.max(1, Math.round(performance.now() - started));
       const state = health.status === 'UP' ? 'UP' : 'DOWN';
-      els.apiMetric.textContent = health.status === 'UP' ? 'UP' : health.status || '—';
-      els.apiLatency.textContent = `API: ${latency}ms`;
-      els.apiState.textContent = `Live API connected · ${latency}ms`;
-      setFooterHealth(`${state} · ${latency}ms`, state);
+      els.apiState.textContent = state === 'UP' ? `API online · ${latency}ms` : 'API unavailable';
+      els.apiState.closest('[data-action="check-health"]').dataset.healthState = state;
     } catch (_error) {
-      els.apiMetric.textContent = 'DOWN';
-      els.apiLatency.textContent = 'API: unreachable';
-      els.apiState.textContent = 'Live API unreachable';
-      setFooterHealth('API unreachable', 'DOWN');
+      els.apiState.textContent = 'API unavailable';
+      els.apiState.closest('[data-action="check-health"]').dataset.healthState = 'DOWN';
     }
   }
 
@@ -356,7 +333,6 @@
   }
 
   async function init() {
-    els.businessDay.textContent = businessDateLabel();
     wireEvents();
     resetSelection();
     updateDots();

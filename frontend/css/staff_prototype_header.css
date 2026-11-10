@@ -1,0 +1,261 @@
+body.staff-header-enhanced > header {
+  z-index: 70;
+  border-bottom: 1px solid rgb(20 27 43 / 12%);
+  box-shadow: 0 10px 28px rgb(20 27 43 / 16%);
+}
+
+body.staff-header-enhanced > header > div {
+  display: flex;
+  height: auto;
+  min-height: 4.25rem;
+  flex-wrap: wrap;
+  gap: 0.6rem 1rem;
+  padding-top: 0.65rem;
+  padding-bottom: 0.65rem;
+}
+
+body.staff-header-enhanced .staff-prototype-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: max-content;
+  color: #141b2b;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+body.staff-header-enhanced .staff-prototype-brand img {
+  display: block;
+  width: 7.25rem;
+  height: 2rem;
+  object-fit: contain;
+}
+
+body.staff-header-enhanced .staff-outlet-switch {
+  display: flex !important;
+  align-items: center;
+  gap: 0.2rem;
+  max-width: 100%;
+  padding: 0.22rem;
+  border: 1px solid rgb(20 27 43 / 10%);
+  border-radius: 999px;
+  background: #e9edf6;
+  box-shadow: inset 0 1px 2px rgb(20 27 43 / 5%);
+}
+
+body.staff-header-enhanced .staff-outlet-switch button {
+  display: inline-flex;
+  min-height: 2.45rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: #4a5568;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 750;
+  line-height: 1.15;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 140ms ease, background-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+}
+
+body.staff-header-enhanced .staff-outlet-switch button:hover {
+  background: #fff;
+  color: #141b2b;
+}
+
+body.staff-header-enhanced .staff-outlet-switch button[aria-pressed="true"] {
+  border-color: rgb(183 0 17 / 18%);
+  background: #a51420;
+  color: #fff;
+  box-shadow: 0 4px 11px rgb(91 15 24 / 22%);
+}
+
+body.staff-header-enhanced .staff-outlet-switch button[aria-pressed="true"]::before {
+  width: 0.45rem;
+  height: 0.45rem;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #8df0ad;
+  content: "";
+  box-shadow: 0 0 0 3px rgb(141 240 173 / 18%);
+}
+
+body.staff-header-enhanced .staff-outlet-switch button:focus-visible,
+body.staff-header-enhanced header nav a:focus-visible {
+  outline: 3px solid #ffbd54;
+  outline-offset: 2px;
+}
+
+body.staff-header-enhanced .staff-outlet-status {
+  display: inline-flex;
+  min-height: 2rem;
+  align-items: center;
+  gap: 0.35rem;
+  margin-left: 0.3rem;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid rgb(0 104 43 / 15%);
+  border-radius: 999px;
+  background: #e8f5ed;
+  color: #075c2b;
+  font-size: 0.68rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+body.staff-header-enhanced .staff-outlet-status::before {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  background: #07833b;
+  content: "";
+}
+
+body.staff-header-enhanced header nav[data-active-classes] {
+  display: flex !important;
+  min-width: 0;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+body.staff-header-enhanced header nav[data-active-classes]::-webkit-scrollbar {
+  display: none;
+}
+
+body.staff-header-enhanced header nav[data-active-classes] a {
+  min-height: 2.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 750;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 140ms ease, background-color 140ms ease, box-shadow 140ms ease;
+}
+
+body.staff-header-enhanced header nav[data-active-classes] a[aria-current="page"] {
+  border-color: rgb(183 0 17 / 17%);
+  background: #a51420;
+  color: #fff;
+  box-shadow: 0 4px 12px rgb(91 15 24 / 18%);
+}
+
+body.staff-header-enhanced header nav[data-active-classes] a:not([aria-current="page"]):hover {
+  background: rgb(20 27 43 / 7%);
+  color: #141b2b;
+}
+
+body.staff-header-enhanced > header .staff-header-message {
+  position: absolute;
+  top: calc(100% + 0.55rem);
+  left: 50%;
+  z-index: 90;
+  max-width: min(30rem, calc(100vw - 2rem));
+  padding: 0.7rem 1rem;
+  transform: translate(-50%, -0.3rem);
+  border: 1px solid rgb(255 255 255 / 13%);
+  border-radius: 0.85rem;
+  background: #202c39;
+  color: #fff;
+  box-shadow: 0 12px 30px rgb(20 27 43 / 25%);
+  font-size: 0.76rem;
+  font-weight: 750;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 140ms ease, transform 140ms ease;
+}
+
+body.staff-header-enhanced > header .staff-header-message.is-visible {
+  transform: translate(-50%, 0);
+  opacity: 1;
+}
+
+@media (max-width: 800px) {
+  body.staff-header-enhanced > header > div {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+  }
+
+  body.staff-header-enhanced > header > div > :first-child {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    display: flex;
+    min-width: 0;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  body.staff-header-enhanced header nav[data-active-classes] {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    width: 100%;
+    max-width: 100%;
+    flex: 0 1 auto;
+    justify-content: flex-start;
+  }
+
+  body.staff-header-enhanced > header > div > :last-child {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: end;
+    min-width: 0;
+  }
+
+  body.staff-header-enhanced .staff-outlet-switch button {
+    padding-inline: 0.65rem;
+    font-size: 0.68rem;
+  }
+
+  body.staff-header-enhanced .staff-outlet-status {
+    margin-left: 0;
+  }
+
+  body.staff-header-enhanced > main {
+    padding-top: 11rem !important;
+  }
+
+  body.staff-header-enhanced > main.pt-16 {
+    padding-top: 11rem !important;
+  }
+}
+
+@media (max-width: 420px) {
+  body.staff-header-enhanced .staff-prototype-brand img {
+    width: 5.75rem;
+  }
+
+  body.staff-header-enhanced .staff-outlet-switch {
+    gap: 0.05rem;
+  }
+
+  body.staff-header-enhanced .staff-outlet-switch button {
+    padding-inline: 0.48rem;
+    font-size: 0.63rem;
+  }
+
+  body.staff-header-enhanced .staff-outlet-status {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.staff-header-enhanced *,
+  body.staff-header-enhanced *::before,
+  body.staff-header-enhanced *::after {
+    transition-duration: 0.01ms !important;
+  }
+}

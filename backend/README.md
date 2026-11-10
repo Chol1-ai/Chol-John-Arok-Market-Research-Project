@@ -8,13 +8,13 @@
 
 ## 1. Architecture Overview
 
-The backend is built with Fastify, Prisma ORM, and TypeScript to power the five live staff surfaces of the Kampala fast-casual restaurant suite (`/login`, `/pos`, `/kds`, `/dispatch`, `/admin`). The customer screens in `frontend/html/` remain static design prototypes and are not wired to this API.
+The backend is built with Fastify, Prisma ORM, and TypeScript to power the five live staff surfaces of the Kampala fast-casual restaurant suite (`/login`, `/pos`, `/kds`, `/dispatch`, `/admin`). The customer menu prototype reads the live menu catalogue, but its cart and checkout remain demonstrations and do not create orders.
 
 * **High Throughput & Low Overhead:** Fastify delivers low latency during the 12:00–14:00 campus lunch rush.
 * **Real-Time WebSocket Bus (`/ws/events`):** Pushes live ticket creations, bumps, and takeaway token statuses to KDS displays without client polling.
 * **Local LAN Hardware Integration:** Direct TCP socket communication with the Station #4 Expo Pass 80mm ESC/POS thermal printer (`192.168.1.200:9100`) and RJ12 drawer kick triggers.
-* **Prepayment Integrity:** Digital takeaway and delivery orders remain in `AWAITING_PAYMENT` until MTN/Airtel MoMo webhooks confirm funds, while FOH waitstaff table tabs execute postpay directly into `PENDING`.
-* **Automatic BOM Deduction:** Claiming kitchen tickets automatically deducts raw food commodities (eggs, cooking oil, chicken pieces, matooke portions) from `raw_inventory`.
+* **Payment Integrity:** Customer pickup orders remain in `AWAITING_PAYMENT` until cash is recorded at the counter. Customer delivery orders use cash on delivery and enter `PENDING` so the kitchen can prepare; the rider records collected cash at handoff. FOH waitstaff table tabs execute postpay directly into `PENDING`.
+* **Automatic BOM Deduction:** Claiming kitchen tickets automatically deducts recipe ingredients from `raw_inventory` and records each deduction in the stock activity ledger. Managers can record opening counts, manual use, supplier orders, and partial deliveries.
 
 ---
 
@@ -44,7 +44,7 @@ backend/
 │   ├── routes/
 │   │   ├── auth.ts                       # Staff PIN authentication (/api/v1/auth)
 │   │   ├── categories.ts                 # Category listings (/api/v1/categories)
-│   │   ├── menu.ts                       # Menu catalogue & 86'd availability toggles (/api/v1/menu-items)
+│   │   ├── menu.ts                       # Menu catalogue, manager editing, photos & availability (/api/v1/menu-items)
 │   │   ├── tables.ts                     # Table occupancy & status matrix (/api/v1/tables)
 │   │   ├── orders.ts                     # Order creation, tokens & state transitions (/api/v1/orders)
 │   │   ├── kds.ts                        # Multi-station ticket claim & bump flow (/api/v1/kds)
@@ -104,7 +104,7 @@ npm run prisma:seed
 #### Seeded Staff Credentials (demo PIN `1234` for every account):
 | Staff member | Role | Outlet | Phone |
 | :--- | :--- | :--- | :--- |
-| Zito Mbowe | `MANAGER_ADMIN` | Cross-outlet | `256700000000` |
+| Zito Mbowe | `MANAGER_ADMIN` | Obunuzi · Opp. YMCA | `256700000000` |
 | Cyrus M. | `MANAGER_ADMIN` | Foodizo · Ham Towers | `256768550986` |
 | Sarah K. | `WAITER_FOH` | Foodizo · Ham Towers | `256772555666` |
 | Chef Juma | `KITCHEN_STAFF` | Foodizo · Ham Towers | `256772333444` |
@@ -150,26 +150,43 @@ Five failed PIN attempts lock the account for 15 minutes. Every login receives a
 | :--- | :--- | :--- | :--- |
 | `GET` | `/api/v1/health` | Service health and environment | Public |
 | `GET` | `/api/v1/categories` | Menu categories, filtered by `outlet` | Public |
-| `GET` | `/api/v1/menu-items` | Menu catalogue and UGX prices, filtered by `outlet`, `category`, or `station` | Public |
+| `GET` | `/api/v1/menu-items` | Menu catalogue, UGX prices, optional `imageUrl`, and recipe-stock-aware `isAvailable` / `availabilityReason`, filtered by `outlet`, `category`, or `station` | Public |
+| `POST` | `/api/v1/menu-items` | Add a meal with its name, category, price, station, outlet and uploaded photo (`imageDataUrl`, PNG/JPEG/WebP, max 2 MB) | Manager only; outlet-scoped |
+| `PATCH` | `/api/v1/menu-items/:id` | Update a meal's price and optionally replace its photo (`imageDataUrl`), remove an uploaded photo (`removeImage: true`), or hide/restore original artwork (`hideOriginalImage`) | Manager only; outlet-scoped |
+| `GET` | `/api/v1/menu-items/images/:filename` | Serve an uploaded meal photo | Public |
 | `PATCH` | `/api/v1/menu-items/:id/availability` | Toggle `isAvailable` / `is86` (86'd items cannot be ordered) | Waiter, Kitchen, Manager |
 | `GET` | `/api/v1/tables` | 16-table grid per outlet (`T-01`–`T-12`, `B-01`–`B-04`), optionally filtered by `outlet` | Waiter, Manager |
 | `PATCH` | `/api/v1/tables/:id/status` | Change table occupancy / cleaning status | Waiter, Manager |
 | `POST` | `/api/v1/tables/drawer/kick` | Fire the RJ12 cash-drawer kick through the printer service | Waiter, Manager |
-| `POST` | `/api/v1/orders` | Create a `DINE_IN`, `TAKEAWAY_PICKUP`, or `PHONE_DELIVERY` order; takeaway/delivery start `AWAITING_PAYMENT` | Public for prepaid channels; `DINE_IN` requires Waiter or Manager |
+| `GET` | `/api/v1/orders/delivery-zones?outlet=...` | List active delivery zones, fees, landmark hints, and ETA for one outlet | Public |
+| `POST` | `/api/v1/orders` | Create a `DINE_IN`, `TAKEAWAY_PICKUP`, or `PHONE_DELIVERY` order; rejects recipe quantities above current ingredient stock with `INSUFFICIENT_INGREDIENT_STOCK`; customer pickup starts `AWAITING_PAYMENT`, customer COD delivery starts `PENDING` | Public for pickup/delivery; `DINE_IN` requires Waiter or Manager |
+| `GET` | `/api/v1/orders/awaiting-payment` | List unpaid customer pickup orders for the staff member's outlet (managers may select an outlet) | Waiter, Manager; outlet-scoped |
 | `GET` | `/api/v1/orders/token/:token` | Public sanitized takeaway status lookup by `TOKEN-NNN` (optional `outlet` when the token exists at both) | Public |
 | `GET` | `/api/v1/orders/:id` | Full order detail with items, payments, table, zone, and handoffs | Waiter, Manager; outlet-scoped |
-| `POST` | `/api/v1/orders/:id/items` | Append items to an open table tab and recompute totals | Waiter, Manager |
+| `POST` | `/api/v1/orders/:id/items` | Append items to an open table tab if recipe ingredients are in stock, then recompute totals | Waiter, Manager |
 | `POST` | `/api/v1/orders/:id/settle` | Settle the full bill by `CASH`, `MANUAL_MOMO`, `MTN`, or `AIRTEL`; MoMo returns `202` until the signed webhook confirms | Waiter, Manager |
 | `POST` | `/api/v1/orders/:id/cancel` | Cancel an order with a mandatory reason; paid MoMo moves to `REFUND_PENDING`, cash is flagged | Manager only |
 | `POST` | `/api/v1/orders/:id/status` | Explicit kitchen/floor status transition (`PENDING`, `PREPARING`, `READY`, `COMPLETED`, `CANCELLED`) | Waiter, Kitchen, Manager |
 | `POST` | `/api/v1/orders/:id/reprint-chit` | Re-fire the ESC/POS kitchen or packaging chit | Waiter, Manager |
 | `POST` | `/api/v1/orders/:id/dispatch` | Assign a boda rider, log the cash advance, and optionally send the dispatch SMS | Waiter, Manager |
-| `POST` | `/api/v1/orders/:id/delivery-complete` | Record `DELIVERED`, `FAILED_UNREACHABLE`, `REFUSED`, or `RETURNED`; never auto-completes | Waiter, Manager |
+| `POST` | `/api/v1/orders/:id/delivery-complete` | Record handoff outcome; successful COD delivery requires sufficient cash tender and atomically records payment, audit, and order completion | Waiter, Manager |
 | `GET` | `/api/v1/kds/tickets` | Active KDS tickets with station filters and preparation timers | Kitchen, Manager |
 | `POST` | `/api/v1/kds/:id/claim` | Claim a ticket, move it to `PREPARING`, and deduct recipe BOM stock | Kitchen, Manager |
 | `POST` | `/api/v1/kds/:id/bump` | Bump the ticket/station to `READY`, print the chit, and send the pickup SMS | Kitchen, Manager |
 
-### 4.3 Payments, Dispatch, Surplus & Digest
+### 4.3 Kitchen Inventory & Supplier Orders
+
+Managers use the Admin dashboard to review on-hand quantities and reorder alerts, set an opening or counted quantity, record stock taken for non-sales use, add products such as flour, and place multi-product supplier orders. An order does not change stock until delivery is recorded; partial deliveries update stock immediately and leave the remaining balance open. Recipe usage from sales, counts, manual use, and supplier receipts are listed in stock activity. Stock carries forward between business days until the manager records a new count.
+
+| Method | Endpoint | Description | Role / Access |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/v1/inventory?outlet=...` | On-hand stock, reorder status, open supplier orders, and recent stock movements | Manager only; outlet-scoped |
+| `POST` | `/api/v1/inventory/items` | Add a product with its unit and reorder threshold | Manager only; outlet-scoped |
+| `POST` | `/api/v1/inventory/stock` | Set a stock count (`STOCK_COUNT`) or remove quantity for manual use (`MANUAL_USAGE`) | Manager only; outlet-scoped |
+| `POST` | `/api/v1/inventory/supplier-orders` | Create a supplier order with one or more products and quantities | Manager only; outlet-scoped |
+| `POST` | `/api/v1/inventory/supplier-orders/:id/receive` | Record full or partial delivered quantities and increase on-hand stock | Manager only; outlet-scoped |
+
+### 4.4 Payments, Dispatch, Surplus & Digest
 
 | Method | Endpoint | Description | Role / Access |
 | :--- | :--- | :--- | :--- |
@@ -190,10 +207,12 @@ Five failed PIN attempts lock the account for 15 minutes. Every login receives a
 
 The API process also schedules the digest at `DIGEST_CRON_SCHEDULE` (default `30 21 * * *`, `Africa/Kampala`). The human-facing read-only report is served at `/d/:token`.
 
-### 4.4 Contract Notes
+Meal photos uploaded from `/admin` are stored under `backend/uploads/menu-items/`; back up this directory with the database, and do not commit its contents. Run the Prisma migrations before using menu editing. The customer menu retains its original prototype cards/photos, applies live prices to matching meals, and appends newly managed meals. Removing an uploaded replacement restores the original artwork; managers can also explicitly hide and restore that artwork.
+
+### 4.5 Contract Notes
 
 * **Settlement is order-level.** `POST /api/v1/orders/:id/settle` requires the full order total. Cash/manual settlement promotes only `AWAITING_PAYMENT` orders to `PENDING`; it never rewinds an order already `PREPARING`, `READY`, or `COMPLETED`. A fully paid `READY`/`COMPLETED` dine-in tab moves its table to `NEEDS_CLEARING`.
+* **Live customer ordering supports pickup and delivery.** `/order` and `/customer` use the live menu and order/token APIs. Pickup orders wait for staff to record cash in the POS before entering `PENDING`; delivery orders require a valid outlet zone and address details, include the server-calculated fee, and enter the kitchen as cash-on-delivery. Dispatch staff must record cash at delivery before completion. Customer mobile-money payment remains unavailable pending C5 provider integration and verification.
 * **Webhooks are idempotent and signed.** Set `PAYMENTS_WEBHOOK_SECRET` in production; unsigned callbacks are rejected there and accepted only outside production. Duplicate callbacks are acknowledged through `payment_events`, not applied twice.
 * **Digest delivery is honest.** Phase 1 has no SMTP transport. `POST /digest/dispatch-now` reports `emailStatus: NOT_CONFIGURED`; development SMS reports `smsMode: MOCK` and `channelsSent: ["SMS_MOCK"]`. A digest status of `PARTIAL` is expected, not a claim that email was delivered. The scheduler runs at 21:30 EAT by default, but `SENT` is reserved for a future multi-channel implementation.
 * **Business date.** The Kampala business day rolls at 05:00 EAT; `business_date` is stored as UTC midnight of that calendar day. Tokens are unique per outlet per business date.
-

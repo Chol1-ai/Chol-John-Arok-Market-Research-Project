@@ -5,6 +5,7 @@
  */
 
 @import './theme_tokens.css';
+@import './staff_prototype_header.css';
 
 /* 3-Pane POS Layout Architecture */
 .pos-workspace-grid {
@@ -89,4 +90,3 @@
   gap: 0.25rem;
   cursor: pointer;
 }
-

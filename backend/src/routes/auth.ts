@@ -1,6 +1,7 @@
 import { randomUUID } from 'crypto';
 import { FastifyPluginAsync } from 'fastify';
 import bcrypt from 'bcryptjs';
+import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 import { PinLoginInput, UserRole } from '../types/index.js';
 import { config } from '../config.js';
@@ -22,6 +23,20 @@ const directoryQuerySchema = z.object({
   outlet: z.enum(['FOODIZO_HAM_TOWERS', 'OBUNUZI_YMCA']).optional()
 });
 
+const createStaffSchema = z.object({
+  fullName: z.string().trim().min(2).max(100),
+  phoneNumber: z
+    .string()
+    .trim()
+    .min(9)
+    .max(24)
+    .transform(normalizeUgandanPhone)
+    .refine((phone) => /^256\d{9}$/.test(phone), 'Enter a valid Ugandan mobile number'),
+  pin: z.string().regex(/^\d{4}$/, 'Staff PIN must be exactly four digits'),
+  role: z.enum(['WAITER_FOH', 'KITCHEN_STAFF']),
+  outlet: z.enum(['FOODIZO_HAM_TOWERS', 'OBUNUZI_YMCA'])
+});
+
 const ROLE_LABELS: Record<UserRole, string> = {
   CUSTOMER: 'Customer',
   WAITER_FOH: 'Waiter / FOH',
@@ -37,6 +52,105 @@ const ROLE_HOME: Record<UserRole, string> = {
 };
 
 export const authRoutes: FastifyPluginAsync = async (fastify) => {
+  // Managers provision staff PIN accounts. PINs are never stored or returned
+  // in plaintext, and outlet-scoped managers cannot create cross-outlet users.
+  fastify.post(
+    '/staff',
+    { preHandler: [fastify.requireRole(['MANAGER_ADMIN'])] },
+    async (request, reply) => {
+      const body = createStaffSchema.parse(request.body);
+      const managerOutlet = request.user!.outlet;
+      if (managerOutlet && managerOutlet !== body.outlet) {
+        return reply.status(403).send({
+          statusCode: 403,
+          error: 'Forbidden',
+          code: 'OUTLET_FORBIDDEN',
+          message: `This manager account is scoped to ${managerOutlet}.`
+        });
+      }
+
+      const existing = await fastify.prisma.users.findUnique({
+        where: { phone_number: body.phoneNumber },
+        select: { id: true }
+      });
+      if (existing) {
+        return reply.status(409).send({
+          statusCode: 409,
+          error: 'Conflict',
+          code: 'STAFF_PHONE_EXISTS',
+          message: 'A staff account already uses this phone number.'
+        });
+      }
+
+      const pinHash = await bcrypt.hash(body.pin, 12);
+      try {
+        const user = await fastify.prisma.$transaction(async (transaction) => {
+          const created = await transaction.users.create({
+            data: {
+              full_name: body.fullName,
+              phone_number: body.phoneNumber,
+              pin_hash: pinHash,
+              role: body.role,
+              outlet: body.outlet
+            },
+            select: {
+              id: true,
+              full_name: true,
+              role: true,
+              outlet: true,
+              created_at: true
+            }
+          });
+
+          await transaction.audit_log.create({
+            data: {
+              actor_user_id: request.user!.userId,
+              actor_role: request.user!.role,
+              outlet: body.outlet,
+              action: 'STAFF_ACCOUNT_CREATED',
+              entity_type: 'USER',
+              entity_id: created.id,
+              after_json: {
+                fullName: created.full_name,
+                role: created.role,
+                outlet: created.outlet
+              },
+              ip_address: request.ip
+            }
+          });
+
+          return created;
+        });
+
+        reply.header('Cache-Control', 'no-store');
+        return reply.status(201).send({
+          success: true,
+          message: 'Staff account created. Share the PIN with the staff member privately.',
+          staff: {
+            id: user.id,
+            fullName: user.full_name,
+            role: user.role,
+            outlet: user.outlet,
+            createdAt: user.created_at
+          }
+        });
+      } catch (error) {
+        if (
+          error instanceof Prisma.PrismaClientKnownRequestError &&
+          error.code === 'P2002'
+        ) {
+          return reply.status(409).send({
+            statusCode: 409,
+            error: 'Conflict',
+            code: 'STAFF_PHONE_EXISTS',
+            message: 'A staff account already uses this phone number.'
+          });
+        }
+        throw error;
+      }
+    }
+  );
+
   // Shared terminal directory. This deliberately exposes only display data —
   // never phone numbers, PIN hashes, failed-login counters, or session state.
   fastify.get(

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 24" role="img" aria-labelledby="title">
+  <title id="title">Uganda flag</title>
+  <path fill="#000" d="M0 0h36v4H0zM0 8h36v4H0zM0 16h36v4H0z"/>
+  <path fill="#FCDC04" d="M0 4h36v4H0zM0 12h36v4H0zM0 20h36v4H0z"/>
+  <path fill="#D90000" d="M0 8h36v4H0zM0 16h36v4H0z"/>
+  <circle cx="18" cy="12" r="3.2" fill="#fff"/>
+  <path fill="#000" d="m18 9.5.8 1.1-.6.7.7.6-.9 1.4-.9-.4.4-1.1-.7-.5.3-1.4z"/>
+</svg>

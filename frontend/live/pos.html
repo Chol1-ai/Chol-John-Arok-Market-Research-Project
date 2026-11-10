@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="icon" type="image/svg+xml" href="../images/foodizo-brand-mark.svg"/>
   <title>Table Floor &amp; Order Pad | Foodizo &amp; Obunuzi</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
   <link rel="stylesheet" href="/css/theme_tokens.css" />
   <link rel="stylesheet" href="/css/live_surfaces.css" />
+  <link rel="stylesheet" href="/css/pickup_orders.css" />
 </head>
 <body class="ls-body" data-surface="pos">
   <a class="ls-skip" href="#main-content">Skip to main content</a>
@@ -91,6 +92,19 @@
           <div class="pos-menu-toolbar" id="pos-categories"></div>
           <div class="pos-menu-grid" id="pos-menu">
             <div class="ls-loading">Loading menu…</div>
+          </div>
+        </section>
+
+        <section class="ls-card pickup-orders-card">
+          <div class="ls-card-head">
+            <div>
+              <div class="ls-card-title">Customer pickup orders</div>
+              <div class="ls-card-sub" id="pos-pickup-sub">Cash collection required before kitchen preparation</div>
+            </div>
+            <button class="ls-btn ls-btn--ghost ls-btn--small" type="button" id="pos-pickup-refresh">Refresh</button>
+          </div>
+          <div class="pickup-orders-list" id="pos-pickup-orders" aria-live="polite">
+            <div class="ls-loading">Loading unpaid pickup orders…</div>
           </div>
         </section>
       </div>

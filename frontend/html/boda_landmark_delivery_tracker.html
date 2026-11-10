@@ -1,285 +1,68 @@
 <!DOCTYPE html>
-
-<html lang="en"><head>
-  <title>Live Boda Landmark Delivery Tracker | Foodizo</title><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;background-color:#f9f9ff;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><link rel="stylesheet" href="../css/boda_landmark_delivery_tracker.css"/><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "primary": "#b70011", "surface-container-low": "#f1f3ff", "primary-fixed": "#ffdad6", "on-surface-variant": "#5c403c", "on-error-container": "#93000a", "outline": "#916f6b", "surface-container-highest": "#dce2f7", "on-primary-fixed-variant": "#93000b", "on-surface": "#141b2b", "on-tertiary": "#ffffff", "on-tertiary-fixed": "#002109", "on-primary": "#ffffff", "outline-variant": "#e6bdb8", "inverse-on-surface": "#edf0ff", "primary-container": "#dc2626", "tertiary-fixed": "#7ffc97", "on-secondary-fixed-variant": "#653e00", "tertiary-container": "#008438", "secondary-fixed-dim": "#ffb95f", "background": "#f9f9ff", "on-error": "#ffffff", "surface-bright": "#f9f9ff", "on-primary-container": "#fff6f5", "primary-fixed-dim": "#ffb4ab", "surface-container-lowest": "#ffffff", "on-background": "#141b2b", "on-secondary-fixed": "#2a1700", "error-container": "#ffdad6", "on-secondary-container": "#684000", "surface": "#f9f9ff", "tertiary": "#00682b", "tertiary-fixed-dim": "#62df7d", "surface-variant": "#dce2f7", "surface-dim": "#d3daef", "on-tertiary-container": "#e7ffe4", "inverse-primary": "#ffb4ab", "on-tertiary-fixed-variant": "#005320", "surface-container": "#e9edff", "secondary": "#855300", "surface-container-high": "#e1e8fd", "on-secondary": "#ffffff", "surface-tint": "#bf0715", "secondary-container": "#fea619", "secondary-fixed": "#ffddb8", "error": "#ba1a1a", "inverse-surface": "#293040", "on-primary-fixed": "#410002" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "margin-sm": "0.75rem", "space-md": "1rem", "margin": "1rem", "space-xl": "2rem", "space-xs": "0.25rem", "space-sm": "0.5rem", "gutter-sm": "0.75rem", "space-lg": "1.5rem", "gutter": "1rem", "margin-lg": "1.5rem" }, fontFamily: { "headline-sm": ["Plus Jakarta Sans"], "currency-display": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "headline-xl-mobile": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "headline-xl": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"] }, fontSize: { "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }], "currency-display": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "800" }], "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }], "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }], "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "700" }], "headline-xl-mobile": ["28px", { "lineHeight": "34px", "letterSpacing": "-0.02em", "fontWeight": "800" }], "headline-md": ["20px", { "lineHeight": "26px", "fontWeight": "700" }], "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.03em", "fontWeight": "600" }], "headline-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "800" }], "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "label-lg": ["14px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "700" }] } } } };</script><style>
-    body {
-      min-height: max(884px, 100dvh);
-    }
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" /><link rel="icon" type="image/svg+xml" href="../images/foodizo-brand-mark.svg"/>
+  <meta name="theme-color" content="#f9f9ff" />
+  <title>Delivery Updates | Foodizo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0" />
+  <style>
+    :root { color-scheme: light; font-family: "Plus Jakarta Sans", system-ui, sans-serif; color: #202a24; background: #f9f9ff; }
+    * { box-sizing: border-box; }
+    body { min-height: 100vh; margin: 0; }
+    a { color: inherit; text-decoration: none; }
+    .page { width: min(100%, 480px); min-height: 100vh; margin: 0 auto; padding: 1rem 1rem 6rem; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
+    .logo { width: 174px; height: 36px; object-fit: contain; object-position: left center; }
+    .home-link { display: inline-flex; min-height: 44px; align-items: center; gap: .35rem; padding: 0 .85rem; border-radius: 999px; background: #e9edff; font-size: .75rem; font-weight: 700; }
+    main { padding-top: 2rem; }
+    .eyebrow { color: #00682b; font-size: .7rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    h1 { margin: .55rem 0 .4rem; font-size: 1.8rem; letter-spacing: -.05em; }
+    .intro { margin: 0; color: #5c6670; font-size: .88rem; line-height: 1.65; }
+    .empty-card { display: flex; flex-direction: column; align-items: center; margin-top: 1.5rem; padding: 1.5rem 1.25rem 1.75rem; border: 1px solid #e1e8fd; border-radius: 1.25rem; background: white; text-align: center; box-shadow: 0 12px 30px rgb(20 27 43 / 6%); }
+    .bike-image { width: min(100%, 260px); height: 150px; object-fit: contain; }
+    h2 { margin: 1rem 0 .5rem; font-size: 1.2rem; letter-spacing: -.03em; }
+    .message { max-width: 310px; margin: 0; color: #68716b; font-size: .82rem; line-height: 1.65; }
+    .button { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; gap: .45rem; margin-top: 1.25rem; padding: 0 1.2rem; border-radius: 999px; background: #245c3e; color: white; font-size: .8rem; font-weight: 700; }
+    .button:hover { background: #194b30; }
+    nav { position: fixed; right: 0; bottom: 0; left: 0; display: flex; justify-content: center; padding: .5rem 1rem calc(.5rem + env(safe-area-inset-bottom)); border-top: 1px solid #e1e8fd; background: rgb(249 249 255 / 94%); backdrop-filter: blur(12px); }
+    .nav-inner { display: flex; width: min(100%, 448px); justify-content: space-around; }
+    nav a { display: flex; min-width: 70px; min-height: 48px; flex-direction: column; align-items: center; justify-content: center; gap: .2rem; color: #68716b; font-size: .65rem; font-weight: 600; }
+    nav a[aria-current="page"] { color: #b70011; }
+    nav .material-symbols-outlined, .home-link .material-symbols-outlined { font-size: 22px; }
+    a:focus-visible { outline: 3px solid #e28a34; outline-offset: 3px; }
   </style>
-  </head><body class="bg-surface font-body-md text-on-surface flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
-  <title>Live Boda Landmark Delivery Tracker | Foodizo</title><div class="h-24 px-margin flex flex-col justify-between py-space-xs"><div class="flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0"><img alt="Foodizo Obunuzi Emblem" class="h-8 w-auto object-contain flex-shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1U-hIwIKhjIYnsXtpNcf-JqB3lWQ0LZzA7CCQEXte87ZbmQbPaXer2NdGu5lTtuy7DNQAmJD-ccvGrqDnR6bRFVniQlGmK3106x5MhQ7O_zNIWgbhSgplREdNDb98IOQnam2E6TTnH19dzTsWkHlTNvUR2Ttcxns07n2csFD9qRLSZHKZAdodfzEEVhDG_AZK6fwWUCX1HkZqnETGu30NwzaX8g7WMi6zsPsJzDMD2q"/><div class="flex flex-col min-w-0"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-primary leading-tight truncate">Foodizo</span><span class="text-on-surface-variant font-label-sm text-label-sm">&amp;</span><span class="font-headline-sm text-headline-sm text-on-surface leading-tight truncate">Obunuzi</span></div><span class="font-label-sm text-label-sm text-on-surface-variant truncate uppercase tracking-wider">Boda Tracker</span></div></div><div class="flex items-center gap-space-sm flex-shrink-0"><button class="h-11 px-space-sm flex items-center gap-space-xs bg-surface-container rounded-full text-on-surface hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-primary text-[18px]">storefront</span><span class="font-label-md text-label-md truncate max-w-[130px]">Ham Towers</span><span class="material-symbols-outlined text-on-surface-variant text-[18px]">expand_more</span></button><button class="w-11 h-11 rounded-full flex items-center justify-center p-0.5 hover:opacity-90 transition-opacity"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbhHtqSX8-oUz4reNLMoLjINLHOJQ8AqqPzpzp5_IMUsFYTtcv56C_W4EofmUyk3kxuOjfiwXvhyArIEP5YVItxxwq1lS5ftjg_07zDZa1QLB7x8F2bUhe9X0PbmHme19Tv1Qbp1jHgrcbkxVUv37A_WEguupSJE_A3QnhavA95rwK0uiE6L6IR1GNHLupLdR6M8kveIU6z5yBMbT4WenlA3h5auOLiRRU5DHnvs8"/></button></div></div><div class="flex items-center justify-between px-space-sm py-1 bg-tertiary-container/10 rounded-lg"><div class="flex items-center gap-space-xs min-w-0"><span class="w-2 h-2 rounded-full bg-tertiary-container animate-pulse flex-shrink-0"></span><span class="font-label-sm text-label-sm text-tertiary truncate">Makerere Peak Lunch Rush: Fast Queue Bypass Active</span></div><span class="font-label-sm text-label-sm text-tertiary font-bold flex-shrink-0">⚡ 8-12m</span></div></div></header><main class="flex flex-col relative w-full pt-24 pb-28 bg-surface min-h-screen"><div class="flex flex-col w-full px-margin py-space-sm gap-space-md">
-<section class="flex flex-col w-full bg-surface-container-lowest p-space-md rounded-xl shadow-sm gap-space-xs">
-<div class="flex items-center justify-between gap-space-xs">
-<div class="flex items-center gap-space-xs min-w-0">
-<span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-primary/10 text-primary flex-shrink-0">
-<span class="material-symbols-outlined text-[18px]">receipt</span>
-</span>
-<span class="font-label-lg text-label-lg text-on-surface truncate">Order #OBZ-4109</span>
-</div>
-<span class="inline-flex items-center gap-1 px-space-xs py-0.5 rounded-full bg-tertiary-container/15 text-tertiary font-label-sm text-label-sm font-bold flex-shrink-0">
-<span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-ping"></span>
-        En Route
-      </span>
-</div>
-<div class="text-on-surface-variant font-body-sm text-body-sm flex items-center gap-1">
-<span class="material-symbols-outlined text-[16px] text-primary">storefront</span>
-<span class="truncate">Obunuzi Restaurant (Opp. YMCA, Wandegeya)</span>
-</div>
-<div class="mt-1 inline-flex items-center gap-space-xs px-2 py-1 rounded-lg bg-surface-container-high text-on-surface w-fit">
-<span class="material-symbols-outlined text-secondary text-[16px]">sports_motorsports</span>
-<span class="font-label-sm text-label-sm font-bold">Boda-Boda Direct Stage Dispatch</span>
-</div>
-</section>
-<section class="flex flex-col w-full bg-surface-container-lowest p-space-md rounded-xl shadow-sm gap-space-sm">
-<div class="flex items-center justify-between">
-<div class="flex items-center gap-space-xs">
-<span class="material-symbols-outlined text-primary text-[20px]">location_on</span>
-<h2 class="font-headline-sm text-headline-sm text-on-surface">Drop-off Zone</h2>
-</div>
-<span class="font-label-sm text-label-sm text-tertiary font-bold px-2 py-0.5 rounded bg-tertiary-container/10">Makerere Main Zone</span>
-</div>
-<div class="flex flex-col gap-1 p-space-sm rounded-lg bg-surface-container-low">
-<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Specific Destination</span>
-<span class="font-label-lg text-label-lg text-on-surface">Makerere University - Lumumba Hall, Block B, Room 14</span>
-<div class="mt-2 flex items-start gap-space-xs bg-surface-container-lowest p-2 rounded">
-<span class="material-symbols-outlined text-secondary text-[18px] flex-shrink-0 mt-0.5">signpost</span>
-<div class="flex flex-col min-w-0">
-<span class="font-label-sm text-label-sm text-on-surface-variant font-bold">Landmark Guide</span>
-<span class="font-body-sm text-body-sm text-on-surface">Near Lumumba basketball court stairs; call on arrival</span>
-</div>
-</div>
-</div>
-<div class="flex items-center justify-between pt-1">
-<div class="flex items-center gap-space-xs text-on-surface-variant">
-<span class="material-symbols-outlined text-[18px]">phone_iphone</span>
-<span class="font-body-sm text-body-sm">Recipient Contact:</span>
-</div>
-<span class="font-label-md text-label-md text-on-surface font-bold tracking-wide">+256 702 441982</span>
-</div>
-</section>
-<section class="flex flex-col w-full bg-surface-container-lowest p-space-md rounded-xl shadow-sm gap-space-md">
-<div class="flex items-center justify-between">
-<div class="flex items-center gap-space-sm min-w-0">
-<div class="relative">
-<img class="w-12 h-12 rounded-full object-cover" data-alt="Close up warm portrait of a friendly Ugandan male boda motorcycle rider wearing a red helmet and safety reflector jacket with Makerere campus background in soft daylight." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoWggS5Kvpg31Ohx6Meten4K7ygoLc2-OijlMcU9EJGaTzwpSQkB6Yzgk9tBZlLThwCX9edfHA2Pr72gez1yDK_9DiDDKCU1nn3lHEbsGGZWVL6zo6I2Qj1FxQPySe0NBbMgivz0NC1799ThKq4aRahyLcZ10eNO0cfGB_WOUnSfTs1tQS3fYdipsrebyvjx4COMgGXIwwJ_rsBXxgAhbdRa0iNqhimGXvBUqk3BE"/>
-<span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-tertiary-container rounded-full ring-2 ring-surface-container-lowest flex items-center justify-center">
-<span class="material-symbols-outlined text-on-tertiary text-[10px]">check</span>
-</span>
-</div>
-<div class="flex flex-col min-w-0">
-<span class="font-label-lg text-label-lg text-on-surface truncate">Kigozi Ronald</span>
-<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Stage #4 - Wandegeya Post Office</span>
-</div>
-</div>
-<div class="flex flex-col items-end flex-shrink-0">
-<span class="font-label-sm text-label-sm text-on-surface-variant">Motorbike</span>
-<span class="font-label-md text-label-md text-primary font-bold">UDJ 482B</span>
-<span class="font-body-sm text-body-sm text-on-surface-variant text-[10px]">Bajaj Boxer (Red)</span>
-</div>
-</div>
-<div class="flex items-center justify-between p-space-sm rounded-lg bg-primary-fixed/20 text-on-surface">
-<div class="flex items-center gap-space-xs">
-<span class="material-symbols-outlined text-primary text-[20px] animate-pulse">moped</span>
-<div class="flex flex-col">
-<span class="font-label-md text-label-md text-primary font-bold leading-tight">Dispatched</span>
-<span class="font-body-sm text-body-sm text-on-surface-variant">Arriving in ~7 mins</span>
-</div>
-</div>
-<div class="flex flex-col items-end">
-<span class="font-label-sm text-label-sm text-on-surface-variant">Stage Fare</span>
-<span class="font-currency-display text-currency-display text-on-surface leading-tight">UGX 2,500</span>
-<span class="font-body-sm text-body-sm text-tertiary font-bold text-[10px]">Pre-negotiated</span>
-</div>
-</div>
-<div class="grid grid-cols-2 gap-space-sm w-full">
-<a class="h-12 flex items-center justify-center gap-space-xs bg-primary text-on-primary rounded-full font-label-lg text-label-lg shadow-sm active:scale-95 transition-transform" href="tel:+256772119933">
-<span class="material-symbols-outlined text-[20px]">call</span>
-<span>Call Rider</span>
-</a>
-<a class="h-12 flex items-center justify-center gap-space-xs bg-tertiary-container text-on-tertiary rounded-full font-label-lg text-label-lg shadow-sm active:scale-95 transition-transform" href="https://wa.me/256772119933?text=Hello%20Ronald,%20regarding%20Foodizo%20order%20OBZ-4109%20to%20Lumumba%20Hall..." target="_blank">
-<span class="material-symbols-outlined text-[20px]">chat</span>
-<span>WhatsApp</span>
-</a>
-</div>
-</section>
-<section class="flex flex-col w-full bg-surface-container-lowest p-space-md rounded-xl shadow-sm gap-space-sm">
-<div class="flex items-center justify-between">
-<div class="flex items-center gap-space-xs">
-<span class="material-symbols-outlined text-primary text-[20px]">map</span>
-<h3 class="font-headline-sm text-headline-sm text-on-surface">Route Preview</h3>
-</div>
-<span class="font-label-sm text-label-sm text-on-surface-variant">Zero-Data Static Pin</span>
-</div>
-<div class="relative w-full h-44 rounded-lg overflow-hidden" data-location="Wandegeya to Lumumba Hall Makerere Kampala Uganda" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA0n7wIYA5rZjX-IHVgB0nOKa4DlCmnzmNgd_f90WSA5rUvVdJkbsBWELzHAkqBMqN9CbeH3o01fRh6JUomng0gHe5iyzGuUgnRNpnofh4iUsh5nF7Nz_BiWqyO8Uk4ebw0SHekLxWYDTudwwG5hKVYRf3hQhYrlhnWlfXBo8JSoPymW8vZkGGCQFBf9W5Wmdprxz8KgMiMZDm0800ufOPuwfvV5p5aO6yCgBJuLgU')">
-<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex flex-col justify-end p-space-sm">
-<div class="flex items-center justify-between text-on-primary">
-<div class="flex items-center gap-1.5">
-<span class="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
-<span class="font-label-sm text-label-sm font-bold">Obunuzi (YMCA)</span>
-<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
-<span class="w-2.5 h-2.5 rounded-full bg-tertiary-container"></span>
-<span class="font-label-sm text-label-sm font-bold">Lumumba Block B</span>
-</div>
-<span class="font-label-sm text-label-sm bg-surface-container-lowest/20 backdrop-blur px-2 py-0.5 rounded text-on-primary">1.2 km</span>
-</div>
-</div>
-</div>
-<a class="mt-1 h-11 flex items-center justify-center gap-space-xs w-full rounded-full bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors" href="https://maps.google.com/?q=Lumumba+Hall+Makerere+University+Kampala" target="_blank">
-<span class="material-symbols-outlined text-primary text-[18px]">pin_drop</span>
-<span>Open in Google Maps Pin</span>
-</a>
-</section>
-<section class="flex flex-col w-full bg-surface-container-lowest p-space-md rounded-xl shadow-sm gap-space-md">
-<div class="flex items-center justify-between">
-<div class="flex items-center gap-space-xs">
-<span class="material-symbols-outlined text-secondary text-[20px]">check_circle</span>
-<h3 class="font-headline-sm text-headline-sm text-on-surface">Order Checklist</h3>
-</div>
-<span class="font-label-sm text-label-sm text-tertiary font-bold">Packed &amp; Sealed</span>
-</div>
-<div class="flex flex-col gap-space-sm">
-<div class="flex items-center justify-between p-space-xs bg-surface-container-low rounded-lg">
-<div class="flex items-center gap-space-sm">
-<img class="w-12 h-12 rounded-lg object-cover" data-alt="Delicious steaming hot Ugandan Rolex roll with two fresh eggs rolled inside crisp layered parotta chapati placed on craft food grade wrapper." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJwFSa8WN0wwvPmZa6W2pi_HSjVQ5RwL37PEnhXjY4_6BzkoZdTpduiC8m_3woE30VUChvDI2C626RvmozcJS6HE7jIhnWVadeAtRpXh2HS0H9bhdHXHc2B2McqG29Q1jhjURUwtwi7So0uvxKDvCc7EfnrtybLXYEvtOx0fDvGI2jlHcLKidWEPTDeLyBgyTAdtTi8Uq7HaviRdFmxRYfkiD1Z0qcjUPldZIdhzU"/>
-<div class="flex flex-col">
-<span class="font-label-lg text-label-lg text-on-surface">Double-Egg Classic Rolex</span>
-<span class="font-body-sm text-body-sm text-on-surface-variant">Extra onions &amp; mild pilipili</span>
-</div>
-</div>
-<div class="flex flex-col items-end">
-<span class="font-label-md text-label-md text-on-surface">1x</span>
-<span class="font-body-sm text-body-sm font-bold text-on-surface-variant">UGX 6,000</span>
-</div>
-</div>
-<div class="flex items-center justify-between p-space-xs bg-surface-container-low rounded-lg">
-<div class="flex items-center gap-space-sm">
-<img class="w-12 h-12 rounded-lg object-cover" data-alt="Traditional Ugandan savory tender beef stew with aromatic spices, fresh herbs and tomatoes in a take-away deep food bowl." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUD_q_9s9hT7P07uua3BrKj8gQc88uOwOYmAUvMkTWr8NwHW_KiH_meuAXufsiKMhDpwIxCPF_3_TLhsHizV3uqhbCV9vbZ3zWMT14h_Ph7ALJ2aWsMI1LEpMaFflidGATyMQtRRYKSvS828ULXtQYmsqGW42TMyUpPsqN8kNNVdvtW2VfFWU2rHeyNiRdNmnd537PNWCGdM-iRzeXhUJzu9BZHmSAYNjjLuDTMrw"/>
-<div class="flex flex-col">
-<span class="font-label-lg text-label-lg text-on-surface">Katogo Special (Beef &amp; Matooke)</span>
-<span class="font-body-sm text-body-sm text-on-surface-variant">Lunch combo portion</span>
-</div>
-</div>
-<div class="flex flex-col items-end">
-<span class="font-label-md text-label-md text-on-surface">1x</span>
-<span class="font-body-sm text-body-sm font-bold text-on-surface-variant">UGX 10,000</span>
-</div>
-</div>
-<div class="flex items-center justify-between p-space-xs bg-surface-container-low rounded-lg">
-<div class="flex items-center gap-space-sm">
-<img class="w-12 h-12 rounded-lg object-cover" data-alt="Fresh chilled passion fruit juice beverage served in a clear sealed takeaway plastic cup with droplet condensation." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0CYpiLjasArDSV9zSp_LUbKUQ5lgs7qK01eRU8Opno75GuieHDpsuOSbIzXJyk59TgVcTGRvYp4rbIxXsCXGP0pw2vpMQ5twbX_yZFKOjRXzCE6rvwxGGHXtnRXEVcalfimA9ytnpsvR8CBsqzMU0_uiPKqtUzC9Yxsi9z7snYw8V62mY4VqdxozMURHvIJdUFoFcmiJANLmqkSpXsJP3szw67zzjn9dg49wMc80"/>
-<div class="flex flex-col">
-<span class="font-label-lg text-label-lg text-on-surface">Fresh Passion Juice (500ml)</span>
-<span class="font-body-sm text-body-sm text-on-surface-variant">Chilled, no added sugar</span>
-</div>
-</div>
-<div class="flex flex-col items-end">
-<span class="font-label-md text-label-md text-on-surface">1x</span>
-<span class="font-body-sm text-body-sm font-bold text-on-surface-variant">UGX 3,500</span>
-</div>
-</div>
-</div>
-<div class="flex flex-col p-space-md rounded-xl bg-surface-container gap-space-xs">
-<div class="flex items-center justify-between">
-<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Thermal Chit Summary</span>
-<span class="font-label-sm text-label-sm font-bold text-tertiary">Paid via MTN MoMo</span>
-</div>
-<div class="flex justify-between items-center text-on-surface-variant pt-1 font-body-sm text-body-sm">
-<span>Food Subtotal</span>
-<span>UGX 19,500</span>
-</div>
-<div class="flex justify-between items-center text-on-surface-variant font-body-sm text-body-sm">
-<span>Packaging Fee</span>
-<span>UGX 1,000</span>
-</div>
-<div class="flex justify-between items-center text-on-surface-variant font-body-sm text-body-sm">
-<span>Boda Stage Dispatch Delivery</span>
-<span>UGX 2,500</span>
-</div>
-<div class="flex justify-between items-center pt-2 mt-1 font-headline-sm text-headline-sm text-on-surface">
-<span>Total Paid</span>
-<span class="text-primary font-bold">UGX 23,000</span>
-</div>
-<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm pt-1">
-<span>MoMo Ref: 04899214771</span>
-<span>Chit #4109-A</span>
-</div>
-</div>
-<button id="received-order-btn" class="h-12 w-full flex items-center justify-center gap-space-xs rounded-full bg-surface-container-highest text-on-surface font-label-lg text-label-lg hover:bg-surface-container-high active:scale-95 transition-all">
-<span class="material-symbols-outlined text-tertiary text-[20px]">thumb_up</span>
-<span>Confirm Order Received</span>
-</button>
-</section>
-</div>
-<!-- Floating Boda Route Simulator -->
-<button id="simulateRouteBtn" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 flex items-center gap-space-xs px-space-lg py-space-sm rounded-full bg-secondary-container text-on-secondary-container font-label-lg text-label-lg font-bold shadow-xl hover:bg-secondary hover:text-on-secondary active:scale-95 transition-all whitespace-nowrap">
-  <span class="material-symbols-outlined text-[20px]">two_wheeler</span>
-  <span>Simulate Route</span>
-</button>
-<script>
-  (function() {
-    /* ── Confirm Order Received ── */
-    const confirmBtn = document.getElementById('received-order-btn');
-    if (confirmBtn) {
-      confirmBtn.addEventListener('click', function() {
-        this.innerHTML = '<span class="material-symbols-outlined text-tertiary text-[20px]">check_circle</span><span>Delivered & Handed Over!</span>';
-        this.classList.remove('bg-surface-container-highest', 'text-on-surface');
-        this.classList.add('bg-tertiary-container', 'text-on-tertiary');
-        // Also finalize route
-        finalizeDelivery();
-      });
-    }
-
-    /* ── Boda Route Stepper ── */
-    let routeStage = 0;
-    const routeStages = [
-      { status: 'Dispatched',           detail: 'Arriving in ~7 mins' },
-      { status: 'Near YMCA',            detail: 'Arriving in ~4 mins' },
-      { status: 'At Lumumba Gate',      detail: 'Arriving in ~1 min'  },
-      { status: 'Delivered ✓',          detail: 'Order handed over'   },
-    ];
-
-    const simulateBtn    = document.getElementById('simulateRouteBtn');
-    const riderStatusEl  = document.querySelector('.font-label-md.text-label-md.text-primary.font-bold.leading-tight');
-    const etaEl          = document.querySelector('.font-body-sm.text-body-sm.text-on-surface-variant');
-    const enRouteBadge   = document.querySelector('.inline-flex.items-center.gap-1.px-space-xs.py-0\\.5.rounded-full.bg-tertiary-container\\/15');
-
-    function showToast(msg) {
-      const existing = document.getElementById('bodaToast');
-      if (existing) existing.remove();
-      const t = document.createElement('div');
-      t.id = 'bodaToast';
-      t.className = 'fixed bottom-24 left-4 right-4 bg-inverse-surface text-inverse-on-surface p-space-sm rounded-xl shadow-lg flex items-center gap-space-sm z-50 transition-all duration-300';
-      t.innerHTML = '<span class="material-symbols-outlined text-tertiary-fixed text-[20px]">two_wheeler</span><span class="font-body-sm text-body-sm font-medium">' + msg + '</span>';
-      document.body.appendChild(t);
-      setTimeout(() => { if(t.parentNode) t.remove(); }, 2800);
-    }
-
-    function finalizeDelivery() {
-      routeStage = 3;
-      if (riderStatusEl) riderStatusEl.textContent = 'Delivered ✓';
-      if (etaEl) etaEl.textContent = 'Order handed over';
-      if (enRouteBadge) {
-        enRouteBadge.className = 'inline-flex items-center gap-1 px-space-xs py-0.5 rounded-full bg-tertiary/15 text-tertiary font-label-sm text-label-sm font-bold flex-shrink-0';
-        enRouteBadge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>Delivered';
-      }
-      if (simulateBtn) simulateBtn.style.display = 'none';
-      showToast('🎉 Your order has arrived! Enjoy your meal.');
-    }
-
-    if (simulateBtn) {
-      simulateBtn.addEventListener('click', () => {
-        if (routeStage >= 3) return;
-        routeStage++;
-        const s = routeStages[routeStage];
-        if (riderStatusEl) riderStatusEl.textContent = s.status;
-        if (etaEl) etaEl.textContent = s.detail;
-        if (routeStage === 3) {
-          finalizeDelivery();
-        } else {
-          showToast('🏍️ Rider update: ' + s.status + ' • ' + s.detail);
-        }
-      });
-    }
-  })();
-</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]" data-active-classes="text-primary font-bold"><div class="h-20 px-space-sm flex items-center justify-around"><a class="flex flex-col items-center justify-center min-w-[70px] h-14 rounded-xl text-on-surface-variant hover:text-on-surface transition-colors" data-path="menu-order" href="campus_pre_order_menu.html"><span class="material-symbols-outlined text-[24px]">restaurant</span><span class="font-label-sm text-label-sm mt-0.5">Menu / Order</span></a><a class="relative flex flex-col items-center justify-center min-w-[70px] h-14 rounded-xl text-on-surface-variant hover:text-on-surface transition-colors" data-path="my-token" href="digital_token_queue_bypass_status.html"><div class="relative flex items-center justify-center"><span class="material-symbols-outlined text-[24px]">confirmation_number</span><span class="absolute -top-1 -right-4 bg-primary text-on-primary font-label-sm text-[10px] px-1.5 py-0.2 rounded-full leading-none font-bold">1 Active</span></div><span class="font-label-sm text-label-sm mt-0.5">My Token</span></a><a aria-current="page" class="flex flex-col items-center justify-center min-w-[70px] h-14 rounded-xl transition-colors text-primary font-bold" data-path="boda-tracker" href="boda_landmark_delivery_tracker.html"><span class="material-symbols-outlined text-[24px]">two_wheeler</span><span class="font-label-sm text-label-sm mt-0.5">Boda Tracker</span></a><a class="flex flex-col items-center justify-center min-w-[70px] h-14 rounded-xl text-on-surface-variant hover:text-on-surface transition-colors" data-path="favorites-history" href="#"><span class="material-symbols-outlined text-[24px]">receipt_long</span><span class="font-label-sm text-label-sm mt-0.5">Favorites</span></a></div></nav></body></html>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a href="customer_pwa_landing_page.html" aria-label="Foodizo and Obunuzi home">
+        <img class="logo" src="../images/foodizo-obunuzi-logo.svg" alt="Foodizo and Obunuzi" />
+      </a>
+      <a class="home-link" href="campus_pre_order_menu.html"><span class="material-symbols-outlined" aria-hidden="true">restaurant_menu</span>Menu</a>
+    </header>
+    <main>
+      <span class="eyebrow">Delivery</span>
+      <h1>Delivery updates</h1>
+      <p class="intro">Follow your order from dispatch to drop-off.</p>
+      <section class="empty-card" aria-live="polite">
+        <img class="bike-image" src="../images/motorbike-illustration.svg" alt="Illustration of a delivery motorbike" />
+        <h2>No delivery in progress</h2>
+        <p class="message">Rider and route details will appear here after an order is dispatched. There are no active deliveries on this account.</p>
+        <a class="button" href="campus_pre_order_menu.html">Browse the menu <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></a>
+      </section>
+    </main>
+  </div>
+  <nav aria-label="Customer navigation">
+    <div class="nav-inner">
+      <a href="campus_pre_order_menu.html"><span class="material-symbols-outlined" aria-hidden="true">restaurant</span><span>Menu</span></a>
+      <a href="digital_token_queue_bypass_status.html"><span class="material-symbols-outlined" aria-hidden="true">confirmation_number</span><span>My Token</span></a>
+      <a aria-current="page" href="boda_landmark_delivery_tracker.html"><span class="material-symbols-outlined" aria-hidden="true">two_wheeler</span><span>Delivery</span></a>
+    </div>
+  </nav>
+  <script src="../js/customer_prototype_ui.js?v=5" defer></script>
+</body>
+</html>

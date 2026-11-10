@@ -5,20 +5,63 @@
  */
 
 @import './theme_tokens.css';
+@import './staff_prototype_header.css';
 
-/* Manager Executive Obsidian / Command Layout */
+body {
+  background-color: var(--color-canvas-base);
+}
+
+main > .flex-col > .w-full.max-w-7xl {
+  max-width: 1440px;
+  padding-top: 1.75rem;
+  padding-bottom: 2rem;
+}
+
+/* Manager dashboard cards and operations */
 .admin-audit-container {
   max-width: 1280px;
   margin: 0 auto;
   padding: 1.5rem;
 }
 
-/* EOD Financial & Shift Summary Cards */
-.shift-summary-banner {
-  background-color: var(--color-surface-container-low);
-  border-radius: var(--radius-xl);
-  padding: 1.5rem;
+main .bg-surface-container-lowest.rounded-xl {
+  border-color: var(--color-border-default);
   box-shadow: var(--shadow-level-1);
+  transition: box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+main .bg-surface-container-lowest.rounded-xl:hover {
+  border-color: #d7cbc2;
+  box-shadow: var(--shadow-level-2);
+}
+
+main .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-5 > div {
+  min-height: 9.5rem;
+}
+
+main h2 {
+  line-height: 1.35;
+}
+
+#actionToast {
+  border: 1px solid rgba(22, 163, 74, 0.22);
+}
+
+main button:not(:disabled) {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+main button:not(:disabled):active {
+  transform: translateY(1px);
+}
+
+main button:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+main img {
+  border-radius: var(--radius-md);
 }
 
 /* Raw Recipe Bill-of-Materials (BOM) Deduction Ledger Table */
@@ -70,3 +113,32 @@
   justify-content: space-between;
 }
 
+@media (max-width: 768px) {
+  main > .flex-col > .w-full.max-w-7xl {
+    padding-top: 1rem;
+    padding-bottom: 1.5rem;
+  }
+
+  main .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-5 > div {
+    min-height: 0;
+  }
+
+  main .flex.items-center.justify-between {
+    gap: 0.75rem;
+  }
+
+  main .overflow-x-auto {
+    max-width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

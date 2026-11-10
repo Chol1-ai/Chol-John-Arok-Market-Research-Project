@@ -19,6 +19,7 @@ import { paymentRoutes } from './routes/payments.js';
 import { dispatchRoutes } from './routes/dispatch.js';
 import { surplusRoutes } from './routes/surplus.js';
 import { digestRoutes } from './routes/digest.js';
+import { inventoryRoutes } from './routes/inventory.js';
 import { config } from './config.js';
 
 export async function buildApp(): Promise<FastifyInstance> {
@@ -69,7 +70,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   await app.register(dispatchRoutes, { prefix: '/api/v1/dispatch' });
   await app.register(surplusRoutes, { prefix: '/api/v1/surplus' });
   await app.register(digestRoutes, { prefix: '/api/v1/digest' });
+  await app.register(inventoryRoutes, { prefix: '/api/v1/inventory' });
 
   return app;
 }
-

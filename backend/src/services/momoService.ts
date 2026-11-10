@@ -22,8 +22,8 @@ export class MomoService {
   static async requestToPay(req: MoMoPushRequest): Promise<MoMoPushResult> {
     const txId = req.idempotencyKey;
 
-    if (config.NODE_ENV === 'development' || config.MTN_MOMO_PRIMARY_KEY === 'sandbox_key') {
-      console.log(`[MoMoService Mock] Initiated ${req.carrier} STK Push for UGX ${req.amountUgx.toLocaleString()} to ${req.phoneNumber} (ref ${txId})`);
+    if (config.NODE_ENV !== 'production') {
+      console.log(`[MoMoService Mock] Initiated ${req.carrier} STK Push for UGX ${req.amountUgx.toLocaleString()} (ref ${txId})`);
       return {
         transactionId: txId,
         status: 'PENDING_CUSTOMER_PIN',
@@ -31,13 +31,8 @@ export class MomoService {
       };
     }
 
-    // Production integration with MTN OpenAPI / Airtel Money OpenAPI.
-    // The X-Reference-Id is the idempotency key, not a random display token.
-    return {
-      transactionId: txId,
-      status: 'PENDING_CUSTOMER_PIN',
-      carrierRef: `PROD-${req.carrier}-${req.idempotencyKey}`
-    };
+    throw new Error(
+      `Live ${req.carrier} mobile-money integration is not configured. Refusing to report a simulated payment prompt.`
+    );
   }
 }
-

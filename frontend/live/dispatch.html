@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="icon" type="image/svg+xml" href="../images/foodizo-brand-mark.svg"/>
   <title>Boda Dispatch Queue | Foodizo &amp; Obunuzi</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -156,8 +156,9 @@
             </select>
           </label>
           <label class="ls-field is-wide"><span>Rider advance returned (UGX)</span><input class="ls-input" id="dispatch-advance-returned" type="number" min="0" step="500" placeholder="Optional" /></label>
+          <label class="ls-field is-wide" id="dispatch-cash-tendered-wrap" hidden><span>Cash collected from customer (UGX)</span><input class="ls-input" id="dispatch-cash-tendered" type="number" min="1" step="500" /></label>
         </div>
-        <p class="ls-help" style="margin-top:10px">A non-delivered outcome stays in the review queue and is counted in the daily digest. It does not silently complete the order.</p>
+        <p class="ls-help" style="margin-top:10px" id="dispatch-complete-note">A non-delivered outcome stays in the review queue and is counted in the daily digest. It does not silently complete the order.</p>
       </form>
       <div class="ls-modal-foot">
         <button class="ls-btn ls-btn--ghost" type="button" id="dispatch-complete-cancel">Cancel</button>

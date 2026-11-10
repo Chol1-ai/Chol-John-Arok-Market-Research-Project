@@ -182,6 +182,27 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
   });
 
   afterAll(async () => {
+    if (app) {
+      const fixture = await app.prisma.raw_inventory.findUnique({
+        where: {
+          raw_inventory_outlet_name_unique: {
+            outlet: 'FOODIZO_HAM_TOWERS',
+            item_name: 'Integration Flour'
+          }
+        },
+        select: { id: true }
+      });
+      if (fixture) {
+        await app.prisma.$transaction(async (tx) => {
+          await tx.recipe_bom.deleteMany({ where: { raw_material_id: fixture.id } });
+          await tx.supplier_orders.deleteMany({
+            where: { items: { some: { inventory_id: fixture.id } } }
+          });
+          await tx.stock_movements.deleteMany({ where: { inventory_id: fixture.id } });
+          await tx.raw_inventory.delete({ where: { id: fixture.id } });
+        });
+      }
+    }
     await app?.close();
   });
 
@@ -200,6 +221,65 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
     expect(body.staff[0].roleLabel).toBeDefined();
   });
 
+  it('lets managers create scoped staff PIN accounts without exposing credentials', async () => {
+    const phoneNumber = '256770123456';
+    const payload = {
+      fullName: 'Integration Waiter',
+      phoneNumber: '+256 770 123 456',
+      pin: '5831',
+      role: 'WAITER_FOH',
+      outlet: 'FOODIZO_HAM_TOWERS'
+    };
+
+    try {
+      const anonymous = await inject('POST', '/api/v1/auth/staff', { payload });
+      expect(anonymous.statusCode).toBe(401);
+
+      const waiter = await inject('POST', '/api/v1/auth/staff', {
+        token: tokens.sarah,
+        payload
+      });
+      expect(waiter.statusCode).toBe(403);
+
+      const crossOutlet = await inject('POST', '/api/v1/auth/staff', {
+        token: tokens.cyrus,
+        payload: { ...payload, outlet: 'OBUNUZI_YMCA' }
+      });
+      expect(crossOutlet.statusCode).toBe(403);
+
+      const created = await inject('POST', '/api/v1/auth/staff', {
+        token: tokens.cyrus,
+        payload
+      });
+      expect(created.statusCode).toBe(201);
+      const createdBody = created.json() as Json;
+      expect(createdBody.staff.fullName).toBe(payload.fullName);
+      expect(createdBody.staff.outlet).toBe(payload.outlet);
+      expect(JSON.stringify(createdBody)).not.toContain(payload.pin);
+
+      const createdId = createdBody.staff.id as string;
+      const login = await inject('POST', '/api/v1/auth/pin', {
+        payload: { staffId: createdId, pin: payload.pin }
+      });
+      expect(login.statusCode).toBe(200);
+      expect((login.json() as Json).user.role).toBe('WAITER_FOH');
+
+      const duplicate = await inject('POST', '/api/v1/auth/staff', {
+        token: tokens.cyrus,
+        payload
+      });
+      expect(duplicate.statusCode).toBe(409);
+
+      const audit = await app.prisma.audit_log.findFirst({
+        where: { entity_id: createdId, action: 'STAFF_ACCOUNT_CREATED' }
+      });
+      expect(audit).not.toBeNull();
+      expect(JSON.stringify(audit?.after_json)).not.toContain(payload.pin);
+    } finally {
+      await app.prisma.users.deleteMany({ where: { phone_number: phoneNumber } });
+    }
+  });
+
   it('authenticates by staffId, returns canonical role labels/home paths, and enforces logout revocation', async () => {
     const me = await inject('GET', '/api/v1/auth/me', { token: tokens.prossy });
     expect(me.statusCode).toBe(200);
@@ -214,6 +294,7 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
 
     const managerMe = await inject('GET', '/api/v1/auth/me', { token: tokens.zito });
     expect((managerMe.json() as Json).user.homePath).toBe('/admin');
+    expect((managerMe.json() as Json).user.outlet).toBe('OBUNUZI_YMCA');
 
     // Aisha's token is used only for the revocation assertion.
     const logout = await inject('POST', '/api/v1/auth/logout', { token: tokens.aisha });
@@ -230,29 +311,45 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
     tokens.aisha = (relogin.json() as Json).token as string;
   });
 
-  it('rejects cross-role and cross-outlet access while allowing a cross-outlet manager', async () => {
-    const order = await app.prisma.orders.findFirstOrThrow({
+  it('enforces outlet-scoped manager access and rejects cross-role access', async () => {
+    const foodizoOrder = await app.prisma.orders.findFirstOrThrow({
       where: { outlet: 'FOODIZO_HAM_TOWERS', status: 'PREPARING' }
     });
 
-    const kitchenSettle = await inject('POST', `/api/v1/orders/${order.id}/settle`, {
+    const kitchenSettle = await inject('POST', `/api/v1/orders/${foodizoOrder.id}/settle`, {
       token: tokens.juma,
-      payload: { paymentMethod: 'CASH', amountUgx: Number(order.total_amount_ugx) }
+      payload: {
+        paymentMethod: 'CASH',
+        amountUgx: Number(foodizoOrder.total_amount_ugx)
+      }
     });
     expect(kitchenSettle.statusCode).toBe(403);
 
     const waiterKds = await inject('GET', '/api/v1/kds/tickets', { token: tokens.prossy });
     expect(waiterKds.statusCode).toBe(403);
 
-    const wrongOutlet = await inject('GET', `/api/v1/orders/${order.id}`, {
+    const wrongOutlet = await inject('GET', `/api/v1/orders/${foodizoOrder.id}`, {
       token: tokens.prossy
     });
     expect(wrongOutlet.statusCode).toBe(403);
 
-    const managerRead = await inject('GET', `/api/v1/orders/${order.id}`, {
+    const zitoWrongOutlet = await inject('GET', `/api/v1/orders/${foodizoOrder.id}`, {
       token: tokens.zito
     });
-    expect(managerRead.statusCode).toBe(200);
+    expect(zitoWrongOutlet.statusCode).toBe(403);
+
+    const obunuziOrder = await app.prisma.orders.findFirstOrThrow({
+      where: { outlet: 'OBUNUZI_YMCA' }
+    });
+    const zitoOwnOutlet = await inject('GET', `/api/v1/orders/${obunuziOrder.id}`, {
+      token: tokens.zito
+    });
+    expect(zitoOwnOutlet.statusCode).toBe(200);
+
+    const cyrusWrongOutlet = await inject('GET', `/api/v1/orders/${obunuziOrder.id}`, {
+      token: tokens.cyrus
+    });
+    expect(cyrusWrongOutlet.statusCode).toBe(403);
 
     const wrongOutletTables = await inject(
       'GET',
@@ -317,6 +414,60 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
     expect(publicOrder.displayToken).toMatch(/^#\d{3,6}$/);
     expect(publicOrder.items).toHaveLength(1);
     expect(JSON.stringify(publicOrder)).not.toContain('256770555222');
+  });
+
+  it('lets customers place pickup orders and requires staff cash collection before kitchen release', async () => {
+    const missingDetails = await inject('POST', '/api/v1/orders', {
+      payload: {
+        outlet: 'FOODIZO_HAM_TOWERS',
+        channel: 'TAKEAWAY_PICKUP',
+        items: [{ menuItemId: menu.foodizoRolex, quantity: 1 }]
+      }
+    });
+    expect(missingDetails.statusCode).toBe(400);
+    expect((missingDetails.json() as Json).code).toBe('CUSTOMER_DETAILS_REQUIRED');
+
+    const created = await inject('POST', '/api/v1/orders', {
+      payload: {
+        outlet: 'FOODIZO_HAM_TOWERS',
+        channel: 'TAKEAWAY_PICKUP',
+        customerName: 'Pickup Customer',
+        customerPhone: '0770555333',
+        items: [{ menuItemId: menu.foodizoRolex, quantity: 1 }]
+      }
+    });
+    expect(created.statusCode).toBe(201);
+    const order = (created.json() as Json).order as Json;
+    expect(order.status).toBe('AWAITING_PAYMENT');
+
+    const anonymousQueue = await inject('GET', '/api/v1/orders/awaiting-payment');
+    expect(anonymousQueue.statusCode).toBe(401);
+
+    const pickupQueue = await inject('GET', '/api/v1/orders/awaiting-payment?outlet=FOODIZO_HAM_TOWERS', {
+      token: tokens.cyrus
+    });
+    expect(pickupQueue.statusCode).toBe(200);
+    const queuedOrders = ((pickupQueue.json() as Json).orders as Json[]);
+    expect(queuedOrders.some((queued) => queued.id === order.id)).toBe(true);
+
+    const crossOutletQueue = await inject('GET', '/api/v1/orders/awaiting-payment?outlet=FOODIZO_HAM_TOWERS', {
+      token: tokens.zito
+    });
+    expect(crossOutletQueue.statusCode).toBe(403);
+
+    const settled = await inject('POST', `/api/v1/orders/${order.id}/settle`, {
+      token: tokens.cyrus,
+      payload: {
+        paymentMethod: 'CASH',
+        amountUgx: order.totalUgx,
+        tenderedCashUgx: order.totalUgx
+      }
+    });
+    expect(settled.statusCode).toBe(200);
+    expect((settled.json() as Json).kitchenStatus).toBe('PENDING');
+
+    const tokenStatus = await inject('GET', `/api/v1/orders/token/${order.tokenNumber}?outlet=FOODIZO_HAM_TOWERS`);
+    expect((tokenStatus.json() as Json).status).toBe('PENDING');
   });
 
   it('does not rewind kitchen state on cash settlement and releases a READY table for clearing', async () => {
@@ -416,7 +567,7 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
     expect((duplicate.json() as Json).status).toBe('ALREADY_PROCESSED');
 
     const detail = await inject('GET', `/api/v1/orders/${order.id}`, {
-      token: tokens.zito
+      token: tokens.cyrus
     });
     const detailBody = (detail.json() as Json).order as Json;
     expect(detailBody.status).toBe('PENDING');
@@ -505,13 +656,13 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
     expect(waiterCancel.statusCode).toBe(403);
 
     const cancel = await inject('POST', `/api/v1/orders/${paid.id}/cancel`, {
-      token: tokens.zito,
+      token: tokens.cyrus,
       payload: { reason: 'Customer cancelled after paying' }
     });
     expect(cancel.statusCode).toBe(200);
 
     const detail = await inject('GET', `/api/v1/orders/${paid.id}`, {
-      token: tokens.zito
+      token: tokens.cyrus
     });
     const order = (detail.json() as Json).order as Json;
     expect(order.status).toBe('CANCELLED');
@@ -519,15 +670,131 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
     expect(order.payments[0].audit_flag).toBe('CANCELLED_AFTER_PAYMENT');
 
     const refund = await inject('POST', `/api/v1/payments/${order.payments[0].id}/refund`, {
-      token: tokens.zito,
+      token: tokens.cyrus,
       payload: { refundReference: 'MOMO-REVERSAL-INTEGRATION-1' }
     });
     expect(refund.statusCode).toBe(200);
 
     const detailAfter = await inject('GET', `/api/v1/orders/${paid.id}`, {
-      token: tokens.zito
+      token: tokens.cyrus
     });
     expect((detailAfter.json() as Json).order.payments[0].status).toBe('REFUNDED');
+  });
+
+  it('creates customer cash-on-delivery orders, prices zones, and audits cash at the rider handoff', async () => {
+    const zones = await inject('GET', '/api/v1/orders/delivery-zones?outlet=FOODIZO_HAM_TOWERS');
+    expect(zones.statusCode).toBe(200);
+    const foodizoZones = (zones.json() as Json).zones as Json[];
+    expect(foodizoZones.length).toBeGreaterThan(0);
+    expect(foodizoZones.every((zone) => zone.outlet === 'FOODIZO_HAM_TOWERS')).toBe(true);
+
+    const crossOutletZone = await inject('POST', '/api/v1/orders', {
+      payload: {
+        outlet: 'FOODIZO_HAM_TOWERS',
+        channel: 'PHONE_DELIVERY',
+        customerName: 'Delivery Customer',
+        customerPhone: '0770555331',
+        deliveryZoneId: zoneIds['OBUNUZI_YMCA:YMCA_MAIN'],
+        deliveryAddressNote: 'YMCA front gate',
+        items: [{ menuItemId: menu.foodizoRolex, quantity: 1 }]
+      }
+    });
+    expect(crossOutletZone.statusCode).toBe(400);
+    expect((crossOutletZone.json() as Json).code).toBe('INVALID_DELIVERY_ZONE');
+
+    const missingLandmark = await inject('POST', '/api/v1/orders', {
+      payload: {
+        outlet: 'FOODIZO_HAM_TOWERS',
+        channel: 'PHONE_DELIVERY',
+        customerName: 'Delivery Customer',
+        customerPhone: '0770555331',
+        deliveryZoneId: zoneIds['FOODIZO_HAM_TOWERS:HAM_TOWERS'],
+        items: [{ menuItemId: menu.foodizoRolex, quantity: 1 }]
+      }
+    });
+    expect(missingLandmark.statusCode).toBe(400);
+
+    const created = await inject('POST', '/api/v1/orders', {
+      payload: {
+        outlet: 'FOODIZO_HAM_TOWERS',
+        channel: 'PHONE_DELIVERY',
+        customerName: 'Delivery Customer',
+        customerPhone: '0770555331',
+        deliveryZoneId: zoneIds['FOODIZO_HAM_TOWERS:HAM_TOWERS'],
+        deliveryAddressNote: 'Ham Towers, reception desk',
+        items: [{ menuItemId: menu.foodizoRolex, quantity: 1 }]
+      }
+    });
+    expect(created.statusCode).toBe(201);
+    const order = (created.json() as Json).order as Json;
+    expect(order.status).toBe('PENDING');
+    expect(order.deliveryFeeUgx).toBeGreaterThan(0);
+    expect(order.totalUgx).toBe(order.subtotalUgx + order.deliveryFeeUgx);
+
+    const publicStatus = await inject('GET', `/api/v1/orders/token/${order.tokenNumber}?outlet=FOODIZO_HAM_TOWERS`);
+    expect((publicStatus.json() as Json).status).toBe('PENDING');
+    expect(JSON.stringify(publicStatus.json())).not.toContain('0770555331');
+
+    const claim = await inject('POST', `/api/v1/kds/${order.id}/claim`, { token: tokens.juma });
+    expect(claim.statusCode).toBe(200);
+    const bump = await inject('POST', `/api/v1/kds/${order.id}/bump`, {
+      token: tokens.juma,
+      payload: {}
+    });
+    expect(bump.statusCode).toBe(200);
+
+    const queue = await inject('GET', '/api/v1/dispatch/queue?outlet=FOODIZO_HAM_TOWERS', {
+      token: tokens.sarah
+    });
+    const dispatchOrder = ((queue.json() as Json).queue as Json[]).find((row) => row.id === order.id);
+    expect(dispatchOrder?.cashOnDelivery).toBe(true);
+
+    const assigned = await inject('POST', `/api/v1/orders/${order.id}/dispatch`, {
+      token: tokens.sarah,
+      payload: { riderName: 'COD Rider', riderPhone: '256701110001' }
+    });
+    expect(assigned.statusCode).toBe(200);
+
+    const missingCash = await inject('POST', `/api/v1/orders/${order.id}/delivery-complete`, {
+      token: tokens.sarah
+    });
+    expect(missingCash.statusCode).toBe(400);
+    expect((missingCash.json() as Json).code).toBe('DELIVERY_CASH_REQUIRED');
+
+    const insufficientCash = await inject('POST', `/api/v1/orders/${order.id}/delivery-complete`, {
+      token: tokens.sarah,
+      payload: { cashTenderedUgx: Number(order.totalUgx) - 1 }
+    });
+    expect(insufficientCash.statusCode).toBe(400);
+    expect((insufficientCash.json() as Json).code).toBe('INSUFFICIENT_DELIVERY_CASH');
+
+    const delivered = await inject('POST', `/api/v1/orders/${order.id}/delivery-complete`, {
+      token: tokens.sarah,
+      payload: { cashTenderedUgx: Number(order.totalUgx) + 1000 }
+    });
+    expect(delivered.statusCode).toBe(200);
+    expect((delivered.json() as Json).cashCollectedUgx).toBe(order.totalUgx);
+    expect((delivered.json() as Json).changeUgx).toBe(1000);
+
+    const detail = await inject('GET', `/api/v1/orders/${order.id}`, { token: tokens.sarah });
+    const completed = (detail.json() as Json).order as Json;
+    expect(completed.status).toBe('COMPLETED');
+    expect(completed.payments).toHaveLength(1);
+    expect(completed.payments[0].status).toBe('SUCCESSFUL');
+    expect(completed.payments[0].audit_flag).toBe('CASH_ON_DELIVERY');
+
+    const duplicate = await inject('POST', `/api/v1/orders/${order.id}/delivery-complete`, {
+      token: tokens.sarah,
+      payload: { cashTenderedUgx: Number(order.totalUgx) }
+    });
+    expect(duplicate.statusCode).toBe(200);
+    expect((duplicate.json() as Json).alreadyCompleted).toBe(true);
+    const paymentCount = await app.prisma.payments.count({ where: { order_id: order.id } });
+    expect(paymentCount).toBe(1);
+    const cashAuditCount = await app.prisma.audit_log.count({
+      where: { entity_id: order.id, action: 'DELIVERY_CASH_COLLECTED' }
+    });
+    expect(cashAuditCount).toBe(1);
   });
 
   it('assigns a rider, exposes delivery queue states, and completes the handoff', async () => {
@@ -673,13 +940,14 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
     const overview = await inject('GET', '/api/v1/digest/overview', { token: tokens.zito });
     expect(overview.statusCode).toBe(200);
     const overviewBody = overview.json() as Json;
-    expect(overviewBody.summary.outlets).toHaveLength(2);
-    expect(overviewBody.staff).toHaveLength(7);
+    expect(overviewBody.summary.outlets).toHaveLength(1);
+    expect(overviewBody.summary.outlets[0].outlet).toBe('OBUNUZI_YMCA');
+    expect(overviewBody.staff).toHaveLength(4);
     const tableTotal = (overviewBody.tables as Json[]).reduce(
       (sum, row) => sum + Number(row.count),
       0
     );
-    expect(tableTotal).toBe(32);
+    expect(tableTotal).toBe(16);
 
     const expected = Number(summary.outlets[0].expectedCashUgx);
     const reconcile = await inject('POST', '/api/v1/digest/reconcile-cash', {
@@ -718,5 +986,167 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
       }
     });
     expect(cashCount?.variance_ugx?.toString()).toBe('1500');
+  });
+
+  it('tracks opening counts, usage, supplier orders, partial receipts, and outlet access', async () => {
+    const forbiddenRead = await inject('GET', '/api/v1/inventory', { token: tokens.sarah });
+    expect(forbiddenRead.statusCode).toBe(403);
+
+    const createdItem = await inject('POST', '/api/v1/inventory/items', {
+      token: tokens.cyrus,
+      payload: {
+        itemName: 'Integration Flour',
+        unitOfMeasure: 'KILOGRAMS',
+        alertThreshold: 5
+      }
+    });
+    expect(createdItem.statusCode).toBe(201);
+    const flour = (createdItem.json() as Json).item as Json;
+
+    const openingCount = await inject('POST', '/api/v1/inventory/stock', {
+      token: tokens.cyrus,
+      payload: {
+        inventoryId: flour.id,
+        action: 'STOCK_COUNT',
+        quantity: 25,
+        note: 'Opening count'
+      }
+    });
+    expect(openingCount.statusCode).toBe(200);
+    expect((openingCount.json() as Json).item.currentStock).toBe(25);
+
+    const usage = await inject('POST', '/api/v1/inventory/stock', {
+      token: tokens.cyrus,
+      payload: { inventoryId: flour.id, action: 'MANUAL_USAGE', quantity: 2 }
+    });
+    expect(usage.statusCode).toBe(200);
+    expect((usage.json() as Json).item.currentStock).toBe(23);
+
+    const overuse = await inject('POST', '/api/v1/inventory/stock', {
+      token: tokens.cyrus,
+      payload: { inventoryId: flour.id, action: 'MANUAL_USAGE', quantity: 24 }
+    });
+    expect(overuse.statusCode).toBe(409);
+
+    const oil = await app.prisma.raw_inventory.findFirstOrThrow({
+      where: { outlet: 'FOODIZO_HAM_TOWERS', item_name: 'Mukwano Cooking Oil' }
+    });
+    const oilStockBeforeOrder = Number(oil.current_stock);
+    const supplierOrder = await inject('POST', '/api/v1/inventory/supplier-orders', {
+      token: tokens.cyrus,
+      payload: {
+        supplierName: 'Integration Supplier',
+        items: [
+          { inventoryId: flour.id, quantity: 10, unitCostUgx: 12000 },
+          { inventoryId: oil.id, quantity: 120 }
+        ]
+      }
+    });
+    expect(supplierOrder.statusCode).toBe(201);
+    const order = (supplierOrder.json() as Json).order as Json;
+    const lines = order.items as Json[];
+    expect(lines).toHaveLength(2);
+    expect((await app.prisma.raw_inventory.findUniqueOrThrow({ where: { id: flour.id } })).current_stock.toString()).toBe('23');
+
+    const crossOutletReceive = await inject('POST', `/api/v1/inventory/supplier-orders/${order.id}/receive`, {
+      token: tokens.zito,
+      payload: { items: [{ itemId: lines[0].id, quantity: 5 }] }
+    });
+    expect(crossOutletReceive.statusCode).toBe(403);
+
+    const firstDelivery = await inject('POST', `/api/v1/inventory/supplier-orders/${order.id}/receive`, {
+      token: tokens.cyrus,
+      payload: {
+        items: [
+          { itemId: lines[0].id, quantity: 5 },
+          { itemId: lines[1].id, quantity: 20 }
+        ]
+      }
+    });
+    expect(firstDelivery.statusCode).toBe(200);
+    expect((firstDelivery.json() as Json).order.status).toBe('PARTIALLY_RECEIVED');
+    expect((await app.prisma.raw_inventory.findUniqueOrThrow({ where: { id: flour.id } })).current_stock.toString()).toBe('28');
+    expect(Number((await app.prisma.raw_inventory.findUniqueOrThrow({ where: { id: oil.id } })).current_stock)).toBe(oilStockBeforeOrder + 20);
+
+    const finalDelivery = await inject('POST', `/api/v1/inventory/supplier-orders/${order.id}/receive`, {
+      token: tokens.cyrus,
+      payload: {
+        items: [
+          { itemId: lines[0].id, quantity: 5 },
+          { itemId: lines[1].id, quantity: 100 }
+        ]
+      }
+    });
+    expect(finalDelivery.statusCode).toBe(200);
+    expect((finalDelivery.json() as Json).order.status).toBe('RECEIVED');
+    expect((await app.prisma.raw_inventory.findUniqueOrThrow({ where: { id: flour.id } })).current_stock.toString()).toBe('33');
+
+    const inventory = await inject('GET', '/api/v1/inventory', { token: tokens.cyrus });
+    expect(inventory.statusCode).toBe(200);
+    const body = inventory.json() as Json;
+    expect((body.items as Json[]).some((item) =>
+      item.id === flour.id && item.currentStock === 33 && item.openingCountRecorded
+    )).toBe(true);
+    expect((body.movements as Json[]).some((movement) => movement.type === 'STOCK_COUNT')).toBe(true);
+    expect((body.movements as Json[]).some((movement) => movement.type === 'MANUAL_USAGE')).toBe(true);
+    expect((body.movements as Json[]).some((movement) => movement.type === 'SUPPLIER_RECEIPT')).toBe(true);
+    expect((body.movements as Json[]).some((movement) => movement.type === 'SALES_USAGE')).toBe(true);
+
+    await app.prisma.recipe_bom.create({
+      data: {
+        menu_item_id: menu.foodizoChicken,
+        raw_material_id: flour.id,
+        quantity_deducted: 2
+      }
+    });
+    await app.prisma.raw_inventory.update({
+      where: { id: flour.id },
+      data: { current_stock: 1 }
+    });
+
+    const menuResponse = await inject(
+      'GET',
+      '/api/v1/menu-items?outlet=FOODIZO_HAM_TOWERS'
+    );
+    expect(menuResponse.statusCode).toBe(200);
+    const chickenMenuItem = ((menuResponse.json() as Json).items as Json[])
+      .find((item) => item.id === menu.foodizoChicken);
+    expect(chickenMenuItem?.isAvailable).toBe(false);
+    expect(chickenMenuItem?.availabilityReason).toContain('Integration Flour');
+
+    const forceAvailable = await inject(
+      'PATCH',
+      `/api/v1/menu-items/${menu.foodizoChicken}/availability`,
+      { token: tokens.cyrus, payload: { isAvailable: true } }
+    );
+    expect(forceAvailable.statusCode).toBe(409);
+    expect((forceAvailable.json() as Json).code).toBe('INSUFFICIENT_INGREDIENT_STOCK');
+
+    const unavailableOrder = await createOrder(tokens.cyrus, {
+      outlet: 'FOODIZO_HAM_TOWERS',
+      channel: 'TAKEAWAY_PICKUP',
+      customerPhone: '256770555222',
+      items: [{ menuItemId: menu.foodizoChicken, quantity: 1 }]
+    });
+    expect(unavailableOrder.statusCode).toBe(409);
+    expect(unavailableOrder.body.code).toBe('INSUFFICIENT_INGREDIENT_STOCK');
+
+    const orderForAppend = await createOrder(tokens.cyrus, {
+      outlet: 'FOODIZO_HAM_TOWERS',
+      channel: 'TAKEAWAY_PICKUP',
+      customerPhone: '256770555223',
+      items: [{ menuItemId: menu.foodizoRolex, quantity: 1 }]
+    });
+    expect(orderForAppend.statusCode).toBe(201);
+    const appendUnavailable = await inject(
+      'POST',
+      `/api/v1/orders/${orderForAppend.body.order.id}/items`,
+      {
+        token: tokens.cyrus,
+        payload: { items: [{ menuItemId: menu.foodizoChicken, quantity: 1 }] }
+      }
+    );
+    expect(appendUnavailable.statusCode).toBe(409);
+    expect((appendUnavailable.json() as Json).code).toBe('INSUFFICIENT_INGREDIENT_STOCK');
   });
 });

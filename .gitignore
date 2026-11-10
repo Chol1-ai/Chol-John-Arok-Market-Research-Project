@@ -21,6 +21,9 @@ backend/.env
 frontend/.env
 !*.env.example
 
+# Uploaded meal photos are stored locally; keep runtime files out of source control.
+backend/uploads/menu-items/
+
 # Logs & Diagnostics
 *.log
 npm-debug.log*
@@ -47,4 +50,3 @@ coverage/
 .nyc_output/
 .vitest/
 .cache/
-

@@ -5,6 +5,338 @@
  */
 
 @import './theme_tokens.css';
+@import './customer_prototype_support.css?v=5';
+
+.customer-home {
+  background:
+    radial-gradient(ellipse at 12% 0, rgba(220, 38, 38, 0.045), transparent 22rem),
+    #f9f9ff;
+}
+
+.customer-home header {
+  border-bottom: 1px solid rgba(20, 27, 43, 0.06);
+}
+
+.customer-home #branch-switcher-btn {
+  min-height: 42px;
+  border: 1px solid #dfe4f4;
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(20, 27, 43, 0.07);
+}
+
+.customer-home #branch-switcher-btn:hover {
+  border-color: #c9d2eb;
+  background: #f7f8ff;
+}
+
+.customer-availability-pill {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  gap: 0.45rem;
+  align-self: flex-start;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid #d8e8d7;
+  border-radius: 999px;
+  background: linear-gradient(110deg, #f1f8ed, #eaf4e8);
+  color: #315d3e;
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.01em;
+}
+
+.customer-availability-pill .material-symbols-outlined {
+  font-size: 17px;
+}
+
+.customer-home main > div > section:first-child {
+  gap: 0.7rem;
+  padding-top: 0.75rem;
+}
+
+.customer-home main h1 {
+  max-width: 24rem;
+  font-size: clamp(1.8rem, 7vw, 2.15rem);
+  letter-spacing: -0.045em;
+  line-height: 1.12;
+}
+
+.customer-home .hero-scrim-card {
+  height: clamp(190px, 55vw, 230px);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: 1.25rem;
+  box-shadow: 0 14px 30px rgba(20, 27, 43, 0.15);
+}
+
+.customer-home main > div > section[aria-label="Kitchen preparation estimates"] {
+  margin-top: 0.4rem;
+  padding-top: 1.15rem;
+  padding-bottom: 1.15rem;
+  border-top: 1px solid #e8ebf3;
+  border-bottom: 1px solid #e8ebf3;
+  background: linear-gradient(115deg, #f1f5ee, #f7f8f2);
+}
+
+.customer-home #branch-tracker-group > div {
+  min-height: 72px;
+  border: 1px solid #e6e9e0;
+  box-shadow: 0 4px 12px rgba(20, 27, 43, 0.045);
+}
+
+.customer-home #branch-tracker-group > div > div:first-child > div:first-child {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.85rem;
+}
+
+.customer-home #branch-tracker-group h3 {
+  font-size: 0.9rem;
+}
+
+.customer-home main > div > section[aria-label="Ordering availability"] {
+  padding-top: 0.4rem;
+}
+
+.customer-status-banner {
+  padding: 0.9rem 1rem;
+  border: 1px solid #d9e8d8;
+  border-radius: 1.1rem;
+  background: linear-gradient(115deg, #f2f8ef, #eaf3e9);
+  box-shadow: 0 7px 18px rgba(38, 86, 51, 0.06);
+}
+
+.customer-status-banner > div {
+  align-items: center;
+}
+
+.customer-status-icon {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 0.75rem;
+  background: #dcebd8;
+  color: #315d3e;
+  font-size: 19px;
+}
+
+.customer-status-label {
+  display: block;
+  margin-bottom: 0.1rem;
+  color: #537354;
+  font-size: 0.61rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.customer-status-banner h2 {
+  font-size: 0.95rem;
+}
+
+.customer-status-banner > p {
+  margin-top: 0.45rem;
+  color: #536453;
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.customer-home aside.customer-order-tray {
+  right: auto !important;
+  bottom: calc(4rem + env(safe-area-inset-bottom, 0px)) !important;
+  left: 50% !important;
+  width: min(100%, 480px) !important;
+  padding: 0 0.65rem 0.5rem;
+  transform: translateX(-50%);
+}
+
+.customer-order-tray-card {
+  min-height: 66px;
+  padding: 0.6rem 0.7rem 0.6rem 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 1.15rem;
+  background: linear-gradient(115deg, #173f34, #245b43);
+  box-shadow: 0 12px 30px rgba(20, 47, 36, 0.28);
+}
+
+.customer-order-tray-copy {
+  gap: 0.65rem;
+}
+
+.customer-order-tray-icon {
+  display: grid;
+  width: 2.4rem;
+  height: 2.4rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 0.8rem;
+  background: rgba(255, 255, 255, 0.12);
+  color: #f6db9d;
+  font-size: 19px;
+}
+
+.customer-order-tray-title {
+  margin-bottom: 0.12rem;
+  color: #f5d992;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.customer-order-tray-card #cart-summary-text {
+  color: #fff;
+  font-size: 0.7rem;
+  line-height: 1.3;
+}
+
+.customer-order-tray-cta {
+  min-height: 42px;
+  padding-inline: 0.9rem;
+  background: #f2bf57;
+  color: #30230d;
+  font-size: 0.72rem;
+  box-shadow: 0 4px 12px rgba(12, 27, 20, 0.18);
+}
+
+.customer-order-tray-cta:hover {
+  background: #ffd578;
+}
+
+#branch-modal-sheet {
+  transform: translateY(100%);
+  transition: transform 300ms ease;
+}
+
+#branch-modal.is-open #branch-modal-sheet {
+  transform: translateY(0);
+}
+
+.customer-home #branch-modal-sheet.customer-branch-sheet {
+  width: min(calc(100% - 1rem), 460px);
+  max-height: min(560px, calc(100dvh - 1rem));
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 1.5rem 1.5rem 0 0;
+  background: #fbfcff;
+  box-shadow: 0 24px 60px rgba(20, 27, 43, 0.25);
+}
+
+.customer-branch-sheet > :first-child {
+  flex: 0 0 auto;
+  padding: 0.7rem 1rem 0.8rem;
+  border-color: #e8ebf3;
+  background: linear-gradient(115deg, #fff, #f7f8fd);
+}
+
+.customer-branch-sheet #branch-modal-title {
+  font-size: 1.02rem;
+}
+
+.customer-branch-sheet > :first-child p {
+  max-width: 18rem;
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
+.customer-branch-list {
+  min-height: 0;
+  flex: 1 1 auto;
+  gap: 0.55rem;
+  padding: 0.65rem 0.75rem 0.75rem;
+}
+
+.customer-branch-sheet .branch-option-card {
+  gap: 0.35rem;
+  padding: 0.7rem;
+  border: 1px solid #e1e6f0;
+  border-radius: 1rem;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(20, 27, 43, 0.045);
+}
+
+.customer-branch-sheet #branch-card-ham {
+  border-color: #9cbe99;
+  background: linear-gradient(135deg, #f5faf2, #fff 68%);
+  box-shadow: 0 5px 15px rgba(49, 93, 62, 0.09);
+}
+
+.customer-branch-sheet .branch-option-card > div:first-child {
+  align-items: center;
+}
+
+.customer-branch-sheet .branch-option-card > div:first-child > div:first-child {
+  gap: 0.3rem;
+}
+
+.customer-branch-sheet .branch-option-card > div:first-child > div:first-child > span:first-child {
+  font-size: 0.85rem;
+  line-height: 1.25;
+}
+
+.customer-branch-sheet .branch-option-card > div:first-child > div:first-child > span:not(:first-child) {
+  padding-inline: 0.45rem;
+  font-size: 0.58rem;
+  line-height: 1.35;
+}
+
+.customer-branch-sheet .branch-option-card > p {
+  align-items: flex-start;
+  font-size: 0.68rem;
+  line-height: 1.35;
+}
+
+.customer-branch-sheet .branch-option-card > div:nth-of-type(2) {
+  gap: 0.25rem;
+  padding: 0.5rem 0.55rem;
+  border: 1px solid #edf0f5;
+  border-radius: 0.75rem;
+  background: #f8f9fc;
+  font-size: 0.62rem;
+  line-height: 1.35;
+}
+
+.customer-branch-sheet .branch-option-card > div:nth-of-type(2) > div {
+  gap: 0.3rem;
+  line-height: 1.3;
+}
+
+.customer-branch-sheet .branch-option-card > div:nth-of-type(2) p {
+  font-size: 0.62rem;
+  line-height: 1.35;
+}
+
+.customer-branch-sheet .branch-option-card > div:last-child {
+  min-height: 30px;
+  align-items: center;
+}
+
+.customer-branch-sheet .branch-option-card > div:last-child > span {
+  font-size: 0.65rem;
+}
+
+.customer-branch-sheet .branch-option-card > div:last-child button {
+  min-height: 30px;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.65rem;
+}
+
+.customer-branch-sheet > :last-child {
+  flex: 0 0 auto;
+  gap: 0.5rem;
+  margin-top: 0;
+  padding: 0.65rem 0.75rem calc(0.65rem + env(safe-area-inset-bottom, 0px));
+  border-color: #e8ebf3;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 -8px 20px rgba(20, 27, 43, 0.05);
+}
+
+.customer-branch-sheet > :last-child button {
+  min-height: 40px;
+  padding-inline: 0.7rem;
+  font-size: 0.7rem;
+}
 
 /* Mobile PWA Shell */
 .pwa-viewport-container {
@@ -48,18 +380,6 @@
   transform: scale(0.96);
 }
 
-/* PWA Install Banner */
-.pwa-install-banner {
-  background-color: var(--color-secondary-container);
-  color: var(--color-on-secondary-container);
-  border-radius: var(--radius-full);
-  padding: 0.5rem 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: var(--shadow-level-1);
-}
-
 /* Bottom Safe Navigation Dock */
 .pwa-bottom-dock {
   position: fixed;
@@ -77,3 +397,42 @@
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
+@media (max-height: 620px) {
+  .customer-home #branch-modal-sheet.customer-branch-sheet {
+    max-height: calc(100dvh - 0.5rem);
+  }
+
+  .customer-branch-sheet .branch-option-card > div:nth-of-type(2) > div {
+    display: none;
+  }
+
+  .customer-branch-sheet .branch-option-card {
+    gap: 0.25rem;
+    padding: 0.55rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .customer-order-tray-card {
+    gap: 0.4rem;
+    padding-inline: 0.55rem;
+  }
+
+  .customer-order-tray-icon {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .customer-order-tray-cta {
+    padding-inline: 0.65rem;
+    font-size: 0.66rem;
+  }
+
+  .customer-branch-sheet > :last-child {
+    flex-direction: column;
+  }
+
+  .customer-branch-sheet > :last-child button {
+    width: 100%;
+  }
+}

@@ -5,6 +5,229 @@
  */
 
 @import './theme_tokens.css';
+@import './staff_prototype_header.css';
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 10% 0%, rgba(255, 218, 214, 0.3), transparent 34rem),
+    #f4f6fb;
+}
+
+header {
+  border-bottom: 1px solid rgba(20, 27, 43, 0.08);
+  box-shadow: 0 8px 26px rgba(20, 27, 43, 0.06);
+}
+
+header > div:first-child {
+  min-height: 72px;
+  max-width: 1680px;
+  margin: 0 auto;
+  padding-right: clamp(1rem, 3vw, 2.5rem);
+  padding-left: clamp(1rem, 3vw, 2.5rem);
+}
+
+header img {
+  display: block;
+  width: 132px;
+  height: auto;
+}
+
+header nav a {
+  white-space: nowrap;
+}
+
+.dispatch-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: max-content;
+}
+
+.dispatch-brand span {
+  padding-left: 0.75rem;
+  border-left: 1px solid rgba(20, 27, 43, 0.12);
+  color: #5c403c;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.dispatch-page-heading {
+  display: flex;
+  max-width: 1680px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 auto;
+  padding: 1.5rem clamp(1rem, 3vw, 2.5rem) 0.25rem;
+}
+
+.dispatch-page-heading p {
+  margin: 0 0 0.25rem;
+  color: #b70011;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.dispatch-page-heading h1 {
+  margin: 0;
+  color: #141b2b;
+  font-size: clamp(1.65rem, 2.7vw, 2.25rem);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 1.15;
+}
+
+.dispatch-page-heading > div > span {
+  display: block;
+  margin-top: 0.4rem;
+  color: #5c6476;
+  font-size: 0.9rem;
+}
+
+.dispatch-stage-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 0.9rem;
+  border: 1px solid rgba(0, 104, 43, 0.12);
+  border-radius: 999px;
+  background: #e8f5ed;
+  color: #00682b;
+  font-size: 0.8rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.dispatch-stage-badge .material-symbols-outlined {
+  font-size: 1.15rem;
+}
+
+main > div > div:first-child,
+main > div > div:nth-child(2),
+main > div > div:nth-child(3),
+main > div > div:nth-child(4) {
+  max-width: 1680px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+main > div > div:nth-child(2) > div {
+  gap: 1rem;
+}
+
+main > div > div:nth-child(2) > div > div {
+  min-height: 148px;
+  border: 1px solid rgba(20, 27, 43, 0.07);
+  border-radius: 1.1rem;
+  box-shadow: 0 8px 24px rgba(31, 41, 65, 0.045);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+main > div > div:nth-child(2) > div > div:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(31, 41, 65, 0.09);
+}
+
+main > div > div:nth-child(2) > div > div > div:first-child > span:first-child {
+  font-size: 0.7rem;
+}
+
+main > div > div:nth-child(2) > div > div > div:nth-child(2) > span:first-child {
+  letter-spacing: -0.045em;
+}
+
+main > div > div:nth-child(3) {
+  padding-right: clamp(1rem, 3vw, 2.5rem);
+  padding-left: clamp(1rem, 3vw, 2.5rem);
+}
+
+main > div > div:nth-child(3) button,
+main > div > div:nth-child(4) button {
+  min-height: 42px;
+}
+
+main > div > div:nth-child(4) {
+  gap: 1rem;
+  padding-right: clamp(1rem, 3vw, 2.5rem);
+  padding-left: clamp(1rem, 3vw, 2.5rem);
+}
+
+main > div > div:nth-child(4) > div {
+  gap: 0.85rem;
+  padding: 0.9rem;
+  border: 1px solid rgba(20, 27, 43, 0.06);
+  border-radius: 1.1rem;
+  background: rgba(235, 239, 250, 0.72);
+}
+
+main > div > div:nth-child(4) > div > div.bg-surface-container-lowest {
+  border: 1px solid rgba(20, 27, 43, 0.075);
+  border-radius: 0.95rem;
+  box-shadow: 0 5px 16px rgba(31, 41, 65, 0.055);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+main > div > div:nth-child(4) > div > div.bg-surface-container-lowest:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(31, 41, 65, 0.1);
+}
+
+main > div > div:nth-child(4) > div > div.bg-surface-container-lowest .bg-surface-container-low,
+main > div > div:nth-child(4) > div > div.bg-surface-container-lowest .bg-surface-container-high {
+  border: 1px solid rgba(20, 27, 43, 0.045);
+}
+
+#dispatch-detail-modal > div,
+#manual-dispatch-modal > div {
+  border: 1px solid rgba(20, 27, 43, 0.08);
+  box-shadow: 0 24px 80px rgba(20, 27, 43, 0.24);
+}
+
+.dispatch-local-state {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid rgba(133, 83, 0, 0.18);
+  border-radius: 999px;
+  background: #fff3d8;
+  color: #63420e;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.035em;
+}
+
+main button:focus-visible {
+  outline: 3px solid rgba(183, 0, 17, 0.4);
+  outline-offset: 2px;
+}
+
+footer {
+  border-top: 1px solid rgba(20, 27, 43, 0.08);
+}
+
+.dispatch-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem clamp(1rem, 3vw, 2.5rem);
+  background: rgba(255, 255, 255, 0.84);
+  color: #5c6476;
+  font-size: 0.78rem;
+}
+
+.dispatch-footer > div {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.dispatch-footer img {
+  width: 104px;
+}
 
 /* Dispatch KPI Bar */
 .dispatch-kpi-grid {
@@ -52,3 +275,72 @@
   cursor: pointer;
 }
 
+@media (max-width: 1023px) {
+  header > div:first-child {
+    gap: 0.5rem;
+  }
+
+  main > div > div:nth-child(4) > div {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 639px) {
+  .dispatch-brand {
+    gap: 0.45rem;
+  }
+
+  header img {
+    width: 108px;
+  }
+
+  .dispatch-brand span {
+    display: none;
+  }
+
+  .dispatch-page-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    padding-top: 1.15rem;
+  }
+
+  .dispatch-stage-badge {
+    font-size: 0.72rem;
+  }
+
+  main > div > div:nth-child(2) {
+    padding-top: 1rem;
+  }
+
+  main > div > div:nth-child(2) > div > div {
+    min-height: 132px;
+    padding: 0.85rem;
+  }
+
+  main > div > div:nth-child(3) {
+    align-items: stretch;
+  }
+
+  main > div > div:nth-child(3) > div:last-child {
+    justify-content: stretch;
+  }
+
+  main > div > div:nth-child(3) > div:last-child button {
+    flex: 1;
+    justify-content: center;
+  }
+
+  main > div > div:nth-child(4) > div {
+    padding: 0.65rem;
+  }
+
+  footer > div > div:last-child {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .dispatch-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

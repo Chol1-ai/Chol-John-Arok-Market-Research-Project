@@ -8,11 +8,14 @@
     outlet: null,
     tables: [],
     menu: [],
+    pickupOrders: [],
     category: 'ALL',
     selectedTableId: null,
     activeOrder: null,
     draft: [],
     settleMethod: 'CASH',
+    settleOrder: null,
+    counterOrderOnly: false,
     selectionSeq: 0,
     events: null,
     refreshTimer: null,
@@ -31,6 +34,9 @@
     menu: document.getElementById('pos-menu'),
     menuSub: document.getElementById('pos-menu-sub'),
     menuRefresh: document.getElementById('pos-menu-refresh'),
+    pickupOrders: document.getElementById('pos-pickup-orders'),
+    pickupSub: document.getElementById('pos-pickup-sub'),
+    pickupRefresh: document.getElementById('pos-pickup-refresh'),
     categories: document.getElementById('pos-categories'),
     ledgerTitle: document.getElementById('pos-ledger-title'),
     ledgerSub: document.getElementById('pos-ledger-sub'),
@@ -164,10 +170,17 @@
         (item) => `
         <button class="pos-menu-item" type="button" data-menu-id="${F.escapeHtml(item.id)}"
           ${item.isAvailable ? '' : 'disabled'}>
+          ${
+            item.imageUrl
+              ? `<img class="pos-menu-image" src="${F.escapeHtml(item.imageUrl)}" alt="" loading="lazy" />`
+              : ''
+          }
           <span class="pos-menu-name">${F.escapeHtml(item.name)}</span>
           <span class="pos-menu-station">${F.escapeHtml(stationLabel(item.station))} · ${F.escapeHtml(item.category)}</span>
           <span class="pos-menu-price">${F.formatUGX(item.priceUgx)}</span>
-          ${item.isAvailable ? '' : '<span class="ls-status" data-status="CANCELLED">86 / unavailable</span>'}
+          ${item.isAvailable ? '' : `<span class="ls-status" data-status="CANCELLED">${F.escapeHtml(
+            item.availabilityReason || (item.is86 ? '86 by manager' : 'Unavailable')
+          )}</span>`}
         </button>`
       )
       .join('');
@@ -306,6 +319,30 @@
     renderCategories();
     renderMenu();
     renderLedger();
+    renderPickupOrders();
+  }
+
+  function renderPickupOrders() {
+    const orders = STATE.pickupOrders;
+    els.pickupSub.textContent = `${orders.length} awaiting cash collection · kitchen starts after settlement`;
+    if (!orders.length) {
+      els.pickupOrders.innerHTML = '<div class="ls-empty">No unpaid customer pickup orders.</div>';
+      return;
+    }
+
+    els.pickupOrders.innerHTML = orders.map((order) => `
+      <article class="pickup-order">
+        <div class="pickup-order-main">
+          <div>
+            <strong>${F.escapeHtml(order.tokenNumber)} · ${F.escapeHtml(order.orderNumber)}</strong>
+            <div class="ls-help">${F.escapeHtml(order.customerName || 'Customer')} · ${F.escapeHtml(order.customerPhone || 'No phone provided')}</div>
+            <div class="ls-help">${(order.items || []).map((item) => `${F.escapeHtml(item.quantity)} × ${F.escapeHtml(item.name)}`).join(' · ')}</div>
+          </div>
+          <strong class="ls-money">${F.formatUGX(order.totalUgx)}</strong>
+        </div>
+        <button class="ls-btn ls-btn--success ls-btn--small" type="button" data-pickup-order-id="${F.escapeHtml(order.id)}">Record cash &amp; send to kitchen</button>
+      </article>
+    `).join('');
   }
 
   async function loadTables() {
@@ -323,6 +360,12 @@
     const query = STATE.outlet ? `?outlet=${encodeURIComponent(STATE.outlet)}` : '';
     const data = await F.request(`/api/v1/menu-items${query}`);
     STATE.menu = (data.items || []).filter((item) => item.isActive);
+  }
+
+  async function loadPickupOrders() {
+    const query = STATE.outlet ? `?outlet=${encodeURIComponent(STATE.outlet)}` : '';
+    const data = await F.request(`/api/v1/orders/awaiting-payment${query}`);
+    STATE.pickupOrders = data.orders || [];
   }
 
   async function loadSelectedOrder() {
@@ -350,7 +393,7 @@
 
   async function refreshAll(options) {
     const opts = options || {};
-    await Promise.all([loadTables(), loadMenu()]);
+    await Promise.all([loadTables(), loadMenu(), loadPickupOrders()]);
     if (STATE.selectedTableId) {
       await loadSelectedOrder();
     }
@@ -404,7 +447,7 @@
     const item = STATE.menu.find((row) => row.id === menuItemId);
     if (!item) return;
     if (!item.isAvailable) {
-      F.toast(`${item.name} is marked 86/unavailable.`, 'error');
+      F.toast(`${item.name} is unavailable. ${item.availabilityReason || ''}`.trim(), 'error');
       return;
     }
     if (!STATE.selectedTableId) {
@@ -472,13 +515,15 @@
     }
   }
 
-  function openSettle() {
-    const order = STATE.activeOrder;
+  function openSettle(order, counterOrderOnly) {
+    order = order || STATE.activeOrder;
     if (!order) return;
-    if (STATE.draft.length) {
+    if (!counterOrderOnly && STATE.draft.length) {
       F.toast('Add the draft lines to the tab before settling.', 'error');
       return;
     }
+    STATE.settleOrder = order;
+    STATE.counterOrderOnly = Boolean(counterOrderOnly);
     const paid = successfulPaid(order);
     if (paid >= Number(order.totalUgx)) {
       F.toast('This bill is already fully paid.', 'info');
@@ -490,17 +535,26 @@
     els.settleTendered.value = String(Math.round(Number(order.totalUgx)));
     els.settleMsisdn.value = order.customerPhone || '';
     els.settleReference.value = '';
-    els.settleSub.textContent = `${order.tokenNumber} · ${F.formatUGX(order.totalUgx)} due`;
+    els.settleSub.textContent = `${order.tokenNumber} · ${F.formatUGX(order.totalUgx)} due${counterOrderOnly ? ' · cash at pickup' : ''}`;
     setSettleMethod('CASH');
+    els.settleMethods.querySelectorAll('[data-method]').forEach((button) => {
+      button.hidden = STATE.counterOrderOnly && button.dataset.method !== 'CASH';
+    });
     els.settleModal.hidden = false;
     els.settleTendered.focus();
   }
 
   function closeSettle() {
     els.settleModal.hidden = true;
+    STATE.settleOrder = null;
+    STATE.counterOrderOnly = false;
+    els.settleMethods.querySelectorAll('[data-method]').forEach((button) => {
+      button.hidden = false;
+    });
   }
 
   function setSettleMethod(method) {
+    if (STATE.counterOrderOnly && method !== 'CASH') return;
     STATE.settleMethod = method;
     els.settleMethods.querySelectorAll('[data-method]').forEach((button) => {
       button.setAttribute('aria-pressed', button.dataset.method === method ? 'true' : 'false');
@@ -524,7 +578,7 @@
   }
 
   async function submitSettlement() {
-    const order = STATE.activeOrder;
+    const order = STATE.settleOrder || STATE.activeOrder;
     if (!order || STATE.busy) return;
     STATE.busy = true;
     els.settleSubmit.disabled = true;
@@ -668,6 +722,13 @@
       outlet: STATE.outlet,
       onStatus: setLiveState,
       onEvent(message) {
+        if (message.event === 'TOKEN_READY' && STATE.user?.role === 'WAITER_FOH') {
+          const data = message.data || {};
+          const token = data.tokenNumber || 'Order';
+          const destination = data.destination ? ` · ${data.destination}` : '';
+          F.toast(`Food ready — ${token}${destination}`, 'success');
+        }
+
         if (
           [
             'TICKET_CREATED',
@@ -689,7 +750,7 @@
     els.refresh.addEventListener('click', async () => {
       try {
         await refreshAll();
-        F.toast('Floor, menu and ledger refreshed.', 'success');
+        F.toast('Floor, menu, ledger and pickup orders refreshed.', 'success');
       } catch (error) {
         F.toast(error.message || 'Refresh failed.', 'error');
       }
@@ -704,6 +765,24 @@
       } catch (error) {
         F.toast(error.message || 'Menu refresh failed.', 'error');
       }
+    });
+
+    els.pickupRefresh.addEventListener('click', async () => {
+      try {
+        await loadPickupOrders();
+        renderPickupOrders();
+        F.toast('Customer pickup orders refreshed.', 'success');
+      } catch (error) {
+        F.toast(error.message || 'Could not refresh customer pickup orders.', 'error');
+      }
+    });
+
+    els.pickupOrders.addEventListener('click', async (event) => {
+      const button = event.target.closest('[data-pickup-order-id]');
+      if (!button) return;
+      const order = STATE.pickupOrders.find((row) => row.id === button.dataset.pickupOrderId);
+      if (!order) return;
+      openSettle(order, true);
     });
 
     els.floor.addEventListener('click', (event) => {
@@ -732,7 +811,7 @@
     });
 
     els.add.addEventListener('click', fireDraft);
-    els.settle.addEventListener('click', openSettle);
+    els.settle.addEventListener('click', () => openSettle());
     els.print.addEventListener('click', reprintChit);
     els.drawer.addEventListener('click', kickDrawer);
     els.clear.addEventListener('click', clearTable);

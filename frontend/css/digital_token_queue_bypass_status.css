@@ -5,6 +5,7 @@
  */
 
 @import './theme_tokens.css';
+@import './customer_prototype_support.css?v=3';
 
 /* Giant Digital Token Card */
 .token-pass-card {
@@ -66,4 +67,3 @@
   display: flex;
   align-items: center;
 }
-

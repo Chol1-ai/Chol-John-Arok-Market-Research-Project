@@ -25,18 +25,18 @@ Based on the market research and operational focus for both establishments:
 
 4. List of All Possible Solutions for Each Challenge
 ●	For Challenge 1 (High-Volume Queue Management):
-✓	Implement a student-focused digital pre-ordering mobile app allowing users to order ahead and skip the counter queue.
-✓	Install fast self-checkout POS terminals at the Ham Towers location.
+	Implement a student-focused digital pre-ordering mobile app allowing users to order ahead and skip the counter queue.
+	Install fast self-checkout POS terminals at the Ham Towers location.
 
 ●	For Challenge 2 (Supply Chain and Price Volatility):
-✓	Integrate automated stock-tracking linked directly to supplier pricing alerts for poultry and cooking oil.
-✓	Use predictive sales analytics based on university schedules to optimize daily ingredient prep for high-turnover items (fried chicken, Rolex, beef Luwombo).
+	Integrate automated stock-tracking linked directly to supplier pricing alerts for poultry and cooking oil.
+	Use predictive sales analytics based on university schedules to optimize daily ingredient prep for high-turnover items (fried chicken, Rolex, beef Luwombo).
 
 ●	For Challenge 3 (Multi-Channel Order Coordination):
-✓	Deploy a centralized Kitchen Display System (KDS) that consolidates sit-down table-side tickets and phone-based takeaway orders into a single queue.
+	Deploy a centralized Kitchen Display System (KDS) that consolidates sit-down table-side tickets and phone-based takeaway orders into a single queue.
 
 ●	For Challenge 4 (Food Surplus and Waste Management):
-✓	Implement real-time inventory decrementing and end-of-day surplus tracking to optimize batch-cooking metrics and automate late-evening discounted meal notifications.
+	Implement real-time inventory decrementing and end-of-day surplus tracking to optimize batch-cooking metrics and automate late-evening discounted meal notifications.
 
 > **Scope note:** These are solutions from the original brief, not all Phase 1 commitments. The Phase 1 system records surplus and provides a **manual** clearance action; predictive sales analytics based on university schedules and automated late-evening discounted-meal notifications are explicitly deferred to Phase 2. Phase 1 also uses no automated supplier-price alerts; it tracks stock against menu-item BOMs and surfaces low-stock flags.
 
@@ -124,5 +124,5 @@ To ensure absolute operational clarity and prevent conflating technical developm
 
 | Execution Track | Dedicated Folder & Master Blueprint | Primary Objective | Audience & Evaluation Gates |
 | :--- | :--- | :--- | :--- |
-| **Engineering Build Strategy** | **[`build_strategy/Build_Strategy_and_Phases.md`](build_strategy/Build_Strategy_and_Phases.md)**<br>👉 *Screen-by-Screen Progression:* **[`build_strategy/Dashboard_Build_Progression.md`](build_strategy/Dashboard_Build_Progression.md)** | Technical engineering architecture, host-installed edge node, C0–C10 coding phases, screen-by-screen dashboard progression (Staff Login $\rightarrow$ Floor POS $\rightarrow$ Kitchen KDS $\rightarrow$ Dispatch Queue $\rightarrow$ Manager Admin), KDS WebSocket event bus, raw thermal print engine, and automated quality gates. | **Software Engineers & Technical Architects:** Evaluated on passing unit/integration tests, zero lint/typecheck errors, schema parity, LAN resilience, and concurrency safety. |
+| **Engineering Build Strategy** | **[`build_strategy/Build_Strategy_and_Phases.md`](build_strategy/Build_Strategy_and_Phases.md)**<br> *Screen-by-Screen Progression:* **[`build_strategy/Dashboard_Build_Progression.md`](build_strategy/Dashboard_Build_Progression.md)** | Technical engineering architecture, host-installed edge node, C0–C10 coding phases, screen-by-screen dashboard progression (Staff Login $\rightarrow$ Floor POS $\rightarrow$ Kitchen KDS $\rightarrow$ Dispatch Queue $\rightarrow$ Manager Admin), KDS WebSocket event bus, raw thermal print engine, and automated quality gates. | **Software Engineers & Technical Architects:** Evaluated on passing unit/integration tests, zero lint/typecheck errors, schema parity, LAN resilience, and concurrency safety. |
 | **Go-To-Market (GTM) Strategy** | **[`go_to_market/Go_To_Market_Strategy.md`](go_to_market/Go_To_Market_Strategy.md)** | Commercial market entry, Makerere & YMCA student pre-order conversion, in-store QR merchandising, waitstaff/cook change management, stage boda agreements, milestone invoicing, and retainer execution. | **Business Leads, Operations & Owners (Zito Mbowe):** Evaluated on peak queue divert rate ($\ge 40\%$), food spoilage reduction, zero cash drawer variance, and monthly retainer execution. |

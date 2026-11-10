@@ -63,6 +63,8 @@ const ROUTE_MAP = {
   '/boda': 'live/dispatch.html',
   '/admin': 'live/admin.html',
   '/digest': 'live/admin.html',
+  '/order': 'live/customer-order.html',
+  '/customer': 'live/customer-order.html',
 
   // Static design prototypes — clearly not live and never API-backed.
   '/prototype': 'html/index.html',
@@ -82,7 +84,6 @@ const ROUTE_MAP = {
 // screen is never presented as a live ordering or payment flow.
 const PROTOTYPE_REDIRECTS = {
   '/landing': '/prototype/customer',
-  '/customer': '/prototype/customer',
   '/menu': '/prototype/menu',
   '/checkout': '/prototype/checkout',
   '/token': '/prototype/token',
@@ -307,26 +308,27 @@ server.on('upgrade', (req, socket, head) => {
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log('\n===============================================================');
-  console.log('🚀 KAMPALA FAST-CASUAL DINING & KITCHEN DISPLAY SYSTEM');
-  console.log('📍 Foodizo (Ham Towers) & Obunuzi Restaurant (Opposite YMCA)');
-  console.log('💰 Currency Engine: UGX (Ugandan Shilling)');
-  console.log(`🌐 Server active on:  http://localhost:${PORT}`);
-  console.log(`🔌 API + WS backend:  http://localhost:${BACKEND_PORT}`);
+  console.log(' KAMPALA FAST-CASUAL DINING & KITCHEN DISPLAY SYSTEM');
+  console.log(' Foodizo (Ham Towers) & Obunuzi Restaurant (Opposite YMCA)');
+  console.log(' Currency Engine: UGX (Ugandan Shilling)');
+  console.log(` Server active on:  http://localhost:${PORT}`);
+  console.log(` API + WS backend:  http://localhost:${BACKEND_PORT}`);
   console.log('===============================================================');
   console.log('LIVE STAFF SURFACES (API-backed):');
-  console.log(`  🔐 Staff PIN Login:        http://localhost:${PORT}/login`);
-  console.log(`  🍽️  Floor POS Pad:          http://localhost:${PORT}/pos`);
-  console.log(`  👨‍🍳 Kitchen Display (KDS):   http://localhost:${PORT}/kds`);
-  console.log(`  🛵 Boda Dispatch Queue:    http://localhost:${PORT}/dispatch`);
-  console.log(`  📊 Manager EOD Audit:      http://localhost:${PORT}/admin`);
-  console.log(`  📄 Read-only Digest link:  http://localhost:${PORT}/d/<token>`);
+  console.log(`   Staff PIN Login:        http://localhost:${PORT}/login`);
+  console.log(`    Floor POS Pad:          http://localhost:${PORT}/pos`);
+  console.log(`   Kitchen Display (KDS):   http://localhost:${PORT}/kds`);
+  console.log(`   Boda Dispatch Queue:    http://localhost:${PORT}/dispatch`);
+  console.log(`   Manager EOD Audit:      http://localhost:${PORT}/admin`);
+  console.log(`   Read-only Digest link:  http://localhost:${PORT}/d/<token>`);
+  console.log(`   Customer Pickup Orders: http://localhost:${PORT}/order`);
   console.log('STATIC DESIGN PROTOTYPES (not live):');
-  console.log(`  🎨 Launch hub:             http://localhost:${PORT}/`);
-  console.log(`  📱 Customer PWA prototype: http://localhost:${PORT}/prototype/customer`);
-  console.log(`  🍲 Campus menu prototype:  http://localhost:${PORT}/prototype/menu`);
-  console.log(`  💳 MoMo checkout prototype:http://localhost:${PORT}/prototype/checkout`);
-  console.log(`  🎫 Token prototype:        http://localhost:${PORT}/prototype/token`);
-  console.log(`  🛵 Tracker prototype:      http://localhost:${PORT}/prototype/tracker`);
-  console.log(`  🎨 All design prototypes:  http://localhost:${PORT}/prototype`);
+  console.log(`   Launch hub:             http://localhost:${PORT}/`);
+  console.log(`   Customer PWA prototype: http://localhost:${PORT}/prototype/customer`);
+  console.log(`   Campus menu prototype:  http://localhost:${PORT}/prototype/menu`);
+  console.log(`   MoMo checkout prototype:http://localhost:${PORT}/prototype/checkout`);
+  console.log(`   Token prototype:        http://localhost:${PORT}/prototype/token`);
+  console.log(`   Tracker prototype:      http://localhost:${PORT}/prototype/tracker`);
+  console.log(`   All design prototypes:  http://localhost:${PORT}/prototype`);
   console.log('===============================================================\n');
 });

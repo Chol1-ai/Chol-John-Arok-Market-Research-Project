@@ -8,7 +8,8 @@
     review: [],
     events: null,
     refreshTimer: null,
-    busy: false
+    busy: false,
+    cashOnDelivery: false
   };
 
   const els = {
@@ -43,6 +44,9 @@
     completeOrderId: document.getElementById('dispatch-complete-order-id'),
     outcome: document.getElementById('dispatch-outcome'),
     advanceReturned: document.getElementById('dispatch-advance-returned'),
+    cashTenderedWrap: document.getElementById('dispatch-cash-tendered-wrap'),
+    cashTendered: document.getElementById('dispatch-cash-tendered'),
+    completeNote: document.getElementById('dispatch-complete-note'),
     completeSubmit: document.getElementById('dispatch-complete-submit'),
     completeClose: document.getElementById('dispatch-complete-close'),
     completeCancel: document.getElementById('dispatch-complete-cancel')
@@ -101,6 +105,7 @@
               <div><span>Phone</span><strong>${F.escapeHtml(order.customerPhone || '—')}</strong></div>
               <div><span>Destination</span><strong>${F.escapeHtml(order.destinationZone || 'Not set')}</strong></div>
               <div><span>Order total</span><strong>${F.formatUGX(order.totalUgx)}</strong></div>
+              <div><span>Payment</span><strong>${order.cashOnDelivery ? 'Cash due at delivery' : 'Paid'}</strong></div>
               <div><span>Elapsed</span><strong>${order.elapsedMinutes}m</strong></div>
               <div><span>Landmark</span><strong>${F.escapeHtml(order.landmarkHint || '—')}</strong></div>
               ${
@@ -119,7 +124,7 @@
                 onTheWay
                   ? `<button class="ls-btn ls-btn--success ls-btn--small" type="button" data-action="complete" data-order-id="${F.escapeHtml(
                       order.id
-                    )}">Complete delivery</button>`
+                    )}" data-cash-on-delivery="${order.cashOnDelivery ? 'true' : 'false'}" data-total-ugx="${F.escapeHtml(order.totalUgx)}">Complete delivery</button>`
                   : `<button class="ls-btn ls-btn--small" type="button" data-action="assign" data-order-id="${F.escapeHtml(
                       order.id
                     )}" data-token="${F.escapeHtml(order.tokenNumber || '')}">Assign boda rider</button>`
@@ -253,17 +258,30 @@
     }
   }
 
-  function openComplete(orderId, token) {
+  function openComplete(orderId, token, cashOnDelivery, totalUgx) {
+    STATE.cashOnDelivery = Boolean(cashOnDelivery);
     els.completeOrderId.value = orderId;
     els.completeSub.textContent = `Order ${token || orderId} · record the real handoff outcome`;
     els.outcome.value = 'DELIVERED';
     els.advanceReturned.value = '';
+    els.cashTendered.value = cashOnDelivery ? String(Math.round(Number(totalUgx))) : '';
+    updateCashCollectionField();
+    els.completeNote.textContent = cashOnDelivery
+      ? 'Collect the full order total from the customer. Record the cash before completing the handoff; failed deliveries stay in the review queue.'
+      : 'A non-delivered outcome stays in the review queue and is counted in the daily digest. It does not silently complete the order.';
     els.completeModal.hidden = false;
     els.outcome.focus();
   }
 
+  function updateCashCollectionField() {
+    const collectCash = STATE.cashOnDelivery && els.outcome.value === 'DELIVERED';
+    els.cashTenderedWrap.hidden = !collectCash;
+    els.cashTendered.required = collectCash;
+  }
+
   function closeComplete() {
     els.completeModal.hidden = true;
+    STATE.cashOnDelivery = false;
   }
 
   async function submitComplete() {
@@ -271,6 +289,13 @@
     const orderId = els.completeOrderId.value;
     const returnedRaw = els.advanceReturned.value.trim();
     const payload = { outcome: els.outcome.value };
+    if (!els.cashTenderedWrap.hidden && payload.outcome === 'DELIVERED') {
+      payload.cashTenderedUgx = Math.round(Number(els.cashTendered.value));
+      if (!payload.cashTenderedUgx) {
+        F.toast('Enter the cash collected from the customer.', 'error');
+        return;
+      }
+    }
     if (returnedRaw !== '') {
       payload.riderAdvanceReturnedUgx = Math.max(0, Math.round(Number(returnedRaw) || 0));
     }
@@ -283,7 +308,10 @@
         method: 'POST',
         body: JSON.stringify(payload)
       });
-      F.toast(data.message || 'Delivery outcome recorded.', 'success');
+      const cashSummary = data.cashCollectedUgx
+        ? ` Cash payment recorded: ${F.formatUGX(data.cashCollectedUgx)}. Change due: ${F.formatUGX(data.changeUgx)}.`
+        : '';
+      F.toast(`${data.message || 'Delivery outcome recorded.'}${cashSummary}`, 'success');
       closeComplete();
       await loadQueues();
     } catch (error) {
@@ -328,11 +356,17 @@
       if (button.dataset.action === 'assign') {
         openAssign(button.dataset.orderId, button.dataset.token);
       } else if (button.dataset.action === 'complete') {
-        openComplete(button.dataset.orderId, button.dataset.token);
+        openComplete(
+          button.dataset.orderId,
+          button.dataset.token,
+          button.dataset.cashOnDelivery === 'true',
+          button.dataset.totalUgx
+        );
       }
     });
 
     els.assignSubmit.addEventListener('click', submitAssign);
+    els.outcome.addEventListener('change', updateCashCollectionField);
     els.assignForm.addEventListener('submit', (event) => {
       event.preventDefault();
       submitAssign();

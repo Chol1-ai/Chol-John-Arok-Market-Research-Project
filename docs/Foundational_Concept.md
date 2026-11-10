@@ -1,4 +1,4 @@
-﻿# Foundational Concept: Multi-Channel Order & Kitchen Display System (KDS)
+# Foundational Concept: Multi-Channel Order & Kitchen Display System (KDS)
 
 **Target Outlets:** Foodizo (Ham Towers) & Obunuzi Restaurant & Cafe (Opposite YMCA)<br>
 **Location:** Wandegeya, Kampala, Uganda<br>
@@ -29,7 +29,7 @@ This system solves four mission-critical operational challenges for Foodizo and 
 | **Customer** | Makerere/YMCA students, Ham Towers corporate workers, walk-ins | • Browse digital menus, modifier choices, and daily specials (Phase 1 customer screens are static prototypes under `/prototype/*`; staff key live orders on the POS).<br>• Place pre-orders for pickup or delivery to bypass counter lines.<br>• For delivery, select an outlet-scoped zone/landmark, enter an exact room/office/gate note, and provide a rider-callable phone number.<br>• Optionally attach a one-shot GPS pin; declining it never blocks checkout.<br>• Pay via MTN MoMo (`25677/78/76`) and Airtel Money (`25670/75/74`) — see `Payment_Integration.md`.<br>• Receive a digital token on the chit and an SMS when the order is ready when Africa's Talking is configured; there is no live customer status page in Phase 1. |
 | **Waiter / FOH** | Floor staff, order takers, counter cashiers | • Input and modify table-side dine-in orders.<br>• View live visual table occupancy grid (`VACANT`, `OCCUPIED`, `BILL_REQUESTED`, `NEEDS_CLEARING`).<br>• Capture delivery zone, room/office note, recipient name, and phone on the phone-order flow.<br>• Dispatch delivery orders from `/dispatch`: assign the rider, call the customer, and record the handoff outcome.<br>• Settle an open table tab in one transaction: cash, manual MoMo, or a MoMo/Airtel STK prompt to the guest. Split checks, split tender, and table transfers are Phase 2. Cancellation is manager-only. |
 | **Kitchen Staff (KDS Operator)** | Chefs, station cooks, kitchen supervisors | • View incoming real-time orders on the KDS.<br>• Filter/toggle queues by channel (`DINE_IN` vs. `TAKEAWAY_PICKUP` vs. `PHONE_DELIVERY`).<br>• Advance order/item states: `PENDING` → `PREPARING` → `READY`; claiming an order deducts its recipe BOM.<br>• Delivery tickets show the destination zone only; customer name, phone, room notes, and GPS coordinates never appear on the KDS. |
-| **Manager / Admin (Zito Mbowe)** | Store owners, operations coordinators, auditors | • Monitor cross-outlet live ticket queues and kitchen turnaround metrics on `/admin`; an outlet-scoped manager sees one outlet.<br>• Review low-stock flags produced by recipe-BOM deduction; stock thresholds are database-managed in Phase 1.<br>• Review seeded delivery zones, fees, and ETAs; there is no zone-maintenance UI in Phase 1.<br>• Audit delivery handoffs, failed deliveries, and chit reprints.<br>• Cancel orders with a required reason and close `REFUND_PENDING` MoMo payments after the external reversal.<br>• Toggle menu availability; item names, prices, and staff accounts are seed/database-managed in Phase 1.<br>• Review daily financial reconciliation (MTN, Airtel, Manual MoMo, Cash); delivery fees are a memo component of the paid total, not a separate payment channel — see `Payment_Integration.md §9`. |
+| **Manager / Admin** | Outlet managers and operations coordinators: Cyrus M. at Foodizo; Zito Mbowe at Obunuzi | • Monitor the assigned outlet's live ticket queue and kitchen turnaround metrics on `/admin`.<br>• Review low-stock flags produced by recipe-BOM deduction; stock thresholds are database-managed in Phase 1.<br>• Review seeded delivery zones, fees, and ETAs; there is no zone-maintenance UI in Phase 1.<br>• Audit delivery handoffs, failed deliveries, and chit reprints.<br>• Cancel orders with a required reason and close `REFUND_PENDING` MoMo payments after the external reversal.<br>• Toggle menu availability; item names, prices, and staff accounts are seed/database-managed in Phase 1.<br>• Review daily financial reconciliation (MTN, Airtel, Manual MoMo, Cash); delivery fees are a memo component of the paid total, not a separate payment channel — see `Payment_Integration.md §9`. |
 
 ---
 
@@ -111,21 +111,21 @@ This system solves four mission-critical operational challenges for Foodizo and 
 
 | Feature | Status | When it may happen |
 | :--- | :---: | :--- |
-| **Rider app / dedicated rider login** | ❌ Phase 2 | Only when the operation has 5+ contracted riders and >100 deliveries/day outside the campus radius |
-| **Live rider GPS tracking / map on FOH screen** | ❌ Phase 2 | Same trigger as rider app — see `Delivery_Zones_and_Dispatch.md §11` |
-| **Google Maps JavaScript SDK / Places / Geocoding / Directions** | ❌ Never in Phase 1 | A static universal map link (`https://www.google.com/maps/search/?...`) replaces all billable map API calls |
-| **WhatsApp Business API for customer-facing notifications** | ❌ Phase 2 | WhatsApp `wa.me` deep links (free) are used in Phase 1 for rider dispatch; automated push messages via the Cloud API require Meta Business verification and are out of scope |
-| **Split checks / split tender** | ❌ Phase 2 | One tab closes in one transaction; partial payment splitting deferred |
-| **Table transfers between waitstaff** | ❌ Phase 2 | A tab belongs to the waitress who opened it until close |
-| **Customer account / login** | ❌ Phase 2 | `CUSTOMER` role enum is reserved; no customer registration, profile, or order history in Phase 1 |
-| **Browser push notifications (Service Worker Push API)** | ❌ Phase 1 | SMS and in-page polling replace browser push; no VAPID keys needed |
-| **Loyalty points / discount codes / promotions engine** | ❌ Phase 2 | No vouchers, no referral codes, no percentage discounts at checkout |
-| **Online card payments (Visa/Mastercard)** | ❌ Phase 2 | Phase 1 accepts MTN MoMo, Airtel Money, cash, and manual-MoMo only |
-| **Multi-outlet inventory transfer / centralised warehouse** | ❌ Phase 2 | Each outlet manages its own BOM independently |
-| **Automated daily prep-quantity forecasting** | ❌ Phase 2 | Phase 1 records closing surplus; the manager sets next-day prep targets manually |
-| **Phase 2 delivery zones (areas beyond the campus corridor)** | ❌ Phase 2 | See `Delivery_Zones_and_Dispatch.md §11` for Phase 2 zone triggers |
-| **Leaflet / OpenStreetMap interactive map** | ❌ Phase 2 | Requires a tile provider with a real usage policy; not needed for the zone/landmark model |
-| **Telegram bot / any third automated channel beyond SMS** | ❌ Phase 2 | Africa's Talking SMS covers the owner digest in Phase 1; email is not implemented |
+| **Rider app / dedicated rider login** |  Phase 2 | Only when the operation has 5+ contracted riders and >100 deliveries/day outside the campus radius |
+| **Live rider GPS tracking / map on FOH screen** |  Phase 2 | Same trigger as rider app — see `Delivery_Zones_and_Dispatch.md §11` |
+| **Google Maps JavaScript SDK / Places / Geocoding / Directions** |  Never in Phase 1 | A static universal map link (`https://www.google.com/maps/search/?...`) replaces all billable map API calls |
+| **WhatsApp Business API for customer-facing notifications** |  Phase 2 | WhatsApp `wa.me` deep links (free) are used in Phase 1 for rider dispatch; automated push messages via the Cloud API require Meta Business verification and are out of scope |
+| **Split checks / split tender** |  Phase 2 | One tab closes in one transaction; partial payment splitting deferred |
+| **Table transfers between waitstaff** |  Phase 2 | A tab belongs to the waitress who opened it until close |
+| **Customer account / login** |  Phase 2 | `CUSTOMER` role enum is reserved; no customer registration, profile, or order history in Phase 1 |
+| **Browser push notifications (Service Worker Push API)** |  Phase 1 | SMS and in-page polling replace browser push; no VAPID keys needed |
+| **Loyalty points / discount codes / promotions engine** |  Phase 2 | No vouchers, no referral codes, no percentage discounts at checkout |
+| **Online card payments (Visa/Mastercard)** |  Phase 2 | Phase 1 accepts MTN MoMo, Airtel Money, cash, and manual-MoMo only |
+| **Multi-outlet inventory transfer / centralised warehouse** |  Phase 2 | Each outlet manages its own BOM independently |
+| **Automated daily prep-quantity forecasting** |  Phase 2 | Phase 1 records closing surplus; the manager sets next-day prep targets manually |
+| **Phase 2 delivery zones (areas beyond the campus corridor)** |  Phase 2 | See `Delivery_Zones_and_Dispatch.md §11` for Phase 2 zone triggers |
+| **Leaflet / OpenStreetMap interactive map** |  Phase 2 | Requires a tile provider with a real usage policy; not needed for the zone/landmark model |
+| **Telegram bot / any third automated channel beyond SMS** |  Phase 2 | Africa's Talking SMS covers the owner digest in Phase 1; email is not implemented |
 
 ---
 

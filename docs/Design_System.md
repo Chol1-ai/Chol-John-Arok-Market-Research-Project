@@ -903,7 +903,7 @@ export default config;
 
 ### 8.1 Role Identity & Colour
 
-| ✅ DO | ❌ DON'T |
+|  DO |  DON'T |
 | :--- | :--- |
 | Give every role its own `--role-primary`, `--role-primary-hover`, `--role-primary-active`, and `--role-on-primary`. | Reuse one `primary` colour across Customer, FOH, KDS, and Admin. |
 | Change hue **and** geometry **and** depth per role: pill + warm lift, 6px + ink offset, 0px + bevel, 2px + flat. | Ship four recoloured copies of the same rounded pill button. |
@@ -914,7 +914,7 @@ export default config;
 
 ### 8.2 Depth, Shape & Motion
 
-| ✅ DO | ❌ DON'T |
+|  DO |  DON'T |
 | :--- | :--- |
 | Use hard physical shadows on FOH and KDS: `2px 2px 0 #0F172A`, `0 5px 0 #022C22`. | Use soft, blurry SaaS shadows such as `0 20px 25px rgba(0,0,0,0.05)`. |
 | Make the press visible: scale, snap, or sink with shadow collapse. | Change only the hover colour and leave the press state identical to rest. |
@@ -925,7 +925,7 @@ export default config;
 
 ### 8.3 Kitchen & FOH Ergonomics
 
-| ✅ DO | ❌ DON'T |
+|  DO |  DON'T |
 | :--- | :--- |
 | Make the KDS bump button **68px** tall and full ticket width. | Use 16px checkboxes, tiny icon buttons, or a three-dot menu on the KDS. |
 | Separate line-item toggles from the bump button by at least 24px. | Place “bump” and “86” next to each other where a palm can hit the wrong one. |
@@ -940,7 +940,7 @@ export default config;
 
 ### 8.4 Data, Currency & Localisation
 
-| ✅ DO | ❌ DON'T |
+|  DO |  DON'T |
 | :--- | :--- |
 | Format every amount as `UGX 14,000` with comma grouping. | Show `UGX 14,000.00`, `$14,000`, or `14,000/=`. |
 | Use JetBrains Mono + `tabular-nums` for all prices, tokens, timers, and counters. | Use a proportional font for counters that causes the layout to jump. |
@@ -954,7 +954,7 @@ export default config;
 
 ### 8.5 Accessibility & Implementation
 
-| ✅ DO | ❌ DON'T |
+|  DO |  DON'T |
 | :--- | :--- |
 | Keep body text at 4.5:1 and large text at 3:1. | Use `#94A3B8` body text on a white card. |
 | Add icon + text to every status badge. | Use colour alone to distinguish `PREPARING` from `READY`. |

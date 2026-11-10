@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 64" role="img" aria-labelledby="title">
+  <title id="title">Foodizo and Obunuzi</title>
+  <rect x="2" y="2" width="60" height="60" rx="18" fill="#C83D2D"/>
+  <path d="M25 17h23v8H33v7h13v8H33v11h-8V17Z" fill="#FFFEFA"/>
+  <text x="76" y="30" fill="#26352D" font-family="Arial, sans-serif" font-size="21" font-weight="700">Foodizo</text>
+  <text x="163" y="30" fill="#879088" font-family="Arial, sans-serif" font-size="19" font-weight="400">&amp;</text>
+  <text x="181" y="30" fill="#26352D" font-family="Arial, sans-serif" font-size="21" font-weight="700">Obunuzi</text>
+  <text x="77" y="48" fill="#68716B" font-family="Arial, sans-serif" font-size="9" font-weight="600" letter-spacing="1.1">CAMPUS DINING · KAMPALA</text>
+</svg>

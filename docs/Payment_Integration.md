@@ -7,7 +7,7 @@
 **Target Environment:** Antigravity IDE + Opencode CLI Repository Scaffold<br>
 **Related Files:** `Foundational_Concept.md` · `Design_System.md` · `User_Flow.md` · `User_Profiles_Personas.md` · `Delivery_Zones_and_Dispatch.md` · `Tech_Stack.md` · `Hardware_and_Peripherals.md` · `Seed_Data_and_Testing.md` · `Repo_Scaffold_and_Config.md` · `Demo_Script_and_Closing_Strategy.md` · `Daily_Audit_Digest.md` · `Deployment_Runbook.md` · `Service_Contract_and_Invoice_Template.md` · `build_strategy/Build_Strategy_and_Phases.md`
 
-> **Implementation status (read this first):** The repository implements the order/payment rows, signed webhook settlement, `payment_events` idempotency, cash and `MANUAL_MOMO` settlement, refund closure, and reconciliation/digest queries. **`MomoService.requestToPay()` is a stub:** it returns `PENDING_CUSTOMER_PIN` without calling the MTN or Airtel API, in both development and production. There is no polling fallback and no live telco client in this repository. A production go-live must wire the telco clients behind the same `MomoService` interface; signed webhook delivery can already be tested. There is no payment-TTL auto-cancel: an unpaid order stays `AWAITING_PAYMENT` until a manager cancels it. There is no Redis; post-commit events use the in-process WebSocket bus (`fastify.broadcastWs`). There is no email transport.
+> **Implementation status (read this first):** The repository implements the order/payment rows, signed webhook settlement, `payment_events` idempotency, cash and `MANUAL_MOMO` settlement, refund closure, and reconciliation/digest queries. **`MomoService.requestToPay()` is a local simulation outside production; no MTN or Airtel API client is wired.** Production fails closed and rejects STK requests instead of returning a fabricated prompt. There is no polling fallback or verified live telco client. A production go-live must wire and sandbox-test the telco clients behind the same `MomoService` interface; signed webhook delivery can already be tested. There is no payment-TTL auto-cancel: an unpaid order stays `AWAITING_PAYMENT` until a manager cancels it. There is no Redis; post-commit events use the in-process WebSocket bus (`fastify.broadcastWs`). There is no email transport.
 
 ---
 
@@ -170,7 +170,7 @@ The 45-second countdown and polling fallback below are a **design target, not im
 
 ## 5. API Implementation Contracts
 
-> **Shipped implementation:** `backend/src/services/momoService.ts` exposes `requestToPay()` and returns `PENDING_CUSTOMER_PIN` with a deterministic carrier reference. It does **not** call either telco. The contracts below are the go-live reference for wiring the real clients, not code that runs today.
+> **Shipped implementation:** In non-production environments, `backend/src/services/momoService.ts` simulates `PENDING_CUSTOMER_PIN` with a deterministic carrier reference. It does **not** call either telco. In production it throws an explicit configuration error rather than simulating success. The contracts below are the go-live reference for wiring the real clients, not code that runs today.
 
 ### 5.1 MTN MoMo Open API (Collection v1.0)
 
@@ -181,7 +181,7 @@ The 45-second countdown and polling fallback below are a **design target, not im
 | `/collection/v1_0/requesttopay/{X-Reference-Id}` | `GET` | Poll transaction status |
 
 ```typescript
-// Reference only: the shipped MomoService.requestToPay() is a stub.
+// Reference only: the shipped MomoService.requestToPay() does not call a provider.
 // Location: backend/src/services/momoService.ts
 
 import axios from 'axios';
@@ -659,7 +659,7 @@ A cash sale is a real payment method, not a missing payment. Use `POST /api/v1/o
 ```
 
 - `CASH` and `MANUAL_MOMO` settle immediately as `SUCCESSFUL`; `MANUAL_MOMO` requires a provider transaction reference of at least 3 characters in `externalTransactionId` (or `transactionReference`). Payer phone is optional in the current API.
-- `MTN` and `AIRTEL` create a new payment attempt and call `MomoService.requestToPay()`; the current service is a stub that returns `PENDING_CUSTOMER_PIN`, and the verified webhook completes the payment. Use this for a table tab that the guest wants to pay by mobile money at bill close.
+- `MTN` and `AIRTEL` create a new payment attempt and call `MomoService.requestToPay()`; non-production currently simulates `PENDING_CUSTOMER_PIN`, while production rejects the attempt until a real provider client is configured. A verified webhook completes the payment. Use this for a table tab that the guest wants to pay by mobile money at bill close.
 - The endpoint never changes kitchen status. A tab that is already `PENDING`, `PREPARING`, `READY`, or `COMPLETED` stays there.
 - One `SUCCESSFUL` payment is allowed per order. A second success becomes `REFUND_PENDING`; it is not a second ticket.
 - Every settlement writes an `audit_log` row naming the staff user and the carrier.

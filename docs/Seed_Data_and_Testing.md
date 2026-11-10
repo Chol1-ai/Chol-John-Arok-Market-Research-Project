@@ -24,7 +24,7 @@ The seed wipes development operational data (orders, payments, sessions, tables,
 
 | Staff member | Role | Outlet | Phone |
 | :--- | :--- | :--- | :--- |
-| Zito Mbowe | `MANAGER_ADMIN` | Cross-outlet | `256700000000` |
+| Zito Mbowe | `MANAGER_ADMIN` | Obunuzi · Opp. YMCA | `256700000000` |
 | Cyrus M. | `MANAGER_ADMIN` | Foodizo · Ham Towers | `256768550986` |
 | Sarah K. | `WAITER_FOH` | Foodizo · Ham Towers | `256772555666` |
 | Chef Juma | `KITCHEN_STAFF` | Foodizo · Ham Towers | `256772333444` |
@@ -82,6 +82,8 @@ npm --prefix backend test
 3. Confirm a Waiter cannot open `/admin` or `/kds`, a Kitchen user cannot open `/pos` or `/admin`, and a Manager can open all three.
 4. Confirm `GET /api/v1/auth/me` returns the role label and `homePath`, and `POST /api/v1/auth/logout` revokes the session and clears the cookie.
 5. Submit five wrong PINs; confirm the sixth attempt reports an account lock for 15 minutes.
+
+Managers can create Waiter/FOH or Kitchen Staff accounts from the `/admin` staff access form. `POST /api/v1/auth/staff` accepts a name, Ugandan mobile number, outlet, role, and four-digit PIN; it stores only a bcrypt hash, writes an audit entry, rejects duplicate phone numbers, and enforces the manager's outlet scope. Manager accounts cannot be provisioned from this form.
 
 ### 3.2 Orders, Kitchen & Settlement
 

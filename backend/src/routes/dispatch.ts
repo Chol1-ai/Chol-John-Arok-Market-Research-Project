@@ -26,7 +26,8 @@ const completeSchema = z.object({
   outcome: z
     .enum(['DELIVERED', 'FAILED_UNREACHABLE', 'REFUSED', 'RETURNED'])
     .default('DELIVERED'),
-  riderAdvanceReturnedUgx: z.number().nonnegative().optional()
+  riderAdvanceReturnedUgx: z.number().nonnegative().optional(),
+  cashTenderedUgx: z.number().positive().optional()
 });
 
 function resolveOutlet(
@@ -126,6 +127,7 @@ export const dispatchRoutes: FastifyPluginAsync = async (fastify) => {
         include: {
           delivery_zone: true,
           order_items: true,
+          payments: { where: { status: 'SUCCESSFUL' } },
           handoffs: { orderBy: { dispatched_at: 'desc' } }
         },
         orderBy: { created_at: 'asc' }
@@ -160,6 +162,7 @@ export const dispatchRoutes: FastifyPluginAsync = async (fastify) => {
               ? `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
               : null,
             totalUgx: Number(order.total_amount_ugx),
+            cashOnDelivery: order.payments.length === 0,
             elapsedMinutes: Math.floor((now - new Date(order.created_at).getTime()) / 60000),
             items: order.order_items.map((item) => ({
               name: item.menu_item_name,
@@ -263,7 +266,9 @@ export const dispatchRoutes: FastifyPluginAsync = async (fastify) => {
               : `Order ${result.order.public_ref} handoff recorded as ${result.outcome}.`,
           orderId: result.order.id,
           outcome: result.outcome,
-          orderStatus: result.order.status
+          orderStatus: result.order.status,
+          cashCollectedUgx: result.cashCollectedUgx || 0,
+          changeUgx: result.changeUgx || 0
         });
       } catch (error) {
         return mapHandoffError(error, reply);

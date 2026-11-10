@@ -235,6 +235,8 @@ export async function main() {
   await prisma.payment_events.deleteMany();
   await prisma.payments.deleteMany();
   await prisma.order_items.deleteMany();
+  await prisma.stock_movements.deleteMany();
+  await prisma.supplier_orders.deleteMany();
   await prisma.orders.deleteMany();
   await prisma.recipe_bom.deleteMany();
   await prisma.menu_items.deleteMany();
@@ -246,8 +248,7 @@ export async function main() {
   await prisma.users.deleteMany();
 
   // 2. CREATE STAFF ACCOUNTS (7 aligned staff records).
-  // Zito is cross-outlet (outlet = NULL). Every waiter/kitchen user must have
-  // one outlet; the database CHECK enforces it.
+  // Managers are scoped to their respective outlets, like all other staff.
   const pinHash = await bcrypt.hash(DEMO_PIN, BCRYPT_COST);
 
   const zito = await prisma.users.create({
@@ -255,7 +256,7 @@ export async function main() {
       full_name: 'Zito Mbowe',
       phone_number: '256700000000',
       role: 'MANAGER_ADMIN',
-      outlet: null,
+      outlet: 'OBUNUZI_YMCA',
       pin_hash: pinHash
     }
   });
@@ -1158,7 +1159,7 @@ export async function main() {
 
   console.log('Seeding completed successfully.');
   console.log('Staff accounts seeded (PIN: 1234):');
-  console.log('  Manager / Admin : Zito Mbowe       256700000000  (cross-outlet)');
+  console.log('  Manager / Admin : Zito Mbowe       256700000000  (Obunuzi YMCA)');
   console.log('  Manager / Admin : Cyrus M.         256768550986  (Foodizo Ham Towers)');
   console.log('  Waiter / FOH    : Sarah K.         256772555666  (Foodizo Ham Towers)');
   console.log('  Kitchen Staff   : Chef Juma        256772333444  (Foodizo Ham Towers)');

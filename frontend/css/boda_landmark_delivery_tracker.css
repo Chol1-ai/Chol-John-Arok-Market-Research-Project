@@ -5,6 +5,7 @@
  */
 
 @import './theme_tokens.css';
+@import './customer_prototype_support.css?v=3';
 
 /* Drop-off Zone & Landmark Instructions Card */
 .landmark-guide-card {
@@ -74,4 +75,3 @@
   text-decoration: none;
   box-shadow: var(--shadow-level-1);
 }
-
