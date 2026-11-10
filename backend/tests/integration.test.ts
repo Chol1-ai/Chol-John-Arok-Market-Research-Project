@@ -32,7 +32,7 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
   const auth = (token: string) => ({ authorization: `Bearer ${token}` });
 
   async function inject(
-    method: 'GET' | 'POST' | 'PATCH',
+    method: 'GET' | 'POST' | 'PATCH' | 'DELETE',
     url: string,
     options: { token?: string; payload?: unknown; headers?: Record<string, string> } = {}
   ) {
@@ -206,6 +206,15 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
     await app?.close();
   });
 
+  it('reports API and database readiness', async () => {
+    const res = await inject('GET', '/api/v1/health');
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toMatchObject({
+      status: 'UP',
+      service: 'foodizo-obunuzi-fastify-api'
+    });
+  });
+
   it('serves a public staff directory without leaking phone numbers or PIN hashes', async () => {
     const res = await inject('GET', '/api/v1/auth/terminal-staff');
     expect(res.statusCode).toBe(200);
@@ -275,6 +284,65 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
       });
       expect(audit).not.toBeNull();
       expect(JSON.stringify(audit?.after_json)).not.toContain(payload.pin);
+
+      const staffToken = (login.json() as Json).token as string;
+      const anonymousDelete = await inject('DELETE', `/api/v1/auth/staff/${createdId}`);
+      expect(anonymousDelete.statusCode).toBe(401);
+
+      const nonManagerDelete = await inject('DELETE', `/api/v1/auth/staff/${createdId}`, {
+        token: tokens.sarah
+      });
+      expect(nonManagerDelete.statusCode).toBe(403);
+
+      const crossOutletDelete = await inject('DELETE', `/api/v1/auth/staff/${createdId}`, {
+        token: tokens.zito
+      });
+      expect(crossOutletDelete.statusCode).toBe(403);
+
+      const invalidId = await inject('DELETE', '/api/v1/auth/staff/not-a-uuid', {
+        token: tokens.cyrus
+      });
+      expect(invalidId.statusCode).toBe(400);
+
+      const removed = await inject('DELETE', `/api/v1/auth/staff/${createdId}`, {
+        token: tokens.cyrus
+      });
+      expect(removed.statusCode).toBe(200);
+      expect((removed.json() as Json).success).toBe(true);
+
+      const deactivatedUser = await app.prisma.users.findUniqueOrThrow({
+        where: { id: createdId },
+        select: { is_active: true }
+      });
+      expect(deactivatedUser.is_active).toBe(false);
+
+      const revokedSession = await app.prisma.user_sessions.findFirst({
+        where: { user_id: createdId, revoked_at: { not: null } }
+      });
+      expect(revokedSession).not.toBeNull();
+
+      const revokedTokenRequest = await inject('GET', '/api/v1/auth/me', { token: staffToken });
+      expect(revokedTokenRequest.statusCode).toBe(401);
+
+      const repeatedDelete = await inject('DELETE', `/api/v1/auth/staff/${createdId}`, {
+        token: tokens.cyrus
+      });
+      expect(repeatedDelete.statusCode).toBe(404);
+
+      const managerDelete = await inject('DELETE', `/api/v1/auth/staff/${staff.zito.id}`, {
+        token: tokens.cyrus
+      });
+      expect(managerDelete.statusCode).toBe(404);
+      const managerAccount = await app.prisma.users.findUniqueOrThrow({
+        where: { id: staff.zito.id },
+        select: { is_active: true }
+      });
+      expect(managerAccount.is_active).toBe(true);
+
+      const removalAudit = await app.prisma.audit_log.findFirst({
+        where: { entity_id: createdId, action: 'STAFF_ACCOUNT_DEACTIVATED' }
+      });
+      expect(removalAudit).not.toBeNull();
     } finally {
       await app.prisma.users.deleteMany({ where: { phone_number: phoneNumber } });
     }

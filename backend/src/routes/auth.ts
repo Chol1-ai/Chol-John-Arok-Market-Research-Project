@@ -37,6 +37,10 @@ const createStaffSchema = z.object({
   outlet: z.enum(['FOODIZO_HAM_TOWERS', 'OBUNUZI_YMCA'])
 });
 
+const staffIdParamsSchema = z.object({
+  id: z.string().uuid()
+});
+
 const ROLE_LABELS: Record<UserRole, string> = {
   CUSTOMER: 'Customer',
   WAITER_FOH: 'Waiter / FOH',
@@ -148,6 +152,103 @@ export const authRoutes: FastifyPluginAsync = async (fastify) => {
         }
         throw error;
       }
+    }
+  );
+
+  fastify.delete(
+    '/staff/:id',
+    { preHandler: [fastify.requireRole(['MANAGER_ADMIN'])] },
+    async (request, reply) => {
+      const { id } = staffIdParamsSchema.parse(request.params);
+      const manager = request.user!;
+
+      const outcome = await fastify.prisma.$transaction(async (transaction) => {
+        const user = await transaction.users.findUnique({
+          where: { id },
+          select: {
+            id: true,
+            full_name: true,
+            role: true,
+            outlet: true,
+            is_active: true
+          }
+        });
+
+        if (
+          !user ||
+          !user.is_active ||
+          (user.role !== 'WAITER_FOH' && user.role !== 'KITCHEN_STAFF')
+        ) {
+          return { kind: 'not-found' as const };
+        }
+
+        if (manager.outlet && user.outlet !== manager.outlet) {
+          return { kind: 'forbidden' as const };
+        }
+
+        const deactivated = await transaction.users.updateMany({
+          where: {
+            id: user.id,
+            is_active: true,
+            role: { in: ['WAITER_FOH', 'KITCHEN_STAFF'] },
+            ...(manager.outlet ? { outlet: manager.outlet } : {})
+          },
+          data: { is_active: false }
+        });
+        if (deactivated.count === 0) {
+          return { kind: 'not-found' as const };
+        }
+
+        await transaction.user_sessions.updateMany({
+          where: { user_id: user.id, revoked_at: null },
+          data: { revoked_at: new Date() }
+        });
+
+        await transaction.audit_log.create({
+          data: {
+            actor_user_id: manager.userId,
+            actor_role: manager.role,
+            outlet: user.outlet,
+            action: 'STAFF_ACCOUNT_DEACTIVATED',
+            entity_type: 'USER',
+            entity_id: user.id,
+            before_json: {
+              fullName: user.full_name,
+              role: user.role,
+              outlet: user.outlet,
+              isActive: true
+            },
+            after_json: { isActive: false },
+            ip_address: request.ip
+          }
+        });
+
+        return { kind: 'deactivated' as const, fullName: user.full_name };
+      });
+
+      if (outcome.kind === 'forbidden') {
+        return reply.status(403).send({
+          statusCode: 403,
+          error: 'Forbidden',
+          code: 'OUTLET_FORBIDDEN',
+          message: `This manager account is scoped to ${manager.outlet}.`
+        });
+      }
+
+      if (outcome.kind === 'not-found') {
+        return reply.status(404).send({
+          statusCode: 404,
+          error: 'Not Found',
+          code: 'STAFF_ACCOUNT_NOT_FOUND',
+          message: 'Active waiter or kitchen staff account not found.'
+        });
+      }
+
+      reply.header('Cache-Control', 'no-store');
+      return reply.send({
+        success: true,
+        message: `${outcome.fullName}'s account was deactivated and active sessions were revoked.`
+      });
     }
   );
 

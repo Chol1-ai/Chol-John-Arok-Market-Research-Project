@@ -68,6 +68,13 @@ DIGEST_RECIPIENT_PHONE=+2567XXXXXXXX
 DIGEST_CRON_SCHEDULE="30 21 * * *"
 ```
 
+Production startup now fails closed unless `DATABASE_URL` is explicit, `JWT_SECRET` and `PAYMENTS_WEBHOOK_SECRET` are unique values of at least 32 characters, `HOST` is `127.0.0.1`, and the configured CORS origins and digest URL use HTTPS. The startup error names invalid settings but never echoes their values. Validate deployment configuration before enabling the service:
+
+```bash
+cd /opt/foodizo/backend
+NODE_ENV=production node --input-type=module -e "import('./dist/config.js').then(() => console.log('Production configuration is valid'))"
+```
+
 Add real MTN/Airtel and Africa's Talking credentials only when those channels are live. The backend accepts sandbox values for local development.
 
 > **Production cookie rule:** `NODE_ENV=production` makes the `foodizo_session` cookie `Secure`. Terminate HTTPS in front of the frontend (Caddy, nginx, or Cloudflare Tunnel); otherwise browsers will not store the login cookie over plain HTTP.
@@ -183,7 +190,7 @@ Do not open PostgreSQL (`5432`) or the printer port (`9100`) to the LAN. The pri
 ### 0.8 Go-live verification
 
 ```bash
-curl -fsS http://127.0.0.1:4000/api/v1/health       # {"status":"UP",...}
+curl -fsS http://127.0.0.1:4000/api/v1/health       # {"status":"UP",...}; checks database connectivity
 curl -fsS http://127.0.0.1:3000/ | head             # launch hub HTML
 curl -fsS http://127.0.0.1:3000/api/v1/health       # proxied API
 ```
@@ -413,7 +420,7 @@ Do not run `prisma migrate dev` on production; it is an interactive development 
 | :--- | :--- | :--- |
 | API service | `sudo systemctl status foodizo-api --no-pager` | Daily |
 | Frontend service | `sudo systemctl status foodizo-web --no-pager` | Daily |
-| API health | `curl -fsS http://127.0.0.1:4000/api/v1/health` | Daily / monitoring |
+| API/database readiness | `curl -fsS http://127.0.0.1:4000/api/v1/health` | Daily / monitoring |
 | Frontend health | `curl -fsS http://127.0.0.1:3000/api/v1/health` | Daily / monitoring |
 | Disk space | `df -h /` | Weekly |
 | Backup exists | `ls -lh /var/backups/foodizo` | Daily |

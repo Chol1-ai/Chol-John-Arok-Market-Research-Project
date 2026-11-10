@@ -63,6 +63,21 @@
     return `UGX ${Number(value || 0).toLocaleString('en-UG')}`;
   }
 
+  function defaultMealImage(item) {
+    const name = item.name.toLowerCase();
+    if (name.includes('water')) return '/images/foodizo-bottled-water.jpg';
+    if (name.includes('juice')) return '/images/foodizo-juice.jpg';
+    if (name.includes('chicken') && name.includes('chips')) return '/images/foodizo-chicken-chips.jpg';
+    if (name.includes('chips')) return '/images/foodizo-plain-chips.jpg';
+    if (name.includes('matooke')) return '/images/foodizo-matooke.jpg';
+    if (name.includes('rice') && name.includes('beans')) return '/images/foodizo-rice-beans.jpg';
+    if (name.includes('luwombo') || name.includes('tilapia') || name.includes('fish')) {
+      return '/images/foodizo-luwombo.jpg';
+    }
+    if (name.includes('rolex')) return '/images/foodizo-rolex.jpg';
+    return null;
+  }
+
   async function request(path, options) {
     const response = await fetch(path, {
       credentials: 'same-origin',
@@ -162,8 +177,13 @@
       return;
     }
     elements.menu.innerHTML = items.map((item) => {
-      const image = typeof item.imageUrl === 'string' && item.imageUrl.startsWith('/api/v1/menu-items/images/')
-        ? `<img src="${escapeHtml(item.imageUrl)}" alt="" loading="lazy" />`
+      const uploadedImage = typeof item.imageUrl === 'string' &&
+        item.imageUrl.startsWith('/api/v1/menu-items/images/')
+        ? item.imageUrl
+        : null;
+      const fallbackImage = item.hideOriginalImage ? null : defaultMealImage(item);
+      const image = uploadedImage || fallbackImage
+        ? `<img src="${escapeHtml(uploadedImage || fallbackImage)}" alt="${escapeHtml(item.name)}" loading="lazy" />`
         : escapeHtml(item.name.slice(0, 1).toUpperCase());
       return `
         <article class="customer-meal">
@@ -180,6 +200,17 @@
         </article>
       `;
     }).join('');
+    elements.menu.querySelectorAll('.customer-meal-photo img').forEach((image) => {
+      image.addEventListener('error', () => {
+        const item = items.find((row) => row.name === image.alt);
+        const fallbackImage = item && !item.hideOriginalImage ? defaultMealImage(item) : null;
+        if (fallbackImage && image.src !== new URL(fallbackImage, location.href).href) {
+          image.src = fallbackImage;
+          return;
+        }
+        image.parentElement.textContent = image.alt.slice(0, 1).toUpperCase();
+      }, { once: true });
+    });
   }
 
   function renderCart() {

@@ -52,10 +52,11 @@
     .hero { display: grid; grid-template-columns: 1fr .88fr; align-items: center; gap: 38px; min-height: 410px; padding: 40px 0 32px; }
     .eyebrow { display: inline-flex; align-items: center; gap: 8px; color: var(--green); font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
     .eyebrow-dot { width: 7px; height: 7px; border-radius: 50%; background: #e49a39; }
-    h1 { max-width: 610px; margin: 16px 0 14px; font-size: clamp(36px, 5vw, 58px); line-height: 1.06; letter-spacing: -.055em; }
-    .hero-copy { max-width: 520px; color: var(--muted); font-size: 15px; line-height: 1.8; }
-    .hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 23px; }
-    .locations { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 25px; }
+    .hero > :first-child { text-align: center; }
+    h1 { max-width: 610px; margin: 16px auto 14px; color: var(--green); font-size: clamp(36px, 5vw, 58px); line-height: 1.06; letter-spacing: -.055em; text-wrap: balance; }
+    .hero-copy { max-width: 520px; margin: 0 auto; color: var(--muted); font-size: 15px; line-height: 1.8; }
+    .hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 23px; }
+    .locations { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 25px; }
     .location-chip { display: inline-flex; align-items: center; gap: 6px; padding: 8px 11px; border: 1px solid var(--line); border-radius: 999px; background: rgba(255,255,255,.64); color: #58625a; font-size: 11px; font-weight: 600; }
     .location-chip .material-symbols-outlined { color: var(--red); font-size: 15px; }
     .hero-photo { position: relative; min-height: 330px; overflow: hidden; border-radius: 26px; background: #d9cdb9; box-shadow: 0 22px 50px rgba(50, 42, 30, .14); }

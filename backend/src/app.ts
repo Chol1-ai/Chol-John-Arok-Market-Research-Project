@@ -50,13 +50,23 @@ export async function buildApp(): Promise<FastifyInstance> {
   await app.register(errorHandlerPlugin);
 
   // 3. Health Check
-  app.get('/api/v1/health', async () => {
-    return {
-      status: 'UP',
-      service: 'foodizo-obunuzi-fastify-api',
-      environment: config.NODE_ENV,
-      timestamp: new Date().toISOString()
-    };
+  app.get('/api/v1/health', async (_request, reply) => {
+    try {
+      await app.prisma.$queryRaw`SELECT 1`;
+      return {
+        status: 'UP',
+        service: 'foodizo-obunuzi-fastify-api',
+        ...(config.NODE_ENV === 'production' ? {} : { environment: config.NODE_ENV }),
+        timestamp: new Date().toISOString()
+      };
+    } catch {
+      app.log.error('Health check failed: database unavailable');
+      return reply.code(503).send({
+        status: 'DOWN',
+        service: 'foodizo-obunuzi-fastify-api',
+        timestamp: new Date().toISOString()
+      });
+    }
   });
 
   // 4. API Domain Routes

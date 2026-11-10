@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
   <link rel="stylesheet" href="/css/theme_tokens.css" />
-  <link rel="stylesheet" href="/css/live_surfaces.css" />
+  <link rel="stylesheet" href="/css/live_surfaces.css?v=4" />
 </head>
 <body class="ls-body" data-surface="admin">
   <a class="ls-skip" href="#main-content">Skip to main content</a>
@@ -278,10 +278,11 @@
                   <th>Role</th>
                   <th>Outlet</th>
                   <th>Last login</th>
+                  <th>Access</th>
                 </tr>
               </thead>
               <tbody id="admin-staff-body">
-                <tr><td colspan="4" class="ls-help">Loading staff…</td></tr>
+                <tr><td colspan="5" class="ls-help">Loading staff…</td></tr>
               </tbody>
             </table>
           </div>
@@ -333,6 +334,7 @@
             <p class="ls-help">The PIN is saved as a secure hash and is not shown again. Share it directly with the staff member.</p>
             <p class="ls-help" id="admin-create-staff-status" role="status" aria-live="polite"></p>
           </form>
+          <p class="ls-help">Use the staff roster above to remove access. Removing an account deactivates it, revokes active sessions, and preserves its history.</p>
         </section>
 
         <section class="ls-card">
@@ -548,6 +550,6 @@
   </footer>
 
   <script src="/js/api.js"></script>
-  <script src="/js/admin.js"></script>
+  <script src="/js/admin.js?v=2"></script>
 </body>
 </html>

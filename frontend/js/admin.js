@@ -287,7 +287,7 @@
   function renderStaff() {
     const staff = STATE.overview.staff || [];
     if (!staff.length) {
-      els.staffBody.innerHTML = '<tr><td colspan="4" class="ls-help">No staff rows in this scope.</td></tr>';
+      els.staffBody.innerHTML = '<tr><td colspan="5" class="ls-help">No staff rows in this scope.</td></tr>';
       return;
     }
     els.staffBody.innerHTML = staff
@@ -298,6 +298,11 @@
           <td>${F.escapeHtml(roleLabel(row.role))}</td>
           <td>${F.escapeHtml(outletLabel(row.outlet))}</td>
           <td>${row.last_login_at ? F.relativeTime(row.last_login_at) : 'Never'}</td>
+          <td>${
+            ['WAITER_FOH', 'KITCHEN_STAFF'].includes(row.role)
+              ? `<button class="ls-btn ls-btn--danger ls-btn--small" type="button" data-staff-remove="${F.escapeHtml(row.id)}" data-staff-name="${F.escapeHtml(row.full_name)}">Remove access</button>`
+              : '<span class="ls-help">Manager</span>'
+          }</td>
         </tr>`
       )
       .join('');
@@ -1019,6 +1024,43 @@
       return;
     }
 
+    async function removeStaffAccount(button) {
+      if (STATE.staffBusy) return;
+
+      const staffId = button.dataset.staffRemove;
+      const staffName = button.dataset.staffName;
+      if (!staffId || !staffName) return;
+      if (
+        !window.confirm(
+          `Remove ${staffName}'s staff access? They will be signed out, and their operational history will be retained.`
+        )
+      ) {
+        return;
+      }
+
+      STATE.staffBusy = true;
+      button.disabled = true;
+      button.textContent = 'Removing…';
+      try {
+        const data = await F.request(`/api/v1/auth/staff/${encodeURIComponent(staffId)}`, {
+          method: 'DELETE'
+        });
+        els.staffStatus.textContent = data.message || `${staffName}'s access was removed.`;
+        F.toast(data.message || 'Staff access removed.', 'success');
+        try {
+          await loadOverview(false);
+        } catch (error) {
+          F.toast(error.message || 'Access was removed, but the staff roster did not refresh.', 'error');
+        }
+      } catch (error) {
+        F.toast(error.message || 'Staff access could not be removed.', 'error');
+      } finally {
+        STATE.staffBusy = false;
+        button.disabled = false;
+        button.textContent = 'Remove access';
+      }
+    }
+
     STATE.staffBusy = true;
     els.createStaffSubmit.disabled = true;
     els.createStaffSubmit.textContent = 'Creating account…';
@@ -1167,6 +1209,10 @@
     els.cashForm.addEventListener('submit', submitCashCount);
     els.surplusForm.addEventListener('submit', submitSurplus);
     els.createStaffForm.addEventListener('submit', submitStaffAccount);
+    els.staffBody.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-staff-remove]');
+      if (button) removeStaffAccount(button);
+    });
     els.menuCreateForm.addEventListener('submit', submitMenuItem);
     els.menuOutlet.addEventListener('change', () => {
       loadManagerMenu();
