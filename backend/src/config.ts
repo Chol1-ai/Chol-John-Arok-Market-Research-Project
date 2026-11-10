@@ -54,8 +54,27 @@ const envSchema = z.object({
 
 export function loadConfig(environment: NodeJS.ProcessEnv = process.env) {
   const parsed = envSchema.parse(environment);
+  const renderExternalUrl = environment.RENDER_EXTERNAL_URL;
+  let renderOrigin: string | undefined;
+  if (renderExternalUrl) {
+    try {
+      const url = new URL(renderExternalUrl);
+      if (url.protocol === 'https:') renderOrigin = url.origin;
+    } catch {
+      renderOrigin = undefined;
+    }
+  }
+  const effective = {
+    ...parsed,
+    ...(parsed.NODE_ENV === 'production' && renderOrigin
+      ? {
+          CORS_ORIGIN: environment.CORS_ORIGIN || renderOrigin,
+          DIGEST_APP_URL: environment.DIGEST_APP_URL || renderOrigin
+        }
+      : {})
+  };
 
-  if (parsed.NODE_ENV === 'production') {
+  if (effective.NODE_ENV === 'production') {
     const invalid: string[] = [];
     const isHttpsUrl = (value: string | undefined) => {
       if (!value) return false;
@@ -77,9 +96,9 @@ export function loadConfig(environment: NodeJS.ProcessEnv = process.env) {
     if (!environment.PAYMENTS_WEBHOOK_SECRET || environment.PAYMENTS_WEBHOOK_SECRET.length < 32) {
       invalid.push('PAYMENTS_WEBHOOK_SECRET must be set to at least 32 characters');
     }
-    if (parsed.HOST !== '127.0.0.1') invalid.push('HOST must be 127.0.0.1');
+    if (effective.HOST !== '127.0.0.1') invalid.push('HOST must be 127.0.0.1');
 
-    const origins = environment.CORS_ORIGIN?.split(',').map((origin) => origin.trim()) ?? [];
+    const origins = effective.CORS_ORIGIN.split(',').map((origin) => origin.trim());
     if (
       origins.length === 0 ||
       origins.some((origin) => {
@@ -90,7 +109,7 @@ export function loadConfig(environment: NodeJS.ProcessEnv = process.env) {
     ) {
       invalid.push('CORS_ORIGIN must contain only HTTPS origins');
     }
-    if (!isHttpsUrl(environment.DIGEST_APP_URL)) {
+    if (!isHttpsUrl(effective.DIGEST_APP_URL)) {
       invalid.push('DIGEST_APP_URL must be an HTTPS URL');
     }
 
@@ -99,7 +118,7 @@ export function loadConfig(environment: NodeJS.ProcessEnv = process.env) {
     }
   }
 
-  return parsed;
+  return effective;
 }
 
 export const config = loadConfig();

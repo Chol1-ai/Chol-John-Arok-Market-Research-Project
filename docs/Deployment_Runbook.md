@@ -1,11 +1,36 @@
 ﻿# Deployment Runbook — Edge Node, LAN & Recovery
 
-**Deployment model:** Single in-store edge node. Fastify/Prisma API, PostgreSQL, and the static frontend server run on the same machine. The cloud tunnel is optional remote administration, not a live ticket-sync layer.<br>
+**Production deployment model:** Single in-store edge node. Fastify/Prisma API, PostgreSQL, and the static frontend server run on the same machine. The cloud tunnel is optional remote administration, not a live ticket-sync layer. A temporary Render + Neon preview is documented below.<br>
 **Target hardware:** Intel NUC / mini-PC (recommended) or Raspberry Pi 5 (8 GB) with SSD and UPS. The stack uses static HTML/CSS/JS, Fastify, and PostgreSQL; it does **not** run Next.js or Redis.<br>
 **Target sites:** Foodizo (Ham Towers) and Obunuzi (Opposite YMCA), Wandegeya, Kampala.<br>
 **Related specifications:** `Tech_Stack.md` · `Repo_Scaffold_and_Config.md` · `Hardware_and_Peripherals.md` · `Daily_Audit_Digest.md` · `Seed_Data_and_Testing.md` · `Payment_Integration.md`
 
 ---
+
+## Temporary hosted preview (Render + Neon)
+
+The repository includes a Render Blueprint at [`render.yaml`](../render.yaml) for a temporary, single-service demo. Render runs the static frontend and Fastify API from this repository; Neon provides PostgreSQL. This is separate from the on-site production design below.
+
+1. Push the repository to GitHub and create a Neon project. Choose a database region close to the Render region you plan to use.
+2. Copy the Neon **direct (non-pooled) PostgreSQL connection string** with SSL enabled. Do not commit it or paste it into source files.
+3. In Render, choose **New → Blueprint**, select this repository, and apply `render.yaml`. Provide the Neon connection string as `DATABASE_URL`; Render generates the JWT and webhook secrets.
+4. Render builds the Prisma client and backend, then the start command applies pending Prisma migrations before starting both servers. The app uses Render's HTTPS service URL for same-origin CORS and digest links automatically. A health check at `/api/v1/health` verifies API and database readiness.
+5. The first deploy creates an empty schema. For a demo only, you may seed a **fresh, disposable Neon database** once from the repository root in PowerShell, using the same values shown in Render for `DATABASE_URL`, `JWT_SECRET`, and `PAYMENTS_WEBHOOK_SECRET`:
+
+   ```powershell
+   $env:NODE_ENV = 'production'
+   $env:HOST = '127.0.0.1'
+   $env:RENDER_EXTERNAL_URL = 'https://<your-service>.onrender.com'
+   $env:DATABASE_URL = '<Neon direct connection string>'
+   $env:JWT_SECRET = '<Render-generated JWT secret>'
+   $env:PAYMENTS_WEBHOOK_SECRET = '<Render-generated webhook secret>'
+   $env:ALLOW_DESTRUCTIVE_SEED = 'true'
+   npm --prefix backend run prisma:seed
+   ```
+
+   **The seed is destructive:** it replaces operational data and creates demo accounts whose PIN is `1234`. Run it only against a fresh disposable database, never rerun it on a database with data to keep, and do not enter real customer or business data into this public demo. Close the PowerShell window when finished so the temporary environment variables are cleared.
+
+Free Render web services sleep after inactivity, have ephemeral local filesystems, and can take around a minute to wake. The free Neon database has its own usage and scale-to-zero limits. Uploaded files/local changes are not durable, backups and production reliability are not provided by this setup, and the app's live MoMo flow refuses simulated payments in production mode. Use it only to preview/share the application—not for actual restaurant operations or payments. For real operations, use the on-site edge deployment below and complete its acceptance checklist.
 
 ## 0. First-Boot Checklist — New Edge Machine (Ubuntu Server 22.04/24.04 LTS)
 

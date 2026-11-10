@@ -49,4 +49,26 @@ describe('production configuration', () => {
       })
     ).toThrow('DATABASE_URL must be set');
   });
+
+  it('uses Render HTTPS service URL for same-origin CORS and digest links by default', () => {
+    const config = loadConfig({
+      ...productionEnvironment,
+      CORS_ORIGIN: undefined,
+      DIGEST_APP_URL: undefined,
+      RENDER_EXTERNAL_URL: 'https://foodizo-obunuzi-demo.onrender.com'
+    });
+    expect(config.CORS_ORIGIN).toBe('https://foodizo-obunuzi-demo.onrender.com');
+    expect(config.DIGEST_APP_URL).toBe('https://foodizo-obunuzi-demo.onrender.com');
+  });
+
+  it('does not use a non-HTTPS Render URL as a production origin', () => {
+    expect(() =>
+      loadConfig({
+        ...productionEnvironment,
+        CORS_ORIGIN: undefined,
+        DIGEST_APP_URL: undefined,
+        RENDER_EXTERNAL_URL: 'http://foodizo-obunuzi-demo.onrender.com'
+      })
+    ).toThrow(/CORS_ORIGIN.*DIGEST_APP_URL/);
+  });
 });
