@@ -101,18 +101,9 @@ npm run prisma:migrate
 npm run prisma:seed
 ```
 
-#### Seeded Staff Credentials (demo PIN `1234` for every account):
-| Staff member | Role | Outlet | Phone |
-| :--- | :--- | :--- | :--- |
-| Zito Mbowe | `MANAGER_ADMIN` | Obunuzi · Opp. YMCA | `256700000000` |
-| Cyrus M. | `MANAGER_ADMIN` | Foodizo · Ham Towers | `256768550986` |
-| Sarah K. | `WAITER_FOH` | Foodizo · Ham Towers | `256772555666` |
-| Chef Juma | `KITCHEN_STAFF` | Foodizo · Ham Towers | `256772333444` |
-| Mubiru Mahad | `WAITER_FOH` | Obunuzi · Opp. YMCA | `256760723280` |
-| Prossy N. | `WAITER_FOH` | Obunuzi · Opp. YMCA | `256772111222` |
-| Chef Aisha | `KITCHEN_STAFF` | Obunuzi · Opp. YMCA | `256772777888` |
+The development seed creates staff accounts for both outlets. Seeded credentials are for disposable development and test databases only; never use them in production. Staff sign in with their registered phone number and PIN. The login page does not expose a public staff directory.
 
-Each outlet seeds 16 tables (`T-01`–`T-12`, `B-01`–`B-04`). The live login pad reads the public display-only directory; log in with the staff card or phone number and PIN `1234`.
+Each outlet seeds 16 tables (`T-01`–`T-12`, `B-01`–`B-04`).
 
 ### 3.4 Running the Server
 ```bash
@@ -137,8 +128,7 @@ Base URL: `http://localhost:4000/api/v1` (the frontend on port 3000 proxies the 
 
 | Method | Endpoint | Description | Role / Access |
 | :--- | :--- | :--- | :--- |
-| `GET` | `/api/v1/auth/terminal-staff` | Display-only staff directory for the login pad (name, role, outlet, initials; no phone or PIN data) | Public, 30/min |
-| `POST` | `/api/v1/auth/pin` | Authenticate with `staffId` or `phoneNumber` plus 4-digit `pin`; returns a bearer token and sets the session cookie | Public, 10/min |
+| `POST` | `/api/v1/auth/pin` | Authenticate with a registered `phoneNumber` plus 4-digit `pin`; returns a bearer token and sets the session cookie | Public, 10/min; five failures lock the account for 15 minutes |
 | `GET` | `/api/v1/auth/me` | Current user, role label, and role home path | Any authenticated staff |
 | `POST` | `/api/v1/auth/logout` | Revoke the current `user_sessions` row and clear the session cookie | Any authenticated staff |
 

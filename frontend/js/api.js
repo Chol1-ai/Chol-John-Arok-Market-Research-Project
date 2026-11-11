@@ -151,10 +151,10 @@
     return payload;
   }
 
-  async function login(staffId, pin) {
+  async function login(phoneNumber, pin) {
     const data = await request('/api/v1/auth/pin', {
       method: 'POST',
-      body: JSON.stringify({ staffId, pin }),
+      body: JSON.stringify({ phoneNumber, pin }),
       skipAuthRedirect: true
     });
     setSession(data.token, data.user);

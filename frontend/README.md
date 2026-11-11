@@ -18,7 +18,7 @@ frontend/
 │
 ├── js/                                                     # Live surface controllers (vanilla ES modules)
 │   ├── api.js                                              # Fetch client, session guard, role routing, toasts
-│   ├── login.js                                            # Staff directory, PIN keypad, login & logout
+│   ├── login.js                                            # Staff phone entry, PIN keypad, login & logout
 │   ├── pos.js                                              # Tables, menu, order creation, items, settle, cancel
 │   ├── kds.js                                              # Ticket polling, claim, bump
 │   ├── dispatch.js                                         # Active/review queues, rider assign, delivery outcome
@@ -75,7 +75,7 @@ These routes run against the Fastify/Prisma backend and the real-time `/ws/event
 
 | Surface ID | Screen Role | Live Route | HTML | Controller | Access |
 | :---: | :--- | :--- | :--- | :--- | :--- |
-| **Surface 1** | Staff PIN Gateway | `/login` | [`html/staff_terminal_pin_login.html`](html/staff_terminal_pin_login.html) | [`js/login.js`](js/login.js) | Public directory; PIN required |
+| **Surface 1** | Staff PIN Gateway | `/login` | [`html/staff_terminal_pin_login.html`](html/staff_terminal_pin_login.html) | [`js/login.js`](js/login.js) | Phone number and PIN required; no public staff directory |
 | **Surface 3** | Floor POS / Table Tabs | `/pos` | [`live/pos.html`](live/pos.html) | [`js/pos.js`](js/pos.js) | `WAITER_FOH`, `MANAGER_ADMIN` |
 | **Surface 4** | Kitchen Display (KDS) | `/kds` | [`live/kds.html`](live/kds.html) | [`js/kds.js`](js/kds.js) | `KITCHEN_STAFF`, `MANAGER_ADMIN` |
 | **Surface 5** | Boda Dispatch Queue | `/dispatch` | [`live/dispatch.html`](live/dispatch.html) | [`js/dispatch.js`](js/dispatch.js) | `WAITER_FOH`, `MANAGER_ADMIN` |
@@ -83,7 +83,7 @@ These routes run against the Fastify/Prisma backend and the real-time `/ws/event
 
 Customer ordering is live at `/order` and `/customer`; token lookup and status tracking are live at `/tracker`. Former `/prototype/*` URLs redirect to their corresponding live screens. Staff routes remain protected by role-based authentication.
 
-The login page uses the public `/api/v1/auth/terminal-staff` display directory (name, role, outlet, initials only) and authenticates with `staffId` plus PIN. Other live pages use the shared [`js/api.js`](js/api.js) client, which relies on the HttpOnly `foodizo_session` cookie with a Bearer-token fallback.
+The login page accepts a staff member's registered mobile number and PIN; it does not display a public staff directory. PIN attempts are rate-limited by source IP and account failures are serialized before lockout updates. Other live pages use the shared [`js/api.js`](js/api.js) client, which relies on the HttpOnly `foodizo_session` cookie with a Bearer-token fallback.
 
 The launch hub at `/` links directly to the live customer and staff workflows.
 

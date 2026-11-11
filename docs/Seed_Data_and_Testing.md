@@ -4,7 +4,7 @@
 **Location Data:** Wandegeya, Kampala, Uganda<br>
 **Canonical seeder:** `backend/prisma/seed.ts`
 
-> **Development only:** every seeded account uses PIN `1234`. Change all PINs before real staff use. The seed is destructive and refuses to run in production unless `ALLOW_DESTRUCTIVE_SEED=true` is set.
+> **Development only:** seeded credentials are for disposable development and test databases. Provision new accounts before real staff use. The seed is destructive and refuses to run in production unless `ALLOW_DESTRUCTIVE_SEED=true` is set.
 
 ---
 
@@ -20,19 +20,11 @@ npm --prefix backend run prisma:seed
 
 The seed wipes development operational data (orders, payments, sessions, tables, menu, inventory, zones, surplus, cash counts, and digests), keeps append-only audit history, and rebuilds the canonical fixtures below.
 
-### 1.1 Staff Accounts (demo PIN `1234` for all)
+### 1.1 Staff Accounts
 
-| Staff member | Role | Outlet | Phone |
-| :--- | :--- | :--- | :--- |
-| Zito Mbowe | `MANAGER_ADMIN` | Obunuzi · Opp. YMCA | `256700000000` |
-| Cyrus M. | `MANAGER_ADMIN` | Foodizo · Ham Towers | `256768550986` |
-| Sarah K. | `WAITER_FOH` | Foodizo · Ham Towers | `256772555666` |
-| Chef Juma | `KITCHEN_STAFF` | Foodizo · Ham Towers | `256772333444` |
-| Mubiru Mahad | `WAITER_FOH` | Obunuzi · Opp. YMCA | `256760723280` |
-| Prossy N. | `WAITER_FOH` | Obunuzi · Opp. YMCA | `256772111222` |
-| Chef Aisha | `KITCHEN_STAFF` | Obunuzi · Opp. YMCA | `256772777888` |
+The development seed creates staff accounts for both outlets. Seeded credentials are for disposable development and test databases only; do not use them in production.
 
-The live login pad reads the public display-only directory and authenticates by `staffId` plus PIN. Phone-number login is also supported. Every role has a distinct home path: Waiter/FOH → `/pos`, Kitchen Staff → `/kds`, Manager/Admin → `/admin`.
+The live login page accepts a registered staff phone number and PIN; it does not display a public staff directory. Every role has a distinct home path: Waiter/FOH → `/pos`, Kitchen Staff → `/kds`, Manager/Admin → `/admin`.
 
 ### 1.2 Operational Fixtures
 
@@ -77,11 +69,11 @@ npm --prefix backend test
 
 ### 3.1 Authentication & Role Scope
 
-1. Open `/login`; confirm seven staff cards load from `GET /api/v1/auth/terminal-staff` without exposing phone numbers or PIN data.
-2. Log in with PIN `1234` as each role. Confirm the redirect: Waiter/FOH → `/pos`, Kitchen → `/kds`, Manager → `/admin`.
+1. Open `/login`; confirm there is no public staff list and the form asks for a phone number and PIN.
+2. Log in with seeded test accounts' phone numbers and configured test PINs. Confirm the redirect: Waiter/FOH → `/pos`, Kitchen → `/kds`, Manager → `/admin`.
 3. Confirm a Waiter cannot open `/admin` or `/kds`, a Kitchen user cannot open `/pos` or `/admin`, and a Manager can open all three.
 4. Confirm `GET /api/v1/auth/me` returns the role label and `homePath`, and `POST /api/v1/auth/logout` revokes the session and clears the cookie.
-5. Submit five wrong PINs; confirm the sixth attempt reports an account lock for 15 minutes.
+5. Submit concurrent wrong PINs for a test staff account; confirm the account records at most five failures before locking for 15 minutes, and invalid, unknown, and locked sign-ins return the same response.
 
 Managers can create Waiter/FOH or Kitchen Staff accounts from the `/admin` staff access form. `POST /api/v1/auth/staff` accepts a name, Ugandan mobile number, outlet, role, and four-digit PIN; it stores only a bcrypt hash, writes an audit entry, rejects duplicate phone numbers, and enforces the manager's outlet scope. Manager accounts cannot be provisioned from this form.
 

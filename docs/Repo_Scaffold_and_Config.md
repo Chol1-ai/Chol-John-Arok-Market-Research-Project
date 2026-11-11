@@ -57,7 +57,7 @@ Chol-John-Arok-Market-Research-Project/
     |   |   |-- prisma.ts
     |   |   `-- websocket.ts      # In-process WebSocket bus (/ws/events)
     |   |-- routes/
-    |   |   |-- auth.ts           # terminal-staff, pin, me, logout
+    |   |   |-- auth.ts           # staff PIN, me, logout
     |   |   |-- categories.ts
     |   |   |-- menu.ts           # menu list + availability/86
     |   |   |-- tables.ts         # occupancy + drawer kick
@@ -182,7 +182,7 @@ The authoritative schema is `backend/prisma/schema.prisma`. Do not duplicate it 
 
 ### 3.4 Seed
 
-`backend/prisma/seed.ts` is the canonical fixture source. It creates **7 staff users** with PIN `1234`, **16 tables per outlet** (`T-01…T-12`, `B-01…B-04`), menus, delivery zones, recipe BOMs, 16 orders, 4 delivery handoffs, 5 surplus logs, 5 digest flags, and balanced cash counts. Re-run it after E2E tests to restore the documented baseline:
+`backend/prisma/seed.ts` is the canonical fixture source. It creates **7 development-only staff users**, **16 tables per outlet** (`T-01…T-12`, `B-01…B-04`), menus, delivery zones, recipe BOMs, 16 orders, 4 delivery handoffs, 5 surplus logs, 5 digest flags, and balanced cash counts. Re-run it only against a disposable development database after E2E tests to restore the documented baseline:
 
 ```bash
 npm --prefix backend run prisma:seed
@@ -251,7 +251,7 @@ npm --prefix backend run dev             # API on :4000
 npm start                                # frontend on :3000
 ```
 
-Open `http://127.0.0.1:3000/` for the launch hub. The login page lists the seven seeded staff accounts; the PIN for every account is `1234`.
+Open `http://127.0.0.1:3000/` for the launch hub. Staff sign in with their registered phone number and PIN; the login page does not display a public staff directory. Do not use development seed credentials in production.
 
 ### 5.1 Quality Gate
 

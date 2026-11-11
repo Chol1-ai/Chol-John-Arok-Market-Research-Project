@@ -959,11 +959,11 @@ Phase 1 uses **staff login only**. Customers browse and order without an account
 
 ### 6.1 Login and session contract
 
-- **Credentials:** staff directory ID (`staffId`) or Ugandan phone number plus a 4-digit PIN. The PIN is bcrypt-hashed; the plaintext is never stored, logged, or returned.
-- **Endpoints:** `GET /api/v1/auth/terminal-staff` (public display directory), `POST /api/v1/auth/pin`, `POST /api/v1/auth/logout`, and `GET /api/v1/auth/me`.
+- **Credentials:** registered Ugandan phone number plus a 4-digit PIN. There is no public staff directory or public staff-ID login. The PIN is bcrypt-hashed; the plaintext is never stored, logged, or returned.
+- **Endpoints:** `POST /api/v1/auth/pin`, `POST /api/v1/auth/logout`, and `GET /api/v1/auth/me`.
 - **Cookie:** `foodizo_session`, a signed JWT in an `HttpOnly`, `SameSite=Lax`, `Path=/` cookie; `Secure` is enabled when `NODE_ENV=production`. API clients may instead send `Authorization: Bearer <token>`.
 - **Server-side session:** only the SHA-256 hash is stored in `user_sessions.token_hash`. Sessions expire after `JWT_EXPIRATION_HOURS` (default 12) and are revoked on logout. Each login includes a unique `jti` so rapid re-logins cannot collide.
-- **Brute-force control:** the PIN endpoint is limited to 10 requests/minute per IP. Five failed attempts lock the account for 15 minutes; a successful login clears the counter. The public directory exposes no phone numbers, PIN hashes, lock state, or session data.
+- **Brute-force control:** the PIN endpoint is limited to 10 requests/minute per IP. Five failed attempts lock the account for 15 minutes; database row locking serializes concurrent failure and success updates. Unknown, incorrect, and locked credentials receive the same generic response.
 - **CSRF:** the session cookie is `SameSite=Lax`; state-changing operations are `POST`/`PATCH`, never GET. The API CORS origin is restricted by `CORS_ORIGIN`. Do not treat a client-supplied role as authorization.
 - **Destructive actions:** cancellation is `MANAGER_ADMIN`-only. There is no shared override PIN and no waiter-initiated cancellation flow. The manager's own authenticated session is recorded in `audit_log`.
 - **Audit:** settlement, cancellation, refunds, cash counts, surplus logs, rider handoffs, and chit reprints write audit rows where implemented. Authorization is enforced in Fastify route guards, not by hiding buttons.
@@ -972,13 +972,13 @@ Phase 1 uses **staff login only**. Customers browse and order without an account
 
 | Surface / Endpoint | Allowed roles / access |
 | :--- | :--- |
-| `/login`, `/` | Public; `/login` reads the display-only staff directory |
+| `/login`, `/` | Public; `/login` accepts a registered staff phone number and PIN |
 | `/prototype/*` | Public static design previews; no live API behaviour |
 | `/pos` | `WAITER_FOH`, `MANAGER_ADMIN` |
 | `/kds` | `KITCHEN_STAFF`, `MANAGER_ADMIN` |
 | `/dispatch` | `WAITER_FOH`, `MANAGER_ADMIN` |
 | `/admin` | `MANAGER_ADMIN` |
-| `GET /api/v1/auth/terminal-staff`, `POST /api/v1/auth/pin` | Public (rate-limited) |
+| `POST /api/v1/auth/pin` | Public (rate-limited; account lockout after repeated failures) |
 | `GET /api/v1/auth/me`, `POST /api/v1/auth/logout` | Any authenticated staff |
 | `GET /api/v1/menu-items?outlet=...` | Public; active, non-86 items with server-owned prices |
 | `GET /api/v1/categories?outlet=...` | Public |

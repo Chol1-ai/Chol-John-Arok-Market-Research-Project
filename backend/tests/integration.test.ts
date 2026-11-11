@@ -24,7 +24,7 @@ type Json = Record<string, any>;
 describeIntegration('Foodizo & Obunuzi API integration', () => {
   let app: Awaited<ReturnType<typeof buildApp>>;
   let tokens: Record<string, string>;
-  let staff: Record<string, { id: string; outlet: string | null; role: string }>;
+  let staff: Record<string, { id: string; phone_number: string; outlet: string | null; role: string }>;
   let menu: Record<string, { foodizoChicken: string; foodizoRolex: string; obunuziLuwombo: string }>;
   let tableIds: Record<string, string>;
   let zoneIds: Record<string, string>;
@@ -129,7 +129,7 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
     app = await buildApp();
 
     const users = await app.prisma.users.findMany({
-      select: { id: true, full_name: true, role: true, outlet: true }
+      select: { id: true, phone_number: true, full_name: true, role: true, outlet: true }
     });
     const byName = Object.fromEntries(users.map((user) => [user.full_name, user]));
     staff = {
@@ -145,7 +145,7 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
     tokens = {};
     for (const [key, user] of Object.entries(staff)) {
       const res = await inject('POST', '/api/v1/auth/pin', {
-        payload: { staffId: user.id, pin: '1234' }
+        payload: { phoneNumber: user.phone_number, pin: '1234' }
       });
       expect(res.statusCode, `login for ${key}`).toBe(200);
       tokens[key] = (res.json() as Json).token as string;
@@ -215,19 +215,53 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
     });
   });
 
-  it('serves a public staff directory without leaking phone numbers or PIN hashes', async () => {
+  it('does not expose a public staff directory', async () => {
     const res = await inject('GET', '/api/v1/auth/terminal-staff');
-    expect(res.statusCode).toBe(200);
+    expect(res.statusCode).toBe(404);
+  });
 
-    const body = res.json() as Json;
-    expect(body.staff).toHaveLength(7);
-    expect(body.staff.some((row: Json) => row.fullName === 'Prossy N.')).toBe(true);
-    expect(body.staff.some((row: Json) => row.fullName === 'Chef Aisha')).toBe(true);
+  it('serializes failed PIN attempts and returns indistinguishable invalid-login responses', async () => {
+    const phoneNumber = '256770123457';
+    const payload = {
+      fullName: 'Integration PIN Lockout',
+      phoneNumber,
+      pin: '5831',
+      role: 'WAITER_FOH',
+      outlet: 'FOODIZO_HAM_TOWERS'
+    };
+    const created = await inject('POST', '/api/v1/auth/staff', {
+      token: tokens.cyrus,
+      payload
+    });
+    expect(created.statusCode).toBe(201);
+    const userId = (created.json() as Json).staff.id as string;
 
-    const serialized = JSON.stringify(body);
-    expect(serialized).not.toContain('256772111222');
-    expect(serialized).not.toContain('pinHash');
-    expect(body.staff[0].roleLabel).toBeDefined();
+    try {
+      const failures = await Promise.all(Array.from({ length: 8 }, () =>
+        inject('POST', '/api/v1/auth/pin', {
+          payload: { phoneNumber, pin: '0000' }
+        })
+      ));
+      expect(failures.every((response) => response.statusCode === 401)).toBe(true);
+
+      const unknownPhone = await inject('POST', '/api/v1/auth/pin', {
+        payload: { phoneNumber: '256770123458', pin: '0000' }
+      });
+      expect(unknownPhone.statusCode).toBe(401);
+      expect(unknownPhone.json().message).toBe(failures[0].json().message);
+
+      const lockedUser = await app.prisma.users.findUniqueOrThrow({ where: { id: userId } });
+      expect(lockedUser.failed_login_count).toBe(5);
+      expect(lockedUser.locked_until?.getTime()).toBeGreaterThan(Date.now());
+
+      const correctPinWhileLocked = await inject('POST', '/api/v1/auth/pin', {
+        payload: { phoneNumber, pin: payload.pin }
+      });
+      expect(correctPinWhileLocked.statusCode).toBe(401);
+      expect(correctPinWhileLocked.json().message).toBe(failures[0].json().message);
+    } finally {
+      await app.prisma.users.deleteMany({ where: { id: userId } });
+    }
   });
 
   it('lets managers create scoped staff PIN accounts without exposing credentials', async () => {
@@ -268,7 +302,7 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
 
       const createdId = createdBody.staff.id as string;
       const login = await inject('POST', '/api/v1/auth/pin', {
-        payload: { staffId: createdId, pin: payload.pin }
+        payload: { phoneNumber, pin: payload.pin }
       });
       expect(login.statusCode).toBe(200);
       expect((login.json() as Json).user.role).toBe('WAITER_FOH');
@@ -349,7 +383,7 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
     }
   });
 
-  it('authenticates by staffId, returns canonical role labels/home paths, and enforces logout revocation', async () => {
+  it('authenticates by phone number, returns canonical role labels/home paths, and enforces logout revocation', async () => {
     const me = await inject('GET', '/api/v1/auth/me', { token: tokens.prossy });
     expect(me.statusCode).toBe(200);
     const meBody = me.json() as Json;
@@ -374,7 +408,7 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
     // Later tests use this token to prove cross-outlet rejection, so restore
     // the session after asserting revocation.
     const relogin = await inject('POST', '/api/v1/auth/pin', {
-      payload: { staffId: staff.aisha.id, pin: '1234' }
+      payload: { phoneNumber: staff.aisha.phone_number, pin: '1234' }
     });
     expect(relogin.statusCode).toBe(200);
     tokens.aisha = (relogin.json() as Json).token as string;

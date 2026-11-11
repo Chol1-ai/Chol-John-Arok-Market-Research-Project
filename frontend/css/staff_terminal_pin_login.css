@@ -77,10 +77,6 @@
   display: none !important;
 }
 
-.login-layout:not(.has-selection) .login-directory {
-  grid-column: 1 / -1;
-}
-
 .login-welcome {
   position: relative;
   display: grid;
@@ -310,28 +306,32 @@
   box-shadow: 0 16px 40px rgba(32, 42, 36, 0.09);
 }
 
-.login-page .staff-card {
-  min-height: 76px;
-  padding: 0.625rem 0.85rem;
-  background: rgba(255, 255, 255, 0.9);
+.login-phone-entry {
+  display: grid;
+  gap: 0.5rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid #e5e7df;
+  border-radius: 1rem;
+  background: #fff;
+  color: #38443c;
+  font-size: 0.85rem;
+  font-weight: 700;
 }
 
-.login-page .staff-card > div:first-child {
-  gap: 0.7rem;
+.login-phone-input {
+  width: 100%;
+  min-height: 3.25rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid #d5ddd3;
+  border-radius: 0.8rem;
+  background: #fff;
+  color: #1d2d23;
+  font: inherit;
 }
 
-.login-page .staff-card > div:first-child > div:first-child {
-  width: 2.625rem;
-  height: 2.625rem;
-}
-
-.login-page .staff-card > div:last-child {
-  width: 1.875rem;
-  height: 1.875rem;
-}
-
-.login-page .staff-card.selected {
-  background: #fff3f0;
+.login-phone-input:focus {
+  border-color: #3c7659;
+  outline: 3px solid rgba(60, 118, 89, 0.18);
 }
 
 .login-auth #active-user-badge {
@@ -407,23 +407,9 @@
   min-height: 3.25rem;
 }
 
-.login-page #staff-filters {
-  margin: 0.35rem 0 0.5rem;
-}
-
-.login-page #staff-filters button {
-  border: 1px solid #e3e5de;
-}
-
 .login-page footer {
   background: transparent;
   box-shadow: none;
-}
-
-@media (min-width: 1024px) {
-  .login-layout.has-selection .login-welcome {
-    display: none;
-  }
 }
 
 @media (max-width: 640px) {
@@ -555,15 +541,4 @@
     padding: 1rem;
   }
 
-  #staff-filters {
-    gap: 0.5rem;
-  }
-
-  #staff-filters button {
-    min-height: 2.75rem;
-  }
-
-  .login-page .staff-card {
-    min-height: 72px;
-  }
 }

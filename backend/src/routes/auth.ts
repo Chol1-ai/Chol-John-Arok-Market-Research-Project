@@ -10,18 +10,15 @@ import { normalizeUgandanPhone } from '../utils/phone.js';
 
 const loginSchema = z
   .object({
-    phoneNumber: z.string().min(9).optional(),
-    staffId: z.string().uuid().optional(),
+    phoneNumber: z
+      .string()
+      .trim()
+      .min(9)
+      .max(24)
+      .transform(normalizeUgandanPhone)
+      .refine((phone) => /^256\d{9}$/.test(phone), 'Enter a valid Ugandan mobile number'),
     pin: z.string().regex(/^\d{4}$/, 'PIN must be exactly four digits')
-  })
-  .refine((value) => Boolean(value.phoneNumber || value.staffId), {
-    message: 'Either phoneNumber or staffId is required',
-    path: ['phoneNumber']
   });
-
-const directoryQuerySchema = z.object({
-  outlet: z.enum(['FOODIZO_HAM_TOWERS', 'OBUNUZI_YMCA']).optional()
-});
 
 const createStaffSchema = z.object({
   fullName: z.string().trim().min(2).max(100),
@@ -54,6 +51,8 @@ const ROLE_HOME: Record<UserRole, string> = {
   KITCHEN_STAFF: '/kds',
   MANAGER_ADMIN: '/admin'
 };
+
+const DUMMY_PIN_HASH = bcrypt.hashSync('0000', 12);
 
 export const authRoutes: FastifyPluginAsync = async (fastify) => {
   // Managers provision staff PIN accounts. PINs are never stored or returned
@@ -246,111 +245,82 @@ export const authRoutes: FastifyPluginAsync = async (fastify) => {
     }
   );
 
-  // Shared terminal directory. This deliberately exposes only display data —
-  // never phone numbers, PIN hashes, failed-login counters, or session state.
-  fastify.get(
-    '/terminal-staff',
-    { config: { rateLimit: { max: 30, timeWindow: '1 minute' } } },
-    async (request, reply) => {
-      const { outlet } = directoryQuerySchema.parse(request.query);
-
-      const users = await fastify.prisma.users.findMany({
-        where: {
-          is_active: true,
-          role: { in: ['WAITER_FOH', 'KITCHEN_STAFF', 'MANAGER_ADMIN'] },
-          ...(outlet && { outlet })
-        },
-        select: {
-          id: true,
-          full_name: true,
-          role: true,
-          outlet: true
-        },
-        orderBy: [{ role: 'asc' }, { full_name: 'asc' }]
-      });
-
-      reply.header('Cache-Control', 'no-store');
-      return reply.send({
-        success: true,
-        staff: users.map((user) => ({
-          id: user.id,
-          fullName: user.full_name,
-          role: user.role,
-          roleLabel: ROLE_LABELS[user.role],
-          outlet: user.outlet,
-          initials: user.full_name
-            .split(/\s+/)
-            .filter(Boolean)
-            .slice(0, 2)
-            .map((part) => part[0]?.toUpperCase())
-            .join('')
-        }))
-      });
-    }
-  );
-
-  // Staff PIN Gateway: POST /api/v1/auth/pin
-  fastify.post<{ Body: PinLoginInput & { staffId?: string } }>(
+  fastify.post<{ Body: PinLoginInput }>(
     '/pin',
-    { config: { rateLimit: { max: 10, timeWindow: '1 minute' } } },
+    { config: { rateLimit: { max: config.NODE_ENV === 'test' ? 1000 : 10, timeWindow: '1 minute' } } },
     async (request, reply) => {
-      const { phoneNumber, staffId, pin } = loginSchema.parse(request.body);
-
+      const { phoneNumber, pin } = loginSchema.parse(request.body);
       const user = await fastify.prisma.users.findUnique({
-        where: staffId
-          ? { id: staffId }
-          : { phone_number: normalizeUgandanPhone(phoneNumber!) }
+        where: { phone_number: phoneNumber }
       });
+      const isStaffAccount = user && user.is_active && user.role !== 'CUSTOMER';
 
-      if (!user || !user.is_active) {
+      if (!isStaffAccount) {
+        await bcrypt.compare(pin, DUMMY_PIN_HASH);
         return reply.status(401).send({
           statusCode: 401,
           error: 'Unauthorized',
-          message: 'Invalid staff account or account inactive'
-        });
-      }
-
-      if (user.locked_until && user.locked_until > new Date()) {
-        return reply.status(423).send({
-          statusCode: 423,
-          error: 'Locked',
-          message: `Account is locked until ${user.locked_until.toISOString()} due to excessive PIN failures`
+          message: 'Invalid phone number or PIN.'
         });
       }
 
       const isPinValid = await bcrypt.compare(pin, user.pin_hash);
 
       if (!isPinValid) {
-        const failedCount = user.failed_login_count + 1;
-        const lockedUntil = failedCount >= 5 ? new Date(Date.now() + 15 * 60 * 1000) : null;
+        await fastify.prisma.$transaction(async (transaction) => {
+          const [current] = await transaction.$queryRaw<Array<{
+            failed_login_count: number;
+            locked_until: Date | null;
+          }>>`
+            SELECT failed_login_count, locked_until
+            FROM users
+            WHERE id = ${user.id}::uuid
+            FOR UPDATE
+          `;
+          if (!current || (current.locked_until && current.locked_until > new Date())) return;
 
-        await fastify.prisma.users.update({
-          where: { id: user.id },
-          data: {
-            failed_login_count: failedCount,
-            locked_until: lockedUntil
-          }
+          const failedCount = current.failed_login_count + 1;
+          await transaction.users.update({
+            where: { id: user.id },
+            data: {
+              failed_login_count: failedCount,
+              locked_until: failedCount >= 5 ? new Date(Date.now() + 15 * 60 * 1000) : null
+            }
+          });
         });
-
         return reply.status(401).send({
           statusCode: 401,
           error: 'Unauthorized',
-          message: lockedUntil
-            ? 'Incorrect PIN. Account locked for 15 minutes after five failed attempts.'
-            : 'Incorrect 4-digit staff PIN',
-          attemptsRemaining: Math.max(0, 5 - failedCount)
+          message: 'Invalid phone number or PIN.'
         });
       }
 
-      // Opening a new session also clears the failed-attempt counter.
-      await fastify.prisma.users.update({
-        where: { id: user.id },
-        data: {
-          failed_login_count: 0,
-          locked_until: null,
-          last_login_at: new Date()
-        }
+      const canSignIn = await fastify.prisma.$transaction(async (transaction) => {
+        const [current] = await transaction.$queryRaw<Array<{ locked_until: Date | null }>>`
+          SELECT locked_until
+          FROM users
+          WHERE id = ${user.id}::uuid
+          FOR UPDATE
+        `;
+        if (!current || (current.locked_until && current.locked_until > new Date())) return false;
+
+        await transaction.users.update({
+          where: { id: user.id },
+          data: {
+            failed_login_count: 0,
+            locked_until: null,
+            last_login_at: new Date()
+          }
+        });
+        return true;
       });
+      if (!canSignIn) {
+        return reply.status(401).send({
+          statusCode: 401,
+          error: 'Unauthorized',
+          message: 'Invalid phone number or PIN.'
+        });
+      }
 
       const token = fastify.jwt.sign({
         // A unique claim per login keeps quick re-logins from producing the same

@@ -28,7 +28,7 @@ The repository includes a Render Blueprint at [`render.yaml`](../render.yaml) fo
    npm --prefix backend run prisma:seed
    ```
 
-   **The seed is destructive:** it replaces operational data and creates demo accounts whose PIN is `1234`. Run it only against a fresh disposable database, never rerun it on a database with data to keep, and do not enter real customer or business data into this public demo. Close the PowerShell window when finished so the temporary environment variables are cleared.
+   **The seed is destructive:** it replaces operational data and creates development-only demo accounts. Run it only against a fresh disposable database, never rerun it on a database with data to keep, and do not enter real customer or business data into this public demo. Do not use seeded credentials in production. Close the PowerShell window when finished so the temporary environment variables are cleared.
 
 Free Render web services sleep after inactivity, have ephemeral local filesystems, and can take around a minute to wake. The free Neon database has its own usage and scale-to-zero limits. Uploaded files/local changes are not durable, backups and production reliability are not provided by this setup, and the app's live MoMo flow refuses simulated payments in production mode. Use it only to preview/share the application—not for actual restaurant operations or payments. For real operations, use the on-site edge deployment below and complete its acceptance checklist.
 
@@ -132,7 +132,7 @@ npm run build
 cd ..
 ```
 
-> The seed refuses to run when `NODE_ENV=production` unless `ALLOW_DESTRUCTIVE_SEED=true` is set. Do not enable that flag on a live database. The seven seeded demo accounts all use PIN `1234`; change them before staff use.
+> The seed refuses to run when `NODE_ENV=production` unless `ALLOW_DESTRUCTIVE_SEED=true` is set. Do not enable that flag on a live database. Seeded accounts are for disposable development and test databases only; provision new staff accounts before real staff use.
 
 ### 0.6 Start the services
 
@@ -222,7 +222,7 @@ curl -fsS http://127.0.0.1:3000/api/v1/health       # proxied API
 
 On a tablet:
 
-1. Open `/login`, confirm the seven staff cards load, and sign in with PIN `1234` as a waiter.
+1. Open `/login` and sign in with a manager-provisioned test account's registered phone number and PIN. Never use development seed credentials in production.
 2. Confirm the waiter lands on `/pos`; a kitchen user lands on `/kds`; a manager lands on `/admin`.
 3. Open a table tab, add an item, and confirm the ticket appears on `/kds`.
 4. Claim and bump the ticket; confirm the chit prints and the SMS result is reported honestly (`MOCK` in development/sandbox).

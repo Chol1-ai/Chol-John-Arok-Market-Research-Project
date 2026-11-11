@@ -96,7 +96,7 @@ The end-to-end technical and operational specifications are organized into clean
 
 | Surface | URL | Allowed roles |
 | :--- | :--- | :--- |
-| Staff PIN directory & login | `/login` | Public staff directory; PIN required |
+| Staff sign-in | `/login` | Public login form; registered phone number and PIN required |
 | Floor POS / table tabs | `/pos` | `WAITER_FOH`, `MANAGER_ADMIN` |
 | Kitchen Display System | `/kds` | `KITCHEN_STAFF`, `MANAGER_ADMIN` |
 | Boda dispatch queue | `/dispatch` | `WAITER_FOH`, `MANAGER_ADMIN` |
