@@ -3391,3 +3391,51 @@ body[data-surface='admin'] #admin-stock-activity .admin-supplier-order-line > sp
   font-size: 10px;
   line-height: 1.55;
 }
+
+.ls-status[data-status='FAILED_UNREACHABLE'],
+.ls-status[data-status='REFUSED'],
+.ls-status[data-status='RETURNED'] {
+  background: var(--color-error-container);
+  color: var(--color-on-error-container);
+}
+
+.dispatch-review-item {
+  border-left-width: 4px;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #fff, #fff8f6);
+  box-shadow: 0 8px 20px -18px rgba(80, 31, 24, .45);
+}
+
+.dispatch-review-owner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+  margin-top: 12px;
+  padding: 9px 11px;
+  border: 1px solid #f0d7d2;
+  border-radius: 10px;
+  background: #fff1ee;
+  color: #6f332c;
+  font-size: 11px;
+}
+
+.dispatch-review-owner > span {
+  color: #805c56;
+}
+
+.dispatch-review-owner strong {
+  color: #7e2920;
+  font-weight: 800;
+}
+
+.dispatch-review-item .dispatch-facts {
+  margin-top: 10px;
+}
+
+.ls-body .dispatch-review-note {
+  margin: 10px 0 0;
+  color: #66544f;
+  font-size: 11px;
+  line-height: 1.55;
+}

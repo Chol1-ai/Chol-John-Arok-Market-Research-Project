@@ -138,16 +138,24 @@
   }
 
   function renderReview() {
-    els.reviewSub.textContent = `${STATE.review.length} unreviewed failed handoff(s)`;
+    const count = STATE.review.length;
+    els.reviewSub.textContent = `${count} failed deliver${count === 1 ? 'y' : 'ies'} need manager review`;
     if (!STATE.review.length) {
       els.review.innerHTML =
-        '<div class="ls-empty">No failed handoffs waiting for review.</div>';
+        '<div class="ls-empty">No failed deliveries need manager review.</div>';
       return;
     }
 
     els.review.innerHTML = STATE.review
-      .map(
-        (row) => `
+      .map((row) => {
+        const outcomeLabels = {
+          FAILED_UNREACHABLE: 'Customer unreachable',
+          REFUSED: 'Customer refused',
+          RETURNED: 'Returned to outlet'
+        };
+        const outcomeLabel =
+          outcomeLabels[row.outcome] || String(row.outcome || 'Failed handoff').replace(/_/g, ' ');
+        return `
         <article class="dispatch-review-item">
           <div class="dispatch-card-head">
             <div>
@@ -156,9 +164,13 @@
           row.customerName || 'Customer'
         )}</div>
             </div>
-            <span class="ls-status" data-status="REFUND_PENDING">${F.escapeHtml(
-              String(row.outcome || '').replace(/_/g, ' ')
+            <span class="ls-status" data-status="${F.escapeHtml(row.outcome)}">${F.escapeHtml(
+              outcomeLabel
             )}</span>
+          </div>
+          <div class="dispatch-review-owner">
+            <span>Review owner</span>
+            <strong>Outlet Manager / Admin</strong>
           </div>
           <div class="dispatch-facts">
             <div><span>Rider</span><strong>${F.escapeHtml(row.riderName || '—')}</strong></div>
@@ -167,9 +179,9 @@
             <div><span>Dispatched by</span><strong>${F.escapeHtml(row.dispatchedBy || '—')}</strong></div>
           </div>
           <div class="dispatch-items">${F.escapeHtml(row.notes || 'No handoff notes recorded.')}</div>
-          <p class="ls-help" style="margin-top:8px">This exception stays visible to the manager digest until reviewed outside this phase.</p>
-        </article>`
-      )
+          <p class="dispatch-review-note">The outlet manager should decide whether to retry delivery, arrange customer pickup, or cancel the order. This queue records the exception but does not resolve it.</p>
+        </article>`;
+      })
       .join('');
   }
 
