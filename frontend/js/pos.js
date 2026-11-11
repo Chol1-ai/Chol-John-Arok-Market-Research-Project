@@ -178,9 +178,9 @@
           <span class="pos-menu-name">${F.escapeHtml(item.name)}</span>
           <span class="pos-menu-station">${F.escapeHtml(stationLabel(item.station))} · ${F.escapeHtml(item.category)}</span>
           <span class="pos-menu-price">${F.formatUGX(item.priceUgx)}</span>
-          ${item.isAvailable ? '' : `<span class="ls-status" data-status="CANCELLED">${F.escapeHtml(
-            item.availabilityReason || (item.is86 ? '86 by manager' : 'Unavailable')
-          )}</span>`}
+          ${item.isAvailable ? '' : `<span class="ls-status" data-status="CANCELLED">${
+            item.is86 ? 'Unavailable by manager' : 'Temporarily unavailable'
+          }</span>`}
         </button>`
       )
       .join('');
@@ -446,8 +446,8 @@
   function addMenuItem(menuItemId) {
     const item = STATE.menu.find((row) => row.id === menuItemId);
     if (!item) return;
-    if (!item.isAvailable) {
-      F.toast(`${item.name} is unavailable. ${item.availabilityReason || ''}`.trim(), 'error');
+    if (!item.isAvailable || item.is86) {
+      F.toast(`${item.name} is currently unavailable. Please check with a manager.`, 'error');
       return;
     }
     if (!STATE.selectedTableId) {

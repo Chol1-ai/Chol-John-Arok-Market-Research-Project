@@ -419,14 +419,7 @@
       const items = (data.items || []).filter((item) => item.isActive);
       els.surplusItem.innerHTML = items.length
         ? `<option value="">Select a menu item</option>${items
-            .map(
-              (item) => {
-                const unavailableReason = item.availabilityReason || (item.is86 ? '86' : 'unavailable');
-                return `<option value="${F.escapeHtml(item.id)}"${
-                  item.isAvailable ? '' : ' disabled'
-                }>${F.escapeHtml(item.name)}${item.isAvailable ? '' : ` (${F.escapeHtml(unavailableReason)})`}</option>`;
-              }
-            )
+            .map((item) => `<option value="${F.escapeHtml(item.id)}">${F.escapeHtml(item.name)}</option>`)
             .join('')}`
         : '<option value="">No menu items at this outlet</option>';
     } catch (error) {
@@ -454,9 +447,11 @@
               <strong>${F.escapeHtml(item.name)}</strong>
               <span>${F.escapeHtml(item.category)} · ${F.escapeHtml(stationLabel(item.station))}</span>
               <small>${F.escapeHtml(outletLabel(item.outlet))}</small>
-              <small>${item.isAvailable ? 'Available' : F.escapeHtml(
-                item.availabilityReason || (item.is86 ? '86 by manager' : 'Unavailable')
-              )}</small>
+              <small>${item.isAvailable
+                ? 'Available'
+                : item.is86
+                  ? 'Unavailable by manager'
+                  : 'Temporarily unavailable'}</small>
             </div>
             <label class="ls-field">
               <span>Price (UGX)</span>
@@ -678,7 +673,7 @@
     const stockOutlet = inventoryOutletFor(els.stockOutlet);
     const optionsFor = (outlet) => {
       const products = productsAt(outlet);
-      return `<option value="">${products.length ? 'Select a product' : 'No products at this outlet'}</option>${products
+      return `<option value="">${products.length ? 'Select a raw ingredient' : 'No raw ingredients at this outlet'}</option>${products
         .map((item) => `<option value="${F.escapeHtml(item.id)}">${F.escapeHtml(item.itemName)} (${F.escapeHtml(
           inventoryUnitLabel(item.unitOfMeasure)
         )})</option>`)
@@ -721,7 +716,7 @@
             <td>${status}</td>
           </tr>`;
         }).join('')
-      : '<tr><td colspan="5" class="ls-help">No kitchen products yet. Add a product below to start tracking stock.</td></tr>';
+      : '<tr><td colspan="5" class="ls-help">No raw ingredients yet. Add one below to start tracking stock.</td></tr>';
 
     const movements = STATE.inventory?.movements || [];
     els.stockActivity.innerHTML = movements.length
@@ -795,14 +790,14 @@
   function addSupplierOrderLine() {
     const line = document.createElement('div');
     line.className = 'admin-order-line';
-    line.innerHTML = `<select class="ls-select" data-order-product required aria-label="Product">${productsAt(
+    line.innerHTML = `<select class="ls-select" data-order-product required aria-label="Raw ingredient">${productsAt(
       inventoryOutletFor(els.orderOutlet)
     ).map((item) => `<option value="${F.escapeHtml(item.id)}">${F.escapeHtml(item.itemName)} (${F.escapeHtml(
       inventoryUnitLabel(item.unitOfMeasure)
     )})</option>`).join('')}</select>
       <input class="ls-input" data-order-quantity type="number" min="0.01" step="0.01" placeholder="Quantity" aria-label="Order quantity" required />
       <input class="ls-input admin-order-cost" data-order-unit-cost type="number" min="0" step="1" placeholder="Unit cost in UGX (optional)" aria-label="Unit cost in UGX (optional)" />
-      <button class="ls-btn ls-btn--ghost ls-btn--small" type="button" data-remove-order-line aria-label="Remove product">Remove</button>`;
+      <button class="ls-btn ls-btn--ghost ls-btn--small" type="button" data-remove-order-line aria-label="Remove ingredient">Remove</button>`;
     els.supplierOrderLines.appendChild(line);
     updateInventorySelectors();
   }
@@ -813,7 +808,7 @@
     const quantity = Number(els.stockQuantity.value);
     if (!els.stockItem.value || !Number.isFinite(quantity) || quantity < 0 ||
       (els.stockAction.value === 'MANUAL_USAGE' && quantity <= 0)) {
-      F.toast('Select a product and enter a valid quantity for this stock update.', 'error');
+      F.toast('Select a raw ingredient and enter a valid quantity for this stock update.', 'error');
       return;
     }
     STATE.inventoryBusy = true;
@@ -866,7 +861,7 @@
       form.reset();
       els.itemOutlet.value = selectedOutlet;
       form.elements.alertThreshold.value = '5';
-      F.toast(`${data.item.itemName} added to kitchen stock. Record its opening count to set the starting quantity.`, 'success');
+      F.toast(`${data.item.itemName} added to raw stock. Record its opening count to set the starting quantity.`, 'success');
       await loadInventory();
       els.stockOutlet.value = selectedOutlet;
       updateInventorySelectors();
@@ -875,11 +870,11 @@
       els.stockAction.dispatchEvent(new Event('change'));
       els.stockQuantity.focus();
     } catch (error) {
-      F.toast(error.message || 'Kitchen product could not be added.', 'error');
+      F.toast(error.message || 'Raw ingredient could not be added.', 'error');
     } finally {
       STATE.inventoryBusy = false;
       els.inventoryItemSubmit.disabled = false;
-      els.inventoryItemSubmit.textContent = 'Add product';
+      els.inventoryItemSubmit.textContent = 'Add ingredient';
     }
   }
 
@@ -895,11 +890,11 @@
     }));
     if (lines.some((line) => !line.inventoryId || !Number.isFinite(line.quantity) || line.quantity <= 0 ||
       (line.unitCostUgx !== undefined && (!Number.isFinite(line.unitCostUgx) || line.unitCostUgx < 0)))) {
-      F.toast('Choose a product and enter a valid order quantity and unit cost.', 'error');
+      F.toast('Choose a raw ingredient and enter a valid order quantity and unit cost.', 'error');
       return;
     }
     if (new Set(lines.map((line) => line.inventoryId)).size !== lines.length) {
-      F.toast('Each product can only appear once in a supplier order.', 'error');
+      F.toast('Each raw ingredient can only appear once in a supplier order.', 'error');
       return;
     }
 
@@ -1184,7 +1179,7 @@
       if (!removeButton) return;
       const lines = els.supplierOrderLines.querySelectorAll('.admin-order-line');
       if (lines.length <= 1) {
-        F.toast('A supplier order needs at least one product line.', 'info');
+        F.toast('A supplier order needs at least one ingredient.', 'info');
         return;
       }
       removeButton.closest('.admin-order-line').remove();

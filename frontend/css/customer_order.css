@@ -72,9 +72,20 @@ h1 { margin: 9px 0; font-size: clamp(30px, 5vw, 46px); line-height: 1.1; letter-
 .customer-meal-info { min-width: 0; flex: 1; display: flex; flex-direction: column; }
 .customer-meal-info h3 { margin: 2px 0 4px; font-size: 13px; line-height: 1.35; }
 .customer-meal-category { color: #788078; font-size: 10px; }
+.customer-meal-unavailable {
+  align-self: flex-start;
+  margin-top: 6px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #fff1e8;
+  color: #8d3c25;
+  font-size: 9px;
+  font-weight: 800;
+}
 .customer-meal-bottom { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-top: auto; padding-top: 8px; }
 .customer-meal-price { color: #245c3e; font-size: 12px; font-weight: 800; white-space: nowrap; }
 .customer-add, .customer-qty-button { min-width: 34px; min-height: 32px; border: 0; border-radius: 9px; background: #e9f1e8; color: #245c3e; font-size: 17px; font-weight: 800; }
+.customer-add:disabled { background: #efede8; color: #8a8d87; cursor: not-allowed; }
 .customer-cart { position: sticky; top: 86px; padding: 17px; }
 .customer-cart-head { display: flex; align-items: center; justify-content: space-between; }
 .customer-cart-head h2 { margin: 4px 0 0; font-size: 20px; letter-spacing: -.04em; }

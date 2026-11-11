@@ -85,16 +85,16 @@
     <section class="ls-card admin-inventory-card" aria-labelledby="admin-inventory-title">
       <div class="ls-card-head">
         <div>
-          <div class="ls-card-title" id="admin-inventory-title">Kitchen stock &amp; supplier orders</div>
-          <div class="ls-card-sub">Track opening counts, kitchen use and deliveries. Sales deduct recipe ingredients automatically.</div>
+          <div class="ls-card-title" id="admin-inventory-title">Raw ingredients &amp; supplier orders</div>
+          <div class="ls-card-sub">Track counts, kitchen use and deliveries. Recipe quantities are deducted when cooking starts.</div>
         </div>
         <button class="ls-btn ls-btn--ghost ls-btn--small" type="button" id="admin-inventory-refresh">Refresh stock</button>
       </div>
-      <div class="admin-inventory-note">Count stock at opening. Supplier orders update stock only after delivery is recorded.</div>
+      <div class="admin-inventory-note">Record actual opening counts. Supplier deliveries add to on-hand stock only after receipt.</div>
       <div class="admin-table-wrap">
         <table class="admin-table">
           <thead>
-            <tr><th>Product</th><th>Outlet</th><th>On hand</th><th>Reorder at</th><th>Status</th></tr>
+            <tr><th>Raw ingredient</th><th>Outlet</th><th>On hand</th><th>Reorder at</th><th>Status</th></tr>
           </thead>
           <tbody id="admin-inventory-body">
             <tr><td colspan="5" class="ls-help">Loading kitchen stock…</td></tr>
@@ -118,7 +118,7 @@
             </select>
           </label>
           <label class="ls-field">
-            <span>Product</span>
+            <span>Raw ingredient</span>
             <select class="ls-select" id="admin-stock-item" required><option value="">Loading stock…</option></select>
           </label>
           <div class="ls-form-grid">
@@ -143,7 +143,7 @@
         </form>
 
         <form class="admin-form" id="admin-inventory-item-form">
-          <h3 class="admin-inventory-form-title">Add a kitchen product</h3>
+          <h3 class="admin-inventory-form-title">Add a raw ingredient</h3>
           <label class="ls-field admin-inventory-outlet-wrap">
             <span>Outlet</span>
             <select class="ls-select" id="admin-item-outlet">
@@ -152,7 +152,7 @@
             </select>
           </label>
           <label class="ls-field">
-            <span>Product name</span>
+            <span>Ingredient name</span>
             <input class="ls-input" name="itemName" type="text" maxlength="100" placeholder="e.g. Flour" required />
           </label>
           <div class="ls-form-grid">
@@ -173,8 +173,8 @@
               <input class="ls-input" name="alertThreshold" type="number" min="0" step="0.01" value="5" required />
             </label>
           </div>
-          <button class="ls-btn" type="submit" id="admin-inventory-item-submit">Add product</button>
-          <p class="ls-help">After adding a product, it is selected in the opening-count form. Enter the actual quantity on hand to start tracking it.</p>
+          <button class="ls-btn" type="submit" id="admin-inventory-item-submit">Add ingredient</button>
+          <p class="ls-help">After adding an ingredient, record its actual quantity on hand to start tracking stock.</p>
         </form>
 
         <form class="admin-form" id="admin-supplier-order-form">
@@ -191,7 +191,7 @@
             <input class="ls-input" name="supplierName" type="text" maxlength="100" placeholder="Supplier name" required />
           </label>
           <div id="admin-supplier-order-lines" class="admin-order-lines"></div>
-          <button class="ls-btn ls-btn--ghost ls-btn--small" type="button" id="admin-add-order-line">Add another product</button>
+          <button class="ls-btn ls-btn--ghost ls-btn--small" type="button" id="admin-add-order-line">Add another ingredient</button>
           <label class="ls-field">
             <span>Order note</span>
             <input class="ls-input" name="notes" type="text" maxlength="250" placeholder="Optional delivery date or note" />
@@ -548,6 +548,6 @@
   </footer>
 
   <script src="/js/api.js"></script>
-  <script src="/js/admin.js?v=4"></script>
+  <script src="/js/admin.js?v=5"></script>
 </body>
 </html>

@@ -110,11 +110,19 @@
     elements.notice.textContent = '';
   }
 
-  async function loadMenu() {
+  async function loadMenu(options) {
+    const preserveCart = Boolean(options && options.preserveCart);
     elements.menu.innerHTML = '<div class="customer-empty">Loading today’s menu…</div>';
     const data = await request(`/api/v1/menu-items?outlet=${encodeURIComponent(state.outlet)}`);
-    state.menu = (data.items || []).filter((item) => item.isActive && item.isAvailable);
-    state.cart.clear();
+    state.menu = (data.items || []).filter((item) => item.isActive);
+    if (preserveCart) {
+      for (const itemId of state.cart.keys()) {
+        const item = state.menu.find((row) => row.id === itemId);
+        if (!item || !item.isAvailable || item.is86) state.cart.delete(itemId);
+      }
+    } else {
+      state.cart.clear();
+    }
     state.category = 'ALL';
     renderCategories();
     renderMenu();
@@ -176,10 +184,11 @@
       (!query || `${item.name} ${item.category}`.toLowerCase().includes(query))
     );
     if (!items.length) {
-      elements.menu.innerHTML = '<div class="customer-empty">No available meals match. Try another category or outlet.</div>';
+      elements.menu.innerHTML = '<div class="customer-empty">No meals match. Try another category or outlet.</div>';
       return;
     }
     elements.menu.innerHTML = items.map((item) => {
+      const available = item.isAvailable && !item.is86;
       const uploadedImage = typeof item.imageUrl === 'string' &&
         item.imageUrl.startsWith('/api/v1/menu-items/images/')
         ? item.imageUrl
@@ -194,10 +203,14 @@
           <div class="customer-meal-info">
             <h3>${escapeHtml(item.name)}</h3>
             <span class="customer-meal-category">${escapeHtml(item.category)}</span>
+            ${available ? '' : '<span class="customer-meal-unavailable">Temporarily unavailable</span>'}
             <div class="customer-meal-bottom">
               <span class="customer-meal-price">${formatUgx(item.priceUgx)}</span>
               <button class="customer-add" type="button" data-add-id="${escapeHtml(item.id)}"
-                aria-label="Add ${escapeHtml(item.name)}">+</button>
+                ${available ? '' : 'disabled'}
+                aria-label="${available ? 'Add' : 'Unavailable'} ${escapeHtml(item.name)}">${
+                  available ? '+' : '×'
+                }</button>
             </div>
           </div>
         </article>
@@ -243,6 +256,8 @@
   }
 
   function changeQuantity(itemId, delta) {
+    const item = state.menu.find((row) => row.id === itemId);
+    if (!item || (delta > 0 && (!item.isAvailable || item.is86))) return;
     const next = (state.cart.get(itemId) || 0) + delta;
     if (next <= 0) state.cart.delete(itemId);
     else state.cart.set(itemId, next);
@@ -281,9 +296,18 @@
       showTrackingScreen();
       await refreshTracking();
     } catch (error) {
-      showNotice(error.message || 'Could not place your order. Please try again.');
+      const stockMessage = 'Some ingredients are temporarily unavailable. Review the refreshed menu and update your order.';
+      const message =
+        error.code === 'INSUFFICIENT_INGREDIENT_STOCK' || error.code === 'MENU_ITEM_UNAVAILABLE'
+          ? stockMessage
+          : error.message || 'Could not place your order. Please try again.';
+      showNotice(message);
       if (error.code === 'MENU_ITEM_UNAVAILABLE' || error.code === 'INSUFFICIENT_INGREDIENT_STOCK') {
-        try { await loadMenu(); } catch (refreshError) { showNotice(`${error.message} Menu refresh failed: ${refreshError.message}`); }
+        try {
+          await loadMenu({ preserveCart: true });
+        } catch (refreshError) {
+          showNotice(`${message} Menu refresh failed: ${refreshError.message}`);
+        }
       }
     } finally {
       elements.submitOrder.textContent = state.channel === 'PHONE_DELIVERY'
