@@ -1,7 +1,7 @@
 # Repository Scaffold, Dependencies & Environment Configuration
 
 **Runtime:** Node.js ≥ 20<br>
-**Backend:** TypeScript + Fastify 4 + Prisma 5 + PostgreSQL<br>
+**Backend:** TypeScript + Fastify 5 + Prisma 5 + PostgreSQL<br>
 **Frontend:** Static HTML, CSS, and vanilla JS served by the root Node `server.js` process<br>
 **Target Locations:** Foodizo (Ham Towers) & Obunuzi (Opposite YMCA)<br>
 **Related Specifications:** `Foundational_Concept.md` · `Design_System.md` · `User_Flow.md` · `User_Profiles_Personas.md` · `Delivery_Zones_and_Dispatch.md` · `Tech_Stack.md` · `Payment_Integration.md` · `Hardware_and_Peripherals.md` · `Seed_Data_and_Testing.md` · `Daily_Audit_Digest.md` · `Deployment_Runbook.md` · `build_strategy/Build_Strategy_and_Phases.md`
@@ -132,7 +132,6 @@ The root package has no framework dependencies. It runs the static server and pr
 | `bcryptjs` | PIN hashing |
 | `dotenv` | Environment loading |
 | `node-cron` | 21:30 EAT digest scheduler |
-| `uuid` | `jti` and payment idempotency keys |
 | `ws` | WebSocket server |
 
 Dev dependencies: `typescript`, `tsx`, `vitest`, `@types/*`, `prisma`.
