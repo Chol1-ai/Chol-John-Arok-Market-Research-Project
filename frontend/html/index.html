@@ -66,31 +66,40 @@
     .photo-caption span { display: block; margin-top: 3px; color: rgba(255,255,255,.78); font-size: 10px; }
     .photo-caption .material-symbols-outlined { color: #ffd18a; font-size: 21px; }
 
-    .section { padding: 34px 0 18px; scroll-margin-top: 90px; }
-    .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 17px; }
-    .section-kicker { color: var(--red); font-size: 10px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
-    h2 { margin: 6px 0 0; font-size: clamp(23px, 3vw, 30px); letter-spacing: -.04em; }
-    .section-description { max-width: 560px; margin: 7px 0 0; color: var(--muted); font-size: 12px; line-height: 1.7; }
-    .section-note { flex: none; padding: 8px 11px; border: 1px solid #ead8bd; border-radius: 999px; background: #fff7e9; color: #895719; font-size: 10px; font-weight: 700; }
-    .cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-    .card { min-height: 220px; display: flex; flex-direction: column; padding: 20px; border: 1px solid var(--line); border-radius: 20px; background: var(--card); text-decoration: none; box-shadow: 0 5px 16px rgba(40, 35, 25, .035); transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
-    .card:hover, .card:focus-visible { transform: translateY(-3px); border-color: #d5c9b8; box-shadow: 0 13px 28px rgba(40, 35, 25, .08); }
-    .card-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-    .card-icon { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 13px; background: #f8ebe5; color: var(--red); }
-    .card-icon.green { background: #e9f1e8; color: var(--green); }
-    .card-icon.amber { background: #fff2db; color: var(--amber); }
-    .card-icon.blue { background: #e9f0f7; color: #426d90; }
-    .card-icon.purple { background: #f0ebf6; color: #77549b; }
-    .card-icon.orange { background: #fff0e4; color: #b9632b; }
-    .card-status { display: inline-flex; align-items: center; gap: 6px; min-height: 25px; padding: 4px 9px; border: 1px solid #ead8bd; border-radius: 999px; background: #fff7e9; color: #895719; font-size: 9px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+    .section { padding: 52px 0 24px; scroll-margin-top: 90px; }
+    .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 23px; }
+    .section-kicker { color: var(--red); font-size: 10px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
+    h2 { margin: 7px 0 0; font-size: clamp(25px, 3vw, 34px); letter-spacing: -.045em; }
+    .section-description { max-width: 560px; margin: 8px 0 0; color: var(--muted); font-size: 13px; line-height: 1.75; }
+    .section-note { flex: none; padding: 9px 13px; border: 1px solid #ead8bd; border-radius: 999px; background: #fff7e9; color: #895719; font-size: 10px; font-weight: 700; }
+    .cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+    .card { min-width: 0; overflow: hidden; border: 1px solid #e8e4da; border-radius: 22px; background: var(--card); text-decoration: none; box-shadow: 0 9px 25px rgba(40, 35, 25, .055); transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
+    .card:hover, .card:focus-visible { transform: translateY(-4px); border-color: #d5c9b8; box-shadow: 0 17px 34px rgba(40, 35, 25, .12); }
+    .card-media { position: relative; height: 164px; overflow: hidden; background: #e9e5d9; }
+    .card-media img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .35s ease; }
+    .card:hover .card-media img { transform: scale(1.045); }
+    .card-media.food-wide img { object-position: center 56%; }
+    .card-media.menu-photo img { object-position: center 48%; }
+    .card-media.screen-preview { background: #e9edf7; }
+    .card-media.screen-preview img { object-fit: cover; object-position: center 12%; }
+    .card-media.delivery-art { display: grid; place-items: center; background: radial-gradient(circle at 75% 30%, #fff8df 0 14%, transparent 14.5%), linear-gradient(135deg, #e8f1e9, #f8f2e5); }
+    .card-media.delivery-art::after { position: absolute; right: 12%; bottom: -48px; width: 170px; height: 110px; border: 1px solid rgba(36, 92, 62, .12); border-radius: 50%; content: ""; }
+    .card-media.delivery-art img { z-index: 1; width: 154px; height: 108px; object-fit: contain; }
+    .card-status { position: absolute; top: 13px; left: 13px; display: inline-flex; align-items: center; gap: 6px; min-height: 27px; padding: 5px 10px; border: 1px solid rgba(255,255,255,.48); border-radius: 999px; background: rgba(255,255,255,.94); color: #59635a; box-shadow: 0 3px 12px rgba(20,25,20,.08); font-size: 9px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
     .card-status::before { width: 6px; height: 6px; border-radius: 50%; background: #c47a19; content: ""; }
-    .card-status.is-live { border-color: #cfe2d1; background: #edf6ed; color: #315d3e; }
+    .card-status.is-live { color: #315d3e; }
     .card-status.is-live::before { background: #278044; }
-    .card h3 { margin: 16px 0 7px; font-size: 16px; line-height: 1.35; letter-spacing: -.025em; }
-    .card p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.65; }
-    .card-link { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 16px; color: var(--green); font-size: 11px; font-weight: 800; }
-    .card-link .material-symbols-outlined { font-size: 17px; transition: transform .18s ease; }
+    .card-content { min-height: 180px; display: flex; flex-direction: column; padding: 17px 19px 18px; }
+    .card-eyebrow { color: #8a6651; font-size: 9px; font-weight: 800; letter-spacing: .11em; text-transform: uppercase; }
+    .card h3 { margin: 7px 0 6px; font-size: 16px; line-height: 1.38; letter-spacing: -.025em; }
+    .card p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.7; }
+    .card-link { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 15px; color: var(--green); font-size: 11px; font-weight: 800; }
+    .card-link .material-symbols-outlined { font-size: 18px; transition: transform .18s ease; }
     .card:hover .card-link .material-symbols-outlined { transform: translateX(3px); }
+    .cards-operations { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .cards-operations .card-media { height: 136px; }
+    .cards-operations .card-content { min-height: 166px; padding: 15px 16px 17px; }
+    .operations-heading { padding-top: 10px; }
     .divider { height: 1px; margin: 28px 0 0; background: var(--line); }
     footer { margin-top: 30px; border-top: 1px solid var(--line); background: #f2f0e9; }
     .footer-inner { min-height: 86px; display: flex; align-items: center; justify-content: space-between; gap: 18px; color: var(--muted); font-size: 10px; }
@@ -100,7 +109,7 @@
     footer .material-symbols-outlined { font-size: 15px; }
 
     @media (max-width: 980px) {
-      .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .cards-operations { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .hero { gap: 24px; }
       .hero-photo { min-height: 300px; }
     }
@@ -111,16 +120,25 @@
       .hero { grid-template-columns: 1fr; gap: 22px; padding: 38px 0 20px; }
       h1 { max-width: 540px; }
       .hero-photo { min-height: 260px; }
-      .section { padding-top: 28px; }
+      .section { padding-top: 38px; }
       .section-heading { align-items: start; flex-direction: column; gap: 10px; }
-      .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .cards:not(.cards-operations) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .cards-operations { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .cards { gap: 13px; }
+      .card-media { height: 140px; }
+      .cards-operations .card-media { height: 116px; }
+      .card-content { min-height: 190px; padding: 14px; }
+      .cards-operations .card-content { min-height: 175px; padding: 13px; }
+      .card h3 { font-size: 14px; }
+      .card p { font-size: 11px; }
       .footer-inner { align-items: start; flex-direction: column; justify-content: center; padding: 20px 0; }
     }
     @media (max-width: 430px) {
       .brand-detail { font-size: 10px; }
       .nav .button { min-height: 38px; padding-inline: 12px; font-size: 11px; }
-      .cards { grid-template-columns: 1fr; }
-      .card { min-height: 180px; }
+      .cards, .cards-operations { grid-template-columns: 1fr; }
+      .card-media, .cards-operations .card-media { height: 178px; }
+      .card-content, .cards-operations .card-content { min-height: 164px; padding: 16px 18px; }
       .hero-actions .button { flex: 1; }
       .location-chip { font-size: 10px; }
     }
@@ -174,37 +192,48 @@
     <section class="section" id="customer" aria-labelledby="customer-title">
       <div class="section-heading">
         <div>
-          <span class="section-kicker">For customers</span>
-          <h2 id="customer-title">Explore the experience</h2>
-          <p class="section-description">Browse the live menu, place a pickup or delivery order, and follow its status with your order token.</p>
+          <span class="section-kicker">A little closer to lunch</span>
+          <h2 id="customer-title">Good food, on your time.</h2>
+          <p class="section-description">Find a campus favourite, choose pickup or delivery, and keep an eye on your order from the first tap to the last bite.</p>
         </div>
-        <span class="section-note">Live ordering · pickup · delivery · tracking</span>
+        <span class="section-note">Foodizo · Obunuzi · Prices in UGX</span>
       </div>
       <div class="cards">
         <a class="card" href="/order">
-          <div class="card-top"><span class="card-icon"><span class="material-symbols-outlined" aria-hidden="true">storefront</span></span><span class="card-status is-live">Live</span></div>
-          <h3>Pickup and delivery ordering</h3><p>Choose an outlet, order available meals, and receive a live order token. Pay cash at pickup or delivery.</p>
-          <span class="card-link">Start an order <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></span>
+          <div class="card-media food-wide">
+            <img src="../images/foodizo-landing-hero.jpg" alt="Freshly prepared campus favourites at Foodizo" fetchpriority="high" />
+            <span class="card-status is-live">Made for your day</span>
+          </div>
+          <div class="card-content">
+            <span class="card-eyebrow">Pickup or delivery</span>
+            <h3>Your next meal starts here</h3>
+            <p>Choose your outlet, pick something delicious, and place your order in a few easy steps.</p>
+            <span class="card-link">Order your meal <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></span>
+          </div>
         </a>
         <a class="card" href="/order">
-          <div class="card-top"><span class="card-icon amber"><span class="material-symbols-outlined" aria-hidden="true">restaurant_menu</span></span><span class="card-status is-live">Live</span></div>
-          <h3>Live campus menu</h3><p>Browse meals currently available at your selected outlet and add them to your order.</p>
-          <span class="card-link">Browse live menu <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></span>
-        </a>
-        <a class="card" href="/order#checkout-form">
-          <div class="card-top"><span class="card-icon green"><span class="material-symbols-outlined" aria-hidden="true">account_balance_wallet</span></span><span class="card-status is-live">Live</span></div>
-          <h3>Checkout</h3><p>Build your live order, review the total and delivery fee, then submit it to the outlet.</p>
-          <span class="card-link">Start checkout <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></span>
-        </a>
-        <a class="card" href="/tracker">
-          <div class="card-top"><span class="card-icon blue"><span class="material-symbols-outlined" aria-hidden="true">confirmation_number</span></span><span class="card-status is-live">Live</span></div>
-          <h3>Order token and status</h3><p>Look up an existing pickup or delivery order using its token and outlet.</p>
-          <span class="card-link">Find my order <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></span>
+          <div class="card-media menu-photo">
+            <img src="../images/foodizo-rolex.jpg" alt="Freshly prepared Rolex, a Kampala favourite" loading="lazy" />
+            <span class="card-status is-live">Fresh from the menu</span>
+          </div>
+          <div class="card-content">
+            <span class="card-eyebrow">A good place to start</span>
+            <h3>See what’s cooking</h3>
+            <p>Take a look at the meals and drinks available at Foodizo and Obunuzi today.</p>
+            <span class="card-link">Explore the menu <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></span>
+          </div>
         </a>
         <a class="card" href="/tracker">
-          <div class="card-top"><span class="card-icon purple"><span class="material-symbols-outlined" aria-hidden="true">two_wheeler</span></span><span class="card-status is-live">Live</span></div>
-          <h3>Order tracker</h3><p>Enter your order token to see live pickup or delivery progress.</p>
-          <span class="card-link">Track an order <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></span>
+          <div class="card-media delivery-art">
+            <img src="../images/motorbike-illustration.svg" alt="" loading="lazy" />
+            <span class="card-status is-live">A little peace of mind</span>
+          </div>
+          <div class="card-content">
+            <span class="card-eyebrow">From the kitchen to you</span>
+            <h3>See how your order’s going</h3>
+            <p>Enter your order token to check its latest pickup or delivery status.</p>
+            <span class="card-link">Track my order <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></span>
+          </div>
         </a>
       </div>
     </section>
@@ -214,37 +243,72 @@
     <section class="section" id="operations" aria-labelledby="operations-title">
       <div class="section-heading">
         <div>
-          <span class="section-kicker">Live team tools</span>
-          <h2 id="operations-title">Restaurant workspaces</h2>
-          <p class="section-description">Role-based workspaces for orders, kitchen preparation, dispatch and daily operations. Staff sign-in is required.</p>
+          <span class="section-kicker">Behind every good service</span>
+          <h2 id="operations-title">The team’s side of the table.</h2>
+          <p class="section-description">A shared set of tools for the front counter, kitchen, delivery team and managers. Staff sign-in is required.</p>
         </div>
         <a class="button button-outline" href="/login">Staff sign in <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></a>
       </div>
-      <div class="cards">
+      <div class="cards cards-operations">
         <a class="card" href="/login">
-          <div class="card-top"><span class="card-icon amber"><span class="material-symbols-outlined" aria-hidden="true">lock</span></span><span class="card-status is-live">Sign in</span></div>
-          <h3>Staff sign in</h3><p>Enter the staff workspace and continue to your role-based tools.</p>
-          <span class="card-link">Open sign in <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></span>
+          <div class="card-media screen-preview">
+            <img src="../images/staff_terminal_pin_login.png" alt="Preview of the staff sign-in workspace" loading="lazy" />
+            <span class="card-status">Team access</span>
+          </div>
+          <div class="card-content">
+            <span class="card-eyebrow">Your shift starts here</span>
+            <h3>Staff sign in</h3>
+            <p>Sign in to open the tools for your role and outlet.</p>
+            <span class="card-link">Enter the workspace <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></span>
+          </div>
         </a>
         <a class="card" href="/pos">
-          <div class="card-top"><span class="card-icon"><span class="material-symbols-outlined" aria-hidden="true">point_of_sale</span></span><span class="card-status is-live">Live</span></div>
-          <h3>Point of sale</h3><p>Manage in-house tables, orders and checkout at the counter.</p>
-          <span class="card-link">Open POS <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></span>
+          <div class="card-media food-wide">
+            <img src="../images/foodizo-landing-hero.jpg" alt="The dining room and counter team serve" loading="lazy" />
+            <span class="card-status is-live">Front of house</span>
+          </div>
+          <div class="card-content">
+            <span class="card-eyebrow">At the counter</span>
+            <h3>Floor &amp; orders</h3>
+            <p>Keep table service, open orders and checkout moving smoothly.</p>
+            <span class="card-link">Open the floor <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></span>
+          </div>
         </a>
         <a class="card" href="/kds">
-          <div class="card-top"><span class="card-icon orange"><span class="material-symbols-outlined" aria-hidden="true">skillet</span></span><span class="card-status is-live">Live</span></div>
-          <h3>Kitchen display</h3><p>View and manage kitchen tickets across preparation stations.</p>
-          <span class="card-link">Open kitchen display <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></span>
+          <div class="card-media screen-preview">
+            <img src="../images/kitchen_display_system_kds_active_stations.png" alt="Preview of the kitchen ticket display" loading="lazy" />
+            <span class="card-status is-live">In the kitchen</span>
+          </div>
+          <div class="card-content">
+            <span class="card-eyebrow">On the pass</span>
+            <h3>Kitchen display</h3>
+            <p>See tickets by station and keep every order moving through prep.</p>
+            <span class="card-link">Open the kitchen <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></span>
+          </div>
         </a>
         <a class="card" href="/dispatch">
-          <div class="card-top"><span class="card-icon blue"><span class="material-symbols-outlined" aria-hidden="true">local_shipping</span></span><span class="card-status is-live">Live</span></div>
-          <h3>Delivery dispatch</h3><p>Coordinate rider assignments and delivery hand-offs.</p>
-          <span class="card-link">Open dispatch <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></span>
+          <div class="card-media screen-preview">
+            <img src="../images/foh_boda_dispatch_delivery_queue.png" alt="Preview of the delivery dispatch queue" loading="lazy" />
+            <span class="card-status is-live">On the way</span>
+          </div>
+          <div class="card-content">
+            <span class="card-eyebrow">Out for delivery</span>
+            <h3>Rider dispatch</h3>
+            <p>Coordinate rider assignments, hand-offs and delivery progress.</p>
+            <span class="card-link">Open dispatch <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></span>
+          </div>
         </a>
         <a class="card" href="/admin">
-          <div class="card-top"><span class="card-icon green"><span class="material-symbols-outlined" aria-hidden="true">analytics</span></span><span class="card-status is-live">Live</span></div>
-          <h3>Manager overview</h3><p>Review end-of-day summaries, reconciliation and operations.</p>
-          <span class="card-link">Open manager tools <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></span>
+          <div class="card-media screen-preview">
+            <img src="../images/manager_admin_eod_surplus_audit_digest.png" alt="Preview of the manager operations dashboard" loading="lazy" />
+            <span class="card-status is-live">For managers</span>
+          </div>
+          <div class="card-content">
+            <span class="card-eyebrow">The bigger picture</span>
+            <h3>Manager overview</h3>
+            <p>Review daily operations, cash reconciliation and shift summaries.</p>
+            <span class="card-link">Open manager tools <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></span>
+          </div>
         </a>
       </div>
     </section>
