@@ -83,7 +83,7 @@ export async function resolveSessionToken(
 
   return {
     // Use the current database row rather than stale JWT claims. A manager can
-    // deactivate an account or move it between outlets without waiting 12h.
+    // delete an account or move it between outlets without waiting 12h.
     userId: session.user.id,
     fullName: session.user.full_name,
     phoneNumber: session.user.phone_number,

@@ -392,11 +392,11 @@ model supplier_orders {
   supplier_name String                 @db.VarChar(100)
   status        supplier_order_status  @default(ORDERED)
   notes         String?                @db.VarChar(250)
-  created_by    String                 @db.Uuid
+  created_by    String?                @db.Uuid
   created_at    DateTime               @default(now()) @db.Timestamptz(6)
   received_at   DateTime?              @db.Timestamptz(6)
 
-  creator       users                  @relation(fields: [created_by], references: [id], onDelete: Restrict)
+  creator       users?                 @relation(fields: [created_by], references: [id], onDelete: SetNull)
   items         supplier_order_items[]
   movements     stock_movements[]
 
@@ -448,11 +448,11 @@ model closing_surplus_logs {
   item_name         String          @db.VarChar(100)
   leftover_portions Int
   resolution        surplus_action
-  logged_by         String          @db.Uuid
+  logged_by         String?         @db.Uuid
   created_at        DateTime        @default(now()) @db.Timestamptz(6)
 
   menu_item menu_items? @relation(fields: [menu_item_id], references: [id], onDelete: SetNull)
-  user      users       @relation(fields: [logged_by], references: [id], onDelete: Restrict)
+  user      users?      @relation(fields: [logged_by], references: [id], onDelete: SetNull)
 
   @@index([outlet, log_date], name: "idx_closing_surplus_date")
   @@map("closing_surplus_logs")
@@ -467,7 +467,7 @@ model delivery_handoffs {
   order_id                   String          @db.Uuid
   rider_name                 String          @db.VarChar(80)
   rider_phone                String?         @db.VarChar(20)
-  dispatched_by              String          @db.Uuid
+  dispatched_by              String?         @db.Uuid
   dispatch_method            dispatch_method @default(CALL)
   rider_advance_ugx          Decimal         @default(0.00) @db.Decimal(10, 2)
   rider_advance_returned_ugx Decimal         @default(0.00) @db.Decimal(10, 2)
@@ -479,7 +479,7 @@ model delivery_handoffs {
   notes                      String?
 
   order      orders @relation(fields: [order_id], references: [id], onDelete: Cascade)
-  dispatcher users  @relation(fields: [dispatched_by], references: [id], onDelete: Restrict)
+  dispatcher users? @relation(fields: [dispatched_by], references: [id], onDelete: SetNull)
 
   @@index([order_id], name: "idx_delivery_handoffs_order")
   @@index([outcome, dispatched_at], name: "idx_delivery_handoffs_outcome")
@@ -497,11 +497,11 @@ model cash_counts {
   counted_cash_ugx  Decimal         @db.Decimal(10, 2)
   expected_cash_ugx Decimal         @db.Decimal(10, 2)
   variance_ugx      Decimal         @db.Decimal(10, 2)
-  counted_by        String          @db.Uuid
+  counted_by        String?         @db.Uuid
   counted_at        DateTime        @default(now()) @db.Timestamptz(6)
   notes             String?
 
-  counter users @relation(fields: [counted_by], references: [id], onDelete: Restrict)
+  counter users? @relation(fields: [counted_by], references: [id], onDelete: SetNull)
 
   @@unique([outlet, business_date], name: "cash_counts_unique")
   @@index([business_date, outlet], name: "idx_cash_counts_date")

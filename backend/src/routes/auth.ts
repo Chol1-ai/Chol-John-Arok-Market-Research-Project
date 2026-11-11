@@ -186,30 +186,24 @@ export const authRoutes: FastifyPluginAsync = async (fastify) => {
           return { kind: 'forbidden' as const };
         }
 
-        const deactivated = await transaction.users.updateMany({
+        const deleted = await transaction.users.deleteMany({
           where: {
             id: user.id,
             is_active: true,
             role: { in: ['WAITER_FOH', 'KITCHEN_STAFF'] },
             ...(manager.outlet ? { outlet: manager.outlet } : {})
-          },
-          data: { is_active: false }
+          }
         });
-        if (deactivated.count === 0) {
+        if (deleted.count === 0) {
           return { kind: 'not-found' as const };
         }
-
-        await transaction.user_sessions.updateMany({
-          where: { user_id: user.id, revoked_at: null },
-          data: { revoked_at: new Date() }
-        });
 
         await transaction.audit_log.create({
           data: {
             actor_user_id: manager.userId,
             actor_role: manager.role,
             outlet: user.outlet,
-            action: 'STAFF_ACCOUNT_DEACTIVATED',
+            action: 'STAFF_ACCOUNT_DELETED',
             entity_type: 'USER',
             entity_id: user.id,
             before_json: {
@@ -218,12 +212,12 @@ export const authRoutes: FastifyPluginAsync = async (fastify) => {
               outlet: user.outlet,
               isActive: true
             },
-            after_json: { isActive: false },
+            after_json: { deleted: true },
             ip_address: request.ip
           }
         });
 
-        return { kind: 'deactivated' as const, fullName: user.full_name };
+        return { kind: 'deleted' as const, fullName: user.full_name };
       });
 
       if (outcome.kind === 'forbidden') {
@@ -247,7 +241,7 @@ export const authRoutes: FastifyPluginAsync = async (fastify) => {
       reply.header('Cache-Control', 'no-store');
       return reply.send({
         success: true,
-        message: `${outcome.fullName}'s account was deactivated and active sessions were revoked.`
+        message: `${outcome.fullName}'s account was permanently deleted.`
       });
     }
   );

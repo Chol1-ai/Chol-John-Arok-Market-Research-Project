@@ -63,7 +63,7 @@ export const surplusRoutes: FastifyPluginAsync = async (fastify) => {
           itemName: log.item_name,
           quantity: log.leftover_portions,
           action: log.resolution,
-          loggedBy: log.user.full_name,
+          loggedBy: log.user?.full_name || 'Former staff member',
           loggedAt: log.created_at
         }))
       });

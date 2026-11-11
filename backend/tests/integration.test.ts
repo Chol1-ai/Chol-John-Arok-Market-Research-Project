@@ -310,19 +310,20 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
       expect(removed.statusCode).toBe(200);
       expect((removed.json() as Json).success).toBe(true);
 
-      const deactivatedUser = await app.prisma.users.findUniqueOrThrow({
-        where: { id: createdId },
-        select: { is_active: true }
-      });
-      expect(deactivatedUser.is_active).toBe(false);
+      expect((removed.json() as Json).message).toContain('permanently deleted');
 
-      const revokedSession = await app.prisma.user_sessions.findFirst({
-        where: { user_id: createdId, revoked_at: { not: null } }
+      const deletedUser = await app.prisma.users.findUnique({
+        where: { id: createdId }
       });
-      expect(revokedSession).not.toBeNull();
+      expect(deletedUser).toBeNull();
 
-      const revokedTokenRequest = await inject('GET', '/api/v1/auth/me', { token: staffToken });
-      expect(revokedTokenRequest.statusCode).toBe(401);
+      const deletedSessions = await app.prisma.user_sessions.count({
+        where: { user_id: createdId }
+      });
+      expect(deletedSessions).toBe(0);
+
+      const deletedTokenRequest = await inject('GET', '/api/v1/auth/me', { token: staffToken });
+      expect(deletedTokenRequest.statusCode).toBe(401);
 
       const repeatedDelete = await inject('DELETE', `/api/v1/auth/staff/${createdId}`, {
         token: tokens.cyrus
@@ -340,7 +341,7 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
       expect(managerAccount.is_active).toBe(true);
 
       const removalAudit = await app.prisma.audit_log.findFirst({
-        where: { entity_id: createdId, action: 'STAFF_ACCOUNT_DEACTIVATED' }
+        where: { entity_id: createdId, action: 'STAFF_ACCOUNT_DELETED' }
       });
       expect(removalAudit).not.toBeNull();
     } finally {

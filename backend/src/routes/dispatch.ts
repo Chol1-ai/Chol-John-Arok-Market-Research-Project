@@ -105,7 +105,7 @@ export const dispatchRoutes: FastifyPluginAsync = async (fastify) => {
             notes: handoff.notes,
             riderName: handoff.rider_name,
             riderPhone: handoff.rider_phone,
-            dispatchedBy: handoff.dispatcher.full_name,
+            dispatchedBy: handoff.dispatcher?.full_name || 'Former staff member',
             dispatchedAt: handoff.dispatched_at,
             customerName: handoff.order.customer_name,
             customerPhone: handoff.order.customer_phone,

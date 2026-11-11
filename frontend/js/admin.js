@@ -300,12 +300,49 @@
           <td>${row.last_login_at ? F.relativeTime(row.last_login_at) : 'Never'}</td>
           <td>${
             ['WAITER_FOH', 'KITCHEN_STAFF'].includes(row.role)
-              ? `<button class="ls-btn ls-btn--danger ls-btn--small" type="button" data-staff-remove="${F.escapeHtml(row.id)}" data-staff-name="${F.escapeHtml(row.full_name)}">Remove access</button>`
+              ? `<button class="ls-btn ls-btn--danger ls-btn--small" type="button" data-staff-remove="${F.escapeHtml(row.id)}" data-staff-name="${F.escapeHtml(row.full_name)}">Delete account</button>`
               : '<span class="ls-help">Manager</span>'
           }</td>
         </tr>`
       )
       .join('');
+  }
+
+  async function removeStaffAccount(button) {
+    if (STATE.staffBusy) return;
+
+    const staffId = button.dataset.staffRemove;
+    const staffName = button.dataset.staffName;
+    if (!staffId || !staffName) return;
+    if (
+      !window.confirm(
+        `Permanently delete ${staffName}'s account? They will be signed out and will no longer be able to log in. Operational records will remain, with this account removed from their staff attribution.`
+      )
+    ) {
+      return;
+    }
+
+    STATE.staffBusy = true;
+    button.disabled = true;
+    button.textContent = 'Deleting…';
+    try {
+      const data = await F.request(`/api/v1/auth/staff/${encodeURIComponent(staffId)}`, {
+        method: 'DELETE'
+      });
+      els.staffStatus.textContent = data.message || `${staffName}'s account was deleted.`;
+      F.toast(data.message || 'Staff account deleted.', 'success');
+      try {
+        await loadOverview(false);
+      } catch (error) {
+        F.toast(error.message || 'Account was deleted, but the staff roster did not refresh.', 'error');
+      }
+    } catch (error) {
+      F.toast(error.message || 'Staff account could not be deleted.', 'error');
+    } finally {
+      STATE.staffBusy = false;
+      button.disabled = false;
+      button.textContent = 'Delete account';
+    }
   }
 
   function renderSurplusLogs() {
@@ -1033,43 +1070,6 @@
       F.toast('The PIN entries do not match.', 'error');
       form.elements.confirmPin.focus();
       return;
-    }
-
-    async function removeStaffAccount(button) {
-      if (STATE.staffBusy) return;
-
-      const staffId = button.dataset.staffRemove;
-      const staffName = button.dataset.staffName;
-      if (!staffId || !staffName) return;
-      if (
-        !window.confirm(
-          `Remove ${staffName}'s staff access? They will be signed out, and their operational history will be retained.`
-        )
-      ) {
-        return;
-      }
-
-      STATE.staffBusy = true;
-      button.disabled = true;
-      button.textContent = 'Removing…';
-      try {
-        const data = await F.request(`/api/v1/auth/staff/${encodeURIComponent(staffId)}`, {
-          method: 'DELETE'
-        });
-        els.staffStatus.textContent = data.message || `${staffName}'s access was removed.`;
-        F.toast(data.message || 'Staff access removed.', 'success');
-        try {
-          await loadOverview(false);
-        } catch (error) {
-          F.toast(error.message || 'Access was removed, but the staff roster did not refresh.', 'error');
-        }
-      } catch (error) {
-        F.toast(error.message || 'Staff access could not be removed.', 'error');
-      } finally {
-        STATE.staffBusy = false;
-        button.disabled = false;
-        button.textContent = 'Remove access';
-      }
     }
 
     STATE.staffBusy = true;

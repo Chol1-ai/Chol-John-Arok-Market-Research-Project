@@ -142,7 +142,7 @@ export const digestRoutes: FastifyPluginAsync = async (fastify) => {
           itemName: log.menu_item?.name || log.item_name,
           quantity: log.leftover_portions,
           resolution: log.resolution,
-          loggedBy: log.user.full_name,
+          loggedBy: log.user?.full_name || 'Former staff member',
           createdAt: log.created_at
         }))
       });
