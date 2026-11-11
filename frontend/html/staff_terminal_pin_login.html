@@ -78,7 +78,6 @@
               <div class="login-welcome-copy">
                 <p class="login-welcome-brand">Foodizo <span>&amp;</span> Obunuzi <span class="login-welcome-label">STAFF PORTAL</span></p>
                 <h1>Welcome back</h1>
-                <p class="login-welcome-description">Choose your staff profile to get started with your shift.</p>
                 <div class="login-welcome-hint">
                   <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15" r="1"/></svg>
                   <span>Quick sign-in with your staff PIN</span>
@@ -132,8 +131,8 @@
                     <span class="font-label-lg text-label-lg" id="active-user-initials">--</span>
                   </div>
                   <div class="min-w-0">
-                    <p class="font-label-lg text-label-lg text-on-surface truncate" id="active-user-name">Select staff profile</p>
-                    <p class="font-body-sm text-body-sm text-on-surface-variant truncate" id="active-user-meta">Choose a roster card to continue</p>
+                    <p class="font-label-lg text-label-lg text-on-surface truncate" id="active-user-name"></p>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant truncate" id="active-user-meta"></p>
                   </div>
                 </div>
                 <span
@@ -150,7 +149,7 @@
                   <div class="pin-dot w-4 h-4 rounded-full bg-surface-container transition-all"></div>
                   <div class="pin-dot w-4 h-4 rounded-full bg-surface-container transition-all"></div>
                 </div>
-                <p class="font-label-sm text-label-sm text-on-surface-variant h-4" id="pin-feedback">Select a profile, then enter your PIN.</p>
+                <p class="font-label-sm text-label-sm text-on-surface-variant h-4" id="pin-feedback"></p>
               </div>
               <!-- Tactile 3x4 On-Screen POS Numeric PIN Pad -->
               <div class="grid grid-cols-3 gap-space-sm w-full mt-space-sm max-w-sm">
@@ -226,10 +225,6 @@
                   <svg class="ui-ico" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M3 12h12"/><path d="m10 7 5 5-5 5"/></svg>
                   <span>Sign in to staff surface</span>
                 </button>
-                <p
-                  class="w-full py-space-sm text-center font-label-sm text-label-sm text-on-surface-variant">
-                  Five incorrect PIN attempts lock the account for 15 minutes.
-                </p>
               </div>
             </div>
           </div>
@@ -237,7 +232,7 @@
       </div>
       <!-- Interactive Terminal Client Script -->
         <script src="/js/api.js"></script>
-  <script src="/js/login.js"></script>
+  <script src="/js/login.js?v=2"></script>
     </div>
   </main>
   <footer class="w-full bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)] py-space-md">

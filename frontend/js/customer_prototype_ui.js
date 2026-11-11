@@ -192,9 +192,6 @@
       details.appendChild(row);
     });
 
-    const notice = document.createElement('p');
-    notice.className = 'prototype-profile-notice';
-    notice.textContent = 'Guest profiles are not connected to accounts or payment details.';
     const actions = document.createElement('div');
     actions.className = 'prototype-support-actions';
     const closeButton = document.createElement('button');
@@ -204,7 +201,7 @@
     menuButton.type = 'button';
     menuButton.textContent = 'Browse menu';
     actions.append(closeButton, menuButton);
-    dialog.append(avatar, heading, subtitle, details, notice, actions);
+    dialog.append(avatar, heading, subtitle, details, actions);
     backdrop.appendChild(dialog);
     document.body.appendChild(backdrop);
 

@@ -191,8 +191,8 @@
     STATE.pin = '';
     els.auth.hidden = true;
     els.layout.classList.remove('has-selection');
-    els.name.textContent = 'Select staff profile';
-    els.meta.textContent = 'Choose a roster card to continue';
+    els.name.textContent = '';
+    els.meta.textContent = '';
     els.initials.textContent = '--';
     els.state.textContent = 'Idle';
     els.state.className =

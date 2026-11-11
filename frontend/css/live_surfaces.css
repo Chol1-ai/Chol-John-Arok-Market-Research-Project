@@ -3328,3 +3328,39 @@ body[data-surface='admin'] .admin-kpi:nth-child(4) {
     text-align: left;
   }
 }
+
+body[data-surface='admin'] .ls-page-head {
+  --surface-accent: #34744f;
+  --surface-accent-soft: #edf6ef;
+  align-items: center;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  padding: 24px 20px;
+  border-color: #e1e9e2;
+  background:
+    radial-gradient(ellipse at 50% -20%, rgba(52, 116, 79, .12), transparent 62%),
+    linear-gradient(135deg, #fff, #f8fbf8);
+  text-align: center;
+}
+
+body[data-surface='admin'] .ls-page-head > :first-child {
+  width: 100%;
+}
+
+body[data-surface='admin'] .ls-page-head .ls-subtitle {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+body[data-surface='admin'] .ls-page-head .ls-head-actions {
+  justify-content: center;
+}
+
+@media (max-width: 640px) {
+  body[data-surface='admin'] .ls-page-head {
+    align-items: center;
+    padding: 20px 16px;
+    text-align: center;
+  }
+}
