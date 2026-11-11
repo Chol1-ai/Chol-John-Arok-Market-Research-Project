@@ -1,7 +1,7 @@
 ﻿# Frontend Workspace & UI Architecture (`frontend/`)
 
 > **Location:** `frontend/`  
-> **Purpose:** API-backed staff surfaces, static design prototypes, shared stylesheets, design tokens, and UI previews.  
+> **Purpose:** API-backed staff and customer surfaces, retained legacy design assets, shared stylesheets, and design tokens.
 > **Brand Identity:** Foodizo (Ham Towers) & Obunuzi Restaurant (Opposite YMCA, Wandegeya, Kampala)
 
 ---
@@ -24,19 +24,19 @@ frontend/
 │   ├── dispatch.js                                         # Active/review queues, rider assign, delivery outcome
 │   └── admin.js                                            # Digest overview, cash count, surplus, dispatch-now
 │
-├── html/                                                   # Live login page + static design prototypes
-│   ├── README.md                                           # Prototype route & companion stylesheet map
-│   ├── index.html                                          # Launch hub at / (live vs prototype labels)
+├── html/                                                   # Live hub/login/tracker + retained legacy design assets
+│   ├── README.md                                           # Screen routes and companion stylesheet map
+│   ├── index.html                                          # Launch hub at /
 │   ├── staff_terminal_pin_login.html                       # Surface 1: live staff PIN gateway (/login)
-│   ├── customer_pwa_landing_page.html                      # Surface 2A: customer PWA prototype
-│   ├── campus_pre_order_menu.html                          # Surface 2B: campus pre-order prototype
-│   ├── momo_checkout_delivery_zone_selector.html           # Surface 2C: MoMo checkout prototype
-│   ├── digital_token_queue_bypass_status.html              # Surface 2D: takeaway token prototype
-│   ├── boda_landmark_delivery_tracker.html                 # Surface 2E: landmark tracker prototype
-│   ├── waitress_pos_table_floor_order_pad.html             # Surface 3: static POS design
-│   ├── kitchen_display_system_kds_active_stations.html     # Surface 4: static KDS design
-│   ├── foh_boda_dispatch_delivery_queue.html               # Surface 5: static dispatch design
-│   └── manager_admin_eod_surplus_audit_digest.html         # Surface 6: static manager design
+│   ├── customer_pwa_landing_page.html                      # Retained legacy customer design (not routed)
+│   ├── campus_pre_order_menu.html                          # Retained legacy menu design (not routed)
+│   ├── momo_checkout_delivery_zone_selector.html           # Retained legacy checkout design (not routed)
+│   ├── digital_token_queue_bypass_status.html              # Retained legacy token design (not routed)
+│   ├── boda_landmark_delivery_tracker.html                 # Surface 2E: public live order tracker
+│   ├── waitress_pos_table_floor_order_pad.html             # Retained legacy POS design (not routed)
+│   ├── kitchen_display_system_kds_active_stations.html     # Retained legacy KDS design (not routed)
+│   ├── foh_boda_dispatch_delivery_queue.html               # Retained legacy dispatch design (not routed)
+│   └── manager_admin_eod_surplus_audit_digest.html         # Retained legacy manager design (not routed)
 │
 ├── css/                                                    # Shared and companion stylesheets
 │   ├── README.md                                           # Styling documentation
@@ -81,34 +81,30 @@ These routes run against the Fastify/Prisma backend and the real-time `/ws/event
 | **Surface 5** | Boda Dispatch Queue | `/dispatch` | [`live/dispatch.html`](live/dispatch.html) | [`js/dispatch.js`](js/dispatch.js) | `WAITER_FOH`, `MANAGER_ADMIN` |
 | **Surface 6** | Manager Audit & Digest | `/admin` | [`live/admin.html`](live/admin.html) | [`js/admin.js`](js/admin.js) | `MANAGER_ADMIN` |
 
+Customer ordering is live at `/order` and `/customer`; token lookup and status tracking are live at `/tracker`. Former `/prototype/*` URLs redirect to their corresponding live screens. Staff routes remain protected by role-based authentication.
+
 The login page uses the public `/api/v1/auth/terminal-staff` display directory (name, role, outlet, initials only) and authenticates with `staffId` plus PIN. Other live pages use the shared [`js/api.js`](js/api.js) client, which relies on the HttpOnly `foodizo_session` cookie with a Bearer-token fallback.
 
-The launch hub at `/` labels these five screens as live and lists the static prototypes separately.
+The launch hub at `/` links directly to the live customer and staff workflows.
 
 ---
 
-## 3. Static Design Prototypes (not API-backed)
+## 3. Live Customer Workflows and Legacy URLs
 
-These screens are for layout and visual review. They do **not** create real orders, call the payment API, track real riders, or read live kitchen data. They are namespaced under `/prototype/*` so they cannot be mistaken for live behaviour. Legacy customer aliases (`/landing`, `/customer`, `/menu`, `/checkout`, `/token`, `/tracker`) return `302` to the matching prototype route.
+The customer menu, cart, checkout, pickup and delivery orders are handled by the live flow at `/order`. Customers can look up token status and track delivery progress at `/tracker`. Former prototype URLs redirect to these live pages or to the corresponding role-protected staff screen; staff authentication and outlet/role checks still apply.
 
-| Surface ID | Screen Role | Prototype Route | HTML | Companion CSS |
-| :---: | :--- | :--- | :--- | :--- |
-| **Surface 2A** | Customer PWA Landing | `/prototype/customer` | [`html/customer_pwa_landing_page.html`](html/customer_pwa_landing_page.html) | [`css/customer_pwa_landing_page.css`](css/customer_pwa_landing_page.css) |
-| **Surface 2B** | Campus Pre-Order Menu | `/prototype/menu` | [`html/campus_pre_order_menu.html`](html/campus_pre_order_menu.html) | [`css/campus_pre_order_menu.css`](css/campus_pre_order_menu.css) |
-| **Surface 2C** | MoMo STK Checkout | `/prototype/checkout` | [`html/momo_checkout_delivery_zone_selector.html`](html/momo_checkout_delivery_zone_selector.html) | [`css/momo_checkout_delivery_zone_selector.css`](css/momo_checkout_delivery_zone_selector.css) |
-| **Surface 2D** | Takeaway Token Pass | `/prototype/token` | [`html/digital_token_queue_bypass_status.html`](html/digital_token_queue_bypass_status.html) | [`css/digital_token_queue_bypass_status.css`](css/digital_token_queue_bypass_status.css) |
-| **Surface 2E** | Landmark Boda Tracker | `/prototype/tracker` | [`html/boda_landmark_delivery_tracker.html`](html/boda_landmark_delivery_tracker.html) | [`css/boda_landmark_delivery_tracker.css`](css/boda_landmark_delivery_tracker.css) |
-| **Surface 1** | Staff PIN design | `/prototype/login` | [`html/staff_terminal_pin_login.html`](html/staff_terminal_pin_login.html) | [`css/staff_terminal_pin_login.css`](css/staff_terminal_pin_login.css) |
-| **Surface 3** | Floor POS design | `/prototype/pos` | [`html/waitress_pos_table_floor_order_pad.html`](html/waitress_pos_table_floor_order_pad.html) | [`css/waitress_pos_table_floor_order_pad.css`](css/waitress_pos_table_floor_order_pad.css) |
-| **Surface 4** | KDS design | `/prototype/kds` | [`html/kitchen_display_system_kds_active_stations.html`](html/kitchen_display_system_kds_active_stations.html) | [`css/kitchen_display_system_kds_active_stations.css`](css/kitchen_display_system_kds_active_stations.css) |
-| **Surface 5** | Dispatch design | `/prototype/dispatch` | [`html/foh_boda_dispatch_delivery_queue.html`](html/foh_boda_dispatch_delivery_queue.html) | [`css/foh_boda_dispatch_delivery_queue.css`](css/foh_boda_dispatch_delivery_queue.css) |
-| **Surface 6** | Manager design | `/prototype/admin` | [`html/manager_admin_eod_surplus_audit_digest.html`](html/manager_admin_eod_surplus_audit_digest.html) | [`css/manager_admin_eod_surplus_audit_digest.css`](css/manager_admin_eod_surplus_audit_digest.css) |
+| Surface | Live route | Purpose |
+| :--- | :--- | :--- |
+| Customer ordering | `/order` | Live menu, cart, pickup/delivery checkout and order creation |
+| Customer tracking | `/tracker` | Live order token lookup and pickup/delivery status |
+| Legacy customer URLs | `/prototype/customer`, `/prototype/menu`, `/prototype/checkout`, `/prototype/token`, `/prototype/tracker` | Redirect to live order or tracking workflows |
+| Legacy staff URLs | `/prototype/login`, `/prototype/pos`, `/prototype/kds`, `/prototype/dispatch`, `/prototype/admin` | Redirect to live staff surfaces with existing access control |
 
 ---
 
 ## 4. Styling & Token Architecture
 
 - **Live surfaces:** `live/*.html` load [`css/theme_tokens.css`](css/theme_tokens.css) and [`css/live_surfaces.css`](css/live_surfaces.css). The shared stylesheet carries the role-differentiated dark staff palette, touch targets, cards, tables, modals, and toasts used by POS, KDS, dispatch, and admin.
-- **Static prototypes:** Each screen in `html/` links to its own companion stylesheet in `css/` via `<link rel="stylesheet" href="../css/<name>.css"/>`.
+- **Retained design assets:** Legacy HTML/CSS screens remain available in the repository for reference, but application routes redirect customers and staff to live workflows.
 - **Shared theme foundation:** Companion stylesheets import [`css/theme_tokens.css`](css/theme_tokens.css), guaranteeing colour, type, and ergonomic consistency while isolating page-specific layout rules.
 - **Canonical values:** Colors, type scale, spacing, and touch targets follow [`design_tokens_kampala_fast_casual.md`](design_tokens_kampala_fast_casual.md) and [`../docs/Design_System.md`](../docs/Design_System.md).

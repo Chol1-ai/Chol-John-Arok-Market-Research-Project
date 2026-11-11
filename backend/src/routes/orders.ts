@@ -493,7 +493,12 @@ export const orderRoutes: FastifyPluginAsync = async (fastify) => {
       },
       include: {
         order_items: true,
-        delivery_zone: true
+        delivery_zone: true,
+        handoffs: {
+          where: { outcome: 'PENDING' },
+          select: { id: true },
+          take: 1
+        }
       },
       orderBy: { created_at: 'desc' },
       take: 5
@@ -524,6 +529,9 @@ export const orderRoutes: FastifyPluginAsync = async (fastify) => {
       displayToken: `#${order.digital_token.replace('TOKEN-', '')}`,
       orderNumber: order.public_ref,
       status: order.status,
+      deliveryStatus: order.channel === 'PHONE_DELIVERY' && order.handoffs.length > 0
+        ? 'OUT_FOR_DELIVERY'
+        : order.status,
       outlet: order.outlet,
       createdAt: order.created_at,
       channel: order.channel,

@@ -50,7 +50,8 @@
     trackingToken: document.getElementById('tracking-token'),
     trackingOrder: document.getElementById('tracking-order'),
     trackingStatus: document.getElementById('tracking-status'),
-    trackingCashNote: document.getElementById('tracking-cash-note')
+    trackingCashNote: document.getElementById('tracking-cash-note'),
+    openTracker: document.getElementById('open-tracker')
   };
 
   function escapeHtml(value) {
@@ -310,6 +311,9 @@
     elements.trackingOrder.textContent = `${data.orderNumber} · ${OUTLET_LABEL[data.outlet] || data.outlet}`;
     state.channel = data.channel;
     state.outlet = data.outlet;
+    const trackerQuery = new URLSearchParams({ token: state.token, outlet: state.outlet });
+    elements.openTracker.href = `/tracker?${trackerQuery.toString()}`;
+    elements.openTracker.hidden = false;
     const isDelivery = data.channel === 'PHONE_DELIVERY';
     document.title = isDelivery ? 'Delivery order status | Foodizo & Obunuzi' : 'Pickup order status | Foodizo & Obunuzi';
     document.getElementById('tracking-channel-label').textContent = isDelivery ? 'Delivery order status' : 'Pickup order status';
@@ -317,12 +321,14 @@
     elements.trackingCopy.textContent = data.channel === 'PHONE_DELIVERY'
       ? `Delivery from ${OUTLET_LABEL[data.outlet] || data.outlet}. Pay cash to the rider at handoff.`
       : `Pickup from ${OUTLET_LABEL[data.outlet] || data.outlet}.`;
+    const deliveryStatus = data.deliveryStatus || data.status;
     elements.trackingStatus.textContent = isDelivery
       ? {
           PENDING: 'Your order is queued for the kitchen. The rider will collect cash on delivery.',
           READY: 'Your order is ready for rider dispatch.',
+          OUT_FOR_DELIVERY: 'Your order has been dispatched and is on the way.',
           COMPLETED: 'This order was delivered. Thank you!'
-        }[data.status] || STATUS_COPY[data.status] || `Order status: ${data.status}`
+        }[deliveryStatus] || STATUS_COPY[deliveryStatus] || `Order status: ${deliveryStatus}`
       : STATUS_COPY[data.status] || `Order status: ${data.status}`;
     elements.trackingCashNote.textContent = data.channel === 'PHONE_DELIVERY'
       ? `Delivery destination: ${data.destination || 'selected area'}. Pay the order total, including the delivery fee, to the rider at handoff.`
@@ -340,6 +346,7 @@
     state.token = null;
     history.replaceState(null, '', '/order');
     elements.trackingScreen.hidden = true;
+    elements.openTracker.hidden = true;
     elements.orderScreen.hidden = false;
     elements.checkoutForm.reset();
     state.cart.clear();

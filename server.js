@@ -9,8 +9,7 @@
  * Canonical staff routes serve the live API-backed surfaces:
  *   /login /pos /kds /dispatch /admin
  *
- * The original static screens remain available as design prototypes under
- * /prototype/* so they are never mistaken for working production behaviour.
+ * Former /prototype/* URLs redirect to live customer or staff workflows.
  *
  * /api/v1/* and the /ws/events upgrade are proxied to the Fastify backend on
  * BACKEND_PORT (default 4000).
@@ -46,7 +45,7 @@ const MIME_TYPES = {
   '.ttf': 'font/ttf'
 };
 
-// Live surfaces, the launch hub, and clearly namespaced design prototypes.
+// Live staff/customer surfaces and the launch hub.
 const ROUTE_MAP = {
   // The launch hub explains which surfaces are live and which are prototypes.
   '/': 'html/index.html',
@@ -65,29 +64,36 @@ const ROUTE_MAP = {
   '/digest': 'live/admin.html',
   '/order': 'live/customer-order.html',
   '/customer': 'live/customer-order.html',
+  '/tracker': 'html/boda_landmark_delivery_tracker.html',
 
-  // Static design prototypes — clearly not live and never API-backed.
-  '/prototype': 'html/index.html',
-  '/prototype/customer': 'html/customer_pwa_landing_page.html',
-  '/prototype/menu': 'html/campus_pre_order_menu.html',
-  '/prototype/checkout': 'html/momo_checkout_delivery_zone_selector.html',
-  '/prototype/token': 'html/digital_token_queue_bypass_status.html',
-  '/prototype/tracker': 'html/boda_landmark_delivery_tracker.html',
-  '/prototype/login': 'html/staff_terminal_pin_login.html',
-  '/prototype/pos': 'html/waitress_pos_table_floor_order_pad.html',
-  '/prototype/kds': 'html/kitchen_display_system_kds_active_stations.html',
-  '/prototype/dispatch': 'html/foh_boda_dispatch_delivery_queue.html',
-  '/prototype/admin': 'html/manager_admin_eod_surplus_audit_digest.html'
 };
 
-// Old customer-surface aliases now point at the prototype namespace so a static
-// screen is never presented as a live ordering or payment flow.
-const PROTOTYPE_REDIRECTS = {
-  '/landing': '/prototype/customer',
-  '/menu': '/prototype/menu',
-  '/checkout': '/prototype/checkout',
-  '/token': '/prototype/token',
-  '/tracker': '/prototype/tracker'
+// Keep former prototype URLs usable by sending them to the live workflows.
+const LIVE_REDIRECTS = {
+  '/prototype': '/',
+  '/prototype/': '/',
+  '/prototype/customer': '/order',
+  '/prototype/menu': '/order',
+  '/prototype/checkout': '/order#checkout-form',
+  '/prototype/token': '/tracker',
+  '/prototype/tracker': '/tracker',
+  '/prototype/login': '/login',
+  '/prototype/pos': '/pos',
+  '/prototype/kds': '/kds',
+  '/prototype/dispatch': '/dispatch',
+  '/prototype/admin': '/admin',
+  '/html/customer_pwa_landing_page.html': '/order',
+  '/html/campus_pre_order_menu.html': '/order',
+  '/html/momo_checkout_delivery_zone_selector.html': '/order#checkout-form',
+  '/html/digital_token_queue_bypass_status.html': '/tracker',
+  '/html/waitress_pos_table_floor_order_pad.html': '/pos',
+  '/html/kitchen_display_system_kds_active_stations.html': '/kds',
+  '/html/foh_boda_dispatch_delivery_queue.html': '/dispatch',
+  '/html/manager_admin_eod_surplus_audit_digest.html': '/admin',
+  '/landing': '/order',
+  '/menu': '/order',
+  '/checkout': '/order#checkout-form',
+  '/token': '/tracker'
 };
 
 function sendJson(res, statusCode, payload) {
@@ -197,12 +203,11 @@ function renderNotFound(res, pathname) {
             • <a href="/dispatch">Boda Dispatch Queue</a><br>
             • <a href="/admin">Manager EOD Audit</a>
           </div>
-          <div><strong>Static Prototypes (not live):</strong><br>
+          <div><strong>Live Customer Workflows:</strong><br>
             • <a href="/">Launch hub</a><br>
-            • <a href="/prototype/customer">Customer PWA</a><br>
-            • <a href="/prototype/menu">Campus Menu</a><br>
-            • <a href="/prototype/checkout">MoMo Checkout</a><br>
-            • <a href="/prototype">All design prototypes</a>
+            • <a href="/order">Menu, ordering &amp; checkout</a><br>
+            • <a href="/tracker">Order token &amp; tracking</a><br>
+            • <a href="/customer">Customer ordering</a>
           </div>
         </div>
       </div>
@@ -293,8 +298,14 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  if (PROTOTYPE_REDIRECTS[pathname]) {
-    res.writeHead(302, { Location: PROTOTYPE_REDIRECTS[pathname] });
+  const liveRedirect = LIVE_REDIRECTS[pathname] ||
+    (pathname.startsWith('/prototype/') ? '/' : null);
+  if (liveRedirect) {
+    const destination = new URL(liveRedirect, `http://${req.headers.host || 'localhost'}`);
+    if (urlObj.search) destination.search = urlObj.search;
+    res.writeHead(302, {
+      Location: `${destination.pathname}${destination.search}${destination.hash}`
+    });
     res.end();
     return;
   }
@@ -321,14 +332,12 @@ server.listen(PORT, '0.0.0.0', () => {
   console.log(`   Boda Dispatch Queue:    http://localhost:${PORT}/dispatch`);
   console.log(`   Manager EOD Audit:      http://localhost:${PORT}/admin`);
   console.log(`   Read-only Digest link:  http://localhost:${PORT}/d/<token>`);
-  console.log(`   Customer Pickup Orders: http://localhost:${PORT}/order`);
-  console.log('STATIC DESIGN PROTOTYPES (not live):');
+  console.log(`   Customer Orders:        http://localhost:${PORT}/order`);
+  console.log(`   Live customer tracker:  http://localhost:${PORT}/tracker`);
+  console.log('LIVE CUSTOMER FLOWS:');
+  console.log(`   Customer ordering:     http://localhost:${PORT}/order`);
+  console.log(`   Order tracker:         http://localhost:${PORT}/tracker`);
+  console.log('Former /prototype/* URLs redirect to live surfaces.');
   console.log(`   Launch hub:             http://localhost:${PORT}/`);
-  console.log(`   Customer PWA prototype: http://localhost:${PORT}/prototype/customer`);
-  console.log(`   Campus menu prototype:  http://localhost:${PORT}/prototype/menu`);
-  console.log(`   MoMo checkout prototype:http://localhost:${PORT}/prototype/checkout`);
-  console.log(`   Token prototype:        http://localhost:${PORT}/prototype/token`);
-  console.log(`   Tracker prototype:      http://localhost:${PORT}/prototype/tracker`);
-  console.log(`   All design prototypes:  http://localhost:${PORT}/prototype`);
   console.log('===============================================================\n');
 });

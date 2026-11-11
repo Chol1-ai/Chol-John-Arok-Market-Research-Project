@@ -28,7 +28,7 @@ Chol-John-Arok-Market-Research-Project/
 |   |   |-- dispatch.html
 |   |   |-- admin.html
 |   |   `-- digest.html           # Public /d/<token> report
-|   |-- html/                     # Static design prototypes under /prototype/*
+|   |-- html/                     # Hub, login, tracker, and retained legacy design files
 |   |-- js/
 |   |   |-- api.js                # Session guard, API client, WebSocket client
 |   |   |-- login.js
@@ -89,16 +89,16 @@ Chol-John-Arok-Market-Research-Project/
 
 | Route | Serves |
 | :--- | :--- |
-| `/` | Launch hub that labels live surfaces and static prototypes |
+| `/` | Launch hub linking to live customer and staff workflows |
 | `/login` | Staff directory + PIN login |
 | `/pos` | Floor POS and table tabs |
 | `/kds` | Kitchen Display System |
 | `/dispatch` | Boda dispatch queue |
 | `/admin` | Manager audit, cash, surplus, digest |
 | `/d/:token` | Public read-only digest report |
-| `/prototype/*` | Static design screens (not API-backed) |
+| `/prototype/*` | Legacy URLs redirecting to live customer/staff workflows |
 
-Legacy customer aliases (`/landing`, `/customer`, `/menu`, `/checkout`, `/token`, `/tracker`) return `302` to the matching `/prototype/*` page. `/waitress`, `/kitchen`, `/boda`, and `/digest` are aliases for the live staff surfaces.
+Customer ordering is live at `/order` and `/customer`; order tracking is live at `/tracker`. Legacy `/prototype/*` and customer alias URLs redirect to live ordering, tracking, or the corresponding role-protected staff surface. `/waitress`, `/kitchen`, `/boda`, and `/digest` are aliases for the live staff surfaces.
 
 ---
 

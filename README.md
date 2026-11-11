@@ -90,7 +90,7 @@ The end-to-end technical and operational specifications are organized into clean
 * **[Demo Script & Closing Strategy](go_to_market/Demo_Script_and_Closing_Strategy.md)** — Live demonstration script, objection handling, and commercial closing proposal in UGX to close Zito Mbowe.
 * **[Service Contract & Invoice Template](go_to_market/Service_Contract_and_Invoice_Template.md)** — Milestone-based service agreement and UGX invoice template for legal review.
 
-### 7.4 Live Application & Frontend Prototypes (frontend/)
+### 7.4 Live Application & Frontend (frontend/)
 
 **Live staff surfaces (API-backed):**
 
@@ -102,10 +102,10 @@ The end-to-end technical and operational specifications are organized into clean
 | Boda dispatch queue | `/dispatch` | `WAITER_FOH`, `MANAGER_ADMIN` |
 | Manager audit & digest | `/admin` | `MANAGER_ADMIN` |
 
-The launch hub at `/` lists every surface and clearly labels live versus prototype screens. The five customer PWA screens and the original staff screen designs are **static design prototypes** under `/prototype/*` — `/prototype/customer`, `/prototype/menu`, `/prototype/checkout`, `/prototype/token`, `/prototype/tracker`, `/prototype/pos`, `/prototype/kds`, `/prototype/dispatch`, and `/prototype/admin`. They are not connected to live ordering, payment, tracking, or real-time APIs.
+The launch hub at `/` links to live customer ordering, checkout, token lookup, delivery tracking, and role-protected staff workspaces. Former `/prototype/*` links redirect to the corresponding live workflow; no static screen mock is served from those routes.
 
-* **[Frontend Architecture Guide](frontend/README.md)** — Master index of live surfaces, static prototype screens, modular stylesheets, and design tokens.
-* **[HTML Prototypes](frontend/html/README.md)** (`frontend/html/`) — Standalone HTML prototypes for Surfaces 1–6 (PIN Login, Customer PWA, Floor POS, KDS, Dispatch Queue, Manager Admin), served under `/prototype/*`.
+* **[Frontend Architecture Guide](frontend/README.md)** — Master index of live surfaces, legacy design assets, modular stylesheets, and design tokens.
+* **[Frontend HTML Screens](frontend/html/README.md)** (`frontend/html/`) — Live launch hub, staff sign-in, and customer tracking screens.
 * **[Live Surface Scripts](frontend/js/)** (`frontend/js/`) — API client, session guard, role routing, and the POS/KDS/dispatch/admin controllers.
 * **[Live Surface Screens](frontend/live/)** (`frontend/live/`) — API-backed HTML for `/pos`, `/kds`, `/dispatch`, and `/admin`.
 * **[Modular CSS Stylesheets](frontend/css/README.md)** (`frontend/css/`) — 1-to-1 matching companion CSS files plus the shared `theme_tokens.css` and `live_surfaces.css`.

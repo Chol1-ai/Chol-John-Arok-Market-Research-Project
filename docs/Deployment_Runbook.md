@@ -228,7 +228,7 @@ On a tablet:
 4. Claim and bump the ticket; confirm the chit prints and the SMS result is reported honestly (`MOCK` in development/sandbox).
 5. Settle the tab and confirm the table moves to `NEEDS_CLEARING`.
 6. Open `/dispatch` and `/admin` as a manager; confirm dispatch and digest data load.
-7. Open `/prototype/customer`; confirm the customer screen is labelled as a static design prototype and does not call the API.
+7. Open `/order`; confirm the live menu loads, select pickup and delivery, and verify outlet menu and delivery-zone data come from the API. Open `/tracker` and verify a valid development order token shows live status. Former `/prototype/*` links should redirect to these live flows.
 
 A first-boot is complete when the health checks pass, all seven demo logins redirect to the correct role home, a test ticket reaches the KDS, and a test chit prints.
 
@@ -487,10 +487,12 @@ Add an external uptime monitor (Uptime Kuma, Cloudflare Health Checks, or a simp
 - [ ] Migrations run successfully on a clean database.
 - [ ] The seed produced 7 staff accounts, 16 tables per outlet, and the canonical fixtures; demo PINs are changed before real use.
 - [ ] All seven staff logins redirect to the correct role home (`/pos`, `/kds`, `/admin`).
+- [ ] Customer menu, pickup/delivery checkout, token lookup, and delivery status are verified against the live API.
 - [ ] KDS receives a table order over the LAN and prints a test chit.
 - [ ] Disconnecting the WAN does not stop local KDS/POS/printing.
 - [ ] MoMo/Airtel/SMS show a clear offline error; no order is marked paid locally.
 - [ ] Payment webhooks are signed with `PAYMENTS_WEBHOOK_SECRET`.
+- [ ] MTN MoMo and Airtel Money provider clients, sandbox transactions, and signed callback settlement are verified before production release; simulated prompts are never treated as payments.
 - [ ] The app uses `Africa/Kampala`; the 21:30 digest scheduler is registered and logged.
 - [ ] Digest channel reporting is honest: `SMS_MOCK` and `NOT_CONFIGURED` are not presented as delivered.
 - [ ] A nightly backup runs and a restore test succeeds.

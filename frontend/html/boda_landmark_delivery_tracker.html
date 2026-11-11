@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" /><link rel="icon" type="image/svg+xml" href="../images/foodizo-brand-mark.svg"/>
   <meta name="theme-color" content="#f9f9ff" />
-  <title>Delivery Updates | Foodizo</title>
+  <title>Track your order | Foodizo &amp; Obunuzi</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" />
@@ -28,6 +28,21 @@
     .message { max-width: 310px; margin: 0; color: #68716b; font-size: .82rem; line-height: 1.65; }
     .button { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; gap: .45rem; margin-top: 1.25rem; padding: 0 1.2rem; border-radius: 999px; background: #245c3e; color: white; font-size: .8rem; font-weight: 700; }
     .button:hover { background: #194b30; }
+    .button:disabled { cursor: wait; opacity: .7; }
+    .tracker-notice { margin-top: 1rem; padding: .8rem 1rem; border: 1px solid #ebc7c0; border-radius: .8rem; background: #fff1ed; color: #8d2c20; font-size: .8rem; line-height: 1.5; }
+    .tracker-card { align-items: stretch; }
+    .tracker-card > .bike-image { align-self: center; }
+    .tracker-form { display: grid; width: min(100%, 340px); gap: .55rem; margin-top: 1.25rem; text-align: left; }
+    .tracker-form label { margin-top: .35rem; color: #48534b; font-size: .75rem; font-weight: 700; }
+    .tracker-form input, .tracker-form select { min-height: 46px; width: 100%; padding: 0 .8rem; border: 1px solid #dcd8ce; border-radius: .7rem; background: white; color: #202a24; font: inherit; font-size: .85rem; }
+    .tracker-form input:focus, .tracker-form select:focus { border-color: #42865c; outline: 3px solid rgb(66 134 92 / 13%); }
+    .tracker-form .button, .tracker-result .button { justify-self: center; border: 0; cursor: pointer; font: inherit; font-size: .8rem; font-weight: 700; }
+    .tracker-result { display: grid; justify-items: center; gap: .45rem; width: 100%; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid #e1e8fd; }
+    .result-label { color: #00682b; font-size: .68rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    .result-status { color: #183d2d; font-size: 1.05rem; line-height: 1.5; }
+    .result-items { width: min(100%, 300px); margin: .25rem 0; padding-left: 1.25rem; color: #59635a; font-size: .8rem; line-height: 1.6; text-align: left; }
+    .result-updated { margin: 0; color: #788078; font-size: .68rem; }
+    [hidden] { display: none !important; }
     nav { position: fixed; right: 0; bottom: 0; left: 0; display: flex; justify-content: center; padding: .5rem 1rem calc(.5rem + env(safe-area-inset-bottom)); border-top: 1px solid #e1e8fd; background: rgb(249 249 255 / 94%); backdrop-filter: blur(12px); }
     .nav-inner { display: flex; width: min(100%, 448px); justify-content: space-around; }
     nav a { display: flex; min-width: 70px; min-height: 48px; flex-direction: column; align-items: center; justify-content: center; gap: .2rem; color: #68716b; font-size: .65rem; font-weight: 600; }
@@ -39,30 +54,50 @@
 <body>
   <div class="page">
     <header>
-      <a href="customer_pwa_landing_page.html" aria-label="Foodizo and Obunuzi home">
+      <a href="/" aria-label="Foodizo and Obunuzi home">
         <img class="logo" src="../images/foodizo-obunuzi-logo.svg" alt="Foodizo and Obunuzi" />
       </a>
-      <a class="home-link" href="campus_pre_order_menu.html"><span class="material-symbols-outlined" aria-hidden="true">restaurant_menu</span>Menu</a>
+      <a class="home-link" href="/order"><span class="material-symbols-outlined" aria-hidden="true">restaurant_menu</span>Order</a>
     </header>
     <main>
-      <span class="eyebrow">Delivery</span>
-      <h1>Delivery updates</h1>
-      <p class="intro">Follow your order from dispatch to drop-off.</p>
-      <section class="empty-card" aria-live="polite">
+      <span class="eyebrow">Live order tracking</span>
+      <h1>Track your order</h1>
+      <p class="intro">Enter the token from your order confirmation to see pickup or delivery progress.</p>
+      <div id="tracker-notice" class="tracker-notice" role="status" hidden></div>
+      <section class="empty-card tracker-card">
         <img class="bike-image" src="../images/motorbike-illustration.svg" alt="Illustration of a delivery motorbike" />
-        <h2>No delivery in progress</h2>
-        <p class="message">Rider and route details will appear here after an order is dispatched. There are no active deliveries on this account.</p>
-        <a class="button" href="campus_pre_order_menu.html">Browse the menu <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></a>
+        <h2>Find your order</h2>
+        <p class="message">Your token is shown after you place an order. Choose the outlet where you ordered.</p>
+        <form id="tracker-form" class="tracker-form">
+          <label for="tracker-token">Order token</label>
+          <input id="tracker-token" name="token" type="text" inputmode="text" autocomplete="off" maxlength="24" placeholder="e.g. #012" required />
+          <label for="tracker-outlet">Restaurant outlet</label>
+          <select id="tracker-outlet" name="outlet" required>
+            <option value="">Choose an outlet</option>
+            <option value="FOODIZO_HAM_TOWERS">Foodizo · Ham Towers</option>
+            <option value="OBUNUZI_YMCA">Obunuzi · Opposite YMCA</option>
+          </select>
+          <button id="tracker-submit" class="button" type="submit">Track order <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></button>
+        </form>
+        <section id="tracker-result" class="tracker-result" aria-live="polite" hidden>
+          <span class="result-label" id="result-channel">Order status</span>
+          <strong id="result-status" class="result-status"></strong>
+          <p id="result-order" class="message"></p>
+          <p id="result-destination" class="message" hidden></p>
+          <ul id="result-items" class="result-items"></ul>
+          <p id="result-updated" class="result-updated"></p>
+          <button id="tracker-refresh" class="button" type="button">Refresh status</button>
+        </section>
       </section>
     </main>
   </div>
   <nav aria-label="Customer navigation">
     <div class="nav-inner">
-      <a href="campus_pre_order_menu.html"><span class="material-symbols-outlined" aria-hidden="true">restaurant</span><span>Menu</span></a>
-      <a href="digital_token_queue_bypass_status.html"><span class="material-symbols-outlined" aria-hidden="true">confirmation_number</span><span>My Token</span></a>
-      <a aria-current="page" href="boda_landmark_delivery_tracker.html"><span class="material-symbols-outlined" aria-hidden="true">two_wheeler</span><span>Delivery</span></a>
+      <a href="/order"><span class="material-symbols-outlined" aria-hidden="true">restaurant</span><span>Order</span></a>
+      <a href="/tracker"><span class="material-symbols-outlined" aria-hidden="true">confirmation_number</span><span>Track</span></a>
+      <a aria-current="page" href="/tracker"><span class="material-symbols-outlined" aria-hidden="true">two_wheeler</span><span>Delivery</span></a>
     </div>
   </nav>
-  <script src="../js/customer_prototype_ui.js?v=5" defer></script>
+  <script src="/js/customer-tracker.js" defer></script>
 </body>
 </html>

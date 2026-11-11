@@ -110,7 +110,7 @@
     const token = getToken();
 
     if (token && !headers.has('Authorization')) {
-      headers.set('Authorization', `Bearer ${token}`);
+      headers.set('Authorization', 'Bearer ' + token);
     }
     if (opts.body !== undefined && opts.body !== null && !headers.has('Content-Type')) {
       headers.set('Content-Type', 'application/json');

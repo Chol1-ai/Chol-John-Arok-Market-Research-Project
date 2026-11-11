@@ -120,7 +120,7 @@ Managers can create Waiter/FOH or Kitchen Staff accounts from the `/admin` staff
 27. Log surplus portions with clearance, staff-meal, and waste resolutions; confirm they appear in the digest overview.
 28. Dispatch the digest; confirm the response reports `digestStatus: PARTIAL` in development, `smsStatus: MOCK`, `channelsSent: ["SMS_MOCK"]`, and `emailStatus: NOT_CONFIGURED`.
 29. Open the returned `GET /api/v1/digest/view/:token` link; confirm it is read-only and rejects a token older than 72 hours.
-30. Open `/` and confirm the launch hub labels five live staff surfaces and five static prototypes; open `/prototype/customer`, `/prototype/menu`, `/prototype/checkout`, `/prototype/token`, and `/prototype/tracker`. Confirm `/menu`, `/checkout`, `/token`, and `/tracker` return `302` to the prototype routes.
+30. Open `/` and confirm customer cards link to live menu, checkout, token lookup, and tracking. Open `/tracker`, enter a current order token and outlet, and confirm pickup/delivery status updates. Confirm former `/prototype/*` URLs redirect to the relevant live customer or role-protected staff surface.
 
 ---
 

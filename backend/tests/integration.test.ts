@@ -801,6 +801,7 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
 
     const publicStatus = await inject('GET', `/api/v1/orders/token/${order.tokenNumber}?outlet=FOODIZO_HAM_TOWERS`);
     expect((publicStatus.json() as Json).status).toBe('PENDING');
+    expect((publicStatus.json() as Json).deliveryStatus).toBe('PENDING');
     expect(JSON.stringify(publicStatus.json())).not.toContain('0770555331');
 
     const claim = await inject('POST', `/api/v1/kds/${order.id}/claim`, { token: tokens.juma });
@@ -822,6 +823,15 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
       payload: { riderName: 'COD Rider', riderPhone: '256701110001' }
     });
     expect(assigned.statusCode).toBe(200);
+    const customerTracking = await inject(
+      'GET',
+      `/api/v1/orders/token/${order.tokenNumber}?outlet=FOODIZO_HAM_TOWERS`
+    );
+    const trackingData = customerTracking.json() as Json;
+    expect(trackingData.status).toBe('READY');
+    expect(trackingData.deliveryStatus).toBe('OUT_FOR_DELIVERY');
+    expect(JSON.stringify(trackingData)).not.toContain('COD Rider');
+    expect(JSON.stringify(trackingData)).not.toContain('256701110001');
 
     const missingCash = await inject('POST', `/api/v1/orders/${order.id}/delivery-complete`, {
       token: tokens.sarah
@@ -1085,7 +1095,7 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
 
     const usage = await inject('POST', '/api/v1/inventory/stock', {
       token: tokens.cyrus,
-      payload: { inventoryId: flour.id, action: 'MANUAL_USAGE', quantity: 2 }
+      payload: { inventoryId: flour.id, action: 'MANUAL_USAGE', quantity: 2, note: 'Kitchen preparation' }
     });
     expect(usage.statusCode).toBe(200);
     expect((usage.json() as Json).item.currentStock).toBe(23);
@@ -1159,6 +1169,11 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
     expect((body.movements as Json[]).some((movement) => movement.type === 'MANUAL_USAGE')).toBe(true);
     expect((body.movements as Json[]).some((movement) => movement.type === 'SUPPLIER_RECEIPT')).toBe(true);
     expect((body.movements as Json[]).some((movement) => movement.type === 'SALES_USAGE')).toBe(true);
+    const manualUsage = (body.movements as Json[]).find((movement) =>
+      movement.type === 'MANUAL_USAGE' && movement.itemName === 'Integration Flour'
+    );
+    expect(manualUsage?.note).toBe('Kitchen preparation');
+    expect(manualUsage?.recordedBy).toBeTruthy();
 
     await app.prisma.recipe_bom.create({
       data: {

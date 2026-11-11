@@ -12,7 +12,7 @@
 
 ## 1. Current Implementation Snapshot
 
-The application is served by root `server.js`; live surfaces are `/login`, `/pos`, `/kds`, `/dispatch`, `/admin`, and pickup ordering at `/order` (also `/customer`), with public order status by token and a public `/d/:token` digest. Other customer-facing pages under `/prototype/*` remain static prototypes. The backend uses Fastify, Prisma, PostgreSQL, an in-process WebSocket bus, and an in-process `node-cron` digest scheduler. See `docs/Repo_Scaffold_and_Config.md` for the maintained architecture.
+The application is served by root `server.js`; live surfaces are `/login`, `/pos`, `/kds`, `/dispatch`, `/admin`, customer ordering at `/order` (also `/customer`), public token-based order tracking at `/tracker`, and a public `/d/:token` digest. Former `/prototype/*` and legacy design-file URLs redirect to the live customer or role-protected staff workflows. The backend uses Fastify, Prisma, PostgreSQL, an in-process WebSocket bus, and an in-process `node-cron` digest scheduler. See `docs/Repo_Scaffold_and_Config.md` for the maintained architecture.
 
 | Phase | Scope | Current status | Remaining evidence or work |
 | :--- | :--- | :--- | :--- |
@@ -20,28 +20,41 @@ The application is served by root `server.js`; live surfaces are `/login`, `/pos
 | C1 | Data model, authentication, RBAC, audit | **Implemented locally** | Production backup/restore and deployment configuration still need verification. |
 | C2 | Menu, inventory, BOM | **Implemented locally** | Opening counts, stock movements, supplier orders/receipts, recipe deductions, low-stock display, and recipe-stock-aware menu/order validation pass local tests. Confirm BOM quantities with kitchen operations during UAT. |
 | C3 | Orders, KDS, printing | **Implemented locally** | Automated tests cover key flows. Physical printer operation and WAN-off LAN behavior have not been evidenced here. |
-| C4 | Customer ordering and digital tokens | **Partial** | Live API-backed pickup and delivery ordering, outlet-aware menu/availability, public token status, and staff cash collection are implemented locally. Customer mobile-money payment remains blocked on C5. |
-| C5 | Payments | **Partial** | Non-production initiation is simulated; production refuses fabricated prompts. Signed, idempotent webhook handling exists, but live MTN/Airtel clients and sandbox verification remain blocked on provider credentials and a reachable callback URL. |
-| C6 | Delivery and dispatch | **Implemented locally; UAT pending** | Live zone-priced customer delivery checkout, kitchen queueing, outlet-scoped rider dispatch, COD collection/audit, and completion are covered by integration tests. Broader browser/device and real operational acceptance tests remain. |
+| C4 | Customer ordering and digital tokens | **Implemented locally; acceptance pending** | The full automated API suite passes against a designated disposable development database; local pickup submission and token lookup also passed by API/proxy. The shared browser status display returned an unrelated fixture, so repeat tracker UI acceptance in a clean browser and complete staff/device sign-off. The customer hub links to live workflows; former prototype URLs redirect to live pages. |
+| C5 | Payments | **Partial; provider access pending** | Mobile money is required before final release. The user is awaiting MTN/Airtel connectivity/credentials; non-production initiation remains simulated and production refuses fabricated prompts. Wire and sandbox-test providers only after credentials and a reachable callback URL are supplied. |
+| C6 | Delivery and dispatch | **Implemented locally; UAT pending** | Automated integration tests cover zone-priced delivery, kitchen queueing, outlet-scoped rider dispatch, COD collection/audit, completion, and public delivery status. Complete end-to-end acceptance on intended devices and confirm operational scenarios with staff. |
 | C7 | Cash reconciliation and daily digest | **Implemented locally** | Digest/cash flows exist; SMS is mock in development, email is not configured, and production delivery/scheduling is unverified. |
 | C8 | Deployment hardening and offline operation | **Partial, locally hardened; acceptance pending** | Production configuration now fails closed for missing secrets, non-HTTPS origins, or non-local API binding, and health checks verify PostgreSQL readiness. Complete deployment, backup/restore, security, and WAN-disconnection drills on the intended edge hardware. |
-| C9 | Release candidate and UAT | **Partial, local browser UAT passed; acceptance pending** | Local customer-to-cashier-to-kitchen flow, delivery fee preview, manager/dispatch screens, build, and 32 automated tests passed. See `docs/UAT_Release_Candidate.md`. Complete intended-device and physical workflow tests, resolve the C8/C5 gates, and obtain stakeholder sign-off. |
+| C9 | Release candidate and UAT | **Partial, local browser UAT passed; acceptance pending** | Local customer-to-cashier-to-kitchen flow, delivery fee preview, manager/dispatch screens, build, and 34 automated tests passed. See `docs/UAT_Release_Candidate.md`. Complete intended-device and physical workflow tests, resolve the C8/C5 gates, and obtain stakeholder sign-off. |
 | C10 | Production go-live and hypercare | **Pending** | Requires passed release gates, approved production configuration, operational ownership, and a documented support period. |
 
 ### 1.1 Verified Local Baseline
 
-As of 2026-11-10, C6 local verification passed: `npm run backend:build`, `npm test` (27 tests), JavaScript syntax checks, `git diff --check`, and Prisma migration status. Browser smoke testing placed a zone-priced COD delivery, followed it through kitchen and dispatch, and verified the handoff recorded payment and change and removed the order from the active queue. These results validate local build and covered behavior only; they do not prove live telco, printer, offline, production deployment, or operational UAT readiness.
+As of 2026-11-10, C6 local verification passed: `npm run backend:build`, `npm test` (34 tests), JavaScript syntax checks, `git diff --check`, and Prisma migration status. Browser smoke testing placed a zone-priced COD delivery, followed it through kitchen and dispatch, and verified the handoff recorded payment and change and removed the order from the active queue. These results validate local build and covered behavior only; they do not prove live telco, printer, offline, production deployment, or operational UAT readiness.
 
 > **Test safety:** The integration suite runs the canonical seed, which clears and rebuilds development operational data. Run it only against a disposable or explicitly designated development database.
 
-### 1.2 Recommended Delivery Sequence
+### 1.2 Current Phase Checkpoint (2026-11-10)
 
-1. Finish C4/C6 acceptance testing and close the remaining C5 gap. Customer mobile-money still requires provider credentials, a reachable callback URL, and verified end-to-end testing; do not treat mock payment initiation as production-ready. Confirm recipe quantities with kitchen operations during C9 UAT.
-2. Complete C8 on the intended host: production configuration, migration and backup/restore rehearsal, access review, and WAN-off LAN test.
-3. Run C9 end-to-end on the target browsers and hardware, including printer checks, dispatch, cash close, digest outcomes, and staff role workflows. Track evidence and unresolved defects.
-4. Approve C10 only after the release gates below are evidenced and the client accepts the operational handover.
+- The backend production build passed, and the full `npm test` suite passed (34 tests across 7 files), including the integration suite against the user-confirmed disposable development database.
+- The integration app uses a higher global rate limit only when `NODE_ENV=test`, preventing the suite's in-process requests from exhausting the production/development limit. Normal environments retain the 120-request limit.
+- Prisma schema validation and migration status passed; `git diff --check` passed. The local API health endpoint returned `UP`.
+- A current local customer pickup submission returned a token; direct requests to both the backend and same-origin frontend proxy returned the correct `AWAITING_PAYMENT` order. The shared browser displayed an unrelated fixture for that token, so tracker UI acceptance remains inconclusive and must be repeated in a clean/target browser.
+- The launch hub displays five live customer cards; browser smoke checks confirmed that former customer/staff prototype URLs redirect to live workflows, preserving order query parameters.
+- The deployment runbook now directs acceptance testing through the live customer order/tracker and requires MTN/Airtel sandbox verification before release.
+- The integration suite reseeded operational data as designed, then the canonical seed was run again successfully after testing and the local pickup smoke test. The database is left in its canonical seeded state.
+- Local migration/readiness checks are complete; C8 target-host setup, backup/restore rehearsal, and WAN-disconnection testing still require the intended deployment hardware and network.
+- Mobile money is a required pre-release capability, intentionally waiting on MTN/Airtel provider access. Do not mark C5, C9, or go-live complete until provider integration and acceptance are evidenced.
 
-### 1.3 Release Gates
+### 1.3 Recommended Delivery Sequence
+
+1. Close the remaining C4/C6 acceptance: repeat the tracker UI check in a clean/target browser and confirm recipe quantities and operational workflows with kitchen and front-of-house staff. Automated API integration acceptance has passed.
+2. Continue C8 deployment readiness on the intended host: production configuration, migration and backup/restore rehearsal, access review, and WAN-off LAN test.
+3. When MTN/Airtel provide the required access, complete C5 provider integration and sandbox/webhook verification. Mobile money is required before release; simulated prompts are not acceptable as production payments.
+4. Run C9 end-to-end on target browsers and hardware, including printer checks, dispatch, cash close, digest outcomes, staff role workflows, and mobile-money acceptance. Obtain client sign-off.
+5. Approve C10 only after the release gates below are evidenced and the client accepts the operational handover.
+
+### 1.4 Release Gates
 
 | Gate | Required evidence | Current status |
 | :--- | :--- | :--- |

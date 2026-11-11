@@ -176,7 +176,7 @@ Five failed PIN attempts lock the account for 15 minutes. Every login receives a
 
 ### 4.3 Kitchen Inventory & Supplier Orders
 
-Managers use the Admin dashboard to review on-hand quantities and reorder alerts, set an opening or counted quantity, record stock taken for non-sales use, add products such as flour, and place multi-product supplier orders. An order does not change stock until delivery is recorded; partial deliveries update stock immediately and leave the remaining balance open. Recipe usage from sales, counts, manual use, and supplier receipts are listed in stock activity. Stock carries forward between business days until the manager records a new count.
+Managers use the Admin dashboard to review on-hand quantities and reorder alerts, set an opening or counted quantity, record stock taken for non-sales use, add products such as flour, and place multi-product supplier orders. An order does not change stock until delivery is recorded; partial deliveries update stock immediately and leave the remaining balance open. Recipe usage from sales, counts, manual use, and supplier receipts are listed in recent stock activity with the recording staff member and any note. Stock carries forward between business days until the manager records a new count.
 
 | Method | Endpoint | Description | Role / Access |
 | :--- | :--- | :--- | :--- |

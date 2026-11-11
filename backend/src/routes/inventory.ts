@@ -140,7 +140,10 @@ export const inventoryRoutes: FastifyPluginAsync = async (fastify) => {
         }),
         fastify.prisma.stock_movements.findMany({
           where: outlet ? { outlet } : undefined,
-          include: { inventory: { select: { item_name: true, unit_of_measure: true } } },
+          include: {
+            inventory: { select: { item_name: true, unit_of_measure: true } },
+            user: { select: { full_name: true } }
+          },
           orderBy: { created_at: 'desc' },
           take: 60
         }),
@@ -180,6 +183,7 @@ export const inventoryRoutes: FastifyPluginAsync = async (fastify) => {
           stockAfter: Number(movement.stock_after),
           businessDate: movement.business_date,
           note: movement.note,
+          recordedBy: movement.user?.full_name || null,
           createdAt: movement.created_at
         }))
       });

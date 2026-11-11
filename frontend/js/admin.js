@@ -699,9 +699,10 @@
           const amount = Number(movement.quantityChange);
           const signed = amount > 0 ? '+' : '';
           const businessDate = String(movement.businessDate || '').slice(0, 10);
+          const details = [movement.recordedBy, movement.note].filter(Boolean).join(' · ');
           return `<div class="admin-supplier-order-line">
             <span><strong>${F.escapeHtml(movement.itemName)}</strong> · ${F.escapeHtml(labels[movement.type] || movement.type)} · ${F.escapeHtml(outletLabel(movement.outlet))}</span>
-            <span>${signed}${amount.toLocaleString()} ${F.escapeHtml(inventoryUnitLabel(movement.unitOfMeasure))} · on hand ${Number(movement.stockAfter).toLocaleString()} · business date ${F.escapeHtml(businessDate)} · ${F.escapeHtml(F.relativeTime(movement.createdAt))}</span>
+            <span>${signed}${amount.toLocaleString()} ${F.escapeHtml(inventoryUnitLabel(movement.unitOfMeasure))} · on hand ${Number(movement.stockAfter).toLocaleString()} · business date ${F.escapeHtml(businessDate)} · ${F.escapeHtml(F.relativeTime(movement.createdAt))}${details ? `<br>${F.escapeHtml(details)}` : ''}</span>
           </div>`;
         }).join('')
       : '<div class="ls-empty">No stock changes recorded yet.</div>';
@@ -816,19 +817,27 @@
     els.inventoryItemSubmit.disabled = true;
     els.inventoryItemSubmit.textContent = 'Adding…';
     try {
+      const selectedOutlet = inventoryOutletFor(els.itemOutlet);
       const data = await F.request('/api/v1/inventory/items', {
         method: 'POST',
         body: JSON.stringify({
-          outlet: inventoryOutletFor(els.itemOutlet),
+          outlet: selectedOutlet,
           itemName: form.elements.itemName.value.trim(),
           unitOfMeasure: form.elements.unitOfMeasure.value,
           alertThreshold: Number(form.elements.alertThreshold.value)
         })
       });
       form.reset();
+      els.itemOutlet.value = selectedOutlet;
       form.elements.alertThreshold.value = '5';
       F.toast(`${data.item.itemName} added to kitchen stock. Record its opening count to set the starting quantity.`, 'success');
       await loadInventory();
+      els.stockOutlet.value = selectedOutlet;
+      updateInventorySelectors();
+      els.stockItem.value = data.item.id;
+      els.stockAction.value = 'STOCK_COUNT';
+      els.stockAction.dispatchEvent(new Event('change'));
+      els.stockQuantity.focus();
     } catch (error) {
       F.toast(error.message || 'Kitchen product could not be added.', 'error');
     } finally {
@@ -863,16 +872,18 @@
     els.supplierOrderSubmit.disabled = true;
     els.supplierOrderSubmit.textContent = 'Placing order…';
     try {
+      const selectedOutlet = inventoryOutletFor(els.orderOutlet);
       const data = await F.request('/api/v1/inventory/supplier-orders', {
         method: 'POST',
         body: JSON.stringify({
-          outlet: inventoryOutletFor(els.orderOutlet),
+          outlet: selectedOutlet,
           supplierName: form.elements.supplierName.value.trim(),
           notes: form.elements.notes.value.trim() || undefined,
           items: lines
         })
       });
       form.reset();
+      els.orderOutlet.value = selectedOutlet;
       els.supplierOrderLines.innerHTML = '';
       addSupplierOrderLine();
       F.toast(data.message || 'Supplier order placed.', 'success');

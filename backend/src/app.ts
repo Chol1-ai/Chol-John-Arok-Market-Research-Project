@@ -39,7 +39,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   });
 
   await app.register(fastifyRateLimit, {
-    max: 120,
+    max: config.NODE_ENV === 'test' ? 1000 : 120,
     timeWindow: '1 minute'
   });
 
