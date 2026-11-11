@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
   <link rel="stylesheet" href="/css/theme_tokens.css" />
-  <link rel="stylesheet" href="/css/live_surfaces.css?v=5" />
+  <link rel="stylesheet" href="/css/live_surfaces.css?v=6" />
 </head>
 <body class="ls-body" data-surface="admin">
   <a class="ls-skip" href="#main-content">Skip to main content</a>
@@ -18,7 +18,7 @@
       <div class="ls-brand-mark">M</div>
       <div>
         <div class="ls-brand-title">Manager Console</div>
-        <div class="ls-brand-sub">EOD audit · cash · surplus · digest</div>
+        <div class="ls-brand-sub">Daily sales · cash · stock · staff</div>
       </div>
     </a>
     <nav class="ls-topnav" aria-label="Staff surfaces">
@@ -40,9 +40,9 @@
   <main class="ls-main" id="main-content">
     <div class="ls-page-head">
       <div>
-        <div class="ls-eyebrow">Manager / admin</div>
-        <h1 class="ls-title">End-of-day audit &amp; digest</h1>
-        <p class="ls-subtitle">Today's live money, floor, surplus and dispatch exceptions — no fabricated zeros.</p>
+        <div class="ls-eyebrow">Manager dashboard</div>
+        <h1 class="ls-title">End-of-day overview</h1>
+        <p class="ls-subtitle">Today's sales, orders, stock and items that need attention.</p>
       </div>
       <div class="ls-head-actions">
         <label class="ls-field" id="admin-outlet-wrap" hidden>
@@ -53,7 +53,7 @@
             <option value="OBUNUZI_YMCA">Obunuzi · Opp. YMCA</option>
           </select>
         </label>
-        <span class="ls-live" id="admin-live" data-state="connecting"><span class="ls-live-dot"></span><span id="admin-live-text">Connecting live bus</span></span>
+        <span class="ls-live" id="admin-live" data-state="connecting"><span class="ls-live-dot"></span><span id="admin-live-text">Connecting…</span></span>
         <span class="ls-updated" id="admin-updated" aria-live="polite">Not loaded</span>
         <button class="ls-btn ls-btn--ghost ls-btn--small" type="button" id="admin-refresh">Refresh data</button>
       </div>
@@ -61,7 +61,7 @@
 
     <section class="admin-kpis" aria-label="Daily key figures">
       <div class="admin-kpi">
-        <div class="admin-kpi-label">Gross settled today</div>
+        <div class="admin-kpi-label">Settled sales</div>
         <div class="admin-kpi-value" id="admin-gross">—</div>
         <div class="admin-kpi-note" id="admin-gross-note">Loading successful payments…</div>
       </div>
@@ -76,7 +76,7 @@
         <div class="admin-kpi-note" id="admin-cash-note">Loading drawer count status…</div>
       </div>
       <div class="admin-kpi">
-        <div class="admin-kpi-label">Open exceptions</div>
+        <div class="admin-kpi-label">Open alerts</div>
         <div class="admin-kpi-value" id="admin-flags">—</div>
         <div class="admin-kpi-note" id="admin-flags-note">Cash, refunds, stock, stale orders</div>
       </div>
@@ -86,11 +86,11 @@
       <div class="ls-card-head">
         <div>
           <div class="ls-card-title" id="admin-inventory-title">Kitchen stock &amp; supplier orders</div>
-          <div class="ls-card-sub">Record the opening count each business day, log kitchen use, and receive supplier deliveries as they arrive. Sales also deduct recipe ingredients automatically.</div>
+          <div class="ls-card-sub">Track opening counts, kitchen use and deliveries. Sales deduct recipe ingredients automatically.</div>
         </div>
         <button class="ls-btn ls-btn--ghost ls-btn--small" type="button" id="admin-inventory-refresh">Refresh stock</button>
       </div>
-      <div class="admin-inventory-note">Opening counts set the actual quantity on hand; stock carries forward until the next count. An order does not increase stock until its delivery is recorded.</div>
+      <div class="admin-inventory-note">Count stock at opening. Supplier orders update stock only after delivery is recorded.</div>
       <div class="admin-table-wrap">
         <table class="admin-table">
           <thead>
@@ -125,8 +125,8 @@
             <label class="ls-field">
               <span>Action</span>
               <select class="ls-select" id="admin-stock-action">
-                <option value="STOCK_COUNT">Set opening / counted stock</option>
-                <option value="MANUAL_USAGE">Record stock taken / used</option>
+                <option value="STOCK_COUNT">Set counted stock</option>
+                <option value="MANUAL_USAGE">Record kitchen use</option>
               </select>
             </label>
             <label class="ls-field">
@@ -226,7 +226,7 @@
           <div class="ls-card-head">
             <div>
               <div class="ls-card-title">Recent orders</div>
-              <div class="ls-card-sub">Latest 12 tickets across the selected scope</div>
+              <div class="ls-card-sub">Latest 12 orders in this dashboard scope</div>
             </div>
           </div>
           <div class="admin-table-wrap">
@@ -255,7 +255,7 @@
           <div class="ls-card-head">
             <div>
               <div class="ls-card-title">Floor state</div>
-              <div class="ls-card-sub">Live table count by status</div>
+              <div class="ls-card-sub">Tables by current service status</div>
             </div>
           </div>
           <div class="ls-card-body" id="admin-tables">
@@ -267,7 +267,7 @@
           <div class="ls-card-head">
             <div>
               <div class="ls-card-title">Staff roster</div>
-              <div class="ls-card-sub">Active staff visible to this scope</div>
+              <div class="ls-card-sub">Staff with access to outlets in this scope</div>
             </div>
           </div>
           <div class="admin-table-wrap">
@@ -292,7 +292,7 @@
           <div class="ls-card-head">
             <div>
               <div class="ls-card-title" id="admin-create-staff-title">Create staff access</div>
-              <div class="ls-card-sub">Set up a waiter or kitchen staff member with a private 4-digit login PIN.</div>
+              <div class="ls-card-sub">Create a waiter or kitchen account with a private 4-digit PIN.</div>
             </div>
           </div>
           <form class="admin-form" id="admin-create-staff-form">
@@ -334,14 +334,14 @@
             <p class="ls-help">The PIN is saved as a secure hash and is not shown again. Share it directly with the staff member.</p>
             <p class="ls-help" id="admin-create-staff-status" role="status" aria-live="polite"></p>
           </form>
-          <p class="ls-help">Use the staff roster above to remove access. Removing an account deactivates it, revokes active sessions, and preserves its history.</p>
+          <p class="ls-help">Remove access from the staff roster above. Deactivated accounts keep their history.</p>
         </section>
 
         <section class="ls-card">
           <div class="ls-card-head">
             <div>
               <div class="ls-card-title">Today's closing surplus</div>
-              <div class="ls-card-sub">Latest entries for the current business date</div>
+              <div class="ls-card-sub">Entries for today's business date</div>
             </div>
           </div>
           <div class="admin-log-list" id="admin-surplus-logs">
@@ -355,7 +355,7 @@
           <div class="ls-card-head">
             <div>
               <div class="ls-card-title">Exception flags</div>
-              <div class="ls-card-sub">Every flag is computed from live data</div>
+              <div class="ls-card-sub">Live alerts that need attention</div>
             </div>
           </div>
           <div class="admin-flags" id="admin-flags-list">
@@ -420,7 +420,7 @@
           <div class="ls-card-head">
             <div>
               <div class="ls-card-title">Cash reconciliation</div>
-              <div class="ls-card-sub">Record the physical drawer count</div>
+              <div class="ls-card-sub">Compare expected and counted drawer cash.</div>
             </div>
           </div>
           <form class="admin-form" id="admin-cash-form">
@@ -444,7 +444,7 @@
               <textarea class="ls-textarea" id="admin-cash-notes" rows="2" maxlength="250" placeholder="Optional drawer notes"></textarea>
             </label>
             <button class="ls-btn" type="submit" id="admin-cash-submit">Record cash count</button>
-            <p class="ls-help">Expected cash = successful cash payments minus net rider advances. A variance above UGX 5,000 raises a digest flag.</p>
+            <p class="ls-help">Expected cash is settled cash minus rider advances. A difference above UGX 5,000 raises an alert.</p>
           </form>
         </section>
 
@@ -495,12 +495,12 @@
           <div class="ls-card-head">
             <div>
               <div class="ls-card-title">Daily digest dispatch</div>
-              <div class="ls-card-sub">SMS and email outcomes are reported exactly</div>
+              <div class="ls-card-sub">Dispatch status is shown for each channel.</div>
             </div>
           </div>
           <div class="admin-form">
             <button class="ls-btn ls-btn--dark" type="button" id="admin-digest-btn">Generate &amp; dispatch digest</button>
-            <p class="ls-help">Development SMS is simulated as <strong>MOCK</strong>. Email is <strong>NOT_CONFIGURED</strong> until a mailer is wired. A partial dispatch is reported as PARTIAL, never SENT.</p>
+            <p class="ls-help">Development SMS is simulated. Email is not configured. Each channel reports its actual delivery status.</p>
             <div class="admin-digest-outcome" id="admin-digest-outcome">No dispatch run in this session.</div>
             <div id="admin-digest-link"></div>
           </div>
@@ -544,12 +544,12 @@
       </div>
     </div>
     <div class="ls-footer-meta">
-      <span>Business date rolls over at 05:00 EAT · auto-refresh every 60 seconds</span>
+      <span>Business day resets at 05:00 EAT · updates every 60 seconds</span>
       <span>© 2026 Foodizo &amp; Obunuzi</span>
     </div>
   </footer>
 
   <script src="/js/api.js"></script>
-  <script src="/js/admin.js?v=3"></script>
+  <script src="/js/admin.js?v=4"></script>
 </body>
 </html>

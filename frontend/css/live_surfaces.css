@@ -3114,3 +3114,217 @@ body[data-surface='admin'] .admin-outlet-grid strong {
     padding: 10px;
   }
 }
+
+/* Refined shared dashboard hierarchy. */
+.ls-page-head {
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 20px;
+  min-height: 112px;
+  padding: 20px 24px;
+  border-color: color-mix(in srgb, var(--surface-accent) 14%, var(--color-border-default));
+  border-radius: 16px;
+  background:
+    radial-gradient(ellipse at 92% 10%, color-mix(in srgb, var(--surface-accent) 8%, transparent), transparent 34%),
+    linear-gradient(110deg, #fff, color-mix(in srgb, var(--surface-accent-soft) 46%, #fff));
+  box-shadow: 0 8px 24px -20px rgba(28, 37, 56, .32);
+  text-align: left;
+}
+
+.ls-page-head::before {
+  top: 18px;
+  bottom: 18px;
+  width: 3px;
+  background: var(--surface-accent);
+}
+
+.ls-page-head::after {
+  display: none;
+}
+
+.ls-page-head > :first-child {
+  width: auto;
+  min-width: 0;
+}
+
+.ls-page-head .ls-eyebrow {
+  min-height: 0;
+  margin-bottom: 7px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--surface-accent);
+  font-size: 10px;
+  letter-spacing: .1em;
+}
+
+.ls-page-head .ls-title {
+  color: var(--color-on-surface);
+  font-size: clamp(24px, 2.5vw, 31px);
+  letter-spacing: -.04em;
+}
+
+.ls-page-head .ls-subtitle {
+  max-width: 600px;
+  margin: 6px 0 0;
+  color: var(--color-on-surface-variant);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.ls-page-head .ls-head-actions {
+  justify-content: flex-end;
+}
+
+.ls-page-head .ls-live {
+  border-color: var(--color-border-default);
+  background: rgba(255, 255, 255, .82);
+  color: var(--color-on-surface);
+}
+
+.ls-page-head .ls-updated {
+  color: var(--color-on-surface-variant);
+}
+
+body[data-surface='kds'] .ls-page-head {
+  border-color: #303847;
+  background:
+    radial-gradient(ellipse at 92% 10%, rgba(52, 211, 153, .09), transparent 34%),
+    linear-gradient(110deg, #1d2430, #171b24 68%);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .18);
+}
+
+body[data-surface='kds'] .ls-page-head .ls-title {
+  color: #f3f7ee;
+}
+
+body[data-surface='kds'] .ls-page-head .ls-subtitle,
+body[data-surface='kds'] .ls-page-head .ls-updated {
+  color: #aeb8c7;
+}
+
+body[data-surface='kds'] .ls-page-head .ls-live {
+  border-color: #3a4655;
+  background: #232b37;
+  color: #e7edf5;
+}
+
+.ls-card {
+  border-color: #e8e5de;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px -13px rgba(28, 37, 56, .34);
+}
+
+.ls-card-head {
+  min-height: 60px;
+  padding: 14px 16px;
+  background: linear-gradient(110deg, color-mix(in srgb, var(--surface-accent) 3%, #fff), #fff 62%);
+}
+
+.ls-card-title {
+  font-size: 14px;
+  letter-spacing: -.015em;
+}
+
+.ls-card-sub {
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.admin-kpi {
+  min-height: 98px;
+  padding: 13px 15px;
+  border-radius: 13px;
+  box-shadow: 0 5px 16px -14px rgba(28, 37, 56, .36);
+}
+
+body[data-surface='admin'] .admin-kpi,
+body[data-surface='admin'] .admin-kpi:nth-child(2),
+body[data-surface='admin'] .admin-kpi:nth-child(3),
+body[data-surface='admin'] .admin-kpi:nth-child(4) {
+  border: 1px solid #e8e5de;
+  border-top: 3px solid #34744f;
+  background: #fff;
+}
+
+.admin-kpi-label {
+  font-size: 10px;
+  letter-spacing: .06em;
+}
+
+.admin-kpi-value {
+  font-size: clamp(20px, 2vw, 26px);
+}
+
+.admin-kpi-note {
+  font-size: 10px;
+}
+
+.admin-table {
+  font-size: 11px;
+}
+
+.admin-table th {
+  font-size: 10px;
+}
+
+.admin-flag {
+  border-color: #efe3c9;
+  background: #fffaf0;
+  font-size: 11px;
+}
+
+.admin-flag code {
+  font-size: 10px;
+}
+
+.admin-form .ls-help,
+.ls-help {
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.ls-footer-meta {
+  font-size: 11px;
+}
+
+@media (max-width: 900px) {
+  .ls-page-head {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .ls-page-head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+    padding: 18px 17px;
+    border-radius: 14px;
+    text-align: left;
+  }
+
+  .ls-page-head .ls-title {
+    font-size: clamp(23px, 7vw, 29px);
+  }
+
+  .ls-page-head .ls-subtitle {
+    margin: 6px 0 0;
+  }
+
+  .ls-page-head .ls-head-actions {
+    justify-content: flex-start;
+  }
+
+  .admin-kpi {
+    min-height: 90px;
+    padding: 11px 12px;
+  }
+
+  body[data-surface='admin'] .ls-page-head {
+    align-items: flex-start;
+    padding: 18px 17px;
+    text-align: left;
+  }
+}

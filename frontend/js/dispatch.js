@@ -54,9 +54,9 @@
 
   function setLiveState(state) {
     const labels = {
-      connecting: 'Connecting live bus',
-      online: 'Live bus connected',
-      offline: 'Live bus reconnecting'
+      connecting: 'Connecting…',
+      online: 'Live updates on',
+      offline: 'Reconnecting…'
     };
     els.live.dataset.state = state;
     els.liveText.textContent = labels[state] || state;

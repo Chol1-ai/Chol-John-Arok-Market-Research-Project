@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
   <link rel="stylesheet" href="/css/theme_tokens.css" />
-  <link rel="stylesheet" href="/css/live_surfaces.css?v=3" />
+  <link rel="stylesheet" href="/css/live_surfaces.css?v=6" />
 </head>
 <body class="ls-body" data-surface="kds">
   <a class="ls-skip" href="#main-content">Skip to main content</a>
@@ -18,7 +18,7 @@
       <div class="ls-brand-mark">KDS</div>
       <div>
         <div class="ls-brand-title">Kitchen Display</div>
-        <div class="ls-brand-sub">Expo board · station tickets · live bumps</div>
+        <div class="ls-brand-sub">Orders · stations · preparation</div>
       </div>
     </a>
     <nav class="ls-topnav" aria-label="Staff surfaces">
@@ -42,10 +42,10 @@
       <div>
         <div class="ls-eyebrow">Expo / station board</div>
         <h1 class="ls-title">Active kitchen tickets</h1>
-        <p class="ls-subtitle">Claim a ticket, cook the line, then bump it to READY. The customer token updates live.</p>
+        <p class="ls-subtitle">Take an order, prepare the items and mark it ready. Customer tokens update automatically.</p>
       </div>
       <div class="ls-head-actions">
-        <span class="ls-live" id="kds-live" data-state="connecting"><span class="ls-live-dot"></span><span id="kds-live-text">Connecting live bus</span></span>
+        <span class="ls-live" id="kds-live" data-state="connecting"><span class="ls-live-dot"></span><span id="kds-live-text">Connecting…</span></span>
         <span class="ls-updated" id="kds-updated" aria-live="polite">Not loaded</span>
         <button class="ls-btn ls-btn--ghost ls-btn--small" type="button" id="kds-refresh">Refresh board</button>
       </div>
@@ -118,12 +118,12 @@
       </div>
     </div>
     <div class="ls-footer-meta">
-      <span>Business date rolls over at 05:00 EAT · auto-refresh every 60 seconds</span>
+      <span>Business day resets at 05:00 EAT · updates every 60 seconds</span>
       <span>© 2026 Foodizo &amp; Obunuzi</span>
     </div>
   </footer>
 
   <script src="/js/api.js"></script>
-  <script src="/js/kds.js"></script>
+  <script src="/js/kds.js?v=2"></script>
 </body>
 </html>

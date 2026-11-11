@@ -92,9 +92,9 @@
 
   function setLiveState(state) {
     const labels = {
-      connecting: 'Connecting live bus',
-      online: 'Live bus connected',
-      offline: 'Live bus reconnecting'
+      connecting: 'Connecting…',
+      online: 'Live updates on',
+      offline: 'Reconnecting…'
     };
     els.live.dataset.state = state;
     els.liveText.textContent = labels[state] || state;
@@ -159,7 +159,8 @@
     const label = STATE.scope === 'ALL' ? 'Both outlets' : outletLabel(STATE.scope);
 
     els.gross.textContent = F.formatUGX(consolidated.grossUgx);
-    els.grossNote.textContent = `${consolidated.paymentCount} successful payment(s) · ${label}`;
+    const paymentCount = Number(consolidated.paymentCount || 0);
+    els.grossNote.textContent = `${paymentCount} successful payment${paymentCount === 1 ? '' : 's'} · ${label}`;
     els.orders.textContent = String(consolidated.totalOrders);
     els.ordersNote.textContent = `Business date ${summary.digestDate} · 05:00 EAT rollover`;
     els.cash.textContent = F.formatUGX(consolidated.expectedCashUgx);
@@ -173,8 +174,8 @@
     }
     els.flags.textContent = String(summary.flagCount);
     els.flagsNote.textContent = summary.flagCount
-      ? `${summary.flags.map((flag) => flag.code).join(' · ')}`
-      : 'No open exceptions on the live data';
+      ? `${summary.flagCount} alert${summary.flagCount === 1 ? '' : 's'} need attention`
+      : 'No open alerts';
     els.digestSub.textContent = `${label} · business date ${summary.digestDate} · generated ${F.relativeTime(
       summary.generatedAt
     )}`;
@@ -224,15 +225,13 @@
     const flags = STATE.overview.summary.flags || [];
     if (!flags.length) {
       els.flagsList.innerHTML =
-        '<div class="ls-empty" style="min-height:72px">No digest flags. Cash, refunds, deliveries, stock and stale orders are clear.</div>';
+        '<div class="ls-empty" style="min-height:72px">No open alerts.</div>';
       return;
     }
     els.flagsList.innerHTML = flags
       .map(
         (flag) =>
-          `<div class="admin-flag"><code>${F.escapeHtml(flag.code)}</code><span>${F.escapeHtml(
-            flag.message
-          )}</span></div>`
+          `<div class="admin-flag"><span>${F.escapeHtml(flag.message)}</span></div>`
       )
       .join('');
   }

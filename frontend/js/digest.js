@@ -104,7 +104,8 @@
     )} · generated ${F.formatTime(data.generatedAt)} EAT · ${status.detail}`;
 
     els.gross.textContent = F.formatUGX(consolidated.grossUgx);
-    els.grossNote.textContent = `${F.formatNumber(consolidated.paymentCount)} successful payment(s)`;
+    const paymentCount = Number(consolidated.paymentCount || 0);
+    els.grossNote.textContent = `${F.formatNumber(paymentCount)} successful payment${paymentCount === 1 ? '' : 's'}`;
     els.orders.textContent = F.formatNumber(consolidated.totalOrders);
     els.cash.textContent = F.formatUGX(consolidated.expectedCashUgx);
 
@@ -119,8 +120,8 @@
 
     els.flagsCount.textContent = F.formatNumber(summary.flagCount);
     els.flagsNote.textContent = summary.flagCount
-      ? summary.flags.map((flag) => flag.code).join(' · ')
-      : 'No open exceptions in this digest';
+      ? `${F.formatNumber(summary.flagCount)} alert${summary.flagCount === 1 ? '' : 's'} need attention`
+      : 'No open alerts';
   }
 
   function renderMetrics(data) {
@@ -200,7 +201,7 @@
     const flags = data.payload.flags || [];
     if (!flags.length) {
       els.flags.innerHTML =
-        '<div class="ls-empty">No digest flags. Cash, refunds, deliveries, stock and stale orders are clear.</div>';
+        '<div class="ls-empty">No open alerts.</div>';
       return;
     }
 
@@ -208,7 +209,6 @@
       .map(
         (flag) => `
           <div class="admin-flag">
-            <code>${F.escapeHtml(flag.code)}</code>
             <span>${F.escapeHtml(flag.message)}</span>
           </div>`
       )
