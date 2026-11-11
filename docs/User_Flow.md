@@ -284,10 +284,10 @@ These are the failure and edge-case paths that every developer must handle. Happ
 | 3 | FOH | Selects **"Failed — customer unreachable"** from the outcome dropdown in `/dispatch` |
 | 4 | System | Records the handoff outcome as `FAILED_UNREACHABLE`; the order stays `READY` and appears in the failed-delivery review queue |
 | 5 | FOH | Rider returns the food to the outlet; records how much of any cash transport advance was used and returns the balance |
-| 6 | Manager | Reviews the failed handoff on `/dispatch`; decides one of: (a) reassign the rider, (b) customer collects in person, (c) cancel the order through the manager-only route |
-| 7 | Manager | If payment was already collected, cancelling the order moves the payment to `REFUND_PENDING`; close it with `POST /api/v1/payments/:id/refund` after the external reversal |
+| 6 | FOH or Manager | Calls the customer from the failed-delivery card. If the customer can receive the order, selects **Retry delivery** and assigns a new rider. The previous failure is marked reviewed in the same transaction, and the new handoff appears in the active queue |
+| 7 | Manager | If the order is cancelled instead, the failed handoff review is cleared with the cancellation. If payment was already collected, it moves to `REFUND_PENDING`; close it with `POST /api/v1/payments/:id/refund` after the external reversal |
 
-> **Rule:** An order is **never falsely marked `COMPLETED`** when delivery failed. The system must not auto-complete delivery orders based on a timer. A human FOH actor must record the outcome, and the manager resolves the failed handoff from the `/dispatch` review queue.
+> **Rule:** An order is **never falsely marked `COMPLETED`** when delivery failed. The system must not auto-complete delivery orders based on a timer. A human FOH actor records the outcome; a retry clears the previous review only after a new rider is assigned.
 
 ---
 

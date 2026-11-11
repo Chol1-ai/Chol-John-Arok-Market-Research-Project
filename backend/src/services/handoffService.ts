@@ -33,7 +33,6 @@ export async function assignRiderToOrder(
     where: { id: orderId },
     include: {
       handoffs: {
-        where: { outcome: 'PENDING' },
         orderBy: { dispatched_at: 'desc' }
       }
     }
@@ -61,7 +60,7 @@ export async function assignRiderToOrder(
     );
   }
 
-  if (order.handoffs.length > 0) {
+  if (order.handoffs.some((handoff) => handoff.outcome === 'PENDING')) {
     throw new HandoffError(
       409,
       'HANDOFF_ALREADY_OPEN',
@@ -74,17 +73,65 @@ export async function assignRiderToOrder(
     input.bodaPlateNumber ? `Plate: ${input.bodaPlateNumber}` : null
   ].filter(Boolean);
 
-  return prisma.delivery_handoffs.create({
-    data: {
-      order_id: order.id,
-      dispatched_by: actor.userId,
-      rider_name: input.riderName,
-      rider_phone: input.riderPhone,
-      rider_advance_ugx: input.advanceCashUgx ?? 0,
-      dispatch_method: input.dispatchMethod || 'CALL',
-      outcome: 'PENDING',
-      notes: notes.length > 0 ? notes.join(' • ') : null
+  const failedHandoffs = order.handoffs.filter(
+    (handoff) =>
+      ['FAILED_UNREACHABLE', 'REFUSED', 'RETURNED'].includes(handoff.outcome) &&
+      !handoff.reviewed
+  );
+
+  return prisma.$transaction(async (tx) => {
+    const newHandoff = await tx.delivery_handoffs.create({
+      data: {
+        order_id: order.id,
+        dispatched_by: actor.userId,
+        rider_name: input.riderName,
+        rider_phone: input.riderPhone,
+        rider_advance_ugx: input.advanceCashUgx ?? 0,
+        dispatch_method: input.dispatchMethod || 'CALL',
+        outcome: 'PENDING',
+        notes: notes.length > 0 ? notes.join(' • ') : null
+      }
+    });
+
+    if (failedHandoffs.length > 0) {
+      const reviewed = await tx.delivery_handoffs.updateMany({
+        where: {
+          id: { in: failedHandoffs.map((handoff) => handoff.id) },
+          reviewed: false
+        },
+        data: { reviewed: true }
+      });
+      if (reviewed.count !== failedHandoffs.length) {
+        throw new HandoffError(
+          409,
+          'HANDOFF_REVIEW_CONFLICT',
+          'The failed handoff changed while a retry was being assigned. Refresh the dispatch queue and try again.'
+        );
+      }
+
+      for (const failedHandoff of failedHandoffs) {
+        await tx.audit_log.create({
+          data: {
+            actor_user_id: actor.userId,
+            actor_role: actor.role,
+            outlet: order.outlet,
+            action: 'FAILED_DELIVERY_RETRY_ASSIGNED',
+            entity_type: 'DELIVERY_HANDOFF',
+            entity_id: failedHandoff.id,
+            before_json: { outcome: failedHandoff.outcome, reviewed: false },
+            after_json: {
+              outcome: failedHandoff.outcome,
+              reviewed: true,
+              retryHandoffId: newHandoff.id,
+              retryRiderName: input.riderName
+            },
+            reason: 'A new rider was assigned after customer follow-up.'
+          }
+        });
+      }
     }
+
+    return newHandoff;
   });
 }
 

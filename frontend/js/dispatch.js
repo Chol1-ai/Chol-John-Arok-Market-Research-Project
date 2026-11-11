@@ -139,7 +139,10 @@
 
   function renderReview() {
     const count = STATE.review.length;
-    els.reviewSub.textContent = `${count} failed deliver${count === 1 ? 'y' : 'ies'} need manager review`;
+    els.reviewSub.textContent =
+      count === 1
+        ? '1 failed delivery needs manager review'
+        : `${count} failed deliveries need manager review`;
     if (!STATE.review.length) {
       els.review.innerHTML =
         '<div class="ls-empty">No failed deliveries need manager review.</div>';
@@ -173,13 +176,26 @@
             <strong>Outlet Manager / Admin</strong>
           </div>
           <div class="dispatch-facts">
+            <div><span>Customer phone</span><strong>${F.escapeHtml(row.customerPhone || '—')}</strong></div>
             <div><span>Rider</span><strong>${F.escapeHtml(row.riderName || '—')}</strong></div>
             <div><span>Rider phone</span><strong>${F.escapeHtml(row.riderPhone || '—')}</strong></div>
             <div><span>Destination</span><strong>${F.escapeHtml(row.destinationZone || '—')}</strong></div>
             <div><span>Dispatched by</span><strong>${F.escapeHtml(row.dispatchedBy || '—')}</strong></div>
           </div>
           <div class="dispatch-items">${F.escapeHtml(row.notes || 'No handoff notes recorded.')}</div>
-          <p class="dispatch-review-note">The outlet manager should decide whether to retry delivery, arrange customer pickup, or cancel the order. This queue records the exception but does not resolve it.</p>
+          <p class="dispatch-review-note">Call the customer. If they can receive the order, assign a new rider to retry; this failed attempt will leave the review queue once the new handoff is assigned.</p>
+          <div class="dispatch-actions">
+            ${
+              row.customerPhone
+                ? `<a class="ls-btn ls-btn--ghost ls-btn--small" href="tel:+${F.escapeHtml(
+                    row.customerPhone
+                  )}">Call customer</a>`
+                : ''
+            }
+            <button class="ls-btn ls-btn--small" type="button" data-action="retry" data-order-id="${F.escapeHtml(
+              row.orderId
+            )}" data-token="${F.escapeHtml(row.tokenNumber || '')}">Retry delivery</button>
+          </div>
         </article>`;
       })
       .join('');
@@ -212,9 +228,11 @@
     }, 220);
   }
 
-  function openAssign(orderId, token) {
+  function openAssign(orderId, token, retry) {
     els.orderId.value = orderId;
-    els.assignSub.textContent = `Order ${token || orderId} · rider handoff`;
+    els.assignSub.textContent = retry
+      ? `Order ${token || orderId} · assign a rider for the retry`
+      : `Order ${token || orderId} · rider handoff`;
     els.riderName.value = '';
     els.riderPhone.value = '';
     els.plate.value = '';
@@ -375,6 +393,11 @@
           button.dataset.totalUgx
         );
       }
+    });
+
+    els.review.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-action="retry"][data-order-id]');
+      if (button) openAssign(button.dataset.orderId, button.dataset.token, true);
     });
 
     els.assignSubmit.addEventListener('click', submitAssign);

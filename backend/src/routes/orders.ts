@@ -1111,6 +1111,15 @@ export const orderRoutes: FastifyPluginAsync = async (fastify) => {
           }
         });
 
+        const clearedFailedHandoffs = await tx.delivery_handoffs.updateMany({
+          where: {
+            order_id: order.id,
+            outcome: { in: ['FAILED_UNREACHABLE', 'REFUSED', 'RETURNED'] },
+            reviewed: false
+          },
+          data: { reviewed: true }
+        });
+
         if (order.table_id) {
           const remaining = await tx.orders.count({
             where: {
@@ -1140,7 +1149,8 @@ export const orderRoutes: FastifyPluginAsync = async (fastify) => {
             after_json: {
               status: 'CANCELLED',
               refundPending,
-              cashRefundException
+              cashRefundException,
+              clearedFailedHandoffCount: clearedFailedHandoffs.count
             },
             ip_address: request.ip
           }

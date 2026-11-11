@@ -474,7 +474,7 @@ model delivery_handoffs {
   dispatched_at              DateTime?       @default(now()) @db.Timestamptz(6)
   delivered_at               DateTime?       @db.Timestamptz(6)
   outcome                    handoff_outcome @default(PENDING)
-  // true once a manager has reviewed a FAILED_UNREACHABLE outcome
+  // true once a failed handoff has been resolved by retry assignment or cancellation
   reviewed                   Boolean         @default(false)
   notes                      String?
 
