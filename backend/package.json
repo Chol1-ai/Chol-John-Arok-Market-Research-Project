@@ -11,6 +11,7 @@
     "prisma:generate": "prisma generate --schema=prisma/schema.prisma",
     "prisma:migrate": "prisma migrate dev --schema=prisma/schema.prisma",
     "prisma:seed": "tsx prisma/seed.ts",
+    "bootstrap:manager": "tsx src/scripts/bootstrap-manager.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },

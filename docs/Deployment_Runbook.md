@@ -15,7 +15,7 @@ The repository includes a Render Blueprint at [`render.yaml`](../render.yaml) fo
 2. Copy the Neon **direct (non-pooled) PostgreSQL connection string** with SSL enabled. Do not commit it or paste it into source files.
 3. In Render, choose **New → Blueprint**, select this repository, and apply `render.yaml`. Provide the Neon connection string as `DATABASE_URL`; Render generates the JWT and webhook secrets.
 4. Render builds the Prisma client and backend, then the start command applies pending Prisma migrations before starting both servers. The app uses Render's HTTPS service URL for same-origin CORS and digest links automatically. A health check at `/api/v1/health` verifies API and database readiness.
-5. The first deploy creates an empty schema. For a demo only, you may seed a **fresh, disposable Neon database** once from the repository root in PowerShell, using the same values shown in Render for `DATABASE_URL`, `JWT_SECRET`, and `PAYMENTS_WEBHOOK_SECRET`:
+5. The first deploy creates an empty schema. For a real setup, bootstrap the first manager as described below. Seeding is only for a fresh, disposable demo database:
 
    ```powershell
    $env:NODE_ENV = 'production'
@@ -29,6 +29,22 @@ The repository includes a Render Blueprint at [`render.yaml`](../render.yaml) fo
    ```
 
    **The seed is destructive:** it replaces operational data and creates development-only demo accounts. Run it only against a fresh disposable database, never rerun it on a database with data to keep, and do not enter real customer or business data into this public demo. Do not use seeded credentials in production. Close the PowerShell window when finished so the temporary environment variables are cleared.
+
+### Create the first manager account
+
+Migrations create the schema but do not create users. Run this one-time command from a local repository checkout, using the same Neon **direct** connection URL configured in Render. It creates a manager for the selected outlet without clearing or changing other data. It refuses to create another manager for an outlet that already has one.
+
+```powershell
+$env:DATABASE_URL = '<Neon direct connection string>'
+$env:BOOTSTRAP_MANAGER_CONFIRM = 'CREATE_MANAGER'
+$env:BOOTSTRAP_MANAGER_FULL_NAME = '<manager full name>'
+$env:BOOTSTRAP_MANAGER_PHONE = '<manager Ugandan mobile number>'
+$env:BOOTSTRAP_MANAGER_PIN = '<private four-digit PIN>'
+$env:BOOTSTRAP_MANAGER_OUTLET = 'FOODIZO_HAM_TOWERS'
+npm --prefix backend run bootstrap:manager
+```
+
+Use `OBUNUZI_YMCA` for an Obunuzi manager. To create a manager for both outlets, run the command again with a different phone number and the other outlet. Afterward, sign in at `/login` with that manager's phone number and PIN, then use **Create staff access** to provision waiter and kitchen accounts. Do not share or commit the connection string or PIN; close the PowerShell window after the command to clear its temporary environment variables.
 
 Free Render web services sleep after inactivity, have ephemeral local filesystems, and can take around a minute to wake. The free Neon database has its own usage and scale-to-zero limits. Uploaded files/local changes are not durable, backups and production reliability are not provided by this setup, and the app's live MoMo flow refuses simulated payments in production mode. Use it only to preview/share the application—not for actual restaurant operations or payments. For real operations, use the on-site edge deployment below and complete its acceptance checklist.
 
