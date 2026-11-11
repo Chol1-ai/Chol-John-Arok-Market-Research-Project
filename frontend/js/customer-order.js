@@ -66,7 +66,9 @@
 
   function defaultMealImage(item) {
     const name = item.name.toLowerCase();
-    if (name.includes('water')) return '/images/foodizo-bottled-water.jpg';
+    if (name.includes('water') || name.includes('bottle') || name.includes('rwenzori')) {
+      return '/images/foodizo-bottled-water.jpg';
+    }
     if (name.includes('juice')) return '/images/foodizo-juice.jpg';
     if (name.includes('chicken') && name.includes('chips')) return '/images/foodizo-chicken-chips.jpg';
     if (name.includes('chips')) return '/images/foodizo-plain-chips.jpg';

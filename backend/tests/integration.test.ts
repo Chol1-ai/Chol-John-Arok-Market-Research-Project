@@ -1192,7 +1192,10 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
       '/api/v1/menu-items?outlet=FOODIZO_HAM_TOWERS'
     );
     expect(menuResponse.statusCode).toBe(200);
-    const chickenMenuItem = ((menuResponse.json() as Json).items as Json[])
+    const menuItems = (menuResponse.json() as Json).items as Json[];
+    const waterMenuItem = menuItems.find((item) => item.name === 'Rwenzori Bottle');
+    expect(waterMenuItem?.priceUgx).toBe(1500);
+    const chickenMenuItem = menuItems
       .find((item) => item.id === menu.foodizoChicken);
     expect(chickenMenuItem?.isAvailable).toBe(false);
     expect(chickenMenuItem?.availabilityReason).toContain('Integration Flour');

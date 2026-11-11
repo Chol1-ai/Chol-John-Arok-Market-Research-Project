@@ -380,7 +380,7 @@ export async function main() {
     { name: 'Regular Rolex (2 Eggs, 1 Chapati)', category: 'Breakfast', price_ugx: 3500,  station: 'ROLEX_GRIDDLE' },
     { name: 'Plain Chips',                       category: 'Sides',     price_ugx: 5000,  station: 'GRILL_FRYER' },
     { name: 'Fresh Passion Juice',               category: 'Drinks',    price_ugx: 4000,  station: 'BAR_BEVERAGE' },
-    { name: 'Bottled Water',                     category: 'Drinks',    price_ugx: 1500,  station: 'BAR_BEVERAGE' }
+    { name: 'Rwenzori Bottle',                   category: 'Drinks',    price_ugx: 1500,  station: 'BAR_BEVERAGE' }
   ]);
 
   const obunuziMenu = await seedMenu('OBUNUZI_YMCA', [
@@ -388,7 +388,7 @@ export async function main() {
     { name: 'Steamed Matooke',          category: 'Sides',  price_ugx: 3000,  station: 'STEAM_LINE' },
     { name: 'Rice & Beans',             category: 'Mains',  price_ugx: 6000,  station: 'STEAM_LINE' },
     { name: 'Fresh Passion Juice',      category: 'Drinks', price_ugx: 4000,  station: 'BAR_BEVERAGE' },
-    { name: 'Bottled Water',            category: 'Drinks', price_ugx: 1500,  station: 'BAR_BEVERAGE' }
+    { name: 'Rwenzori Bottle',           category: 'Drinks', price_ugx: 1500,  station: 'BAR_BEVERAGE' }
   ]);
 
   // 6. RAW INVENTORY.
@@ -519,7 +519,7 @@ export async function main() {
       completedMinutesAgo: 40,
       items: [
         { name: '2pc Fried Chicken & Chips', quantity: 1 },
-        { name: 'Bottled Water', quantity: 2 }
+        { name: 'Rwenzori Bottle', quantity: 2 }
       ]
     },
     foodizoMenu,
@@ -588,7 +588,7 @@ export async function main() {
       readyMinutesAgo: 5,
       items: [
         { name: '2pc Fried Chicken & Chips', quantity: 1 },
-        { name: 'Bottled Water', quantity: 1 }
+        { name: 'Rwenzori Bottle', quantity: 1 }
       ]
     },
     foodizoMenu,
@@ -625,7 +625,7 @@ export async function main() {
       completedMinutesAgo: 120,
       items: [
         { name: 'Regular Rolex (2 Eggs, 1 Chapati)', quantity: 2 },
-        { name: 'Bottled Water', quantity: 1 }
+        { name: 'Rwenzori Bottle', quantity: 1 }
       ]
     },
     foodizoMenu,
@@ -815,7 +815,7 @@ export async function main() {
       items: [
         { name: 'Traditional Beef Luwombo', quantity: 1 },
         { name: 'Steamed Matooke', quantity: 1 },
-        { name: 'Bottled Water', quantity: 1 }
+        { name: 'Rwenzori Bottle', quantity: 1 }
       ]
     },
     obunuziMenu,
@@ -904,7 +904,7 @@ export async function main() {
       completedMinutesAgo: 190,
       items: [
         { name: 'Traditional Beef Luwombo', quantity: 1 },
-        { name: 'Bottled Water', quantity: 1 }
+        { name: 'Rwenzori Bottle', quantity: 1 }
       ]
     },
     obunuziMenu,
@@ -951,7 +951,7 @@ export async function main() {
       items: [
         { name: 'Traditional Beef Luwombo', quantity: 1 },
         { name: 'Steamed Matooke', quantity: 1 },
-        { name: 'Bottled Water', quantity: 1 }
+        { name: 'Rwenzori Bottle', quantity: 1 }
       ]
     },
     obunuziMenu,
@@ -1024,7 +1024,7 @@ export async function main() {
       readyMinutesAgo: 12,
       items: [
         { name: 'Traditional Beef Luwombo', quantity: 1 },
-        { name: 'Bottled Water', quantity: 1 }
+        { name: 'Rwenzori Bottle', quantity: 1 }
       ]
     },
     obunuziMenu,
