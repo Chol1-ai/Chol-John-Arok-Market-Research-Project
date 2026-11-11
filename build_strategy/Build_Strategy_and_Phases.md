@@ -6,7 +6,7 @@
 **Target Locations:** Foodizo (Ham Towers) & Obunuzi Restaurant & Cafe (Opposite YMCA), Kampala, Uganda  
 **Related Specifications:** `build_strategy/Dashboard_Build_Progression.md` · `docs/Tech_Stack.md` · `docs/Repo_Scaffold_and_Config.md` · `docs/Payment_Integration.md` · `docs/Delivery_Zones_and_Dispatch.md` · `docs/Hardware_and_Peripherals.md` · `docs/Seed_Data_and_Testing.md` · `docs/Deployment_Runbook.md` · `go_to_market/Go_To_Market_Strategy.md`
 
-**Status reviewed:** 2026-11-10
+**Status reviewed:** 2026-11-11
 
 > This roadmap separates what is present in the repository from what has been verified for release. “Implemented” means the capability exists in the local application; it does not mean production deployment, hardware acceptance, or client sign-off. Historical architecture details and estimates have been removed; this document reflects the current implementation rather than proposed Next.js, Redis, or Docker work.
 
@@ -18,14 +18,14 @@ The application is served by root `server.js`; live surfaces are `/login`, `/pos
 | :--- | :--- | :--- | :--- |
 | C0 | Repository, runtime, quality gates | **Implemented, adapted** | The current static-server/backend layout builds and tests. The original Next.js/Docker gates do not apply. |
 | C1 | Data model, authentication, RBAC, audit | **Implemented locally** | Production backup/restore and deployment configuration still need verification. |
-| C2 | Menu, inventory, BOM | **Implemented locally** | Opening counts, stock movements, supplier orders/receipts, recipe deductions, low-stock display, and recipe-stock-aware menu/order validation pass local tests. Confirm BOM quantities with kitchen operations during UAT. |
+| C2 | Menu, inventory, BOM | **Implemented locally** | Opening counts, stock movements, supplier orders/receipts, recipe deductions, low-stock display, and recipe-stock-aware menu/order validation pass local tests. Configured BOM values were inspected on 2026-11-11; kitchen confirmation is still pending. |
 | C3 | Orders, KDS, printing | **Implemented locally** | Automated tests cover key flows. Physical printer operation and WAN-off LAN behavior have not been evidenced here. |
-| C4 | Customer ordering and digital tokens | **Implemented locally; acceptance pending** | The full automated API suite passes against a designated disposable development database; local pickup submission and token lookup also passed by API/proxy. The shared browser status display returned an unrelated fixture, so repeat tracker UI acceptance in a clean browser and complete staff/device sign-off. The customer hub links to live workflows; former prototype URLs redirect to live pages. |
+| C4 | Customer ordering and digital tokens | **Implemented locally; acceptance pending** | Clean-page browser check on 2026-11-11 placed a local pickup order and verified the same token, item, outlet, and status on the standalone tracker; the unpaid test order was then cancelled. Complete staff/device sign-off. The customer hub links to live workflows; former prototype URLs redirect to live pages. |
 | C5 | Payments | **Partial; provider access pending** | Mobile money is required before final release. The user is awaiting MTN/Airtel connectivity/credentials; non-production initiation remains simulated and production refuses fabricated prompts. Wire and sandbox-test providers only after credentials and a reachable callback URL are supplied. |
-| C6 | Delivery and dispatch | **Implemented locally; UAT pending** | Automated integration tests cover zone-priced delivery, kitchen queueing, outlet-scoped rider dispatch, COD collection/audit, completion, and public delivery status. Complete end-to-end acceptance on intended devices and confirm operational scenarios with staff. |
+| C6 | Delivery and dispatch | **Implemented locally; UAT pending** | Automated integration tests cover zone-priced delivery, kitchen queueing, outlet-scoped rider dispatch, COD collection/audit, completion, and public delivery status. A 2026-11-11 local preview confirmed the Ham Towers zone fee and total; end-to-end acceptance on intended devices and staff review remain. |
 | C7 | Cash reconciliation and daily digest | **Implemented locally** | Digest/cash flows exist; SMS is mock in development, email is not configured, and production delivery/scheduling is unverified. |
 | C8 | Deployment hardening and offline operation | **Partial, locally hardened; acceptance pending** | Production configuration now fails closed for missing secrets, non-HTTPS origins, or non-local API binding, and health checks verify PostgreSQL readiness. Complete deployment, backup/restore, security, and WAN-disconnection drills on the intended edge hardware. |
-| C9 | Release candidate and UAT | **Partial, local browser UAT passed; acceptance pending** | Local customer-to-cashier-to-kitchen flow, delivery fee preview, manager/dispatch screens, build, and 34 automated tests passed. See `docs/UAT_Release_Candidate.md`. Complete intended-device and physical workflow tests, resolve the C8/C5 gates, and obtain stakeholder sign-off. |
+| C9 | Release candidate and UAT | **Partial, local browser UAT passed; acceptance pending** | 2026-11-11 clean-page pickup/tracker, waiter POS, kitchen KDS, outlet-denial, and delivery-fee preview checks passed locally. The backend build and 34 automated tests last passed on 2026-11-10. See `docs/UAT_Release_Candidate.md`. Complete recipe/staff sign-off on intended devices, resolve C8/C5 gates, and obtain stakeholder acceptance. |
 | C10 | Production go-live and hypercare | **Pending** | Requires passed release gates, approved production configuration, operational ownership, and a documented support period. |
 
 ### 1.1 Verified Local Baseline
@@ -34,7 +34,7 @@ As of 2026-11-10, C6 local verification passed: `npm run backend:build`, `npm te
 
 > **Test safety:** The integration suite runs the canonical seed, which clears and rebuilds development operational data. Run it only against a disposable or explicitly designated development database.
 
-### 1.2 Current Phase Checkpoint (2026-11-10)
+### 1.2 Previous Phase Checkpoint (2026-11-10)
 
 - The backend production build passed, and the full `npm test` suite passed (34 tests across 7 files), including the integration suite against the user-confirmed disposable development database.
 - The integration app uses a higher global rate limit only when `NODE_ENV=test`, preventing the suite's in-process requests from exhausting the production/development limit. Normal environments retain the 120-request limit.
@@ -46,15 +46,26 @@ As of 2026-11-10, C6 local verification passed: `npm run backend:build`, `npm te
 - Local migration/readiness checks are complete; C8 target-host setup, backup/restore rehearsal, and WAN-disconnection testing still require the intended deployment hardware and network.
 - Mobile money is a required pre-release capability, intentionally waiting on MTN/Airtel provider access. Do not mark C5, C9, or go-live complete until provider integration and acceptance are evidenced.
 
-### 1.3 Recommended Delivery Sequence
+### 1.3 Current Acceptance Checkpoint (2026-11-11)
 
-1. Close the remaining C4/C6 acceptance: repeat the tracker UI check in a clean/target browser and confirm recipe quantities and operational workflows with kitchen and front-of-house staff. Automated API integration acceptance has passed.
+- The local backend and same-origin health checks returned `UP`. In a clean browser page, the current Foodizo menu and images loaded, including the Rwenzori Bottle photo.
+- A local pickup order for one Rwenzori Bottle (UGX 1,500) displayed the correct `AWAITING_PAYMENT` status on both confirmation and a separate `/tracker` page. The earlier shared-browser mismatch is resolved for this clean-page check.
+- The unpaid development test order was cancelled and its tracker changed to `CANCELLED`; the cancelled test row and audit entry remain in the local development database.
+- Delivery preview showed the Ham Towers UGX 1,000 fee, 5–10 minute estimate, and UGX 2,500 total for the same item. Checkout was not submitted.
+- Sarah K. signed in to the Foodizo POS (16 tables), and Chef Juma signed in to the Foodizo KDS (live bus connected; seeded tickets left unchanged). A cross-outlet queue request returned `403 OUTLET_FORBIDDEN`.
+- Configured recipe/BOM values were read for staff review, not accepted as accurate recipes: chicken uses 2 broiler pieces, 250 g potatoes, and 50 ml oil; a regular Rolex uses 2 eggs and 15 ml oil; beef luwombo uses 350 g beef and 1 matooke portion. Kitchen confirmation remains outstanding.
+- No production database, real customer order, physical staff device, or printer was used. The local database contains seeded demo data plus the cancelled, unpaid UAT order; it is not an operations database.
+- Backend build and the full 34-test suite last passed on 2026-11-10. Target-host backup/restore and WAN-off testing, MTN/Airtel provider access, staff recipe/workflow sign-off, and intended-device acceptance remain open.
+
+### 1.4 Recommended Delivery Sequence
+
+1. Complete remaining C4/C6 human acceptance: have kitchen and front-of-house staff confirm recipe quantities and real workflows, then repeat on intended tablets/phones. Clean-page customer tracking, waiter/KDS login, outlet denial, and a delivery fee preview are now locally verified.
 2. Continue C8 deployment readiness on the intended host: production configuration, migration and backup/restore rehearsal, access review, and WAN-off LAN test.
 3. When MTN/Airtel provide the required access, complete C5 provider integration and sandbox/webhook verification. Mobile money is required before release; simulated prompts are not acceptable as production payments.
 4. Run C9 end-to-end on target browsers and hardware, including printer checks, dispatch, cash close, digest outcomes, staff role workflows, and mobile-money acceptance. Obtain client sign-off.
 5. Approve C10 only after the release gates below are evidenced and the client accepts the operational handover.
 
-### 1.4 Release Gates
+### 1.5 Release Gates
 
 | Gate | Required evidence | Current status |
 | :--- | :--- | :--- |
