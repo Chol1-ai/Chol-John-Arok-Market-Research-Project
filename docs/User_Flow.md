@@ -134,6 +134,8 @@ The same transaction deducts every defined BOM line on the ticket; menu items wi
 
 Inventory is tracked by raw ingredient. Supplier orders increase on-hand quantities only when the delivery is recorded, and recipe quantities are deducted when cooking starts. A low ingredient count keeps the active meal and its image visible, but marks it temporarily unavailable for ordering until stock is sufficient; checkout also rechecks stock.
 
+Managers can type an ingredient name directly while recording a stock count or placing a supplier order. A new name is added to that outlet's inventory with its chosen unit and reorder threshold; a supplier order still adds on-hand stock only after delivery is recorded.
+
 #### C3. Closing Surplus Log — 9:00 PM EOD Routine
 
 0. **Optional 7:30 PM clearance:** The manager may apply a reduced price to selected items through the existing **Menu & Pricing** admin. This is a manual price change, not an automatic markdown engine. The normal menu price returns the next day.

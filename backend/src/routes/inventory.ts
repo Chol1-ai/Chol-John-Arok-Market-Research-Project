@@ -4,24 +4,50 @@ import { getKampalaBusinessDate } from '../services/tokenService.js';
 import { OutletLocation } from '../types/index.js';
 
 const outletSchema = z.enum(['FOODIZO_HAM_TOWERS', 'OBUNUZI_YMCA']);
+const inventoryUnitSchema = z.enum(['MILLILITERS', 'LITERS', 'GRAMS', 'KILOGRAMS', 'PIECES', 'PORTIONS', 'UNITS']);
 const querySchema = z.object({ outlet: outletSchema.optional() });
 
 const createItemSchema = z.object({
   outlet: outletSchema.optional(),
   itemName: z.string().trim().min(1).max(100),
-  unitOfMeasure: z.enum(['MILLILITERS', 'LITERS', 'GRAMS', 'KILOGRAMS', 'PIECES', 'PORTIONS', 'UNITS']),
+  unitOfMeasure: inventoryUnitSchema,
   alertThreshold: z.number().nonnegative().max(99999999)
 });
 
 const stockUpdateSchema = z.object({
   outlet: outletSchema.optional(),
-  inventoryId: z.string().uuid(),
+  inventoryId: z.string().uuid().optional(),
+  itemName: z.string().trim().min(1).max(100).optional(),
+  unitOfMeasure: inventoryUnitSchema.optional(),
+  alertThreshold: z.number().nonnegative().max(99999999).optional(),
   action: z.enum(['STOCK_COUNT', 'MANUAL_USAGE']),
   quantity: z.number().nonnegative().max(99999999),
   note: z.string().trim().max(250).optional()
 }).superRefine((data, context) => {
+  if (Boolean(data.inventoryId) === Boolean(data.itemName)) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ['inventoryId'], message: 'Select an existing item or provide a new item name.' });
+  }
+  if (data.itemName && (!data.unitOfMeasure || data.alertThreshold === undefined)) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ['itemName'], message: 'New ingredients require a stock unit and reorder threshold.' });
+  }
   if (data.action === 'MANUAL_USAGE' && data.quantity <= 0) {
     context.addIssue({ code: z.ZodIssueCode.custom, path: ['quantity'], message: 'Usage quantity must be greater than zero.' });
+  }
+});
+
+const supplierOrderItemSchema = z.object({
+  inventoryId: z.string().uuid().optional(),
+  itemName: z.string().trim().min(1).max(100).optional(),
+  unitOfMeasure: inventoryUnitSchema.optional(),
+  alertThreshold: z.number().nonnegative().max(99999999).optional(),
+  quantity: z.number().positive().max(99999999),
+  unitCostUgx: z.number().nonnegative().max(99999999.99).optional()
+}).superRefine((item, context) => {
+  if (Boolean(item.inventoryId) === Boolean(item.itemName)) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ['inventoryId'], message: 'Select an existing item or provide a new item name.' });
+  }
+  if (item.itemName && (!item.unitOfMeasure || item.alertThreshold === undefined)) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ['itemName'], message: 'New ingredients require a stock unit and reorder threshold.' });
   }
 });
 
@@ -29,14 +55,12 @@ const purchaseOrderSchema = z.object({
   outlet: outletSchema.optional(),
   supplierName: z.string().trim().min(1).max(100),
   notes: z.string().trim().max(250).optional(),
-  items: z.array(z.object({
-    inventoryId: z.string().uuid(),
-    quantity: z.number().positive().max(99999999),
-    unitCostUgx: z.number().nonnegative().max(99999999.99).optional()
-  })).min(1).max(50)
+  items: z.array(supplierOrderItemSchema).min(1).max(50)
 }).superRefine((data, context) => {
-  const ids = data.items.map((item) => item.inventoryId);
-  if (new Set(ids).size !== ids.length) {
+  const keys = data.items.map((item) => item.inventoryId
+    ? `id:${item.inventoryId}`
+    : `name:${item.itemName?.toLowerCase() || ''}`);
+  if (new Set(keys).size !== keys.length) {
     context.addIssue({ code: z.ZodIssueCode.custom, path: ['items'], message: 'Each inventory item can only appear once per supplier order.' });
   }
 });
@@ -69,6 +93,7 @@ function resolveOutlet(
 }
 
 class SupplierOrderConflict extends Error {}
+class DuplicateSupplierOrderItem extends Error {}
 
 function serializeOrder(order: {
   id: string;
@@ -205,13 +230,8 @@ export const inventoryRoutes: FastifyPluginAsync = async (fastify) => {
         });
       }
 
-      const existing = await fastify.prisma.raw_inventory.findUnique({
-        where: {
-          raw_inventory_outlet_name_unique: {
-            outlet,
-            item_name: data.itemName
-          }
-        }
+      const existing = await fastify.prisma.raw_inventory.findFirst({
+        where: { outlet, item_name: { equals: data.itemName, mode: 'insensitive' } }
       });
       if (existing) {
         return reply.status(409).send({
@@ -277,9 +297,34 @@ export const inventoryRoutes: FastifyPluginAsync = async (fastify) => {
       }
 
       const result = await fastify.prisma.$transaction(async (tx) => {
-        const item = await tx.raw_inventory.findFirst({
-          where: { id: data.inventoryId, outlet }
-        });
+        let item = data.inventoryId
+          ? await tx.raw_inventory.findFirst({ where: { id: data.inventoryId, outlet } })
+          : await tx.raw_inventory.findFirst({
+            where: { outlet, item_name: { equals: data.itemName || '', mode: 'insensitive' } }
+          });
+        if (!item && data.itemName && data.action === 'STOCK_COUNT' &&
+          data.unitOfMeasure && data.alertThreshold !== undefined) {
+          item = await tx.raw_inventory.create({
+            data: {
+              outlet,
+              item_name: data.itemName,
+              unit_of_measure: data.unitOfMeasure,
+              alert_threshold: data.alertThreshold
+            }
+          });
+          await tx.audit_log.create({
+            data: {
+              actor_user_id: request.user!.userId,
+              actor_role: request.user!.role,
+              outlet,
+              action: 'INVENTORY_ITEM_CREATED',
+              entity_type: 'RAW_INVENTORY',
+              entity_id: item.id,
+              after_json: { itemName: item.item_name, unitOfMeasure: item.unit_of_measure },
+              ip_address: request.ip
+            }
+          });
+        }
         if (!item) return null;
 
         if (data.action === 'MANUAL_USAGE') {
@@ -349,6 +394,8 @@ export const inventoryRoutes: FastifyPluginAsync = async (fastify) => {
         success: true,
         item: {
           id: result.item.id,
+          itemName: result.item.item_name,
+          unitOfMeasure: result.item.unit_of_measure,
           currentStock: Number(result.item.current_stock),
           alertThreshold: Number(result.item.alert_threshold)
         },
@@ -375,56 +422,108 @@ export const inventoryRoutes: FastifyPluginAsync = async (fastify) => {
           message: error || 'An outlet is required.'
         });
       }
-      const inventory = await fastify.prisma.raw_inventory.findMany({
-        where: { outlet, id: { in: data.items.map((item) => item.inventoryId) } },
-        select: { id: true }
-      });
-      if (inventory.length !== data.items.length) {
+      const inventoryIds = data.items.flatMap((item) => item.inventoryId ? [item.inventoryId] : []);
+      const inventory = inventoryIds.length
+        ? await fastify.prisma.raw_inventory.findMany({
+          where: { outlet, id: { in: inventoryIds } },
+          select: { id: true }
+        })
+        : [];
+      if (inventory.length !== inventoryIds.length) {
         return reply.status(400).send({
           statusCode: 400,
           error: 'Bad Request',
           code: 'INVENTORY_OUTLET_MISMATCH',
-          message: 'All supplier order products must belong to the selected outlet.'
+          message: 'All selected ingredients must belong to the selected outlet.'
         });
       }
 
-      const order = await fastify.prisma.$transaction(async (tx) => {
-        const created = await tx.supplier_orders.create({
-          data: {
-            outlet,
-            supplier_name: data.supplierName,
-            notes: data.notes || null,
-            created_by: request.user!.userId,
-            items: {
-              create: data.items.map((item) => ({
-                inventory_id: item.inventoryId,
-                quantity_ordered: item.quantity,
-                unit_cost_ugx: item.unitCostUgx ?? null
-              }))
+      let order;
+      try {
+        order = await fastify.prisma.$transaction(async (tx) => {
+          const orderItems: Array<{ inventory_id: string; quantity_ordered: number; unit_cost_ugx: number | null }> = [];
+          const resolvedInventoryIds = new Set<string>();
+          for (const item of data.items) {
+            let rawItem = item.inventoryId
+              ? await tx.raw_inventory.findFirst({ where: { id: item.inventoryId, outlet } })
+              : await tx.raw_inventory.findFirst({
+                where: { outlet, item_name: { equals: item.itemName || '', mode: 'insensitive' } }
+              });
+            if (!rawItem && item.itemName && item.unitOfMeasure && item.alertThreshold !== undefined) {
+              rawItem = await tx.raw_inventory.create({
+                data: {
+                  outlet,
+                  item_name: item.itemName,
+                  unit_of_measure: item.unitOfMeasure,
+                  alert_threshold: item.alertThreshold
+                }
+              });
+              await tx.audit_log.create({
+                data: {
+                  actor_user_id: request.user!.userId,
+                  actor_role: request.user!.role,
+                  outlet,
+                  action: 'INVENTORY_ITEM_CREATED',
+                  entity_type: 'RAW_INVENTORY',
+                  entity_id: rawItem.id,
+                  after_json: { itemName: rawItem.item_name, unitOfMeasure: rawItem.unit_of_measure },
+                  ip_address: request.ip
+                }
+              });
             }
-          },
-          include: { items: { include: { inventory: true } } }
-        });
-        await tx.audit_log.create({
-          data: {
-            actor_user_id: request.user!.userId,
-            actor_role: request.user!.role,
-            outlet,
-            action: 'SUPPLIER_ORDER_CREATED',
-            entity_type: 'SUPPLIER_ORDER',
-            entity_id: created.id,
-            after_json: {
-              supplierName: created.supplier_name,
-              items: created.items.map((item) => ({
-                itemName: item.inventory.item_name,
-                quantity: Number(item.quantity_ordered)
-              }))
-            },
-            ip_address: request.ip
+            if (!rawItem) {
+              throw new Error('Supplier order ingredient could not be resolved.');
+            }
+            if (resolvedInventoryIds.has(rawItem.id)) throw new DuplicateSupplierOrderItem();
+            resolvedInventoryIds.add(rawItem.id);
+            orderItems.push({
+              inventory_id: rawItem.id,
+              quantity_ordered: item.quantity,
+              unit_cost_ugx: item.unitCostUgx ?? null
+            });
           }
+
+          const created = await tx.supplier_orders.create({
+            data: {
+              outlet,
+              supplier_name: data.supplierName,
+              notes: data.notes || null,
+              created_by: request.user!.userId,
+              items: { create: orderItems }
+            },
+            include: { items: { include: { inventory: true } } }
+          });
+          await tx.audit_log.create({
+            data: {
+              actor_user_id: request.user!.userId,
+              actor_role: request.user!.role,
+              outlet,
+              action: 'SUPPLIER_ORDER_CREATED',
+              entity_type: 'SUPPLIER_ORDER',
+              entity_id: created.id,
+              after_json: {
+                supplierName: created.supplier_name,
+                items: created.items.map((line) => ({
+                  itemName: line.inventory.item_name,
+                  quantity: Number(line.quantity_ordered)
+                }))
+              },
+              ip_address: request.ip
+            }
+          });
+          return created;
         });
-        return created;
-      });
+      } catch (orderError) {
+        if (orderError instanceof DuplicateSupplierOrderItem) {
+          return reply.status(409).send({
+            statusCode: 409,
+            error: 'Conflict',
+            code: 'DUPLICATE_SUPPLIER_ORDER_ITEM',
+            message: 'Each raw ingredient can only appear once in a supplier order.'
+          });
+        }
+        throw orderError;
+      }
 
       return reply.status(201).send({
         success: true,

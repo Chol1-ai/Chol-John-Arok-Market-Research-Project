@@ -73,6 +73,10 @@
     stockForm: document.getElementById('admin-stock-form'),
     stockOutlet: document.getElementById('admin-stock-outlet'),
     stockItem: document.getElementById('admin-stock-item'),
+    stockItemOptions: document.getElementById('admin-stock-item-options'),
+    stockNewItemFields: document.getElementById('admin-stock-new-item-fields'),
+    stockUnit: document.getElementById('admin-stock-unit'),
+    stockAlertThreshold: document.getElementById('admin-stock-alert-threshold'),
     stockAction: document.getElementById('admin-stock-action'),
     stockQuantity: document.getElementById('admin-stock-quantity'),
     stockQuantityLabel: document.getElementById('admin-stock-quantity-label'),
@@ -84,6 +88,7 @@
     inventoryItemSubmit: document.getElementById('admin-inventory-item-submit'),
     supplierOrderForm: document.getElementById('admin-supplier-order-form'),
     orderOutlet: document.getElementById('admin-order-outlet'),
+    orderItemOptions: document.getElementById('admin-order-item-options'),
     supplierOrderLines: document.getElementById('admin-supplier-order-lines'),
     addOrderLine: document.getElementById('admin-add-order-line'),
     supplierOrderSubmit: document.getElementById('admin-supplier-order-submit'),
@@ -669,30 +674,81 @@
     return (STATE.inventory?.items || []).filter((item) => item.outlet === outlet);
   }
 
-  function updateInventorySelectors() {
-    const stockOutlet = inventoryOutletFor(els.stockOutlet);
-    const optionsFor = (outlet) => {
-      const products = productsAt(outlet);
-      return `<option value="">${products.length ? 'Select a raw ingredient' : 'No raw ingredients at this outlet'}</option>${products
-        .map((item) => `<option value="${F.escapeHtml(item.id)}">${F.escapeHtml(item.itemName)} (${F.escapeHtml(
-          inventoryUnitLabel(item.unitOfMeasure)
-        )})</option>`)
-        .join('')}`;
-    };
+  function inventoryUnits() {
+    return [
+      ['KILOGRAMS', 'Kilograms'],
+      ['GRAMS', 'Grams'],
+      ['LITERS', 'Litres'],
+      ['MILLILITERS', 'Millilitres'],
+      ['PIECES', 'Pieces'],
+      ['UNITS', 'Units'],
+      ['PORTIONS', 'Portions']
+    ];
+  }
 
-    const previousStockItem = els.stockItem.value;
-    els.stockItem.innerHTML = optionsFor(stockOutlet);
-    if (productsAt(stockOutlet).some((item) => item.id === previousStockItem)) {
-      els.stockItem.value = previousStockItem;
+  function inventoryUnitOptions() {
+    return inventoryUnits().map(([value, label]) =>
+      `<option value="${value}">${label}</option>`
+    ).join('');
+  }
+
+  function inventoryItemByName(outlet, name) {
+    const normalizedName = String(name || '').trim().toLowerCase();
+    return normalizedName
+      ? productsAt(outlet).find((item) => item.itemName.trim().toLowerCase() === normalizedName)
+      : null;
+  }
+
+  function updateStockItemFields() {
+    const item = inventoryItemByName(inventoryOutletFor(els.stockOutlet), els.stockItem.value);
+    const wasExisting = els.stockItem.dataset.matchedInventoryId;
+    if (item) {
+      els.stockNewItemFields.hidden = true;
+      els.stockUnit.value = item.unitOfMeasure;
+      els.stockAlertThreshold.value = String(item.alertThreshold);
+      els.stockItem.dataset.matchedInventoryId = item.id;
+      return;
     }
 
-    els.supplierOrderLines.querySelectorAll('[data-order-product]').forEach((select) => {
-      const previous = select.value;
-      select.innerHTML = optionsFor(inventoryOutletFor(els.orderOutlet));
-      if (productsAt(inventoryOutletFor(els.orderOutlet)).some((item) => item.id === previous)) {
-        select.value = previous;
-      }
-    });
+    els.stockNewItemFields.hidden = !els.stockItem.value.trim();
+    if (wasExisting) {
+      els.stockUnit.value = 'KILOGRAMS';
+      els.stockAlertThreshold.value = '5';
+    }
+    els.stockItem.dataset.matchedInventoryId = '';
+  }
+
+  function updateSupplierOrderLine(line) {
+    const input = line.querySelector('[data-order-product]');
+    const item = inventoryItemByName(inventoryOutletFor(els.orderOutlet), input.value);
+    const newFields = line.querySelector('[data-order-new-fields]');
+    const previousId = line.dataset.matchedInventoryId;
+    if (item) {
+      newFields.hidden = true;
+      line.querySelector('[data-order-unit]').value = item.unitOfMeasure;
+      line.querySelector('[data-order-alert-threshold]').value = String(item.alertThreshold);
+      line.dataset.matchedInventoryId = item.id;
+      return;
+    }
+
+    newFields.hidden = !input.value.trim();
+    if (previousId) {
+      line.querySelector('[data-order-unit]').value = 'KILOGRAMS';
+      line.querySelector('[data-order-alert-threshold]').value = '5';
+    }
+    line.dataset.matchedInventoryId = '';
+  }
+
+  function updateInventorySelectors() {
+    const optionsFor = (outlet) => productsAt(outlet)
+      .map((item) => `<option value="${F.escapeHtml(item.itemName)}" label="${F.escapeHtml(
+        inventoryUnitLabel(item.unitOfMeasure)
+      )}"></option>`)
+      .join('');
+    els.stockItemOptions.innerHTML = optionsFor(inventoryOutletFor(els.stockOutlet));
+    els.orderItemOptions.innerHTML = optionsFor(inventoryOutletFor(els.orderOutlet));
+    updateStockItemFields();
+    els.supplierOrderLines.querySelectorAll('.admin-order-line').forEach(updateSupplierOrderLine);
   }
 
   function renderInventory() {
@@ -790,15 +846,22 @@
   function addSupplierOrderLine() {
     const line = document.createElement('div');
     line.className = 'admin-order-line';
-    line.innerHTML = `<select class="ls-select" data-order-product required aria-label="Raw ingredient">${productsAt(
-      inventoryOutletFor(els.orderOutlet)
-    ).map((item) => `<option value="${F.escapeHtml(item.id)}">${F.escapeHtml(item.itemName)} (${F.escapeHtml(
-      inventoryUnitLabel(item.unitOfMeasure)
-    )})</option>`).join('')}</select>
+    line.innerHTML = `<input class="ls-input" data-order-product list="admin-order-item-options" type="text" maxlength="100" placeholder="Type or choose ingredient" autocomplete="off" aria-label="Raw ingredient" required />
       <input class="ls-input" data-order-quantity type="number" min="0.01" step="0.01" placeholder="Quantity" aria-label="Order quantity" required />
+      <div class="admin-order-new-fields" data-order-new-fields hidden>
+        <label class="ls-field">
+          <span>Stock unit</span>
+          <select class="ls-select" data-order-unit>${inventoryUnitOptions()}</select>
+        </label>
+        <label class="ls-field">
+          <span>Reorder alert at</span>
+          <input class="ls-input" data-order-alert-threshold type="number" min="0" max="99999999" step="0.01" value="5" />
+        </label>
+      </div>
       <input class="ls-input admin-order-cost" data-order-unit-cost type="number" min="0" step="1" placeholder="Unit cost in UGX (optional)" aria-label="Unit cost in UGX (optional)" />
       <button class="ls-btn ls-btn--ghost ls-btn--small" type="button" data-remove-order-line aria-label="Remove ingredient">Remove</button>`;
     els.supplierOrderLines.appendChild(line);
+    updateSupplierOrderLine(line);
     updateInventorySelectors();
   }
 
@@ -806,9 +869,20 @@
     event.preventDefault();
     if (STATE.inventoryBusy) return;
     const quantity = Number(els.stockQuantity.value);
-    if (!els.stockItem.value || !Number.isFinite(quantity) || quantity < 0 ||
+    const itemName = els.stockItem.value.trim();
+    const existingItem = inventoryItemByName(inventoryOutletFor(els.stockOutlet), itemName);
+    if (!itemName || !Number.isFinite(quantity) || quantity < 0 ||
       (els.stockAction.value === 'MANUAL_USAGE' && quantity <= 0)) {
       F.toast('Select a raw ingredient and enter a valid quantity for this stock update.', 'error');
+      return;
+    }
+    if (!existingItem && els.stockAction.value === 'MANUAL_USAGE') {
+      F.toast('Set a counted stock amount for this new ingredient before recording kitchen use.', 'error');
+      return;
+    }
+    if (!existingItem && (!Number.isFinite(Number(els.stockAlertThreshold.value)) ||
+      Number(els.stockAlertThreshold.value) < 0)) {
+      F.toast('Enter a valid reorder alert threshold for this new ingredient.', 'error');
       return;
     }
     STATE.inventoryBusy = true;
@@ -819,7 +893,11 @@
         method: 'POST',
         body: JSON.stringify({
           outlet: inventoryOutletFor(els.stockOutlet),
-          inventoryId: els.stockItem.value,
+          ...(existingItem ? { inventoryId: existingItem.id } : {
+            itemName,
+            unitOfMeasure: els.stockUnit.value,
+            alertThreshold: Number(els.stockAlertThreshold.value)
+          }),
           action: els.stockAction.value,
           quantity,
           note: els.stockNote.value.trim() || undefined
@@ -865,7 +943,8 @@
       await loadInventory();
       els.stockOutlet.value = selectedOutlet;
       updateInventorySelectors();
-      els.stockItem.value = data.item.id;
+      els.stockItem.value = data.item.itemName;
+      updateStockItemFields();
       els.stockAction.value = 'STOCK_COUNT';
       els.stockAction.dispatchEvent(new Event('change'));
       els.stockQuantity.focus();
@@ -881,36 +960,49 @@
   async function submitSupplierOrder(event) {
     event.preventDefault();
     if (STATE.inventoryBusy) return;
-    const lines = [...els.supplierOrderLines.querySelectorAll('.admin-order-line')].map((line) => ({
-      inventoryId: line.querySelector('[data-order-product]').value,
-      quantity: Number(line.querySelector('[data-order-quantity]').value),
-      unitCostUgx: line.querySelector('[data-order-unit-cost]').value === ''
-        ? undefined
-        : Number(line.querySelector('[data-order-unit-cost]').value)
-    }));
-    if (lines.some((line) => !line.inventoryId || !Number.isFinite(line.quantity) || line.quantity <= 0 ||
+    const selectedOutlet = inventoryOutletFor(els.orderOutlet);
+    const lines = [...els.supplierOrderLines.querySelectorAll('.admin-order-line')].map((line) => {
+      const itemName = line.querySelector('[data-order-product]').value.trim();
+      const existingItem = inventoryItemByName(selectedOutlet, itemName);
+      return {
+        ...(existingItem ? { inventoryId: existingItem.id } : {
+          itemName,
+          unitOfMeasure: line.querySelector('[data-order-unit]').value,
+          alertThreshold: Number(line.querySelector('[data-order-alert-threshold]').value)
+        }),
+        existingItemId: existingItem?.id || '',
+        normalizedName: itemName.toLowerCase(),
+        quantity: Number(line.querySelector('[data-order-quantity]').value),
+        unitCostUgx: line.querySelector('[data-order-unit-cost]').value === ''
+          ? undefined
+          : Number(line.querySelector('[data-order-unit-cost]').value)
+      };
+    });
+    if (lines.some((line) => (!line.inventoryId && !line.itemName) || !Number.isFinite(line.quantity) || line.quantity <= 0 ||
+      (!line.inventoryId && (!Number.isFinite(line.alertThreshold) || line.alertThreshold < 0)) ||
       (line.unitCostUgx !== undefined && (!Number.isFinite(line.unitCostUgx) || line.unitCostUgx < 0)))) {
-      F.toast('Choose a raw ingredient and enter a valid order quantity and unit cost.', 'error');
+      F.toast('Enter a raw ingredient, valid order quantity, and valid unit cost or reorder threshold.', 'error');
       return;
     }
-    if (new Set(lines.map((line) => line.inventoryId)).size !== lines.length) {
+    const uniqueNames = lines.map((line) => line.existingItemId || line.normalizedName);
+    if (new Set(uniqueNames).size !== lines.length) {
       F.toast('Each raw ingredient can only appear once in a supplier order.', 'error');
       return;
     }
+    const orderItems = lines.map(({ existingItemId, normalizedName, ...item }) => item);
 
     const form = event.currentTarget;
     STATE.inventoryBusy = true;
     els.supplierOrderSubmit.disabled = true;
     els.supplierOrderSubmit.textContent = 'Placing order…';
     try {
-      const selectedOutlet = inventoryOutletFor(els.orderOutlet);
       const data = await F.request('/api/v1/inventory/supplier-orders', {
         method: 'POST',
         body: JSON.stringify({
           outlet: selectedOutlet,
           supplierName: form.elements.supplierName.value.trim(),
           notes: form.elements.notes.value.trim() || undefined,
-          items: lines
+          items: orderItems
         })
       });
       form.reset();
@@ -1169,11 +1261,16 @@
       els.stockQuantityLabel.textContent = isCount ? 'Counted quantity' : 'Quantity used';
       els.stockQuantity.min = isCount ? '0' : '0.01';
     });
+    els.stockItem.addEventListener('input', updateStockItemFields);
     els.stockOutlet.addEventListener('change', updateInventorySelectors);
     els.orderOutlet.addEventListener('change', updateInventorySelectors);
     els.inventoryItemForm.addEventListener('submit', submitInventoryItem);
     els.supplierOrderForm.addEventListener('submit', submitSupplierOrder);
     els.addOrderLine.addEventListener('click', addSupplierOrderLine);
+    els.supplierOrderLines.addEventListener('input', (event) => {
+      const input = event.target.closest('[data-order-product]');
+      if (input) updateSupplierOrderLine(input.closest('.admin-order-line'));
+    });
     els.supplierOrderLines.addEventListener('click', (event) => {
       const removeButton = event.target.closest('[data-remove-order-line]');
       if (!removeButton) return;

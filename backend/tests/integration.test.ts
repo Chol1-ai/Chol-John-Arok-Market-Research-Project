@@ -1101,6 +1101,32 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
     expect(usage.statusCode).toBe(200);
     expect((usage.json() as Json).item.currentStock).toBe(23);
 
+    const typedOpeningCount = await inject('POST', '/api/v1/inventory/stock', {
+      token: tokens.cyrus,
+      payload: {
+        itemName: 'Integration Cassava Flour',
+        unitOfMeasure: 'KILOGRAMS',
+        alertThreshold: 2,
+        action: 'STOCK_COUNT',
+        quantity: 12
+      }
+    });
+    expect(typedOpeningCount.statusCode).toBe(200);
+    expect((typedOpeningCount.json() as Json).item.itemName).toBe('Integration Cassava Flour');
+
+    const typedUsage = await inject('POST', '/api/v1/inventory/stock', {
+      token: tokens.cyrus,
+      payload: {
+        itemName: 'integration cassava flour',
+        unitOfMeasure: 'KILOGRAMS',
+        alertThreshold: 2,
+        action: 'MANUAL_USAGE',
+        quantity: 2
+      }
+    });
+    expect(typedUsage.statusCode).toBe(200);
+    expect((typedUsage.json() as Json).item.currentStock).toBe(10);
+
     const overuse = await inject('POST', '/api/v1/inventory/stock', {
       token: tokens.cyrus,
       payload: { inventoryId: flour.id, action: 'MANUAL_USAGE', quantity: 24 }
@@ -1116,20 +1142,28 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
       payload: {
         supplierName: 'Integration Supplier',
         items: [
-          { inventoryId: flour.id, quantity: 10, unitCostUgx: 12000 },
-          { inventoryId: oil.id, quantity: 120 }
+          { itemName: 'integration flour', unitOfMeasure: 'KILOGRAMS', alertThreshold: 5, quantity: 10, unitCostUgx: 12000 },
+          { inventoryId: oil.id, quantity: 120 },
+          { itemName: 'Integration Groundnuts', unitOfMeasure: 'KILOGRAMS', alertThreshold: 3, quantity: 8 }
         ]
       }
     });
     expect(supplierOrder.statusCode).toBe(201);
     const order = (supplierOrder.json() as Json).order as Json;
     const lines = order.items as Json[];
-    expect(lines).toHaveLength(2);
+    expect(lines).toHaveLength(3);
+    const flourLine = lines.find((line) => line.itemName === 'Integration Flour')!;
+    const oilLine = lines.find((line) => line.itemName === 'Mukwano Cooking Oil')!;
+    const groundnutsLine = lines.find((line) => line.itemName === 'Integration Groundnuts')!;
     expect((await app.prisma.raw_inventory.findUniqueOrThrow({ where: { id: flour.id } })).current_stock.toString()).toBe('23');
+    const groundnuts = await app.prisma.raw_inventory.findFirstOrThrow({
+      where: { outlet: 'FOODIZO_HAM_TOWERS', item_name: 'Integration Groundnuts' }
+    });
+    expect(Number(groundnuts.current_stock)).toBe(0);
 
     const crossOutletReceive = await inject('POST', `/api/v1/inventory/supplier-orders/${order.id}/receive`, {
       token: tokens.zito,
-      payload: { items: [{ itemId: lines[0].id, quantity: 5 }] }
+      payload: { items: [{ itemId: flourLine.id, quantity: 5 }] }
     });
     expect(crossOutletReceive.statusCode).toBe(403);
 
@@ -1137,8 +1171,9 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
       token: tokens.cyrus,
       payload: {
         items: [
-          { itemId: lines[0].id, quantity: 5 },
-          { itemId: lines[1].id, quantity: 20 }
+          { itemId: flourLine.id, quantity: 5 },
+          { itemId: oilLine.id, quantity: 20 },
+          { itemId: groundnutsLine.id, quantity: 3 }
         ]
       }
     });
@@ -1151,14 +1186,16 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
       token: tokens.cyrus,
       payload: {
         items: [
-          { itemId: lines[0].id, quantity: 5 },
-          { itemId: lines[1].id, quantity: 100 }
+          { itemId: flourLine.id, quantity: 5 },
+          { itemId: oilLine.id, quantity: 100 },
+          { itemId: groundnutsLine.id, quantity: 5 }
         ]
       }
     });
     expect(finalDelivery.statusCode).toBe(200);
     expect((finalDelivery.json() as Json).order.status).toBe('RECEIVED');
     expect((await app.prisma.raw_inventory.findUniqueOrThrow({ where: { id: flour.id } })).current_stock.toString()).toBe('33');
+    expect(Number((await app.prisma.raw_inventory.findUniqueOrThrow({ where: { id: groundnuts.id } })).current_stock)).toBe(8);
 
     const inventory = await inject('GET', '/api/v1/inventory', { token: tokens.cyrus });
     expect(inventory.statusCode).toBe(200);

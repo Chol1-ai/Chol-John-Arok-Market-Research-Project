@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
   <link rel="stylesheet" href="/css/theme_tokens.css" />
-  <link rel="stylesheet" href="/css/live_surfaces.css?v=8" />
+  <link rel="stylesheet" href="/css/live_surfaces.css?v=9" />
 </head>
 <body class="ls-body" data-surface="admin">
   <a class="ls-skip" href="#main-content">Skip to main content</a>
@@ -90,7 +90,7 @@
         </div>
         <button class="ls-btn ls-btn--ghost ls-btn--small" type="button" id="admin-inventory-refresh">Refresh stock</button>
       </div>
-      <div class="admin-inventory-note">Record actual opening counts. Supplier deliveries add to on-hand stock only after receipt.</div>
+      <div class="admin-inventory-note">Type an existing ingredient or a new name. New ingredients need a unit and reorder alert; supplier orders add stock after delivery is recorded.</div>
       <div class="admin-table-wrap">
         <table class="admin-table">
           <thead>
@@ -119,8 +119,27 @@
           </label>
           <label class="ls-field">
             <span>Raw ingredient</span>
-            <select class="ls-select" id="admin-stock-item" required><option value="">Loading stock…</option></select>
+            <input class="ls-input" id="admin-stock-item" list="admin-stock-item-options" type="text" maxlength="100" placeholder="Type or choose a raw ingredient" autocomplete="off" required />
+            <datalist id="admin-stock-item-options"></datalist>
           </label>
+          <div class="ls-form-grid" id="admin-stock-new-item-fields" hidden>
+            <label class="ls-field">
+              <span>Stock unit</span>
+              <select class="ls-select" id="admin-stock-unit">
+                <option value="KILOGRAMS">Kilograms</option>
+                <option value="GRAMS">Grams</option>
+                <option value="LITERS">Litres</option>
+                <option value="MILLILITERS">Millilitres</option>
+                <option value="PIECES">Pieces</option>
+                <option value="UNITS">Units</option>
+                <option value="PORTIONS">Portions</option>
+              </select>
+            </label>
+            <label class="ls-field">
+              <span>Reorder alert at</span>
+              <input class="ls-input" id="admin-stock-alert-threshold" type="number" min="0" max="99999999" step="0.01" value="5" />
+            </label>
+          </div>
           <div class="ls-form-grid">
             <label class="ls-field">
               <span>Action</span>
@@ -190,6 +209,7 @@
             <span>Supplier</span>
             <input class="ls-input" name="supplierName" type="text" maxlength="100" placeholder="Supplier name" required />
           </label>
+          <datalist id="admin-order-item-options"></datalist>
           <div id="admin-supplier-order-lines" class="admin-order-lines"></div>
           <button class="ls-btn ls-btn--ghost ls-btn--small" type="button" id="admin-add-order-line">Add another ingredient</button>
           <label class="ls-field">
@@ -548,6 +568,6 @@
   </footer>
 
   <script src="/js/api.js"></script>
-  <script src="/js/admin.js?v=5"></script>
+  <script src="/js/admin.js?v=6"></script>
 </body>
 </html>
