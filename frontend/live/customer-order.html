@@ -4,27 +4,33 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#f8f6f1" />
-  <meta name="description" content="Order campus favourites for pickup at Foodizo or Obunuzi in Wandegeya, Kampala." />
+  <meta name="description" content="Browse the Foodizo and Obunuzi menu and order pickup or local delivery in Wandegeya, Kampala." />
   <link rel="icon" type="image/svg+xml" href="/images/foodizo-brand-mark.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" />
-  <link rel="stylesheet" href="/css/customer_order.css?v=5" />
-  <title>Order for pickup | Foodizo &amp; Obunuzi</title>
+  <link rel="stylesheet" href="/css/customer_order.css?v=6" />
+  <title>Foodizo &amp; Obunuzi | Menu and Ordering</title>
 </head>
 <body>
   <header class="customer-topbar">
     <a class="customer-brand" href="/" aria-label="Foodizo and Obunuzi home">
       <img src="/images/foodizo-obunuzi-logo.svg" alt="Foodizo and Obunuzi" />
     </a>
-    <span class="customer-pickup-label">Pickup &amp; local delivery</span>
+    <div class="customer-topbar-actions">
+      <a class="customer-back-link" href="/" data-customer-back>
+        <span aria-hidden="true">←</span>
+        <span>Back</span>
+      </a>
+      <span class="customer-pickup-label">Pickup &amp; local delivery</span>
+    </div>
   </header>
 
   <main class="customer-main" id="main-content">
     <div id="notice" class="customer-notice" role="status" hidden></div>
     <section id="order-screen">
       <div class="customer-intro">
-        <div class="customer-eyebrow">Good food, ready around campus</div>
+        <div class="customer-eyebrow">Foodizo &amp; Obunuzi · Wandegeya, Kampala</div>
         <h1>Order for pickup or delivery</h1>
         <p>Browse the menu and place a pickup or local delivery order. Temporarily unavailable meals stay listed so you can still see what the outlet offers.</p>
       </div>
@@ -63,6 +69,11 @@
         <div class="customer-zone-hint" id="delivery-zone-hint">Choose an area to see the delivery fee and estimated time.</div>
       </div>
 
+      <button id="cart-toggle" class="customer-cart-toggle" type="button" aria-controls="cart-panel" aria-expanded="false">
+        <span>View cart</span>
+        <strong id="cart-toggle-summary">0 items · UGX 0</strong>
+      </button>
+
       <div class="customer-layout">
         <section class="customer-menu">
           <div class="customer-category-row" id="categories" aria-label="Menu categories"></div>
@@ -71,10 +82,13 @@
           </div>
         </section>
 
-        <aside class="customer-cart" aria-labelledby="cart-title">
+        <aside class="customer-cart" id="cart-panel" aria-labelledby="cart-title">
           <div class="customer-cart-head">
             <div><span class="customer-eyebrow">Your selection</span><h2 id="cart-title">Pickup bag</h2></div>
             <span class="customer-cart-count" id="cart-count">0</span>
+            <button id="cart-close" class="customer-cart-close" type="button" aria-label="Close cart">
+              <span aria-hidden="true">×</span>
+            </button>
           </div>
           <div id="cart-lines" class="customer-cart-lines"><p class="customer-empty">Your bag is empty.</p></div>
           <div class="customer-fee-row" id="delivery-fee-row" hidden><span>Delivery fee</span><strong id="delivery-fee">UGX 0</strong></div>
@@ -106,6 +120,7 @@
   </main>
 
   <footer class="customer-footer">Foodizo · Ham Towers &nbsp;·&nbsp; Obunuzi · Opposite YMCA &nbsp;·&nbsp; Prices in UGX</footer>
-  <script src="/js/customer-order.js?v=2"></script>
+  <script src="/js/customer-order.js?v=3"></script>
+  <script src="/js/customer-navigation.js" defer></script>
 </body>
 </html>

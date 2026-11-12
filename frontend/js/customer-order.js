@@ -5,14 +5,7 @@
     FOODIZO_HAM_TOWERS: 'Foodizo · Ham Towers',
     OBUNUZI_YMCA: 'Obunuzi · Opposite YMCA'
   };
-  const STATUS_COPY = {
-    AWAITING_PAYMENT: 'Order received. Show this token and pay cash at the counter. Preparation starts after staff records payment.',
-    PENDING: 'Your order is queued for the kitchen.',
-    PREPARING: 'The kitchen is preparing your order.',
-    READY: 'Your order is ready for pickup at the counter.',
-    COMPLETED: 'This order has been collected. Thank you!',
-    CANCELLED: 'This order was cancelled. Please speak with staff if you need help.'
-  };
+  const CART_STORAGE_PREFIX = 'foodizo-customer-cart-v1:';
   const state = {
     outlet: 'FOODIZO_HAM_TOWERS',
     channel: 'TAKEAWAY_PICKUP',
@@ -41,6 +34,10 @@
     search: document.getElementById('search'),
     categories: document.getElementById('categories'),
     menu: document.getElementById('menu'),
+    cartPanel: document.getElementById('cart-panel'),
+    cartToggle: document.getElementById('cart-toggle'),
+    cartToggleSummary: document.getElementById('cart-toggle-summary'),
+    cartClose: document.getElementById('cart-close'),
     cartLines: document.getElementById('cart-lines'),
     cartCount: document.getElementById('cart-count'),
     cartTotal: document.getElementById('cart-total'),
@@ -102,6 +99,51 @@
     elements.notice.hidden = false;
   }
 
+  function persistCart() {
+    try {
+      localStorage.setItem(
+        `${CART_STORAGE_PREFIX}${state.outlet}`,
+        JSON.stringify(Array.from(state.cart.entries()))
+      );
+    } catch (error) {
+      showNotice(`Could not save your cart in this browser: ${error.message}`);
+    }
+  }
+
+  function restoreCart() {
+    let saved;
+    try {
+      const serialized = localStorage.getItem(`${CART_STORAGE_PREFIX}${state.outlet}`);
+      if (!serialized) return;
+      saved = JSON.parse(serialized);
+    } catch (error) {
+      showNotice(`Could not restore your saved cart: ${error.message}`);
+      return;
+    }
+
+    if (!Array.isArray(saved)) {
+      showNotice('Could not restore your saved cart because its data is invalid.');
+      return;
+    }
+
+    let skippedItems = false;
+    for (const entry of saved) {
+      if (!Array.isArray(entry) || entry.length !== 2) {
+        skippedItems = true;
+        continue;
+      }
+      const [itemId, quantity] = entry;
+      if (typeof itemId !== 'string' || !Number.isSafeInteger(quantity) || quantity < 1) {
+        skippedItems = true;
+        continue;
+      }
+      const item = state.menu.find((row) => row.id === itemId);
+      if (item && item.isAvailable && !item.is86) state.cart.set(itemId, quantity);
+      else skippedItems = true;
+    }
+    if (skippedItems) showNotice('Some saved cart items were omitted because they are no longer available.');
+  }
+
   function hideNotice() {
     elements.notice.hidden = true;
     elements.notice.textContent = '';
@@ -117,8 +159,10 @@
         const item = state.menu.find((row) => row.id === itemId);
         if (!item || !item.isAvailable || item.is86) state.cart.delete(itemId);
       }
+      persistCart();
     } else {
       state.cart.clear();
+      restoreCart();
     }
     state.category = 'ALL';
     renderCategories();
@@ -181,7 +225,12 @@
       (!query || `${item.name} ${item.category}`.toLowerCase().includes(query))
     );
     if (!items.length) {
-      elements.menu.innerHTML = '<div class="customer-empty">No meals match. Try another category or outlet.</div>';
+      const filter = query || (state.category !== 'ALL' ? state.category : null);
+      const message = filter
+        ? `No menu items match “${filter}” at this outlet.`
+        : 'No menu items are currently available at this outlet.';
+      elements.menu.innerHTML =
+        `<div class="customer-empty">${escapeHtml(message)} Try another category or outlet.</div>`;
       return;
     }
     elements.menu.innerHTML = items.map((item) => {
@@ -237,6 +286,8 @@
     const total = subtotal + deliveryFee;
     elements.cartCount.textContent = String(count);
     elements.cartTotal.textContent = formatUgx(total);
+    elements.cartToggleSummary.textContent =
+      `${count} ${count === 1 ? 'item' : 'items'} · ${formatUgx(total)}`;
     elements.deliveryFee.textContent = formatUgx(deliveryFee);
     elements.submitOrder.disabled = !lines.length ||
       (state.channel === 'PHONE_DELIVERY' && (!state.selectedZone || !state.zones.length));
@@ -258,7 +309,16 @@
     const next = (state.cart.get(itemId) || 0) + delta;
     if (next <= 0) state.cart.delete(itemId);
     else state.cart.set(itemId, next);
+    persistCart();
     renderCart();
+  }
+
+  function setCartOpen(open) {
+    elements.cartPanel.classList.toggle('is-open', open);
+    document.body.classList.toggle('cart-open', open);
+    elements.cartToggle.setAttribute('aria-expanded', String(open));
+    if (open) elements.cartClose.focus();
+    else elements.cartToggle.focus();
   }
 
   async function submitOrder(event) {
@@ -289,6 +349,8 @@
         throw new Error('The order was accepted but no pickup token was returned. Please ask staff for help.');
       }
       state.token = data.order.tokenNumber;
+      state.cart.clear();
+      persistCart();
       history.replaceState(null, '', `/order?token=${encodeURIComponent(state.token)}&outlet=${encodeURIComponent(state.outlet)}`);
       showTrackingScreen();
       await refreshTracking();
@@ -315,6 +377,9 @@
   }
 
   function showTrackingScreen() {
+    elements.cartPanel.classList.remove('is-open');
+    document.body.classList.remove('cart-open');
+    elements.cartToggle.setAttribute('aria-expanded', 'false');
     elements.orderScreen.hidden = true;
     elements.trackingScreen.hidden = false;
     elements.trackingToken.textContent = state.token || '—';
@@ -368,6 +433,7 @@
     elements.orderScreen.hidden = false;
     elements.checkoutForm.reset();
     state.cart.clear();
+    persistCart();
     updateFulfillment();
   }
 
@@ -401,6 +467,13 @@
       const button = event.target.closest('[data-cart-change]');
       if (button) changeQuantity(button.dataset.id, Number(button.dataset.cartChange));
     });
+    elements.cartToggle.addEventListener('click', () => setCartOpen(true));
+    elements.cartClose.addEventListener('click', () => setCartOpen(false));
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && elements.cartPanel.classList.contains('is-open')) {
+        setCartOpen(false);
+      }
+    });
     elements.checkoutForm.addEventListener('submit', submitOrder);
     document.getElementById('tracking-refresh').addEventListener('click', () => {
       refreshTracking().catch((error) => showNotice(error.message));
@@ -416,8 +489,31 @@
       state.outlet = requestedOutlet;
       elements.outlet.value = requestedOutlet;
     }
+    const requestedFulfillment = params.get('fulfillment');
+    if (requestedFulfillment === 'TAKEAWAY_PICKUP' || requestedFulfillment === 'PHONE_DELIVERY') {
+      elements.fulfillment.value = requestedFulfillment;
+      state.channel = requestedFulfillment;
+    }
     try {
       await Promise.all([loadMenu(), loadZones()]);
+      const requestedZoneId = params.get('deliveryZoneId');
+      if (requestedZoneId && state.channel === 'PHONE_DELIVERY') {
+        state.selectedZone = state.zones.find((zone) => zone.id === requestedZoneId) || null;
+        elements.deliveryZone.value = state.selectedZone ? state.selectedZone.id : '';
+        if (state.selectedZone) {
+          elements.deliveryZoneHint.textContent =
+            `${state.selectedZone.landmarkHint || state.selectedZone.landmarkGroup} · ` +
+            `${state.selectedZone.etaMinMinutes}–${state.selectedZone.etaMaxMinutes} min`;
+        }
+      }
+      const requestedCategory = params.get('category');
+      if (requestedCategory && state.menu.some((item) => item.category === requestedCategory)) {
+        state.category = requestedCategory;
+      }
+      const requestedSearch = params.get('q');
+      if (requestedSearch) elements.search.value = requestedSearch;
+      renderCategories();
+      renderMenu();
       const token = params.get('token');
       if (token) {
         state.token = token;

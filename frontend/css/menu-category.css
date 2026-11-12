@@ -22,7 +22,7 @@ a:focus-visible { outline: 3px solid #e28a34; outline-offset: 4px; }
 .category-brand img { width: 38px; height: 38px; object-fit: contain; }
 .category-header nav { display: flex; align-items: center; gap: 16px; }
 .category-header nav a, .category-order { font-size: 12px; font-weight: 700; text-decoration: none; }
-.category-back { color: #48534b; }
+.category-back { display: inline-flex; align-items: center; gap: 7px; color: #48534b; }
 .category-back:hover { color: var(--green); }
 .category-order { padding: 12px 17px; border-radius: 999px; background: var(--green); color: white; }
 .category-order:hover { background: #194b30; }
@@ -44,8 +44,6 @@ a:focus-visible { outline: 3px solid #e28a34; outline-offset: 4px; }
 .category-meal-copy p { margin: 0 0 18px; color: var(--muted); font-size: 12px; line-height: 1.6; }
 .category-meal-price { margin-top: auto; padding-top: 10px; color: var(--green); font-size: 14px; font-weight: 800; }
 .category-empty { padding: 26px; border: 1px solid var(--line); border-radius: 16px; background: white; color: var(--muted); line-height: 1.6; }
-.category-order-bottom { display: inline-flex; gap: 8px; margin-top: 26px; color: var(--green); font-size: 13px; font-weight: 800; text-decoration: none; }
-.category-order-bottom:hover { text-decoration: underline; text-underline-offset: 3px; }
 .mobile-back { display: none; }
 
 @media (max-width: 900px) {

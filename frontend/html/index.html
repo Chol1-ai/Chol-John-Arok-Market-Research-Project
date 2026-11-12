@@ -109,6 +109,9 @@
       .wrap { width: min(100% - 30px, 560px); }
       .topbar-inner { min-height: 68px; }
       .nav a:not(.button) { display: none; }
+      .brand-logo { width: 140px; }
+      .nav .nav-back { min-width: 42px; padding-inline: 0; }
+      .nav-back-label { display: none; }
       .hero { grid-template-columns: 1fr; gap: 22px; padding: 38px 0 20px; }
       h1 { max-width: 540px; }
       .section { padding-top: 38px; }
@@ -178,7 +181,7 @@
     .delivery-retry { display: block; margin: -4px 2px 6px; padding: 0; border: 0; background: none; color: var(--green); font: inherit; font-size: 10px; font-weight: 800; text-decoration: underline; cursor: pointer; }
     .delivery-retry:hover { color: #194b30; text-decoration-thickness: 2px; }
     .delivery-retry[hidden] { display: none; }
-    .browse-section { padding-top: 23px; background: linear-gradient(180deg, rgba(248,246,241,.88), rgba(250,249,245,.98)), url('/images/foodizo-landing-hero.jpg') center/cover no-repeat; }
+    .browse-section { padding-top: 23px; background: linear-gradient(180deg, rgba(248,246,241,.52), rgba(250,249,245,.68)), url('/images/foodizo-landing-hero.jpg') center/cover no-repeat; }
     .home-menu-groups { display: grid; gap: 24px; }
     .home-category-grid { align-items: stretch; }
     .home-category-card .card-media { height: 225px; }
@@ -231,6 +234,7 @@
       .customer-footer-main { grid-template-columns: 1fr; }
       .footer-brand { grid-column: auto; }
     }
+    .browse-section .section-heading { align-items: center; flex-direction: column; text-align: center; }
   </style>
 </head>
 <body id="top">
@@ -243,6 +247,10 @@
         </span>
       </a>
       <nav class="nav customer-nav" aria-label="Main navigation">
+        <a class="button button-outline nav-back" href="/order" data-customer-back aria-label="Go back">
+          <span class="material-symbols-outlined" aria-hidden="true">arrow_back</span>
+          <span class="nav-back-label">Back</span>
+        </a>
         <a href="#menu">Menu</a>
         <a href="#faq">Help</a>
         <a class="button button-primary" href="/order">Order now <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></a>
@@ -403,5 +411,6 @@
   </dialog>
   <script src="/js/menu-catalog.js?v=20261112"></script>
   <script src="/js/customer-home.js?v=20261112-2"></script>
+  <script src="/js/customer-navigation.js" defer></script>
 </body>
 </html>

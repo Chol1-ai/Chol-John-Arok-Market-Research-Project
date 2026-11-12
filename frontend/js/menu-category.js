@@ -5,7 +5,8 @@
     title: document.getElementById('category-title'),
     description: document.getElementById('category-description'),
     status: document.getElementById('category-status'),
-    items: document.getElementById('category-items')
+    items: document.getElementById('category-items'),
+    order: document.getElementById('category-order')
   };
   const requestedCategory = new URLSearchParams(location.search).get('name');
 
@@ -65,6 +66,7 @@
 
     elements.title.textContent = category.title;
     elements.description.textContent = category.description;
+    elements.order.href = `/order?${new URLSearchParams({ category: category.title }).toString()}`;
     document.title = `${category.title} | Foodizo & Obunuzi`;
     elements.status.textContent = `${category.items.length} ${category.items.length === 1 ? 'meal' : 'meals'}`;
     renderCategory(category);
