@@ -8,6 +8,7 @@
   const submit = document.getElementById('home-delivery-submit');
   const menuGroups = document.getElementById('home-menu-groups');
   let requestNumber = 0;
+  let menuRequestNumber = 0;
   let zones = [];
 
   function escapeHtml(value) {
@@ -20,20 +21,42 @@
     return `UGX ${Number(value || 0).toLocaleString('en-UG')}`;
   }
 
-  function renderCategoryCards(categories) {
+  function renderMenuGroups(items) {
+    const groups = new Map();
+    items.forEach((item) => {
+      const category = typeof item.category === 'string' && item.category.trim()
+        ? item.category
+        : 'Other';
+      if (!groups.has(category)) groups.set(category, []);
+      groups.get(category).push(item);
+    });
+
+    if (!groups.size) {
+      menuGroups.innerHTML = '<p class="section-description" role="status">No active meals are listed for this outlet.</p>';
+      return;
+    }
+
     menuGroups.innerHTML = `
       <div class="cards home-category-grid">
-        ${categories.map((category) => {
-          const params = new URLSearchParams({ name: category.title });
+        ${Array.from(groups.entries()).map(([category, categoryItems]) => {
+          const params = new URLSearchParams({ outlet: outlet.value });
+          if (category !== 'Other') params.set('category', category);
           return `
-            <a class="card home-category-card" href="/category?${escapeHtml(params.toString())}">
-              <div class="card-media">
-                <img src="${escapeHtml(category.image)}" alt="${escapeHtml(category.imageAlt)}" loading="lazy" />
-              </div>
+            <a class="card home-category-card" href="/order?${escapeHtml(params.toString())}">
               <div class="card-content">
-                <h3>${escapeHtml(category.title)}</h3>
-                <p>${escapeHtml(category.description)}</p>
-                <span class="card-link">Explore ${escapeHtml(category.title)} <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></span>
+                <h3>${escapeHtml(category)}</h3>
+                <ul class="home-category-items">
+                  ${categoryItems.map((item) => `
+                    <li>
+                      <span>
+                        ${escapeHtml(item.name)}
+                        ${item.isAvailable && !item.is86 ? '' : '<small>Temporarily unavailable</small>'}
+                      </span>
+                      <strong>${formatUgx(item.priceUgx)}</strong>
+                    </li>
+                  `).join('')}
+                </ul>
+                <span class="card-link">Browse ${escapeHtml(category)} <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></span>
               </div>
             </a>
           `;
@@ -42,7 +65,28 @@
     `;
   }
 
-  renderCategoryCards(window.FOODIZO_MENU_CATEGORIES);
+  async function loadMenu() {
+    const currentRequest = ++menuRequestNumber;
+    menuGroups.innerHTML = '<p class="section-description" role="status">Loading the current menu…</p>';
+    try {
+      const response = await fetch(
+        `/api/v1/menu-items?outlet=${encodeURIComponent(outlet.value)}`
+      );
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || `Request failed (${response.status}).`);
+      }
+      if (!Array.isArray(data.items)) {
+        throw new Error('The current menu response was invalid.');
+      }
+      if (currentRequest !== menuRequestNumber) return;
+      renderMenuGroups(data.items.filter((item) => item.isActive));
+    } catch (error) {
+      if (currentRequest !== menuRequestNumber) return;
+      menuGroups.innerHTML =
+        `<p class="section-description" role="status">Could not load the current menu: ${escapeHtml(error.message)} <a href="/order?outlet=${encodeURIComponent(outlet.value)}">Open the full menu</a>.</p>`;
+    }
+  }
 
   function updateSelection() {
     const zone = zones.find((item) => item.id === zoneSelect.value);
@@ -106,7 +150,10 @@
     }
   }
 
-  outlet.addEventListener('change', loadZones);
+  outlet.addEventListener('change', () => {
+    loadZones();
+    loadMenu();
+  });
   zoneSelect.addEventListener('change', updateSelection);
   retry.addEventListener('click', loadZones);
   document.querySelectorAll('[data-info-dialog]').forEach((link) => {
@@ -132,4 +179,5 @@
   });
 
   loadZones();
+  loadMenu();
 })();

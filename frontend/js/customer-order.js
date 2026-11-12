@@ -34,12 +34,16 @@
     search: document.getElementById('search'),
     categories: document.getElementById('categories'),
     menu: document.getElementById('menu'),
+    layout: document.querySelector('.customer-layout'),
     cartPanel: document.getElementById('cart-panel'),
     cartToggle: document.getElementById('cart-toggle'),
     cartToggleSummary: document.getElementById('cart-toggle-summary'),
     cartClose: document.getElementById('cart-close'),
+    cartTitle: document.getElementById('cart-title'),
+    cartReview: document.getElementById('cart-review'),
+    proceedToCheckout: document.getElementById('proceed-to-checkout'),
+    checkoutBack: document.getElementById('checkout-back'),
     cartLines: document.getElementById('cart-lines'),
-    cartCount: document.getElementById('cart-count'),
     cartTotal: document.getElementById('cart-total'),
     checkoutForm: document.getElementById('checkout-form'),
     submitOrder: document.getElementById('submit-order'),
@@ -209,6 +213,12 @@
       : 0;
   }
 
+  function setCheckoutStep(isCheckout) {
+    elements.cartReview.hidden = isCheckout;
+    elements.checkoutForm.hidden = !isCheckout;
+    elements.cartTitle.textContent = isCheckout ? 'Checkout' : 'Your cart';
+  }
+
   function renderCategories() {
     const categories = ['ALL', ...new Set(state.menu.map((item) => item.category).filter(Boolean))];
     if (!categories.includes(state.category)) state.category = 'ALL';
@@ -284,11 +294,21 @@
     const subtotal = lines.reduce((sum, line) => sum + line.item.priceUgx * line.quantity, 0);
     const deliveryFee = selectedDeliveryFee();
     const total = subtotal + deliveryFee;
-    elements.cartCount.textContent = String(count);
+    const hasItems = lines.length > 0;
+    elements.cartPanel.hidden = !hasItems;
+    elements.cartToggle.hidden = !hasItems;
+    elements.layout.classList.toggle('has-cart', hasItems);
+    if (!hasItems) {
+      elements.cartPanel.classList.remove('is-open');
+      document.body.classList.remove('cart-open');
+      elements.cartToggle.setAttribute('aria-expanded', 'false');
+      setCheckoutStep(false);
+    }
     elements.cartTotal.textContent = formatUgx(total);
     elements.cartToggleSummary.textContent =
       `${count} ${count === 1 ? 'item' : 'items'} · ${formatUgx(total)}`;
     elements.deliveryFee.textContent = formatUgx(deliveryFee);
+    elements.proceedToCheckout.disabled = !hasItems;
     elements.submitOrder.disabled = !lines.length ||
       (state.channel === 'PHONE_DELIVERY' && (!state.selectedZone || !state.zones.length));
     elements.cartLines.innerHTML = lines.length ? lines.map(({ item, quantity }) => `
@@ -300,7 +320,7 @@
           <button class="customer-qty-button" type="button" data-cart-change="1" data-id="${escapeHtml(item.id)}" aria-label="Add one ${escapeHtml(item.name)}">+</button>
         </span>
       </div>
-    `).join('') : '<p class="customer-empty">Your bag is empty.</p>';
+    `).join('') : '';
   }
 
   function changeQuantity(itemId, delta) {
@@ -469,6 +489,16 @@
     });
     elements.cartToggle.addEventListener('click', () => setCartOpen(true));
     elements.cartClose.addEventListener('click', () => setCartOpen(false));
+    elements.proceedToCheckout.addEventListener('click', () => {
+      if (!state.cart.size) return;
+      setCheckoutStep(true);
+      const nameField = elements.checkoutForm.querySelector('[name="customerName"]');
+      if (nameField) nameField.focus();
+    });
+    elements.checkoutBack.addEventListener('click', () => {
+      setCheckoutStep(false);
+      elements.proceedToCheckout.focus();
+    });
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape' && elements.cartPanel.classList.contains('is-open')) {
         setCartOpen(false);

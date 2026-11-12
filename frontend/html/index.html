@@ -184,11 +184,14 @@
     .browse-section { padding-top: 23px; }
     .home-menu-groups { display: grid; gap: 24px; }
     .home-category-grid { align-items: stretch; }
-    .home-category-card .card-media { height: 225px; }
-    .home-category-card .card-content { min-height: 236px; padding: 22px 24px; }
-    .home-category-card h3 { margin: 8px 0 4px; font-size: 25px; line-height: 1.25; letter-spacing: -.04em; }
-    .home-category-card p { color: var(--ink); font-size: 15px; line-height: 1.45; }
-    .home-category-card .card-link { justify-content: flex-start; margin-top: 10px; padding-top: 8px; color: #00866c; font-size: 15px; font-weight: 600; }
+    .home-category-card .card-content { min-height: 0; padding: 22px 24px; }
+    .home-category-card h3 { margin: 0; font-size: 25px; line-height: 1.25; letter-spacing: -.04em; }
+    .home-category-items { display: grid; gap: 0; margin: 12px 0 0; padding: 0; list-style: none; }
+    .home-category-items li { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); font-size: 12px; line-height: 1.5; }
+    .home-category-items li > span { min-width: 0; }
+    .home-category-items strong { flex: none; color: var(--green); white-space: nowrap; }
+    .home-category-items small { display: block; color: var(--muted); font-size: 10px; }
+    .home-category-card .card-link { justify-content: flex-start; margin-top: 10px; padding-top: 8px; color: #00866c; font-size: 13px; font-weight: 700; }
     .info-panel { padding: 25px; border: 1px solid var(--line); border-radius: 20px; background: #fffefa; }
     .info-panel > p { max-width: 800px; margin: 12px 0 0; color: var(--muted); font-size: 12px; line-height: 1.8; }
     .info-panel h3 { margin: 0; font-size: 20px; letter-spacing: -.03em; }
@@ -323,9 +326,6 @@
         <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">Instagram</a>
       </nav>
     </div>
-    <div class="customer-footer-bottom">
-      <div class="wrap"><span>Foodizo &amp; Obunuzi · Wandegeya, Kampala</span></div>
-    </div>
   </footer>
   <dialog class="info-dialog" id="about" aria-labelledby="about-title">
     <div class="info-dialog-header">
@@ -409,8 +409,7 @@
       </div>
     </div>
   </dialog>
-  <script src="/js/menu-catalog.js?v=20261112"></script>
-  <script src="/js/customer-home.js?v=20261112-2"></script>
+  <script src="/js/customer-home.js?v=20261113"></script>
   <script src="/js/customer-navigation.js" defer></script>
 </body>
 </html>

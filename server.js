@@ -62,7 +62,6 @@ const ROUTE_MAP = {
   '/boda': 'live/dispatch.html',
   '/admin': 'live/admin.html',
   '/digest': 'live/admin.html',
-  '/category': 'html/menu-category.html',
   '/order': 'live/customer-order.html',
   '/customer': 'live/customer-order.html',
   '/tracker': 'html/boda_landmark_delivery_tracker.html',
@@ -71,6 +70,7 @@ const ROUTE_MAP = {
 
 // Keep former prototype URLs usable by sending them to the live workflows.
 const LIVE_REDIRECTS = {
+  '/category': '/order',
   '/prototype': '/',
   '/prototype/': '/',
   '/prototype/customer': '/order',

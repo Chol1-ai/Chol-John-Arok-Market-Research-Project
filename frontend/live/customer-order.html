@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" />
-  <link rel="stylesheet" href="/css/customer_order.css?v=6" />
+  <link rel="stylesheet" href="/css/customer_order.css?v=7" />
   <title>Foodizo &amp; Obunuzi | Menu and Ordering</title>
 </head>
 <body>
@@ -30,7 +30,6 @@
     <div id="notice" class="customer-notice" role="status" hidden></div>
     <section id="order-screen">
       <div class="customer-intro">
-        <div class="customer-eyebrow">Foodizo &amp; Obunuzi · Wandegeya, Kampala</div>
         <h1>Order for pickup or delivery</h1>
         <p>Browse the menu and place a pickup or local delivery order. Temporarily unavailable meals stay listed so you can still see what the outlet offers.</p>
       </div>
@@ -55,23 +54,9 @@
           <input id="search" type="search" placeholder="Search the live menu" autocomplete="off" />
         </label>
       </div>
-      <div class="customer-delivery-fields" id="delivery-fields" hidden>
-        <label class="customer-field">
-          <span>Delivery area and fee</span>
-          <select id="delivery-zone" name="deliveryZoneId" form="checkout-form" disabled>
-            <option value="">Choose your delivery area</option>
-          </select>
-        </label>
-        <label class="customer-field">
-          <span>Room, office, gate, or landmark</span>
-          <input id="delivery-note" name="deliveryAddressNote" form="checkout-form" type="text" minlength="3" maxlength="160" placeholder="e.g. Mary Stuart Hall, Block B, Room 14" />
-        </label>
-        <div class="customer-zone-hint" id="delivery-zone-hint">Choose an area to see the delivery fee and estimated time.</div>
-      </div>
-
-      <button id="cart-toggle" class="customer-cart-toggle" type="button" aria-controls="cart-panel" aria-expanded="false">
+      <button id="cart-toggle" class="customer-cart-toggle" type="button" aria-controls="cart-panel" aria-expanded="false" hidden>
         <span>View cart</span>
-        <strong id="cart-toggle-summary">0 items · UGX 0</strong>
+        <strong id="cart-toggle-summary"></strong>
       </button>
 
       <div class="customer-layout">
@@ -82,26 +67,41 @@
           </div>
         </section>
 
-        <aside class="customer-cart" id="cart-panel" aria-labelledby="cart-title">
+        <aside class="customer-cart" id="cart-panel" aria-labelledby="cart-title" hidden>
           <div class="customer-cart-head">
-            <div><span class="customer-eyebrow">Your selection</span><h2 id="cart-title">Pickup bag</h2></div>
-            <span class="customer-cart-count" id="cart-count">0</span>
+            <div><h2 id="cart-title">Your cart</h2></div>
             <button id="cart-close" class="customer-cart-close" type="button" aria-label="Close cart">
               <span aria-hidden="true">×</span>
             </button>
           </div>
-          <div id="cart-lines" class="customer-cart-lines"><p class="customer-empty">Your bag is empty.</p></div>
-          <div class="customer-fee-row" id="delivery-fee-row" hidden><span>Delivery fee</span><strong id="delivery-fee">UGX 0</strong></div>
-          <div class="customer-cart-total"><span>Total</span><strong id="cart-total">UGX 0</strong></div>
-          <div class="customer-payment-note" id="payment-note">
-            <strong id="payment-note-title">Cash at the outlet counter</strong>
-            <span id="payment-note-copy">Show your pickup token and pay the full amount. Kitchen preparation starts after staff records your payment.</span>
+          <div id="cart-review">
+            <div id="cart-lines" class="customer-cart-lines"></div>
+            <button id="proceed-to-checkout" class="customer-primary-button" type="button">Proceed to checkout</button>
           </div>
-          <form id="checkout-form" class="customer-checkout">
+          <form id="checkout-form" class="customer-checkout" hidden>
+            <button id="checkout-back" class="customer-secondary-button" type="button">Back to cart</button>
+            <div class="customer-delivery-fields" id="delivery-fields" hidden>
+              <label class="customer-field">
+                <span>Delivery area and fee</span>
+                <select id="delivery-zone" name="deliveryZoneId" disabled>
+                  <option value="">Choose your delivery area</option>
+                </select>
+              </label>
+              <label class="customer-field">
+                <span>Room, office, gate, or landmark</span>
+                <input id="delivery-note" name="deliveryAddressNote" type="text" minlength="3" maxlength="160" placeholder="e.g. Mary Stuart Hall, Block B, Room 14" />
+              </label>
+              <div class="customer-zone-hint" id="delivery-zone-hint">Choose an area to see the delivery fee and estimated time.</div>
+            </div>
+            <div class="customer-fee-row" id="delivery-fee-row" hidden><span>Delivery fee</span><strong id="delivery-fee">UGX 0</strong></div>
+            <div class="customer-cart-total"><span>Total</span><strong id="cart-total">UGX 0</strong></div>
+            <div class="customer-payment-note" id="payment-note">
+              <strong id="payment-note-title">Cash at the outlet counter</strong>
+              <span id="payment-note-copy">Show your pickup token and pay the full amount. Kitchen preparation starts after staff records your payment.</span>
+            </div>
             <label class="customer-field"><span>Your name</span><input name="customerName" type="text" minlength="2" maxlength="80" autocomplete="name" required /></label>
             <label class="customer-field"><span>Mobile number</span><input name="customerPhone" type="tel" minlength="9" maxlength="20" placeholder="e.g. 0770 555 333" autocomplete="tel" required /></label>
             <button id="submit-order" class="customer-primary-button" type="submit" disabled>Place pickup order</button>
-            <p class="customer-fine-print">Prices and availability are confirmed by the restaurant when you place the order.</p>
           </form>
         </aside>
       </div>
@@ -120,7 +120,7 @@
   </main>
 
   <footer class="customer-footer">Foodizo · Ham Towers &nbsp;·&nbsp; Obunuzi · Opposite YMCA &nbsp;·&nbsp; Prices in UGX</footer>
-  <script src="/js/customer-order.js?v=3"></script>
+  <script src="/js/customer-order.js?v=4"></script>
   <script src="/js/customer-navigation.js" defer></script>
 </body>
 </html>
