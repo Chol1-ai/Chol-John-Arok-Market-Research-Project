@@ -27,7 +27,7 @@
     }
 
     * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; overflow-x: clip; }
     body { margin: 0; background: var(--paper); color: var(--ink); }
     a { color: inherit; }
     a:focus-visible { outline: 3px solid #e28a34; outline-offset: 4px; }
@@ -142,7 +142,7 @@
     .customer-nav { gap: 16px; }
     .customer-nav a:not(.button) { color: #48534b; font-size: 12px; font-weight: 700; text-decoration: none; }
     .customer-nav a:not(.button):hover { color: var(--green); }
-    .customer-hero { grid-template-columns: minmax(0, 760px); justify-content: center; min-height: 0; gap: 0; padding-block: 48px 40px; }
+    .customer-hero { grid-template-columns: minmax(0, 760px); justify-content: center; min-height: 0; gap: 0; margin-inline: calc(50% - 50vw); padding: 48px 20px 40px; background: linear-gradient(180deg, rgba(248,246,241,.62), rgba(250,249,245,.76)), url('/images/foodizo-landing-hero.jpg') center/cover no-repeat; }
     .customer-hero > :first-child { text-align: center; }
     .customer-hero h1 { margin: 18px auto 16px; font-size: clamp(42px, 5.2vw, 66px); }
     .customer-hero .hero-actions, .customer-hero .locations { justify-content: center; }
@@ -181,7 +181,7 @@
     .delivery-retry { display: block; margin: -4px 2px 6px; padding: 0; border: 0; background: none; color: var(--green); font: inherit; font-size: 10px; font-weight: 800; text-decoration: underline; cursor: pointer; }
     .delivery-retry:hover { color: #194b30; text-decoration-thickness: 2px; }
     .delivery-retry[hidden] { display: none; }
-    .browse-section { padding-top: 23px; background: linear-gradient(180deg, rgba(248,246,241,.52), rgba(250,249,245,.68)), url('/images/foodizo-landing-hero.jpg') center/cover no-repeat; }
+    .browse-section { padding-top: 23px; }
     .home-menu-groups { display: grid; gap: 24px; }
     .home-category-grid { align-items: stretch; }
     .home-category-card .card-media { height: 225px; }
