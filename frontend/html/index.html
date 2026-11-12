@@ -61,10 +61,6 @@
     .location-chip .material-symbols-outlined { color: var(--red); font-size: 15px; }
     .hero-photo { position: relative; min-height: 330px; overflow: hidden; border-radius: 26px; background: #d9cdb9; box-shadow: 0 22px 50px rgba(50, 42, 30, .14); }
     .hero-photo img { position: absolute; width: 100%; height: 100%; inset: 0; object-fit: cover; }
-    .photo-caption { position: absolute; right: 16px; bottom: 16px; left: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 15px; border: 1px solid rgba(255,255,255,.44); border-radius: 16px; background: rgba(28, 35, 29, .72); color: white; backdrop-filter: blur(10px); }
-    .photo-caption strong { display: block; font-size: 12px; }
-    .photo-caption span { display: block; margin-top: 3px; color: rgba(255,255,255,.78); font-size: 10px; }
-    .photo-caption .material-symbols-outlined { color: #ffd18a; font-size: 21px; }
 
     .section { padding: 52px 0 24px; scroll-margin-top: 90px; }
     .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 23px; }
@@ -153,7 +149,6 @@
     .customer-hero .hero-copy { margin: 0; }
     .customer-hero .hero-actions, .customer-hero .locations { justify-content: flex-start; }
     .customer-hero .hero-photo { min-height: 390px; }
-    .customer-hero .photo-caption { right: 20px; bottom: 20px; left: 20px; }
     .customer-section { padding-top: 40px; }
     .customer-section .section-heading { align-items: end; }
     .customer-section .section-kicker { color: var(--green); }
@@ -199,11 +194,6 @@
     .home-category-card h3 { margin: 8px 0 4px; font-size: 25px; line-height: 1.25; letter-spacing: -.04em; }
     .home-category-card p { color: var(--ink); font-size: 15px; line-height: 1.45; }
     .home-category-card .card-link { justify-content: flex-start; margin-top: 10px; padding-top: 8px; color: #00866c; font-size: 15px; font-weight: 600; }
-    .customer-benefits { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 29px; }
-    .benefit { display: flex; align-items: center; gap: 11px; padding: 15px; border: 1px solid var(--line); border-radius: 16px; background: rgba(255,255,255,.55); }
-    .benefit .material-symbols-outlined { color: var(--green); font-size: 22px; }
-    .benefit strong { display: block; font-size: 11px; }
-    .benefit span:not(.material-symbols-outlined) { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; line-height: 1.5; }
     .info-panel { padding: 25px; border: 1px solid var(--line); border-radius: 20px; background: #fffefa; }
     .info-panel > p { max-width: 800px; margin: 12px 0 0; color: var(--muted); font-size: 12px; line-height: 1.8; }
     .info-panel h3 { margin: 0; font-size: 20px; letter-spacing: -.03em; }
@@ -239,7 +229,6 @@
     @media (max-width: 700px) {
       .customer-hero { grid-template-columns: 1fr; gap: 24px; padding-top: 34px; }
       .customer-hero .hero-photo { min-height: 280px; }
-      .customer-benefits { grid-template-columns: 1fr; gap: 9px; }
       .customer-footer-main { grid-template-columns: 1fr 1fr; gap: 25px 20px; }
       .footer-brand { grid-column: 1 / -1; }
     }
@@ -298,10 +287,6 @@
       </div>
       <div class="hero-photo">
         <img src="../images/foodizo-landing-hero.jpg" alt="Meals available at Foodizo and Obunuzi in Wandegeya" fetchpriority="high" />
-        <div class="photo-caption">
-          <div><strong>Foodizo and Obunuzi</strong><span>Two Wandegeya restaurant locations</span></div>
-          <span class="material-symbols-outlined" aria-hidden="true">lunch_dining</span>
-        </div>
       </div>
     </section>
 
@@ -315,11 +300,6 @@
       </div>
       <div id="home-menu-groups" class="home-menu-groups" aria-live="polite">
         <p class="section-description" role="status">Loading food categories…</p>
-      </div>
-      <div class="customer-benefits" aria-label="Ordering details">
-        <div class="benefit"><span class="material-symbols-outlined" aria-hidden="true">storefront</span><div><strong>Pickup or delivery</strong><span>Choose how to receive your order.</span></div></div>
-        <div class="benefit"><span class="material-symbols-outlined" aria-hidden="true">payments</span><div><strong>Cash payment</strong><span>Pay at the counter or to the rider.</span></div></div>
-        <div class="benefit"><span class="material-symbols-outlined" aria-hidden="true">receipt_long</span><div><strong>Follow your order</strong><span>Use your token to check its status.</span></div></div>
       </div>
     </section>
 
