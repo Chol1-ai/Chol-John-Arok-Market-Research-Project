@@ -4,31 +4,35 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#f8f6f1" />
-  <meta name="description" content="Browse current menu items from Foodizo and Obunuzi." />
   <title>Current menu | Foodizo &amp; Obunuzi</title>
   <link rel="icon" type="image/svg+xml" href="/images/foodizo-brand-mark.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" />
-  <link rel="stylesheet" href="/css/customer_order.css?v=7" />
+  <link rel="stylesheet" href="/css/customer_order.css?v=8" />
 </head>
 <body>
   <header class="customer-topbar">
     <a class="customer-brand" href="/" aria-label="Foodizo and Obunuzi home">
       <img src="/images/foodizo-obunuzi-logo.svg" alt="Foodizo and Obunuzi" />
     </a>
-    <a class="customer-back-link" href="/" data-customer-back>
-      <span aria-hidden="true">←</span>
-      <span>Back</span>
-    </a>
+    <div class="customer-topbar-actions">
+      <a class="customer-cart-nav" href="/order#cart" data-customer-cart aria-label="Open cart">
+        <span class="material-symbols-outlined" aria-hidden="true">shopping_cart</span>
+        <span>Cart</span>
+        <span class="customer-cart-nav-count" data-customer-cart-count hidden></span>
+      </a>
+      <a class="customer-back-link" href="/" data-customer-back>
+        <span aria-hidden="true">←</span>
+        <span>Back</span>
+      </a>
+    </div>
   </header>
   <main class="customer-main">
-    <section class="customer-intro">
-      <h1>Current menu</h1>
-      <p>Opening the current restaurant menu… <a href="/order">Continue to all meals</a>.</p>
-    </section>
+    <section class="customer-intro"><h1>Current menu</h1></section>
   </main>
   <script src="/js/menu-category.js?v=20261113"></script>
+  <script src="/js/customer-cart-navigation.js?v=1" defer></script>
   <script src="/js/customer-navigation.js" defer></script>
 </body>
 </html>

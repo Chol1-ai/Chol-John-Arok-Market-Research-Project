@@ -74,9 +74,24 @@
       line.textContent = `${item.quantity} × ${item.name}`;
       elements.items.appendChild(line);
     });
-    elements.updated.textContent = `Last updated ${new Date().toLocaleTimeString()}. Status refreshes automatically.`;
+    elements.updated.textContent = `Updated ${new Date().toLocaleTimeString()}`;
     elements.result.hidden = false;
     elements.refresh.disabled = false;
+
+    if (window.FoodizoReadyNotifications) {
+      const activeOrder = {
+        token: data.token || token,
+        outlet: data.outlet || outlet,
+        channel: data.channel,
+        createdAt: data.createdAt
+      };
+      if (status === 'READY') window.FoodizoReadyNotifications.notifyReady(activeOrder);
+      if (status === 'COMPLETED' || status === 'CANCELLED') {
+        window.FoodizoReadyNotifications.clearActiveOrder(token, outlet);
+      } else {
+        window.FoodizoReadyNotifications.setActiveOrder(activeOrder);
+      }
+    }
 
     if (status === 'COMPLETED' || status === 'CANCELLED') {
       if (pollTimer) window.clearInterval(pollTimer);

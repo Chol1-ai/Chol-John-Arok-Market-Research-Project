@@ -6,6 +6,7 @@
     OBUNUZI_YMCA: 'Obunuzi · Opposite YMCA'
   };
   const CART_STORAGE_PREFIX = 'foodizo-customer-cart-v1:';
+  const LAST_OUTLET_STORAGE_KEY = 'foodizo-customer-last-outlet';
   const state = {
     outlet: 'FOODIZO_HAM_TOWERS',
     channel: 'TAKEAWAY_PICKUP',
@@ -26,16 +27,14 @@
     deliveryFields: document.getElementById('delivery-fields'),
     deliveryZone: document.getElementById('delivery-zone'),
     deliveryNote: document.getElementById('delivery-note'),
-    deliveryZoneHint: document.getElementById('delivery-zone-hint'),
     deliveryFeeRow: document.getElementById('delivery-fee-row'),
     deliveryFee: document.getElementById('delivery-fee'),
-    paymentNoteTitle: document.getElementById('payment-note-title'),
-    paymentNoteCopy: document.getElementById('payment-note-copy'),
     search: document.getElementById('search'),
     categories: document.getElementById('categories'),
     menu: document.getElementById('menu'),
     layout: document.querySelector('.customer-layout'),
     cartPanel: document.getElementById('cart-panel'),
+    cartNav: document.querySelector('[data-customer-cart]'),
     cartToggle: document.getElementById('cart-toggle'),
     cartToggleSummary: document.getElementById('cart-toggle-summary'),
     cartClose: document.getElementById('cart-close'),
@@ -114,6 +113,24 @@
     }
   }
 
+  function persistLastOutlet() {
+    try {
+      localStorage.setItem(LAST_OUTLET_STORAGE_KEY, state.outlet);
+    } catch (error) {
+      showNotice(`Could not save your selected outlet: ${error.message}`);
+    }
+  }
+
+  function saveActiveOrder() {
+    if (window.FoodizoReadyNotifications && state.token) {
+      window.FoodizoReadyNotifications.setActiveOrder({
+        token: state.token,
+        outlet: state.outlet,
+        channel: state.channel
+      });
+    }
+  }
+
   function restoreCart() {
     let saved;
     try {
@@ -183,9 +200,6 @@
         `<option value="${escapeHtml(zone.id)}">${escapeHtml(zone.name)} · ${formatUgx(zone.feeUgx)}</option>`
       ).join('');
     elements.deliveryZone.disabled = state.zones.length === 0;
-    elements.deliveryZoneHint.textContent = state.zones.length
-      ? 'Choose an area to see the delivery fee and estimated time.'
-      : 'No delivery areas are currently available at this outlet.';
     renderCart();
   }
 
@@ -197,12 +211,6 @@
     elements.deliveryZone.required = isDelivery;
     elements.deliveryNote.required = isDelivery;
     elements.deliveryFeeRow.hidden = !isDelivery;
-    elements.paymentNoteTitle.textContent = isDelivery
-      ? 'Cash on delivery'
-      : 'Cash at the outlet counter';
-    elements.paymentNoteCopy.textContent = isDelivery
-      ? 'Pay the full amount, including the delivery fee, to the rider at handoff. The kitchen starts preparing your order right away.'
-      : 'Show your pickup token and pay the full amount. Kitchen preparation starts after staff records your payment.';
     elements.submitOrder.textContent = isDelivery ? 'Place delivery order' : 'Place pickup order';
     renderCart();
   }
@@ -237,10 +245,10 @@
     if (!items.length) {
       const filter = query || (state.category !== 'ALL' ? state.category : null);
       const message = filter
-        ? `No menu items match “${filter}” at this outlet.`
-        : 'No menu items are currently available at this outlet.';
+        ? `No items match “${filter}”.`
+        : 'No menu items available.';
       elements.menu.innerHTML =
-        `<div class="customer-empty">${escapeHtml(message)} Try another category or outlet.</div>`;
+        `<div class="customer-empty">${escapeHtml(message)}</div>`;
       return;
     }
     elements.menu.innerHTML = items.map((item) => {
@@ -311,6 +319,7 @@
     elements.proceedToCheckout.disabled = !hasItems;
     elements.submitOrder.disabled = !lines.length ||
       (state.channel === 'PHONE_DELIVERY' && (!state.selectedZone || !state.zones.length));
+    document.dispatchEvent(new Event('customer-cart-change'));
     elements.cartLines.innerHTML = lines.length ? lines.map(({ item, quantity }) => `
       <div class="customer-cart-line">
         <span class="customer-cart-line-name">${escapeHtml(item.name)}</span>
@@ -341,6 +350,16 @@
     else elements.cartToggle.focus();
   }
 
+  function openCartFromNav() {
+    if (!state.cart.size) {
+      showNotice('Your cart is empty.');
+      return;
+    }
+    setCheckoutStep(false);
+    setCartOpen(true);
+    elements.cartPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
   async function submitOrder(event) {
     event.preventDefault();
     hideNotice();
@@ -369,6 +388,7 @@
         throw new Error('The order was accepted but no pickup token was returned. Please ask staff for help.');
       }
       state.token = data.order.tokenNumber;
+      saveActiveOrder();
       state.cart.clear();
       persistCart();
       history.replaceState(null, '', `/order?token=${encodeURIComponent(state.token)}&outlet=${encodeURIComponent(state.outlet)}`);
@@ -439,6 +459,19 @@
     elements.trackingTitle.textContent = statusLabel;
     elements.trackingTokenLabel.textContent = isDelivery ? 'Delivery token' : 'Pickup token';
     document.title = `${statusLabel} | Foodizo & Obunuzi`;
+    if (window.FoodizoReadyNotifications) {
+      if (deliveryStatus === 'READY') {
+        window.FoodizoReadyNotifications.notifyReady({
+          token: data.token || state.token,
+          outlet: state.outlet,
+          channel: state.channel,
+          createdAt: data.createdAt
+        });
+      }
+      if (deliveryStatus === 'COMPLETED' || deliveryStatus === 'CANCELLED') {
+        window.FoodizoReadyNotifications.clearActiveOrder(state.token, state.outlet);
+      }
+    }
     if (data.status === 'CANCELLED' || data.status === 'COMPLETED') {
       clearInterval(state.pollTimer);
       state.pollTimer = null;
@@ -460,15 +493,13 @@
   function wireEvents() {
     elements.outlet.addEventListener('change', async () => {
       state.outlet = elements.outlet.value;
+      persistLastOutlet();
       hideNotice();
       try { await Promise.all([loadMenu(), loadZones()]); } catch (error) { showNotice(error.message); }
     });
     elements.fulfillment.addEventListener('change', updateFulfillment);
     elements.deliveryZone.addEventListener('change', () => {
       state.selectedZone = state.zones.find((zone) => zone.id === elements.deliveryZone.value) || null;
-      elements.deliveryZoneHint.textContent = state.selectedZone
-        ? `${state.selectedZone.landmarkHint || state.selectedZone.landmarkGroup} · ${state.selectedZone.etaMinMinutes}–${state.selectedZone.etaMaxMinutes} min`
-        : 'Choose an area to see the delivery fee and estimated time.';
       renderCart();
     });
     elements.search.addEventListener('input', renderMenu);
@@ -489,6 +520,19 @@
     });
     elements.cartToggle.addEventListener('click', () => setCartOpen(true));
     elements.cartClose.addEventListener('click', () => setCartOpen(false));
+    elements.cartNav.addEventListener('click', (event) => {
+      if (location.pathname !== '/order' || new URLSearchParams(location.search).has('token')) return;
+      event.preventDefault();
+      const currentUrl = new URL(location.href);
+      currentUrl.hash = 'cart';
+      history.replaceState(null, '', `${currentUrl.pathname}${currentUrl.search}${currentUrl.hash}`);
+      openCartFromNav();
+    });
+    window.addEventListener('hashchange', () => {
+      if (location.hash === '#cart' && !new URLSearchParams(location.search).has('token')) {
+        openCartFromNav();
+      }
+    });
     elements.proceedToCheckout.addEventListener('click', () => {
       if (!state.cart.size) return;
       setCheckoutStep(true);
@@ -517,8 +561,18 @@
     const requestedOutlet = params.get('outlet');
     if (requestedOutlet && Object.prototype.hasOwnProperty.call(OUTLET_LABEL, requestedOutlet)) {
       state.outlet = requestedOutlet;
-      elements.outlet.value = requestedOutlet;
+    } else {
+      try {
+        const savedOutlet = localStorage.getItem(LAST_OUTLET_STORAGE_KEY);
+        if (savedOutlet && Object.prototype.hasOwnProperty.call(OUTLET_LABEL, savedOutlet)) {
+          state.outlet = savedOutlet;
+        }
+      } catch (error) {
+        showNotice(`Could not restore your selected outlet: ${error.message}`);
+      }
     }
+    elements.outlet.value = state.outlet;
+    persistLastOutlet();
     const requestedFulfillment = params.get('fulfillment');
     if (requestedFulfillment === 'TAKEAWAY_PICKUP' || requestedFulfillment === 'PHONE_DELIVERY') {
       elements.fulfillment.value = requestedFulfillment;
@@ -530,11 +584,6 @@
       if (requestedZoneId && state.channel === 'PHONE_DELIVERY') {
         state.selectedZone = state.zones.find((zone) => zone.id === requestedZoneId) || null;
         elements.deliveryZone.value = state.selectedZone ? state.selectedZone.id : '';
-        if (state.selectedZone) {
-          elements.deliveryZoneHint.textContent =
-            `${state.selectedZone.landmarkHint || state.selectedZone.landmarkGroup} · ` +
-            `${state.selectedZone.etaMinMinutes}–${state.selectedZone.etaMaxMinutes} min`;
-        }
       }
       const requestedCategory = params.get('category');
       if (requestedCategory && state.menu.some((item) => item.category === requestedCategory)) {
@@ -547,10 +596,12 @@
       const token = params.get('token');
       if (token) {
         state.token = token;
+        saveActiveOrder();
         showTrackingScreen();
         await refreshTracking();
       } else {
         updateFulfillment();
+        if (location.hash === '#cart') openCartFromNav();
       }
     } catch (error) {
       showNotice(error.message || 'Could not load the restaurant menu.');

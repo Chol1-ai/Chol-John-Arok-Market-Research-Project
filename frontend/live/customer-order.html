@@ -4,12 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#f8f6f1" />
-  <meta name="description" content="Browse the Foodizo and Obunuzi menu and order pickup or local delivery in Wandegeya, Kampala." />
   <link rel="icon" type="image/svg+xml" href="/images/foodizo-brand-mark.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" />
-  <link rel="stylesheet" href="/css/customer_order.css?v=7" />
+  <link rel="stylesheet" href="/css/customer_order.css?v=8" />
   <title>Foodizo &amp; Obunuzi | Menu and Ordering</title>
 </head>
 <body>
@@ -18,6 +17,11 @@
       <img src="/images/foodizo-obunuzi-logo.svg" alt="Foodizo and Obunuzi" />
     </a>
     <div class="customer-topbar-actions">
+      <a class="customer-cart-nav" href="/order#cart" data-customer-cart aria-label="Open cart">
+        <span class="material-symbols-outlined" aria-hidden="true">shopping_cart</span>
+        <span>Cart</span>
+        <span class="customer-cart-nav-count" data-customer-cart-count hidden></span>
+      </a>
       <a class="customer-back-link" href="/" data-customer-back>
         <span aria-hidden="true">←</span>
         <span>Back</span>
@@ -31,7 +35,6 @@
     <section id="order-screen">
       <div class="customer-intro">
         <h1>Order for pickup or delivery</h1>
-        <p>Browse the menu and place a pickup or local delivery order. Temporarily unavailable meals stay listed so you can still see what the outlet offers.</p>
       </div>
 
       <div class="customer-controls">
@@ -91,14 +94,9 @@
                 <span>Room, office, gate, or landmark</span>
                 <input id="delivery-note" name="deliveryAddressNote" type="text" minlength="3" maxlength="160" placeholder="e.g. Mary Stuart Hall, Block B, Room 14" />
               </label>
-              <div class="customer-zone-hint" id="delivery-zone-hint">Choose an area to see the delivery fee and estimated time.</div>
             </div>
             <div class="customer-fee-row" id="delivery-fee-row" hidden><span>Delivery fee</span><strong id="delivery-fee">UGX 0</strong></div>
             <div class="customer-cart-total"><span>Total</span><strong id="cart-total">UGX 0</strong></div>
-            <div class="customer-payment-note" id="payment-note">
-              <strong id="payment-note-title">Cash at the outlet counter</strong>
-              <span id="payment-note-copy">Show your pickup token and pay the full amount. Kitchen preparation starts after staff records your payment.</span>
-            </div>
             <label class="customer-field"><span>Your name</span><input name="customerName" type="text" minlength="2" maxlength="80" autocomplete="name" required /></label>
             <label class="customer-field"><span>Mobile number</span><input name="customerPhone" type="tel" minlength="9" maxlength="20" placeholder="e.g. 0770 555 333" autocomplete="tel" required /></label>
             <button id="submit-order" class="customer-primary-button" type="submit" disabled>Place pickup order</button>
@@ -119,8 +117,9 @@
     </section>
   </main>
 
-  <footer class="customer-footer">Foodizo · Ham Towers &nbsp;·&nbsp; Obunuzi · Opposite YMCA &nbsp;·&nbsp; Prices in UGX</footer>
-  <script src="/js/customer-order.js?v=4"></script>
+  <script src="/js/customer-cart-navigation.js?v=1" defer></script>
+  <script src="/js/customer-notifications.js?v=1" defer></script>
+  <script src="/js/customer-order.js?v=6" defer></script>
   <script src="/js/customer-navigation.js" defer></script>
 </body>
 </html>

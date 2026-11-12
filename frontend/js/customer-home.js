@@ -7,9 +7,23 @@
   const retry = document.getElementById('home-zone-retry');
   const submit = document.getElementById('home-delivery-submit');
   const menuGroups = document.getElementById('home-menu-groups');
+  const allMealsLink = document.getElementById('see-all-meals');
+  const OUTLETS = new Set(['FOODIZO_HAM_TOWERS', 'OBUNUZI_YMCA']);
   let requestNumber = 0;
   let menuRequestNumber = 0;
   let zones = [];
+
+  const requestedOutlet = new URLSearchParams(location.search).get('outlet');
+  if (requestedOutlet && OUTLETS.has(requestedOutlet)) {
+    outlet.value = requestedOutlet;
+  } else {
+    try {
+      const savedOutlet = localStorage.getItem('foodizo-customer-last-outlet');
+      if (savedOutlet && OUTLETS.has(savedOutlet)) outlet.value = savedOutlet;
+    } catch (error) {
+      console.error('Could not restore the selected restaurant outlet.', error);
+    }
+  }
 
   function escapeHtml(value) {
     return String(value == null ? '' : value).replace(/[&<>"']/g, (character) => ({
@@ -100,6 +114,10 @@
     }
   }
 
+  function updateAllMealsLink() {
+    allMealsLink.href = `/order?outlet=${encodeURIComponent(outlet.value)}`;
+  }
+
   async function loadZones() {
     const currentRequest = ++requestNumber;
     zoneSelect.disabled = true;
@@ -151,6 +169,7 @@
   }
 
   outlet.addEventListener('change', () => {
+    updateAllMealsLink();
     loadZones();
     loadMenu();
   });
@@ -178,6 +197,7 @@
     window.location.assign(`/order?${params.toString()}`);
   });
 
+  updateAllMealsLink();
   loadZones();
   loadMenu();
 })();

@@ -47,6 +47,7 @@
     .nav-inner { display: flex; width: min(100%, 448px); justify-content: space-around; }
     nav a { display: flex; min-width: 70px; min-height: 48px; flex-direction: column; align-items: center; justify-content: center; gap: .2rem; color: #68716b; font-size: .65rem; font-weight: 600; }
     nav a[aria-current="page"] { color: #b70011; }
+    .customer-cart-nav-count { min-width: 16px; height: 16px; display: inline-grid; place-items: center; padding: 0 4px; border-radius: 999px; background: #c83d2d; color: #fff; font-size: .55rem; font-weight: 800; }
     nav .material-symbols-outlined, .home-link .material-symbols-outlined { font-size: 22px; }
     a:focus-visible { outline: 3px solid #e28a34; outline-offset: 3px; }
   </style>
@@ -62,12 +63,10 @@
     <main>
       <span class="eyebrow">Live order tracking</span>
       <h1>Track your order</h1>
-      <p class="intro">Enter the token from your order confirmation to see pickup or delivery progress.</p>
       <div id="tracker-notice" class="tracker-notice" role="status" hidden></div>
       <section class="empty-card tracker-card">
         <img class="bike-image" src="../images/royal-farms-boda.jpg" alt="Royal Farms-branded motorcycle ready for Kampala delivery" />
         <h2>Find your order</h2>
-        <p class="message">Your token is shown after you place an order. Choose the outlet where you ordered.</p>
         <form id="tracker-form" class="tracker-form">
           <label for="tracker-token">Order token</label>
           <input id="tracker-token" name="token" type="text" inputmode="text" autocomplete="off" maxlength="24" placeholder="e.g. #012" required />
@@ -96,9 +95,12 @@
       <a href="/order"><span class="material-symbols-outlined" aria-hidden="true">restaurant</span><span>Order</span></a>
       <a href="/tracker"><span class="material-symbols-outlined" aria-hidden="true">confirmation_number</span><span>Track</span></a>
       <a aria-current="page" href="/tracker"><span class="material-symbols-outlined" aria-hidden="true">two_wheeler</span><span>Delivery</span></a>
+      <a href="/order#cart" data-customer-cart aria-label="Open cart"><span class="material-symbols-outlined" aria-hidden="true">shopping_cart</span><span>Cart</span><span class="customer-cart-nav-count" data-customer-cart-count hidden></span></a>
     </div>
   </nav>
+  <script src="/js/customer-cart-navigation.js?v=1" defer></script>
+  <script src="/js/customer-notifications.js?v=1" defer></script>
   <script src="/js/customer-navigation.js" defer></script>
-  <script src="/js/customer-tracker.js" defer></script>
+  <script src="/js/customer-tracker.js?v=2" defer></script>
 </body>
 </html>
