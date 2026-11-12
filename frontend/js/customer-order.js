@@ -63,6 +63,10 @@
   }
 
   function defaultMealImage(item) {
+    const itemImages = window.FOODIZO_MENU_ITEM_IMAGES || {};
+    if (Object.prototype.hasOwnProperty.call(itemImages, item.name)) {
+      return itemImages[item.name];
+    }
     const categories = window.FOODIZO_MENU_CATEGORIES || [];
     const category = categories.find((entry) => entry.name === item.category);
     return category ? category.image : null;
