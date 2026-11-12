@@ -102,10 +102,10 @@ The end-to-end technical and operational specifications are organized into clean
 | Boda dispatch queue | `/dispatch` | `WAITER_FOH`, `MANAGER_ADMIN` |
 | Manager audit & digest | `/admin` | `MANAGER_ADMIN` |
 
-The launch hub at `/` links to live customer ordering, checkout, token lookup, delivery tracking, and role-protected staff workspaces. Former `/prototype/*` links redirect to the corresponding live workflow; no static screen mock is served from those routes.
+The customer homepage at `/` starts with outlet-specific delivery-area selection and displays 13 curated menu-category cards. Selecting a category opens `/category?name=...`, where its listed dishes appear with images, descriptions, and prices. `/order` remains the separate live outlet-menu checkout flow. Customers can also open delivery checkout with a chosen zone and track orders at `/tracker`. Staff sign in separately at `/staff` (also `/login`); staff workspaces remain role-protected. Former `/prototype/*` links redirect to the corresponding live workflow.
 
 * **[Frontend Architecture Guide](frontend/README.md)** — Master index of live surfaces, legacy design assets, modular stylesheets, and design tokens.
-* **[Frontend HTML Screens](frontend/html/README.md)** (`frontend/html/`) — Live launch hub, staff sign-in, and customer tracking screens.
+* **[Frontend HTML Screens](frontend/html/README.md)** (`frontend/html/`) — Customer homepage, staff sign-in, and customer tracking screens.
 * **[Live Surface Scripts](frontend/js/)** (`frontend/js/`) — API client, session guard, role routing, and the POS/KDS/dispatch/admin controllers.
 * **[Live Surface Screens](frontend/live/)** (`frontend/live/`) — API-backed HTML for `/pos`, `/kds`, `/dispatch`, and `/admin`.
 * **[Modular CSS Stylesheets](frontend/css/README.md)** (`frontend/css/`) — 1-to-1 matching companion CSS files plus the shared `theme_tokens.css` and `live_surfaces.css`.

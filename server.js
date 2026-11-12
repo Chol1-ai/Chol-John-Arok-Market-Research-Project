@@ -7,7 +7,7 @@
  * Usage: node server.js [port]
  *
  * Canonical staff routes serve the live API-backed surfaces:
- *   /login /pos /kds /dispatch /admin
+ *   /staff /login /pos /kds /dispatch /admin
  *
  * Former /prototype/* URLs redirect to live customer or staff workflows.
  *
@@ -45,13 +45,13 @@ const MIME_TYPES = {
   '.ttf': 'font/ttf'
 };
 
-// Live staff/customer surfaces and the launch hub.
+// Public customer pages and role-protected staff surfaces.
 const ROUTE_MAP = {
-  // The launch hub explains which surfaces are live and which are prototypes.
   '/': 'html/index.html',
   '/hub': 'html/index.html',
 
   // Canonical live staff surfaces (API-backed).
+  '/staff': 'html/staff_terminal_pin_login.html',
   '/login': 'html/staff_terminal_pin_login.html',
   '/terminal': 'html/staff_terminal_pin_login.html',
   '/pos': 'live/pos.html',
@@ -62,6 +62,7 @@ const ROUTE_MAP = {
   '/boda': 'live/dispatch.html',
   '/admin': 'live/admin.html',
   '/digest': 'live/admin.html',
+  '/category': 'html/menu-category.html',
   '/order': 'live/customer-order.html',
   '/customer': 'live/customer-order.html',
   '/tracker': 'html/boda_landmark_delivery_tracker.html',
@@ -204,7 +205,7 @@ function renderNotFound(res, pathname) {
             • <a href="/admin">Manager EOD Audit</a>
           </div>
           <div><strong>Live Customer Workflows:</strong><br>
-            • <a href="/">Launch hub</a><br>
+            • <a href="/">Customer home</a><br>
             • <a href="/order">Menu, ordering &amp; checkout</a><br>
             • <a href="/tracker">Order token &amp; tracking</a><br>
             • <a href="/customer">Customer ordering</a>
@@ -338,6 +339,6 @@ server.listen(PORT, '0.0.0.0', () => {
   console.log(`   Customer ordering:     http://localhost:${PORT}/order`);
   console.log(`   Order tracker:         http://localhost:${PORT}/tracker`);
   console.log('Former /prototype/* URLs redirect to live surfaces.');
-  console.log(`   Launch hub:             http://localhost:${PORT}/`);
+  console.log(`   Customer home:          http://localhost:${PORT}/`);
   console.log('===============================================================\n');
 });

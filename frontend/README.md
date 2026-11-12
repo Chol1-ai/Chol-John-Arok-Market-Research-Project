@@ -22,11 +22,16 @@ frontend/
 │   ├── pos.js                                              # Tables, menu, order creation, items, settle, cancel
 │   ├── kds.js                                              # Ticket polling, claim, bump
 │   ├── dispatch.js                                         # Active/review queues, rider assign, delivery outcome
-│   └── admin.js                                            # Digest overview, cash count, surplus, dispatch-now
+│   ├── admin.js                                            # Digest overview, cash count, surplus, dispatch-now
+│   ├── menu-catalog.js                                     # Curated 13-category browse catalog and listing details
+│   ├── customer-home.js                                    # Homepage category cards and delivery-area chooser
+│   ├── menu-category.js                                    # Category cards with item photos, descriptions, and prices
+│   └── customer-order.js                                   # Customer menu, checkout, and tracking
 │
 ├── html/                                                   # Live hub/login/tracker + retained legacy design assets
 │   ├── README.md                                           # Screen routes and companion stylesheet map
-│   ├── index.html                                          # Launch hub at /
+│   ├── index.html                                          # Customer homepage at /
+│   ├── menu-category.html                                  # /category — curated category listings
 │   ├── staff_terminal_pin_login.html                       # Surface 1: live staff PIN gateway (/login)
 │   ├── customer_pwa_landing_page.html                      # Retained legacy customer design (not routed)
 │   ├── campus_pre_order_menu.html                          # Retained legacy menu design (not routed)
@@ -53,7 +58,7 @@ frontend/
 │   ├── foh_boda_dispatch_delivery_queue.css                # Companion styles for Surface 5
 │   └── manager_admin_eod_surplus_audit_digest.css          # Companion styles for Surface 6
 │
-├── images/                                                 # High-resolution screen capture previews (.png)
+├── images/                                                 # Menu photos, category illustrations, and previews
 │   ├── staff_terminal_pin_login.png
 │   ├── customer_pwa_landing_page.png
 │   ├── campus_pre_order_menu.png
@@ -85,7 +90,7 @@ Customer ordering is live at `/order` and `/customer`; token lookup and status t
 
 The login page accepts a staff member's registered mobile number and PIN; it does not display a public staff directory. PIN attempts are rate-limited by source IP and account failures are serialized before lockout updates. Other live pages use the shared [`js/api.js`](js/api.js) client, which relies on the HttpOnly `foodizo_session` cookie with a Bearer-token fallback.
 
-The launch hub at `/` links directly to the live customer and staff workflows.
+The customer homepage at `/` displays 13 curated menu-category cards. Selecting a card opens `/category?name=...`, where its specified dishes are shown with photos, descriptions, and prices. The separate `/order` flow continues to load the live outlet menu for checkout. The homepage also provides a delivery-area selector, restaurant locations, FAQ, and ordering terms. Delivery-area selection carries the outlet and zone into `/order`; pickup menus remain available without selecting a zone. Staff sign in separately at `/staff` (also `/login`); the page does not link to staff workspaces.
 
 ---
 

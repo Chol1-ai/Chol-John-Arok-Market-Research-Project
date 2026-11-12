@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f8f6f1" />
+  <meta name="description" content="Explore meals and prices from Foodizo and Obunuzi." />
+  <title>Menu category | Foodizo &amp; Obunuzi</title>
+  <link rel="icon" type="image/svg+xml" href="/images/foodizo-brand-mark.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" />
+  <link rel="stylesheet" href="/css/menu-category.css?v=20261112" />
+</head>
+<body>
+  <header class="category-header">
+    <div class="category-wrap category-header-inner">
+      <a class="category-brand" href="/" aria-label="Foodizo and Obunuzi home">
+        <img src="/images/foodizo-brand-mark.svg" alt="" />
+        <span>Foodizo <span aria-hidden="true">&amp;</span> Obunuzi</span>
+      </a>
+      <nav aria-label="Main navigation">
+        <a class="category-back" href="/">All categories</a>
+        <a class="category-order" href="/order">Order now</a>
+      </nav>
+    </div>
+  </header>
+  <main class="category-wrap category-main">
+    <a class="category-back mobile-back" href="/"><span aria-hidden="true">←</span> All categories</a>
+    <div class="category-heading">
+      <span class="category-kicker">Foodizo &amp; Obunuzi · Wandegeya</span>
+      <h1 id="category-title">Explore the menu</h1>
+      <p id="category-description">Browse dishes from our restaurants, with current prices and availability.</p>
+    </div>
+    <div id="category-status" class="category-status" role="status" aria-live="polite">Loading menu…</div>
+    <div id="category-items" class="category-grid" aria-live="polite"></div>
+    <a class="category-order-bottom" href="/order">Browse all meals and place an order <span aria-hidden="true">→</span></a>
+  </main>
+  <script src="/js/menu-catalog.js?v=20261112"></script>
+  <script src="/js/menu-category.js?v=20261112-3"></script>
+</body>
+</html>

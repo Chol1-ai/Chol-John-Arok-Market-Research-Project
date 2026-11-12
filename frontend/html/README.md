@@ -1,11 +1,13 @@
 # Live Screens and Legacy Design Assets (`html/`)
 
-This directory contains the launch hub at `/`, the live staff PIN gateway at `/login`, and the live customer tracker at `/tracker`. Legacy customer and staff design files are retained for reference, but their former `/prototype/*` routes redirect to the live customer or role-protected staff workflows instead of serving static mock screens.
+This directory contains the customer homepage at `/` with 13 curated menu-category cards and outlet-specific delivery-area selection; the `/category?name=...` page shows the category's listed dishes with photos, descriptions, and prices. The separate `/order` page continues to load the live outlet menu for checkout. The homepage also includes restaurant information, FAQ, and ordering terms. The directory also contains the live staff PIN gateway at `/staff` (also `/login`) and the live customer tracker at `/tracker`. Legacy customer and staff design files are retained for reference, but their former `/prototype/*` routes redirect to the live customer or role-protected staff workflows instead of serving static mock screens.
 
 Legacy design files and their original screenshots are retained for internal reference; application routes serve the live workflows listed below.
 
 | HTML File | Live Route | Status | Companion Stylesheet | Visual Preview |
 | :--- | :--- | :--- | :--- | :--- |
+| [`index.html`](index.html) | `/` | **Live** customer category-card homepage | Inline | — |
+| [`menu-category.html`](menu-category.html) | `/category?name=...` | **Live** curated menu-category listings | [`../css/menu-category.css`](../css/menu-category.css) | — |
 | [`staff_terminal_pin_login.html`](staff_terminal_pin_login.html) | Surface 1 (`/login`) | **Live** (API-backed) | [`../css/staff_terminal_pin_login.css`](../css/staff_terminal_pin_login.css) | [`../images/staff_terminal_pin_login.png`](../images/staff_terminal_pin_login.png) |
 | [`customer_pwa_landing_page.html`](customer_pwa_landing_page.html) | `/order` | Legacy design file; route redirects to live ordering | [`../css/customer_pwa_landing_page.css`](../css/customer_pwa_landing_page.css) | [`../images/customer_pwa_landing_page.png`](../images/customer_pwa_landing_page.png) |
 | [`campus_pre_order_menu.html`](campus_pre_order_menu.html) | `/order` | Legacy design file; route redirects to live menu | [`../css/campus_pre_order_menu.css`](../css/campus_pre_order_menu.css) | [`../images/campus_pre_order_menu.png`](../images/campus_pre_order_menu.png) |

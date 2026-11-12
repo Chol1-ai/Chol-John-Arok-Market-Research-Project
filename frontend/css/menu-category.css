@@ -1,0 +1,68 @@
+:root {
+  color-scheme: light;
+  --ink: #202a24;
+  --muted: #68716b;
+  --paper: #f8f6f1;
+  --card: #fffefa;
+  --line: #e8e4da;
+  --green: #245c3e;
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); }
+a { color: inherit; }
+a:focus-visible { outline: 3px solid #e28a34; outline-offset: 4px; }
+.category-wrap { width: min(1160px, calc(100% - 40px)); margin-inline: auto; }
+.category-header { position: sticky; top: 0; z-index: 2; border-bottom: 1px solid rgba(232, 228, 218, .9); background: rgba(248, 246, 241, .95); backdrop-filter: blur(14px); }
+.category-header-inner { min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.category-brand { display: flex; align-items: center; gap: 10px; color: var(--green); font-size: 15px; font-weight: 800; text-decoration: none; }
+.category-brand img { width: 38px; height: 38px; object-fit: contain; }
+.category-header nav { display: flex; align-items: center; gap: 16px; }
+.category-header nav a, .category-order { font-size: 12px; font-weight: 700; text-decoration: none; }
+.category-back { color: #48534b; }
+.category-back:hover { color: var(--green); }
+.category-order { padding: 12px 17px; border-radius: 999px; background: var(--green); color: white; }
+.category-order:hover { background: #194b30; }
+.category-main { padding-top: 44px; padding-bottom: 60px; }
+.category-heading { margin-bottom: 24px; }
+.category-kicker { color: var(--green); font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.category-heading h1 { margin: 10px 0 8px; font-size: clamp(32px, 5vw, 48px); line-height: 1.1; letter-spacing: -.05em; }
+.category-heading p { max-width: 650px; margin: 0; color: var(--muted); font-size: 14px; line-height: 1.65; }
+.category-status { min-height: 24px; margin-bottom: 15px; color: var(--muted); font-size: 13px; }
+.category-status:empty { display: none; }
+.category-status.is-error { color: #a63d2c; }
+.category-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.category-meal { min-width: 0; overflow: hidden; border: 1px solid #e8e4da; border-radius: 18px; background: var(--card); box-shadow: 0 8px 23px rgba(40, 35, 25, .07); }
+.category-meal-photo { height: 215px; overflow: hidden; background: linear-gradient(145deg, #e8dfcb, #c8d4c5); }
+.category-meal-photo img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .3s ease; }
+.category-meal:hover .category-meal-photo img { transform: scale(1.035); }
+.category-meal-copy { display: flex; min-height: 195px; flex-direction: column; padding: 17px 19px 19px; }
+.category-meal h2 { margin: 7px 0 5px; font-size: 17px; line-height: 1.4; letter-spacing: -.025em; }
+.category-meal-copy p { margin: 0 0 18px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+.category-meal-price { margin-top: auto; padding-top: 10px; color: var(--green); font-size: 14px; font-weight: 800; }
+.category-empty { padding: 26px; border: 1px solid var(--line); border-radius: 16px; background: white; color: var(--muted); line-height: 1.6; }
+.category-order-bottom { display: inline-flex; gap: 8px; margin-top: 26px; color: var(--green); font-size: 13px; font-weight: 800; text-decoration: none; }
+.category-order-bottom:hover { text-decoration: underline; text-underline-offset: 3px; }
+.mobile-back { display: none; }
+
+@media (max-width: 900px) {
+  .category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .category-wrap { width: min(100% - 30px, 560px); }
+  .category-header-inner { min-height: 66px; }
+  .category-header nav .category-back { display: none; }
+  .category-brand { font-size: 13px; }
+  .category-order { padding: 11px 14px; font-size: 11px; }
+  .category-main { padding-top: 24px; }
+  .mobile-back { display: inline-flex; margin-bottom: 20px; gap: 7px; font-size: 12px; font-weight: 700; text-decoration: none; }
+  .category-heading h1 { font-size: 34px; }
+  .category-grid { grid-template-columns: 1fr; gap: 15px; }
+  .category-meal-photo { height: 220px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: .01ms !important; }
+}

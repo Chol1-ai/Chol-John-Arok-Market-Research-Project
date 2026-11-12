@@ -4,6 +4,7 @@ This directory contains screen-specific CSS stylesheets matched to their HTML pa
 
 | Stylesheet File | Companion HTML Screen | Surface / Purpose |
 | :--- | :--- | :--- |
+| [`menu-category.css`](menu-category.css) | [`../html/menu-category.html`](../html/menu-category.html) | Responsive meal cards with live images, prices, availability, outlet labels, and order links. |
 | [`card_surfaces.css`](file:///c:/Users/USER/OneDrive/Desktop/Chol-John-Arok-Market-Research-Project/frontend/css/card_surfaces.css) | *(Imported by `theme_tokens.css`)* | Consistent borders, subtle elevation, and hover states for shared card surfaces across the app. |
 | [`staff_prototype_header.css`](file:///c:/Users/USER/OneDrive/Desktop/Chol-John-Arok-Market-Research-Project/frontend/css/staff_prototype_header.css) | *(Imported by POS, KDS, dispatch, and manager prototype stylesheets)* | Shared responsive staff navigation and high-contrast outlet selection states. |
 | [`theme_tokens.css`](file:///c:/Users/USER/OneDrive/Desktop/Chol-John-Arok-Market-Research-Project/frontend/css/theme_tokens.css) | *(Shared by all stylesheets)* | Global theme variables (Terracotta Red `#DC2626`, Saffron Amber `#FEA619`, Forest Green `#16A34A`, Cream Canvas `#FAF9F6`), Plus Jakarta Sans typography scales, radii, and ambient shadows. |
