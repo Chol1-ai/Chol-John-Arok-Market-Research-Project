@@ -160,18 +160,11 @@
     .meal-card .card-media { height: 210px; }
     .meal-card .card-content { min-height: 145px; }
     .meal-card .card h3 { font-size: 18px; }
-    .location-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .location-card { padding: 22px; }
-    .location-card .location-icon { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 14px; background: #edf2eb; color: var(--green); }
-    .location-card .card-content { min-height: 0; padding: 18px 0 0; }
-    .location-card h3 { margin-top: 8px; }
-    .location-card .card-link { justify-content: flex-start; gap: 8px; }
     .customer-footer-links { gap: 20px; }
     @media (max-width: 700px) {
       .customer-hero { grid-template-columns: 1fr; gap: 24px; padding-top: 34px; }
       .customer-hero .hero-photo { min-height: 280px; }
       .customer-section .section-heading { align-items: flex-start; }
-      .location-cards { grid-template-columns: 1fr; }
     }
     @media (max-width: 430px) {
       .customer-nav { gap: 6px; }
@@ -197,8 +190,6 @@
     .delivery-finder-status { min-height: 16px; margin: 9px 2px 0; color: var(--muted); font-size: 10px; line-height: 1.5; }
     .delivery-retry { display: block; margin: -4px 2px 6px; padding: 0; border: 0; background: none; color: var(--green); font: inherit; font-size: 10px; font-weight: 800; text-decoration: underline; cursor: pointer; }
     .delivery-retry[hidden] { display: none; }
-    .pickup-link { display: inline-flex; align-items: center; gap: 5px; margin-top: 13px; color: var(--green); font-size: 11px; font-weight: 800; text-decoration: none; }
-    .pickup-link:hover { text-decoration: underline; text-underline-offset: 3px; }
     .customer-hero .hero-photo { min-height: 410px; }
     .browse-section { padding-top: 23px; background: linear-gradient(180deg, rgba(248,246,241,.88), rgba(250,249,245,.98)), url('/images/foodizo-landing-hero.jpg') center/cover no-repeat; }
     .home-menu-groups { display: grid; gap: 24px; }
@@ -274,7 +265,6 @@
       </a>
       <nav class="nav customer-nav" aria-label="Main navigation">
         <a href="#menu">Menu</a>
-        <a href="#locations">Restaurants</a>
         <a href="#faq">Help</a>
         <a class="button button-primary" href="/order">Order now <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></a>
       </nav>
@@ -284,7 +274,6 @@
   <main class="wrap">
     <section class="hero customer-hero" aria-labelledby="hero-title">
       <div>
-        <span class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span> Foodizo &amp; Obunuzi · Wandegeya</span>
         <h1 id="hero-title">Order from Foodizo or Obunuzi in Wandegeya.</h1>
         <p class="hero-copy">Order from Foodizo or Obunuzi for pickup or delivery in Wandegeya, Kampala.</p>
         <form class="delivery-finder" id="delivery-finder">
@@ -306,7 +295,6 @@
           <button class="delivery-retry" id="home-zone-retry" type="button" hidden>Try loading areas again</button>
           <button class="button button-primary" id="home-delivery-submit" type="submit" disabled>Choose an area to continue</button>
         </form>
-        <a class="pickup-link" href="/order">Ordering pickup? Browse the menu <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></a>
       </div>
       <div class="hero-photo">
         <img src="../images/foodizo-landing-hero.jpg" alt="Meals available at Foodizo and Obunuzi in Wandegeya" fetchpriority="high" />
@@ -332,36 +320,6 @@
         <div class="benefit"><span class="material-symbols-outlined" aria-hidden="true">storefront</span><div><strong>Pickup or delivery</strong><span>Choose how to receive your order.</span></div></div>
         <div class="benefit"><span class="material-symbols-outlined" aria-hidden="true">payments</span><div><strong>Cash payment</strong><span>Pay at the counter or to the rider.</span></div></div>
         <div class="benefit"><span class="material-symbols-outlined" aria-hidden="true">receipt_long</span><div><strong>Follow your order</strong><span>Use your token to check its status.</span></div></div>
-      </div>
-    </section>
-
-    <section class="section customer-section" id="locations" aria-labelledby="locations-title">
-      <div class="section-heading">
-        <div>
-          <span class="section-kicker">Our restaurants</span>
-          <h2 id="locations-title">Choose where to order from</h2>
-          <p class="section-description">Each outlet has its own menu and delivery areas.</p>
-        </div>
-      </div>
-      <div class="cards location-cards">
-        <article class="card location-card">
-          <span class="location-icon material-symbols-outlined" aria-hidden="true">location_on</span>
-          <div class="card-content">
-            <span class="card-eyebrow">Foodizo</span>
-            <h3>Ham Towers</h3>
-            <p>Wandegeya, Kampala</p>
-            <a class="card-link" href="https://www.google.com/maps/search/?api=1&amp;query=Ham+Towers+Wandegeya+Kampala" target="_blank" rel="noopener noreferrer">Open location <span class="material-symbols-outlined" aria-hidden="true">arrow_outward</span></a>
-          </div>
-        </article>
-        <article class="card location-card">
-          <span class="location-icon material-symbols-outlined" aria-hidden="true">location_on</span>
-          <div class="card-content">
-            <span class="card-eyebrow">Obunuzi Restaurant &amp; Cafe</span>
-            <h3>Opposite YMCA</h3>
-            <p>Wandegeya, Kampala</p>
-            <a class="card-link" href="https://www.google.com/maps/search/?api=1&amp;query=YMCA+Wandegeya+Kampala" target="_blank" rel="noopener noreferrer">Open location <span class="material-symbols-outlined" aria-hidden="true">arrow_outward</span></a>
-          </div>
-        </article>
       </div>
     </section>
 
