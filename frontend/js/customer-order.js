@@ -46,12 +46,9 @@
     cartTotal: document.getElementById('cart-total'),
     checkoutForm: document.getElementById('checkout-form'),
     submitOrder: document.getElementById('submit-order'),
-    trackingCopy: document.getElementById('tracking-copy'),
+    trackingTitle: document.getElementById('tracking-title'),
     trackingToken: document.getElementById('tracking-token'),
-    trackingOrder: document.getElementById('tracking-order'),
-    trackingStatus: document.getElementById('tracking-status'),
-    trackingCashNote: document.getElementById('tracking-cash-note'),
-    openTracker: document.getElementById('open-tracker')
+    trackingTokenLabel: document.getElementById('tracking-token-label')
   };
 
   function escapeHtml(value) {
@@ -320,9 +317,6 @@
   function showTrackingScreen() {
     elements.orderScreen.hidden = true;
     elements.trackingScreen.hidden = false;
-    elements.trackingCopy.textContent = state.channel === 'PHONE_DELIVERY'
-      ? `Delivery from ${OUTLET_LABEL[state.outlet] || state.outlet}. Pay cash to the rider at handoff.`
-      : `Pickup from ${OUTLET_LABEL[state.outlet] || state.outlet}.`;
     elements.trackingToken.textContent = state.token || '—';
     if (state.pollTimer) clearInterval(state.pollTimer);
     state.pollTimer = setInterval(() => refreshTracking().catch((error) => showNotice(error.message)), 10000);
@@ -334,33 +328,32 @@
     const path = `/api/v1/orders/token/${encodeURIComponent(state.token)}?outlet=${encodeURIComponent(state.outlet)}`;
     const data = await request(path);
     elements.trackingToken.textContent = data.displayToken || state.token;
-    elements.trackingOrder.textContent = `${data.orderNumber} · ${OUTLET_LABEL[data.outlet] || data.outlet}`;
     state.channel = data.channel;
     state.outlet = data.outlet;
-    const trackerQuery = new URLSearchParams({ token: state.token, outlet: state.outlet });
-    elements.openTracker.href = `/tracker?${trackerQuery.toString()}`;
-    elements.openTracker.hidden = false;
     const isDelivery = data.channel === 'PHONE_DELIVERY';
-    document.title = isDelivery ? 'Delivery order status | Foodizo & Obunuzi' : 'Pickup order status | Foodizo & Obunuzi';
-    document.getElementById('tracking-channel-label').textContent = isDelivery ? 'Delivery order status' : 'Pickup order status';
-    document.getElementById('tracking-token-label').textContent = isDelivery ? 'Delivery token' : 'Pickup token';
-    elements.trackingCopy.textContent = data.channel === 'PHONE_DELIVERY'
-      ? `Delivery from ${OUTLET_LABEL[data.outlet] || data.outlet}. Pay cash to the rider at handoff.`
-      : `Pickup from ${OUTLET_LABEL[data.outlet] || data.outlet}.`;
     const deliveryStatus = data.deliveryStatus || data.status;
-    elements.trackingStatus.textContent = isDelivery
+    const statusLabels = isDelivery
       ? {
-          PENDING: 'Your order is queued for the kitchen. The rider will collect cash on delivery.',
-          READY: 'Your order is ready for rider dispatch.',
-          OUT_FOR_DELIVERY: 'Your order has been dispatched and is on the way.',
-          COMPLETED: 'This order was delivered. Thank you!'
-        }[deliveryStatus] || STATUS_COPY[deliveryStatus] || `Order status: ${deliveryStatus}`
-      : STATUS_COPY[data.status] || `Order status: ${data.status}`;
-    elements.trackingCashNote.textContent = data.channel === 'PHONE_DELIVERY'
-      ? `Delivery destination: ${data.destination || 'selected area'}. Pay the order total, including the delivery fee, to the rider at handoff.`
-      : data.status === 'AWAITING_PAYMENT'
-        ? 'This order is not in the kitchen yet. Pay cash at the counter before preparation begins.'
-        : 'Your pickup token is linked to this live order status.';
+          AWAITING_PAYMENT: 'Payment required',
+          PENDING: 'Order received',
+          PREPARING: 'Preparing your order',
+          READY: 'Ready for dispatch',
+          OUT_FOR_DELIVERY: 'On the way',
+          COMPLETED: 'Delivered',
+          CANCELLED: 'Order cancelled'
+        }
+      : {
+          AWAITING_PAYMENT: 'Payment required',
+          PENDING: 'Order received',
+          PREPARING: 'Preparing your order',
+          READY: 'Ready for pickup',
+          COMPLETED: 'Order collected',
+          CANCELLED: 'Order cancelled'
+        };
+    const statusLabel = statusLabels[deliveryStatus] || `Order status: ${deliveryStatus}`;
+    elements.trackingTitle.textContent = statusLabel;
+    elements.trackingTokenLabel.textContent = isDelivery ? 'Delivery token' : 'Pickup token';
+    document.title = `${statusLabel} | Foodizo & Obunuzi`;
     if (data.status === 'CANCELLED' || data.status === 'COMPLETED') {
       clearInterval(state.pollTimer);
       state.pollTimer = null;
@@ -372,7 +365,6 @@
     state.token = null;
     history.replaceState(null, '', '/order');
     elements.trackingScreen.hidden = true;
-    elements.openTracker.hidden = true;
     elements.orderScreen.hidden = false;
     elements.checkoutForm.reset();
     state.cart.clear();

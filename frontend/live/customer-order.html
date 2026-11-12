@@ -95,19 +95,12 @@
 
     <section id="tracking-screen" class="customer-tracking" hidden aria-labelledby="tracking-title">
       <div class="tracking-card">
-        <div class="customer-eyebrow" id="tracking-channel-label">Pickup order status</div>
-        <h1 id="tracking-title">Your order is in</h1>
-        <p class="tracking-copy" id="tracking-copy"></p>
+        <h1 id="tracking-title" aria-live="polite">Order status</h1>
         <div class="tracking-token"><span id="tracking-token-label">Pickup token</span><strong id="tracking-token"></strong></div>
-        <div class="tracking-order" id="tracking-order"></div>
-        <div class="tracking-status" id="tracking-status" aria-live="polite"></div>
-        <p class="tracking-cash-note" id="tracking-cash-note"></p>
         <div class="tracking-actions">
           <button class="customer-primary-button" id="tracking-refresh" type="button">Refresh status</button>
           <button class="customer-secondary-button" id="new-order" type="button">Start another order</button>
         </div>
-        <a id="open-tracker" class="customer-tracker-link" hidden>Open shareable live tracker</a>
-        <p class="customer-fine-print">This page refreshes order status automatically. Keep your token handy for staff.</p>
       </div>
     </section>
   </main>
