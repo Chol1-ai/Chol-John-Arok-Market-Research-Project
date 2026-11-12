@@ -59,19 +59,9 @@ h1 { margin: 9px 0; font-size: clamp(30px, 5vw, 46px); line-height: 1.1; letter-
 .customer-layout.has-cart { grid-template-columns: minmax(0, 1fr) 340px; }
 .customer-menu, .customer-cart, .tracking-card { border: 1px solid #e8e4da; border-radius: 18px; background: #fffefa; box-shadow: 0 8px 26px rgba(40, 35, 25, .045); }
 .customer-menu { padding: 16px; }
-.customer-category-row { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 10px; }
-.customer-category {
-  flex: none;
-  min-height: 30px;
-  padding: 0 10px;
-  border: 1px solid #e4e0d7;
-  border-radius: 999px;
-  background: #fff;
-  color: #59635a;
-  font-size: 10px;
-  font-weight: 700;
-}
-.customer-category[aria-pressed="true"] { border-color: #245c3e; background: #245c3e; color: #fff; }
+.customer-menu-heading { margin: 0 0 13px; }
+.customer-menu-heading h2 { margin: 0; font-size: clamp(20px, 3vw, 26px); letter-spacing: -.04em; }
+.customer-menu-heading p { max-width: 700px; margin: 7px 0 0; color: #68716b; font-size: 12px; line-height: 1.65; }
 .customer-menu-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
 .customer-meal { display: flex; min-height: 76px; gap: 8px; padding: 8px; border: 1px solid #eeeae2; border-radius: 12px; background: #fff; }
 .customer-meal-photo { width: 52px; height: 52px; flex: none; display: grid; place-items: center; overflow: hidden; border-radius: 9px; background: #f5eee4; color: #a63c2b; font-size: 20px; font-weight: 800; }
@@ -79,6 +69,7 @@ h1 { margin: 9px 0; font-size: clamp(30px, 5vw, 46px); line-height: 1.1; letter-
 .customer-meal-info { min-width: 0; flex: 1; display: flex; flex-direction: column; }
 .customer-meal-info h3 { margin: 1px 0 3px; font-size: 12px; line-height: 1.3; }
 .customer-meal-category { color: #788078; font-size: 9px; }
+.customer-meal-description { margin: 5px 0 0; color: #68716b; font-size: 10px; line-height: 1.45; }
 .customer-meal-unavailable {
   align-self: flex-start;
   margin-top: 6px;

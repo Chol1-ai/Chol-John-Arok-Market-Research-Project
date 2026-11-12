@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="title">
+  <title id="title">Breakfast with eggs, toast, pancakes, and tea</title>
+  <defs>
+    <linearGradient id="bg" x2="0" y2="1"><stop stop-color="#f5d6a0"/><stop offset="1" stop-color="#d78654"/></linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg)"/>
+  <circle cx="520" cy="74" r="52" fill="#fff2cd" opacity=".35"/>
+  <ellipse cx="305" cy="283" rx="225" ry="32" fill="#884b36" opacity=".2"/>
+  <ellipse cx="302" cy="230" rx="220" ry="82" fill="#fffdf6" stroke="#efe2c8" stroke-width="7"/>
+  <path d="M164 220l36-63 74 42-37 62z" fill="#c47b3d" stroke="#905a30" stroke-width="7"/>
+  <path d="M183 207l24-39m10 51 24-40" stroke="#f1c57e" stroke-width="7"/>
+  <ellipse cx="331" cy="211" rx="58" ry="45" fill="#f7f0dc"/><circle cx="331" cy="210" r="24" fill="#f0b52d"/>
+  <path d="M389 215c22-40 75-44 93-9 16 31-4 63-44 62-39-1-66-25-49-53z" fill="#d99743"/>
+  <path d="M411 207c22-14 43-14 63 0" fill="none" stroke="#f5d18d" stroke-width="8" stroke-linecap="round"/>
+  <path d="M494 238h56c-3 34-13 49-28 49s-25-15-28-49z" fill="#f7f2e7" stroke="#d9ccb7" stroke-width="6"/>
+  <path d="M550 246c27-4 26 29 1 30" fill="none" stroke="#d9ccb7" stroke-width="7"/>
+  <path d="M515 233c-11-11 12-15 2-26m15 26c-10-10 13-16 3-27" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+</svg>

@@ -243,18 +243,19 @@ model restaurant_tables {
 // ============================================================
 
 model menu_items {
-  id         String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  outlet     outlet_location
-  name       String          @db.VarChar(100)
-  category   String          @db.VarChar(40)
-  price_ugx  Decimal         @db.Decimal(10, 2)
-  station    station_type
-  image_url  String?         @db.VarChar(500)
-  image_hidden Boolean       @default(false)
-  is_active  Boolean         @default(true)
-  is_86      Boolean         @default(false)
-  created_at DateTime        @default(now()) @db.Timestamptz(6)
-  updated_at DateTime        @default(now()) @updatedAt @db.Timestamptz(6)
+  id            String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  outlet        outlet_location
+  name          String          @db.VarChar(100)
+  category      String          @db.VarChar(40)
+  description   String?         @db.VarChar(280)
+  price_ugx     Decimal         @db.Decimal(10, 2)
+  station       station_type
+  image_url     String?         @db.VarChar(500)
+  image_hidden  Boolean         @default(false)
+  is_active     Boolean         @default(true)
+  is_86         Boolean         @default(false)
+  created_at    DateTime        @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime        @default(now()) @updatedAt @db.Timestamptz(6)
 
   order_items  order_items[]
   recipe_boms  recipe_bom[]

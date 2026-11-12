@@ -30,7 +30,8 @@
     deliveryFeeRow: document.getElementById('delivery-fee-row'),
     deliveryFee: document.getElementById('delivery-fee'),
     search: document.getElementById('search'),
-    categories: document.getElementById('categories'),
+    menuTitle: document.getElementById('menu-title'),
+    menuDescription: document.getElementById('menu-description'),
     menu: document.getElementById('menu'),
     layout: document.querySelector('.customer-layout'),
     cartPanel: document.getElementById('cart-panel'),
@@ -62,20 +63,9 @@
   }
 
   function defaultMealImage(item) {
-    const name = item.name.toLowerCase();
-    if (name.includes('water') || name.includes('bottle') || name.includes('rwenzori')) {
-      return '/images/rwenzori-bottle.png';
-    }
-    if (name.includes('juice')) return '/images/foodizo-juice.jpg';
-    if (name.includes('chicken') && name.includes('chips')) return '/images/foodizo-chicken-chips.jpg';
-    if (name.includes('chips')) return '/images/foodizo-plain-chips.jpg';
-    if (name.includes('matooke')) return '/images/foodizo-matooke.jpg';
-    if (name.includes('rice') && name.includes('beans')) return '/images/foodizo-rice-beans.jpg';
-    if (name.includes('luwombo') || name.includes('tilapia') || name.includes('fish')) {
-      return '/images/foodizo-luwombo.jpg';
-    }
-    if (name.includes('rolex')) return '/images/foodizo-rolex.jpg';
-    return null;
+    const categories = window.FOODIZO_MENU_CATEGORIES || [];
+    const category = categories.find((entry) => entry.name === item.category);
+    return category ? category.image : null;
   }
 
   async function request(path, options) {
@@ -186,7 +176,6 @@
       restoreCart();
     }
     state.category = 'ALL';
-    renderCategories();
     renderMenu();
     renderCart();
   }
@@ -227,20 +216,16 @@
     elements.cartTitle.textContent = isCheckout ? 'Checkout' : 'Your cart';
   }
 
-  function renderCategories() {
-    const categories = ['ALL', ...new Set(state.menu.map((item) => item.category).filter(Boolean))];
-    if (!categories.includes(state.category)) state.category = 'ALL';
-    elements.categories.innerHTML = categories.map((category) => `
-      <button class="customer-category" type="button" data-category="${escapeHtml(category)}"
-        aria-pressed="${state.category === category}">${escapeHtml(category === 'ALL' ? 'All meals' : category)}</button>
-    `).join('');
-  }
-
   function renderMenu() {
     const query = elements.search.value.trim().toLowerCase();
+    const categories = window.FOODIZO_MENU_CATEGORIES || [];
+    const category = categories.find((entry) => entry.name === state.category);
+    elements.menuTitle.textContent = category ? category.name : 'Menu';
+    elements.menuDescription.textContent = category ? category.description : '';
+    elements.menuDescription.hidden = !category;
     const items = state.menu.filter((item) =>
       (state.category === 'ALL' || item.category === state.category) &&
-      (!query || `${item.name} ${item.category}`.toLowerCase().includes(query))
+      (!query || `${item.name} ${item.category} ${item.description || ''}`.toLowerCase().includes(query))
     );
     if (!items.length) {
       const filter = query || (state.category !== 'ALL' ? state.category : null);
@@ -267,6 +252,7 @@
           <div class="customer-meal-info">
             <h3>${escapeHtml(item.name)}</h3>
             <span class="customer-meal-category">${escapeHtml(item.category)}</span>
+            ${item.description ? `<p class="customer-meal-description">${escapeHtml(item.description)}</p>` : ''}
             ${available ? '' : '<span class="customer-meal-unavailable">Temporarily unavailable</span>'}
             <div class="customer-meal-bottom">
               <span class="customer-meal-price">${formatUgx(item.priceUgx)}</span>
@@ -503,13 +489,6 @@
       renderCart();
     });
     elements.search.addEventListener('input', renderMenu);
-    elements.categories.addEventListener('click', (event) => {
-      const button = event.target.closest('[data-category]');
-      if (!button) return;
-      state.category = button.dataset.category;
-      renderCategories();
-      renderMenu();
-    });
     elements.menu.addEventListener('click', (event) => {
       const button = event.target.closest('[data-add-id]');
       if (button) changeQuantity(button.dataset.addId, 1);
@@ -591,7 +570,6 @@
       }
       const requestedSearch = params.get('q');
       if (requestedSearch) elements.search.value = requestedSearch;
-      renderCategories();
       renderMenu();
       const token = params.get('token');
       if (token) {

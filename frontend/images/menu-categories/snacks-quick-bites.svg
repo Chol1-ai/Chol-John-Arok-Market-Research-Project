@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="title">
+  <title id="title">Golden samosas and fried plantain</title>
+  <defs>
+    <linearGradient id="bg" x2="0" y2="1"><stop stop-color="#f3c66c"/><stop offset="1" stop-color="#bd6a42"/></linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg)"/>
+  <circle cx="530" cy="70" r="52" fill="#fff4da" opacity=".3"/>
+  <ellipse cx="324" cy="285" rx="220" ry="33" fill="#7a4331" opacity=".2"/>
+  <ellipse cx="324" cy="236" rx="213" ry="79" fill="#fff8e9" stroke="#eddfc5" stroke-width="8"/>
+  <path d="M183 257l43-117 62 118z" fill="#d98f32" stroke="#a66027" stroke-width="8" stroke-linejoin="round"/>
+  <path d="M245 257l49-129 66 129z" fill="#efb047" stroke="#b8772f" stroke-width="8" stroke-linejoin="round"/>
+  <path d="M216 189l15 11m41-39 18 14m-70 57 19 13m58-34 18 15" stroke="#ffdf91" stroke-width="7" stroke-linecap="round"/>
+  <g fill="#d8983f" stroke="#bd7732" stroke-width="5"><path d="M391 200c18-21 55-19 70 2s-1 41-28 44-59-19-42-46z"/><path d="M425 247c18-21 55-19 70 2s-1 41-28 44-59-19-42-46z"/><path d="M373 252c15-19 46-20 60-2s3 38-21 43-53-16-39-41z"/></g>
+  <path d="M411 205c12 13 19 28 18 43m18-35c11 12 17 25 17 37m-55 17c10 10 16 21 17 34" fill="none" stroke="#f6d280" stroke-width="5"/>
+</svg>

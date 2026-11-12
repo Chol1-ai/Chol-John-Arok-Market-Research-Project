@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="title">
+  <title id="title">Juicy cheeseburger with lettuce and tomato</title>
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#f2bc62"/><stop offset="1" stop-color="#c95b43"/></linearGradient>
+    <linearGradient id="bun" x2="0" y2="1"><stop stop-color="#f5c46e"/><stop offset="1" stop-color="#d8853b"/></linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg)"/>
+  <circle cx="96" cy="74" r="49" fill="#fff" opacity=".17"/>
+  <ellipse cx="323" cy="294" rx="210" ry="27" fill="#723c2e" opacity=".22"/>
+  <path d="M151 190c4-80 63-122 169-122 101 0 162 44 168 122H151z" fill="url(#bun)" stroke="#ad642d" stroke-width="8"/>
+  <g fill="#ffe4a0"><ellipse cx="249" cy="111" rx="7" ry="4"/><ellipse cx="300" cy="91" rx="7" ry="4"/><ellipse cx="360" cy="110" rx="7" ry="4"/><ellipse cx="401" cy="139" rx="7" ry="4"/></g>
+  <path d="M154 191c26-31 52 16 80-7s49 20 78-3 51 21 80-2 48 16 93-1v28H154z" fill="#4d8b45"/>
+  <path d="M160 214h330l-18 27H173z" fill="#f1c84f"/>
+  <path d="M165 240c12-34 46-38 78-30 27 7 47 7 72-2 39-14 71 8 93 2 32-10 67 5 78 30l-17 32H179z" fill="#58352c"/>
+  <path d="M177 272c60 15 224 16 297 0l-10 34H188z" fill="url(#bun)"/>
+  <circle cx="222" cy="205" r="16" fill="#d54c3d"/><circle cx="436" cy="207" r="17" fill="#d54c3d"/>
+</svg>

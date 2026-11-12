@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="title">
+  <title id="title">Ugandan Rolex on a hot skillet</title>
+  <defs>
+    <linearGradient id="bg" x2="0" y2="1"><stop stop-color="#e9ae60"/><stop offset="1" stop-color="#9d5140"/></linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg)"/>
+  <circle cx="523" cy="70" r="51" fill="#fff2d6" opacity=".25"/>
+  <ellipse cx="324" cy="290" rx="213" ry="31" fill="#4c2b27" opacity=".25"/>
+  <path d="M129 202c20-81 101-121 194-121s174 40 194 121l-40 63c-68 42-240 42-308 0z" fill="#303c40" stroke="#171e21" stroke-width="8"/>
+  <ellipse cx="323" cy="204" rx="170" ry="69" fill="#a76b3e"/>
+  <path d="M184 207c8-50 58-78 133-78s127 28 138 78c-11 36-61 55-137 55s-125-19-134-55z" fill="#e8bf73" stroke="#cf954b" stroke-width="7"/>
+  <path d="M208 206c27-33 47 32 76-2s49 33 78-1 43 28 70 0" fill="none" stroke="#d04d39" stroke-width="10" stroke-linecap="round"/>
+  <path d="M211 223c29-25 52 21 78-2s47 23 73 0 43 20 69 0" fill="none" stroke="#5d863e" stroke-width="9" stroke-linecap="round"/>
+  <path d="M225 187c34 8 46 31 39 58m54-112c-8 37 8 60 43 75m42-65c-24 29-19 53 7 75" fill="none" stroke="#f3d996" stroke-width="7" stroke-linecap="round"/>
+  <path d="M108 169c-15-28 2-55 23-71" fill="none" stroke="#fff0d2" stroke-width="7" stroke-linecap="round"/>
+</svg>

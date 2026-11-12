@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="title">
+  <title id="title">Golden fries and crispy chicken</title>
+  <defs>
+    <linearGradient id="bg" x2="0" y2="1"><stop stop-color="#f7c665"/><stop offset="1" stop-color="#e66f48"/></linearGradient>
+    <linearGradient id="tray" x2="0" y2="1"><stop stop-color="#fffdf5"/><stop offset="1" stop-color="#ded2b7"/></linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg)"/>
+  <circle cx="523" cy="68" r="57" fill="#fff2c4" opacity=".35"/>
+  <ellipse cx="340" cy="285" rx="205" ry="35" fill="#853f32" opacity=".2"/>
+  <path d="M172 196h335l-40 91H210z" fill="url(#tray)" stroke="#fff" stroke-width="7"/>
+  <path d="M228 202l-17-93 26-9 33 99m5-2-5-117 27-4 18 123m8 1 11-126 28 3 4 128m8-1 27-108 26 8-16 108" fill="#f3b52c" stroke="#d88a16" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M358 226c-4-26 20-45 47-42l26-17c16-10 33 1 29 18l-7 27 17 20c12 15 1 34-18 33l-30-2-20 18c-15 13-33 2-30-17l4-26z" fill="#bd6437" stroke="#8f4427" stroke-width="7"/>
+  <circle cx="391" cy="218" r="7" fill="#e6a14f"/><circle cx="429" cy="243" r="7" fill="#e6a14f"/>
+</svg>

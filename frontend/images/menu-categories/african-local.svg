@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="title">
+  <title id="title">Matooke, beef stew, and greens</title>
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#f4d8a1"/><stop offset="1" stop-color="#6f9b57"/></linearGradient>
+    <linearGradient id="plate" x2="0" y2="1"><stop stop-color="#fffdf3"/><stop offset="1" stop-color="#e7dfc8"/></linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg)"/>
+  <circle cx="92" cy="68" r="52" fill="#ffffff" opacity=".16"/>
+  <ellipse cx="350" cy="275" rx="220" ry="48" fill="#3c4d2e" opacity=".2"/>
+  <ellipse cx="350" cy="230" rx="220" ry="92" fill="url(#plate)" stroke="#fff" stroke-width="8"/>
+  <ellipse cx="350" cy="226" rx="178" ry="64" fill="#d9cda9"/>
+  <path d="M202 232c25-55 82-64 118-29-12 44-46 65-112 57-18-2-22-12-6-28z" fill="#568b45"/>
+  <path d="M224 227c26-42 57-51 88-32-14 40-40 54-91 49" fill="#7fac57"/>
+  <path d="M355 197c26-29 85-24 103 9 10 18-11 38-41 38h-61c-25-3-24-29-1-47z" fill="#8b472c"/>
+  <circle cx="378" cy="205" r="13" fill="#bd7740"/><circle cx="422" cy="217" r="12" fill="#d0904e"/>
+  <path d="M469 207c36 3 48 32 19 51-22 14-50 13-65-2 2-23 19-44 46-49z" fill="#345b38"/>
+  <path d="M472 210l-28 37m48-30-31 34m14-43 20 24" stroke="#78a75b" stroke-width="8" stroke-linecap="round"/>
+</svg>

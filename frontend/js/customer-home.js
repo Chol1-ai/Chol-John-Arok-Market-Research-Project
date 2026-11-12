@@ -50,27 +50,29 @@
       return;
     }
 
+    const categories = window.FOODIZO_MENU_CATEGORIES || [];
+    const categoryByName = new Map(categories.map((category) => [category.name, category]));
+    const orderedNames = [
+      ...categories.filter((category) => groups.has(category.name)).map((category) => category.name),
+      ...Array.from(groups.keys()).filter((category) => !categoryByName.has(category))
+    ];
+
     menuGroups.innerHTML = `
       <div class="cards home-category-grid">
-        ${Array.from(groups.entries()).map(([category, categoryItems]) => {
+        ${orderedNames.map((category) => {
+          const categoryDetails = categoryByName.get(category);
           const params = new URLSearchParams({ outlet: outlet.value });
           if (category !== 'Other') params.set('category', category);
           return `
             <a class="card home-category-card" href="/order?${escapeHtml(params.toString())}">
+              <div class="card-media">
+                <img src="${escapeHtml(categoryDetails ? categoryDetails.image : '/images/foodizo-landing-hero.jpg')}"
+                  alt="" loading="lazy" />
+              </div>
               <div class="card-content">
                 <h3>${escapeHtml(category)}</h3>
-                <ul class="home-category-items">
-                  ${categoryItems.map((item) => `
-                    <li>
-                      <span>
-                        ${escapeHtml(item.name)}
-                        ${item.isAvailable && !item.is86 ? '' : '<small>Temporarily unavailable</small>'}
-                      </span>
-                      <strong>${formatUgx(item.priceUgx)}</strong>
-                    </li>
-                  `).join('')}
-                </ul>
-                <span class="card-link">Browse ${escapeHtml(category)} <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></span>
+                ${categoryDetails ? `<p>${escapeHtml(categoryDetails.description)}</p>` : ''}
+                <span class="card-link">Explore ${escapeHtml(category)} <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></span>
               </div>
             </a>
           `;

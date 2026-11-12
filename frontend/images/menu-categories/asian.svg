@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="title">
+  <title id="title">Wok of stir-fried noodles</title>
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#142f3c"/><stop offset="1" stop-color="#54836d"/></linearGradient>
+    <linearGradient id="wok" x2="0" y2="1"><stop stop-color="#54636a"/><stop offset="1" stop-color="#17252c"/></linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg)"/>
+  <path d="M64 0v360M104 0v360M560 0v360" stroke="#e0c782" stroke-width="5" opacity=".22"/>
+  <ellipse cx="326" cy="284" rx="215" ry="35" fill="#0c1b21" opacity=".38"/>
+  <path d="M135 176c31 142 349 142 382 0H135z" fill="url(#wok)" stroke="#d5d9d4" stroke-width="7"/>
+  <ellipse cx="326" cy="177" rx="193" ry="74" fill="#ede0bd"/>
+  <path d="M173 177c30-43 55 42 86 0s53 41 83 0 53 39 82 0 45 39 74 0" fill="none" stroke="#dfa349" stroke-width="14" stroke-linecap="round"/>
+  <path d="M200 148c23 42 40-28 62 16s43-29 67 15m30-30c22 39 40-22 62 17s37-28 58 13" fill="none" stroke="#f0bd5a" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="232" cy="187" r="11" fill="#7eaa55"/><circle cx="280" cy="149" r="10" fill="#d75c3f"/><circle cx="371" cy="203" r="11" fill="#81ad54"/><circle cx="434" cy="158" r="9" fill="#db6948"/>
+  <path d="M418 30l-91 132M450 40l-98 137" stroke="#d4ae70" stroke-width="9" stroke-linecap="round"/>
+</svg>

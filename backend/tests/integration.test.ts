@@ -152,13 +152,13 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
     }
 
     const chicken = await app.prisma.menu_items.findFirstOrThrow({
-      where: { outlet: 'FOODIZO_HAM_TOWERS', name: '2pc Fried Chicken & Chips' }
+      where: { outlet: 'FOODIZO_HAM_TOWERS', name: 'Crispy Fried Chicken (2 Pieces)' }
     });
     const rolex = await app.prisma.menu_items.findFirstOrThrow({
-      where: { outlet: 'FOODIZO_HAM_TOWERS', name: 'Regular Rolex (2 Eggs, 1 Chapati)' }
+      where: { outlet: 'FOODIZO_HAM_TOWERS', name: 'Single Egg Rolex' }
     });
     const luwombo = await app.prisma.menu_items.findFirstOrThrow({
-      where: { outlet: 'OBUNUZI_YMCA', name: 'Traditional Beef Luwombo' }
+      where: { outlet: 'OBUNUZI_YMCA', name: 'Traditional Luwombo (Chicken)' }
     });
     menu = {
       foodizoChicken: chicken.id,
@@ -505,8 +505,8 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
     const order = created.body.order as Json;
     expect(order.tokenNumber).toMatch(/^TOKEN-\d{3,6}$/);
     expect(order.status).toBe('AWAITING_PAYMENT');
-    expect(order.subtotalUgx).toBe(28000);
-    expect(order.totalUgx).toBe(28000);
+    expect(order.subtotalUgx).toBe(20000);
+    expect(order.totalUgx).toBe(20000);
 
     const tokenLookup = await inject(
       'GET',
@@ -1161,6 +1161,27 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
     expect(typedUsage.statusCode).toBe(200);
     expect((typedUsage.json() as Json).item.currentStock).toBe(10);
 
+    await app.prisma.recipe_bom.create({
+      data: {
+        menu_item_id: menu.foodizoChicken,
+        raw_material_id: flour.id,
+        quantity_deducted: 2
+      }
+    });
+    const inventorySale = await createPaidOrder({
+      outlet: 'FOODIZO_HAM_TOWERS',
+      token: tokens.cyrus,
+      menuItemId: menu.foodizoChicken
+    });
+    const saleClaim = await inject('POST', `/api/v1/kds/${inventorySale.id}/claim`, { token: tokens.juma });
+    expect(saleClaim.statusCode).toBe(200);
+    expect((await app.prisma.raw_inventory.findUniqueOrThrow({ where: { id: flour.id } })).current_stock.toString()).toBe('21');
+    const saleBump = await inject('POST', `/api/v1/kds/${inventorySale.id}/bump`, {
+      token: tokens.juma,
+      payload: {}
+    });
+    expect(saleBump.statusCode).toBe(200);
+
     const overuse = await inject('POST', '/api/v1/inventory/stock', {
       token: tokens.cyrus,
       payload: { inventoryId: flour.id, action: 'MANUAL_USAGE', quantity: 24 }
@@ -1189,7 +1210,7 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
     const flourLine = lines.find((line) => line.itemName === 'Integration Flour')!;
     const oilLine = lines.find((line) => line.itemName === 'Mukwano Cooking Oil')!;
     const groundnutsLine = lines.find((line) => line.itemName === 'Integration Groundnuts')!;
-    expect((await app.prisma.raw_inventory.findUniqueOrThrow({ where: { id: flour.id } })).current_stock.toString()).toBe('23');
+    expect((await app.prisma.raw_inventory.findUniqueOrThrow({ where: { id: flour.id } })).current_stock.toString()).toBe('21');
     const groundnuts = await app.prisma.raw_inventory.findFirstOrThrow({
       where: { outlet: 'FOODIZO_HAM_TOWERS', item_name: 'Integration Groundnuts' }
     });
@@ -1213,7 +1234,7 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
     });
     expect(firstDelivery.statusCode).toBe(200);
     expect((firstDelivery.json() as Json).order.status).toBe('PARTIALLY_RECEIVED');
-    expect((await app.prisma.raw_inventory.findUniqueOrThrow({ where: { id: flour.id } })).current_stock.toString()).toBe('28');
+    expect((await app.prisma.raw_inventory.findUniqueOrThrow({ where: { id: flour.id } })).current_stock.toString()).toBe('26');
     expect(Number((await app.prisma.raw_inventory.findUniqueOrThrow({ where: { id: oil.id } })).current_stock)).toBe(oilStockBeforeOrder + 20);
 
     const finalDelivery = await inject('POST', `/api/v1/inventory/supplier-orders/${order.id}/receive`, {
@@ -1228,14 +1249,14 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
     });
     expect(finalDelivery.statusCode).toBe(200);
     expect((finalDelivery.json() as Json).order.status).toBe('RECEIVED');
-    expect((await app.prisma.raw_inventory.findUniqueOrThrow({ where: { id: flour.id } })).current_stock.toString()).toBe('33');
+    expect((await app.prisma.raw_inventory.findUniqueOrThrow({ where: { id: flour.id } })).current_stock.toString()).toBe('31');
     expect(Number((await app.prisma.raw_inventory.findUniqueOrThrow({ where: { id: groundnuts.id } })).current_stock)).toBe(8);
 
     const inventory = await inject('GET', '/api/v1/inventory', { token: tokens.cyrus });
     expect(inventory.statusCode).toBe(200);
     const body = inventory.json() as Json;
     expect((body.items as Json[]).some((item) =>
-      item.id === flour.id && item.currentStock === 33 && item.openingCountRecorded
+      item.id === flour.id && item.currentStock === 31 && item.openingCountRecorded
     )).toBe(true);
     expect((body.movements as Json[]).some((movement) => movement.type === 'STOCK_COUNT')).toBe(true);
     expect((body.movements as Json[]).some((movement) => movement.type === 'MANUAL_USAGE')).toBe(true);
@@ -1247,13 +1268,6 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
     expect(manualUsage?.note).toBe('Kitchen preparation');
     expect(manualUsage?.recordedBy).toBeTruthy();
 
-    await app.prisma.recipe_bom.create({
-      data: {
-        menu_item_id: menu.foodizoChicken,
-        raw_material_id: flour.id,
-        quantity_deducted: 2
-      }
-    });
     await app.prisma.raw_inventory.update({
       where: { id: flour.id },
       data: { current_stock: 1 }
@@ -1267,6 +1281,21 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
     const menuItems = (menuResponse.json() as Json).items as Json[];
     const waterMenuItem = menuItems.find((item) => item.name === 'Rwenzori Bottle');
     expect(waterMenuItem?.priceUgx).toBe(1500);
+    const activeMenuItems = menuItems.filter((item) => item.isActive === true);
+    expect(activeMenuItems).toHaveLength(59);
+    const localMeal = activeMenuItems.find((item) => item.name === 'Matooke & Beef Stew');
+    expect(localMeal?.category).toBe('African & Local Cuisine');
+    expect(localMeal?.description).toBe('Fresh green bananas served with tender beef stew');
+    expect(menuItems.find((item) => item.name === '2pc Fried Chicken & Chips')?.isActive).toBe(false);
+    expect(activeMenuItems.filter((item) => item.name.startsWith('Traditional Luwombo')))
+      .toHaveLength(2);
+    const obunuziMenuResponse = await inject(
+      'GET',
+      '/api/v1/menu-items?outlet=OBUNUZI_YMCA'
+    );
+    expect(obunuziMenuResponse.statusCode).toBe(200);
+    expect(((obunuziMenuResponse.json() as Json).items as Json[])
+      .filter((item) => item.isActive === true)).toHaveLength(59);
     const chickenMenuItem = menuItems
       .find((item) => item.id === menu.foodizoChicken);
     expect(chickenMenuItem?.isAvailable).toBe(false);

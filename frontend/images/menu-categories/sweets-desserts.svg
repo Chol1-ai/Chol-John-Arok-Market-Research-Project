@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="title">
+  <title id="title">Ice cream cone with sweet toppings</title>
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#f4c1cc"/><stop offset="1" stop-color="#9b7dc2"/></linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg)"/>
+  <circle cx="105" cy="70" r="55" fill="#fff" opacity=".23"/><circle cx="546" cy="285" r="69" fill="#fff" opacity=".16"/>
+  <ellipse cx="326" cy="304" rx="142" ry="24" fill="#604d79" opacity=".2"/>
+  <path d="M235 163l92 153 94-153z" fill="#c78b50" stroke="#9f683d" stroke-width="8" stroke-linejoin="round"/>
+  <path d="M257 197l114 0m-91 34 70 0m-51 33 31 0" stroke="#f1c17d" stroke-width="7"/>
+  <path d="M237 166c-40-28-27-83 18-88 12-52 82-61 112-17 47-22 94 22 77 68 35 28 22 79-19 90-27 23-66 16-88-9-33 24-81 9-90-25-32 6-51-7-55-19z" fill="#f8e6c6" stroke="#fff5df" stroke-width="8"/>
+  <path d="M279 147c19-20 38-20 56-1 18-24 38-22 57 1" fill="none" stroke="#a95783" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="294" cy="120" r="7" fill="#d84f60"/><circle cx="368" cy="119" r="7" fill="#d84f60"/><circle cx="333" cy="92" r="7" fill="#d84f60"/>
+  <path d="M342 41c-14-19 14-24 2-42m24 48c-12-17 14-23 3-39" fill="none" stroke="#fff5e3" stroke-width="6" stroke-linecap="round"/>
+</svg>

@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import { randomUUID } from 'crypto';
 import { getKampalaBusinessDate } from '../src/services/tokenService.js';
 import { DigestService } from '../src/services/digestService.js';
+import { customerMenuItems, type MenuSeed } from './customerMenuCatalog.js';
 
 const prisma = new PrismaClient();
 const DEMO_PIN = '1234';
@@ -12,13 +13,6 @@ type Outlet = 'FOODIZO_HAM_TOWERS' | 'OBUNUZI_YMCA';
 type Channel = 'DINE_IN' | 'TAKEAWAY_PICKUP' | 'PHONE_DELIVERY';
 type OrderStatus = 'AWAITING_PAYMENT' | 'PENDING' | 'PREPARING' | 'READY' | 'COMPLETED' | 'CANCELLED';
 type Station = 'STEAM_LINE' | 'GRILL_FRYER' | 'ROLEX_GRIDDLE' | 'BAR_BEVERAGE';
-
-type MenuSeed = {
-  name: string;
-  category: string;
-  price_ugx: number;
-  station: Station;
-};
 
 type MenuMap = Record<string, { id: string; name: string; price_ugx: number; station: Station }>;
 
@@ -376,19 +370,21 @@ export async function main() {
 
   // 5. MENU ITEMS.
   const foodizoMenu = await seedMenu('FOODIZO_HAM_TOWERS', [
-    { name: '2pc Fried Chicken & Chips',         category: 'Mains',     price_ugx: 14000, station: 'GRILL_FRYER' },
-    { name: 'Regular Rolex (2 Eggs, 1 Chapati)', category: 'Breakfast', price_ugx: 3500,  station: 'ROLEX_GRIDDLE' },
-    { name: 'Plain Chips',                       category: 'Sides',     price_ugx: 5000,  station: 'GRILL_FRYER' },
-    { name: 'Fresh Passion Juice',               category: 'Drinks',    price_ugx: 4000,  station: 'BAR_BEVERAGE' },
-    { name: 'Rwenzori Bottle',                   category: 'Drinks',    price_ugx: 1500,  station: 'BAR_BEVERAGE' }
+    ...customerMenuItems,
+    { name: '2pc Fried Chicken & Chips', category: 'Mains', price_ugx: 14000, station: 'GRILL_FRYER', is_active: false },
+    { name: 'Regular Rolex (2 Eggs, 1 Chapati)', category: 'Breakfast', price_ugx: 3500, station: 'ROLEX_GRIDDLE', is_active: false },
+    { name: 'Plain Chips', category: 'Sides', price_ugx: 5000, station: 'GRILL_FRYER', is_active: false },
+    { name: 'Fresh Passion Juice', category: 'Drinks', price_ugx: 4000, station: 'BAR_BEVERAGE', is_active: false },
+    { name: 'Rwenzori Bottle', category: 'Drinks', price_ugx: 1500, station: 'BAR_BEVERAGE', is_active: false }
   ]);
 
   const obunuziMenu = await seedMenu('OBUNUZI_YMCA', [
-    { name: 'Traditional Beef Luwombo', category: 'Mains',  price_ugx: 16000, station: 'STEAM_LINE' },
-    { name: 'Steamed Matooke',          category: 'Sides',  price_ugx: 3000,  station: 'STEAM_LINE' },
-    { name: 'Rice & Beans',             category: 'Mains',  price_ugx: 6000,  station: 'STEAM_LINE' },
-    { name: 'Fresh Passion Juice',      category: 'Drinks', price_ugx: 4000,  station: 'BAR_BEVERAGE' },
-    { name: 'Rwenzori Bottle',           category: 'Drinks', price_ugx: 1500,  station: 'BAR_BEVERAGE' }
+    ...customerMenuItems,
+    { name: 'Traditional Beef Luwombo', category: 'Mains', price_ugx: 16000, station: 'STEAM_LINE', is_active: false },
+    { name: 'Steamed Matooke', category: 'Sides', price_ugx: 3000, station: 'STEAM_LINE', is_active: false },
+    { name: 'Rice & Beans', category: 'Mains', price_ugx: 6000, station: 'STEAM_LINE', is_active: false },
+    { name: 'Fresh Passion Juice', category: 'Drinks', price_ugx: 4000, station: 'BAR_BEVERAGE', is_active: false },
+    { name: 'Rwenzori Bottle', category: 'Drinks', price_ugx: 1500, station: 'BAR_BEVERAGE', is_active: false }
   ]);
 
   // 6. RAW INVENTORY.

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="title">
+  <title id="title">Chilled bottled sodas and refreshing drinks</title>
+  <defs>
+    <linearGradient id="bg" x2="0" y2="1"><stop stop-color="#7ed4dc"/><stop offset="1" stop-color="#216e91"/></linearGradient>
+    <linearGradient id="bottle" x2="1" y2="0"><stop stop-color="#fff" stop-opacity=".35"/><stop offset=".5" stop-color="#fff" stop-opacity=".06"/><stop offset="1" stop-color="#fff" stop-opacity=".28"/></linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg)"/>
+  <circle cx="531" cy="61" r="58" fill="#edffff" opacity=".25"/>
+  <ellipse cx="318" cy="300" rx="220" ry="28" fill="#124b6c" opacity=".26"/>
+  <g stroke="#d8fbff" stroke-width="7">
+    <path d="M182 103h41v28l17 20v128c0 23-12 35-38 35s-38-12-38-35V151l18-20z" fill="#e64b45"/>
+    <path d="M301 82h42v35l18 22v141c0 24-12 35-39 35s-39-11-39-35V139l18-22z" fill="#f4a62b"/>
+    <path d="M423 103h41v28l17 20v128c0 23-12 35-38 35s-38-12-38-35V151l18-20z" fill="#36a66b"/>
+  </g>
+  <path d="M182 103h41m78-21h42m80 21h41" stroke="#f4fbf8" stroke-width="10" stroke-linecap="round"/>
+  <rect x="168" y="188" width="79" height="45" rx="10" fill="#fff" opacity=".92"/><rect x="287" y="177" width="79" height="45" rx="10" fill="#fff" opacity=".92"/><rect x="409" y="188" width="79" height="45" rx="10" fill="#fff" opacity=".92"/>
+  <path d="M191 202h33m-33 15h28m90-40h36m-36 15h28m92 1h34m-34 15h28" stroke="#3b6877" stroke-width="5" stroke-linecap="round"/>
+  <g fill="#fff" opacity=".75"><circle cx="170" cy="158" r="5"/><circle cx="229" cy="256" r="5"/><circle cx="300" cy="151" r="5"/><circle cx="354" cy="259" r="5"/><circle cx="427" cy="166" r="5"/><circle cx="478" cy="253" r="5"/></g>
+</svg>

@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" />
-  <link rel="stylesheet" href="/css/customer_order.css?v=8" />
+  <link rel="stylesheet" href="/css/customer_order.css?v=9" />
   <title>Foodizo &amp; Obunuzi | Menu and Ordering</title>
 </head>
 <body>
@@ -57,6 +57,10 @@
           <input id="search" type="search" placeholder="Search the live menu" autocomplete="off" />
         </label>
       </div>
+      <div class="customer-menu-heading">
+        <h2 id="menu-title">Menu</h2>
+        <p id="menu-description" hidden></p>
+      </div>
       <button id="cart-toggle" class="customer-cart-toggle" type="button" aria-controls="cart-panel" aria-expanded="false" hidden>
         <span>View cart</span>
         <strong id="cart-toggle-summary"></strong>
@@ -64,7 +68,6 @@
 
       <div class="customer-layout">
         <section class="customer-menu">
-          <div class="customer-category-row" id="categories" aria-label="Menu categories"></div>
           <div class="customer-menu-grid" id="menu" aria-live="polite">
             <div class="customer-empty">Loading today’s menu…</div>
           </div>
@@ -119,7 +122,8 @@
 
   <script src="/js/customer-cart-navigation.js?v=1" defer></script>
   <script src="/js/customer-notifications.js?v=1" defer></script>
-  <script src="/js/customer-order.js?v=6" defer></script>
+  <script src="/js/customer-menu-categories.js?v=1" defer></script>
+  <script src="/js/customer-order.js?v=7" defer></script>
   <script src="/js/customer-navigation.js" defer></script>
 </body>
 </html>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="title">
+  <title id="title">Steaming coffee with latte art</title>
+  <defs>
+    <linearGradient id="bg" x2="0" y2="1"><stop stop-color="#493b37"/><stop offset="1" stop-color="#b7794d"/></linearGradient>
+    <linearGradient id="cup" x2="0" y2="1"><stop stop-color="#fffdf5"/><stop offset="1" stop-color="#ddd4c4"/></linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg)"/>
+  <circle cx="90" cy="72" r="58" fill="#f4d7a6" opacity=".12"/>
+  <ellipse cx="324" cy="292" rx="190" ry="25" fill="#241c1a" opacity=".3"/>
+  <path d="M208 141h216l-17 122c-4 33-27 50-91 50s-87-17-91-50z" fill="url(#cup)" stroke="#fff" stroke-width="7"/>
+  <path d="M421 165h34c47 0 43 73-3 74h-42" fill="none" stroke="#eee5d7" stroke-width="18"/>
+  <ellipse cx="316" cy="146" rx="108" ry="35" fill="#4a261a"/>
+  <path d="M285 151c3-29 56-35 70-12 12 20-11 38-28 35 23-22-10-38-22-18-7 11 2 22 13 24-21 7-35-10-33-29z" fill="#f6e3c2"/>
+  <path d="M268 102c-20-24 23-29 8-54m42 55c-20-24 23-29 8-54m42 54c-19-22 20-30 9-51" fill="none" stroke="#fff0d6" stroke-width="7" stroke-linecap="round"/>
+</svg>

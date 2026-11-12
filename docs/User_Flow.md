@@ -70,13 +70,13 @@
 | Step | Actor | Action |
 | :--- | :--- | :--- |
 | 1 | Customer | Scans Foodizo Ham Towers QR code or opens saved bookmark |
-| 2 | Customer | Adds `1x 2pc Fried Chicken & Chips` (UGX 14,000) + `1x Fresh Passion Juice` (UGX 4,000) |
+| 2 | Customer | Adds `1x Crispy Fried Chicken (2 Pieces)` (UGX 10,000) + `1x Fresh Passion Fruit Juice` (UGX 6,000) |
 | 3 | Customer | Selects fulfillment type: **Pre-order pickup** (canonical channel: `TAKEAWAY_PICKUP`) |
 | 4 | System | Resolves menu IDs, names, and prices from `menu_items`; creates the order as `AWAITING_PAYMENT`; reserves the next daily display token and a globally unique `public_ref` |
 | 5 | Customer | Inputs MTN MoMo number (`077XXXXXXX`) → taps **"Pay Now"** |
 | 6 | System | MSISDN normalised to E.164 (`25677XXXXXXX`); carrier detected as MTN; the same number is stored as `orders.customer_phone` so the `READY` SMS has a destination |
 | 7 | System | `POST /collection/v1_0/requesttopay` dispatched with `X-Reference-Id` (payment-attempt idempotency key); payment record status → `INITIATED` |
-| 8 | Customer | USSD prompt arrives on handset: *"Approve UGX 18,000 for Foodizo? Enter PIN"*; frontend shows the payment countdown |
+| 8 | Customer | USSD prompt arrives on handset: *"Approve UGX 16,000 for Foodizo? Enter PIN"*; frontend shows the payment countdown |
 | 9 | Customer | Enters MoMo PIN on handset |
 | 10 | System | MTN webhook fires: `status: SUCCESSFUL` → `payment_events` dedupe and row locks run → `payments.status → SUCCESSFUL` → `orders.status: AWAITING_PAYMENT → PENDING` *(see `Payment_Integration.md §6`)* |
 | 11 | KDS | Order appears on Station 2 (Fryer) with the reserved token: `TAKEAWAY_PICKUP — TOKEN-088` |
@@ -93,10 +93,10 @@
 | Step | Actor | Action |
 | :--- | :--- | :--- |
 | 1 | Prossy N. | Views Table Occupancy Grid → taps `T-04` (`VACANT` → `OCCUPIED`) |
-| 2 | Prossy N. | Selects `2x Beef Luwombo`, `2x Matooke`, `2x Water`. Adds note: *"Sauce hot"* |
+| 2 | Prossy N. | Selects `2x Traditional Luwombo (Chicken)`, `2x Matooke & Beef Stew`, `2x Bottled Mineral Water (500ml)`. Adds note: *"Sauce hot"* |
 | 3 | Prossy N. | Taps **"Send to Kitchen"** |
 | 4 | KDS | The authenticated FOH action creates the postpay table tab as `PENDING`; it appears on Station 1 (Steam Line): `DINE_IN — T-04` (blue badge) |
-| 5 | Prossy N. (FOH cashier) | Takes phone order: `1x Beef Luwombo (delivery)` for Dr. Okello. Selects delivery zone `YMCA_MAIN`, enters note `Block C, Room 204 — call at security gate`, recipient `Dr. Okello`, phone `0701 234 567` |
+| 5 | Prossy N. (FOH cashier) | Takes phone order: `1x Traditional Luwombo (Chicken)` for Dr. Okello. Selects delivery zone `YMCA_MAIN`, enters note `Block C, Room 204 — call at security gate`, recipient `Dr. Okello`, phone `0701 234 567` |
 | 6 | System | Validates the zone is active and belongs to Obunuzi; recomputes menu prices and delivery fee `UGX 1,500`; creates the unpaid cash-on-delivery order as `PENDING`. No order is created if the zone, note, name, or phone is missing |
 | 8 | KDS | Second ticket appears: `PHONE_DELIVERY — TOKEN-043` (purple badge) with destination `YMCA MAIN CAMPUS`. Customer name, phone, room note, and GPS (if any) are not shown on the KDS |
 | 9 | Cook | KDS shows both tickets chronologically. Cook prepares both Luwombo portions together. |

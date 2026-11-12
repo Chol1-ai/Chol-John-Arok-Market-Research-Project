@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="title">
+  <title id="title">Tropical fruit juices and smoothies</title>
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#f6c852"/><stop offset="1" stop-color="#65b577"/></linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg)"/>
+  <circle cx="96" cy="76" r="55" fill="#fff" opacity=".2"/><circle cx="540" cy="280" r="74" fill="#fff" opacity=".12"/>
+  <ellipse cx="322" cy="301" rx="232" ry="27" fill="#47754a" opacity=".22"/>
+  <path d="M179 117h90l-12 158c-2 26-11 37-33 37s-31-11-33-37z" fill="#fff8e6" stroke="#fff" stroke-width="7"/>
+  <path d="M194 184h60l-6 87c-2 24-8 32-25 32s-23-8-25-32z" fill="#e97534"/>
+  <path d="M225 114l22-72" stroke="#f1efe1" stroke-width="9" stroke-linecap="round"/>
+  <path d="M300 135h90l-12 141c-2 26-11 36-33 36s-31-10-33-36z" fill="#fff8e6" stroke="#fff" stroke-width="7"/>
+  <path d="M316 193h59l-7 78c-2 24-8 32-24 32s-24-8-26-32z" fill="#eeb43a"/>
+  <path d="M340 132l23-72" stroke="#f1efe1" stroke-width="9" stroke-linecap="round"/>
+  <path d="M420 157h77l-10 119c-2 24-11 36-29 36s-27-12-29-36z" fill="#f3e8c5" stroke="#fff" stroke-width="7"/>
+  <path d="M433 211h51l-5 60c-2 23-8 31-21 31s-19-8-21-31z" fill="#ba6372"/>
+  <path d="M453 153l22-68" stroke="#f1efe1" stroke-width="9" stroke-linecap="round"/>
+  <path d="M116 230c25-39 59-46 82-30-5 35-36 55-82 30z" fill="#4b9b52"/><path d="M121 228l54-23" stroke="#c5e294" stroke-width="5"/>
+  <circle cx="508" cy="110" r="30" fill="#ee7d35"/><path d="M508 79c6-18 25-21 36-15-6 16-18 20-36 15z" fill="#478c49"/>
+</svg>

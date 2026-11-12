@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="title">
+  <title id="title">Fresh bread and golden pastries</title>
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#f6e2b9"/><stop offset="1" stop-color="#c78b4b"/></linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg)"/>
+  <circle cx="112" cy="74" r="48" fill="#fff" opacity=".22"/>
+  <ellipse cx="332" cy="286" rx="216" ry="31" fill="#71482e" opacity=".2"/>
+  <ellipse cx="326" cy="242" rx="204" ry="68" fill="#fff7e6" stroke="#ead5ad" stroke-width="7"/>
+  <path d="M169 231c4-56 44-88 110-83 54 3 93 33 90 81-3 32-35 45-99 45-73 0-104-11-101-43z" fill="#bd7036"/>
+  <path d="M198 204c25-22 54-27 90-20m-71 41c28-22 60-27 99-21m-73 41c24-13 51-16 77-11" fill="none" stroke="#e8b56e" stroke-width="10" stroke-linecap="round"/>
+  <path d="M397 234c8-41 36-63 71-55 39 8 51 41 33 72-15 25-42 34-74 19-21-10-35-20-30-36z" fill="#e9a43e"/>
+  <path d="M423 215c14 17 22 33 24 50m16-62c14 18 21 34 22 52" stroke="#ffe0a0" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="477" cy="154" r="31" fill="#7d3f36"/><circle cx="477" cy="154" r="12" fill="#f6e2b9"/>
+</svg>

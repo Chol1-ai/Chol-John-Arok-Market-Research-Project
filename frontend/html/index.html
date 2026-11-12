@@ -114,11 +114,12 @@
       .hero { grid-template-columns: 1fr; gap: 22px; padding: 38px 0 20px; }
       h1 { max-width: 540px; }
       .section { padding-top: 38px; }
-      .section-heading { align-items: start; flex-direction: column; gap: 10px; }
+      .section-heading { align-items: center; flex-direction: column; gap: 10px; text-align: center; }
       .cards:not(.cards-operations) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .cards-operations { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .cards { gap: 13px; }
       .card-media { height: 140px; }
+      .home-category-card .card-media { height: 122px; }
       .cards-operations .card-media { height: 116px; }
       .card-content { min-height: 190px; padding: 14px; }
       .cards-operations .card-content { min-height: 175px; padding: 13px; }
@@ -152,7 +153,7 @@
     .customer-hero h1 { margin: 18px auto 16px; color: #183d2d; font-size: clamp(42px, 5.2vw, 66px); text-shadow: 0 1px 12px rgba(255,255,255,.9); }
     .customer-hero .hero-actions, .customer-hero .locations { justify-content: center; }
     .customer-section { padding-top: 40px; }
-    .customer-section .section-heading { align-items: end; }
+    .customer-section .section-heading { align-items: center; justify-content: center; flex-direction: column; gap: 13px; text-align: center; }
     .customer-section .section-kicker { color: var(--green); }
     .meal-card .card-media { height: 210px; }
     .meal-card .card-content { min-height: 145px; }
@@ -189,16 +190,13 @@
     .delivery-retry[hidden] { display: none; }
     .browse-section { padding-top: 23px; }
     .home-menu-groups { display: grid; gap: 16px; }
-    .home-category-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); align-items: stretch; gap: 10px; }
-    .home-category-card { border-radius: 15px; }
-    .home-category-card .card-content { min-height: 0; padding: 12px 14px; }
-    .home-category-card h3 { margin: 0; font-size: 17px; line-height: 1.25; letter-spacing: -.04em; }
-    .home-category-items { display: grid; gap: 0; margin: 7px 0 0; padding: 0; list-style: none; }
-    .home-category-items li { display: flex; justify-content: space-between; gap: 10px; padding: 5px 0; border-top: 1px solid var(--line); font-size: 10px; line-height: 1.4; }
-    .home-category-items li > span { min-width: 0; }
-    .home-category-items strong { flex: none; color: var(--green); white-space: nowrap; }
-    .home-category-items small { display: block; color: var(--muted); font-size: 9px; }
-    .home-category-card .card-link { justify-content: flex-start; margin-top: 6px; padding-top: 6px; color: #00866c; font-size: 11px; font-weight: 700; }
+    .home-category-grid { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); align-items: stretch; gap: 14px; }
+    .home-category-card { border-radius: 16px; }
+    .home-category-card .card-media { height: 146px; }
+    .home-category-card .card-content { min-height: 176px; padding: 14px 16px 16px; }
+    .home-category-card h3 { margin: 0 0 7px; font-size: 15px; line-height: 1.3; letter-spacing: -.035em; }
+    .home-category-card p { margin: 0; font-size: 11px; line-height: 1.6; }
+    .home-category-card .card-link { justify-content: flex-start; margin-top: auto; padding-top: 11px; color: var(--green); font-size: 10px; font-weight: 800; }
     .info-panel { padding: 25px; border: 1px solid var(--line); border-radius: 20px; background: #fffefa; }
     .info-panel > p { max-width: 800px; margin: 12px 0 0; color: var(--muted); font-size: 12px; line-height: 1.8; }
     .info-panel h3 { margin: 0; font-size: 20px; letter-spacing: -.03em; }
@@ -354,7 +352,8 @@
       </div>
     </div>
   </dialog>
-  <script src="/js/customer-home.js?v=20261114"></script>
+  <script src="/js/customer-menu-categories.js?v=1"></script>
+  <script src="/js/customer-home.js?v=20261115"></script>
   <script src="/js/customer-cart-navigation.js?v=1" defer></script>
   <script src="/js/customer-notifications.js?v=1" defer></script>
   <script src="/js/customer-navigation.js" defer></script>
