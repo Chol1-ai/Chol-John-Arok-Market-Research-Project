@@ -41,12 +41,13 @@
     .nav a, .button { min-height: 42px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0 15px; border-radius: 999px; font-size: 12px; font-weight: 700; text-decoration: none; transition: transform .18s ease, background .18s ease, border-color .18s ease; }
     .nav a:hover, .button:hover { transform: translateY(-1px); }
     .nav a { color: #48534b; }
-    .nav a:hover { background: #eeece5; }
+    .nav a:hover { background: #edf4ee; color: var(--green); }
     .nav a.button-primary { color: white; }
+    .nav a.button-primary:hover { background: #194b30; color: white; box-shadow: 0 9px 22px rgba(25, 75, 48, .24); }
     .button-primary { background: var(--green); color: white; box-shadow: 0 7px 18px rgba(36, 92, 62, .15); }
-    .button-primary:hover { background: #194b30; }
+    .button-primary:hover { background: #194b30; box-shadow: 0 9px 22px rgba(25, 75, 48, .24); }
     .button-outline { border: 1px solid #d6d3ca; background: rgba(255,255,255,.55); }
-    .button-outline:hover { background: white; border-color: #bcb8ad; }
+    .button-outline:hover { background: #edf4ee; border-color: #9bb8a4; color: var(--green); }
     .material-symbols-outlined { font-size: 18px; line-height: 1; }
 
     .hero { display: grid; grid-template-columns: 1fr .88fr; align-items: center; gap: 38px; min-height: 410px; padding: 40px 0 32px; }
@@ -59,8 +60,6 @@
     .locations { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 25px; }
     .location-chip { display: inline-flex; align-items: center; gap: 6px; padding: 8px 11px; border: 1px solid var(--line); border-radius: 999px; background: rgba(255,255,255,.64); color: #58625a; font-size: 11px; font-weight: 600; }
     .location-chip .material-symbols-outlined { color: var(--red); font-size: 15px; }
-    .hero-photo { position: relative; min-height: 330px; overflow: hidden; border-radius: 26px; background: #d9cdb9; box-shadow: 0 22px 50px rgba(50, 42, 30, .14); }
-    .hero-photo img { position: absolute; width: 100%; height: 100%; inset: 0; object-fit: cover; }
 
     .section { padding: 52px 0 24px; scroll-margin-top: 90px; }
     .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 23px; }
@@ -106,7 +105,6 @@
     @media (max-width: 980px) {
       .cards-operations { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .hero { gap: 24px; }
-      .hero-photo { min-height: 300px; }
     }
     @media (max-width: 700px) {
       .wrap { width: min(100% - 30px, 560px); }
@@ -114,7 +112,6 @@
       .nav a:not(.button) { display: none; }
       .hero { grid-template-columns: 1fr; gap: 22px; padding: 38px 0 20px; }
       h1 { max-width: 540px; }
-      .hero-photo { min-height: 260px; }
       .section { padding-top: 38px; }
       .section-heading { align-items: start; flex-direction: column; gap: 10px; }
       .cards:not(.cards-operations) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -143,12 +140,11 @@
     .customer-nav { gap: 16px; }
     .customer-nav a:not(.button) { color: #48534b; font-size: 12px; font-weight: 700; text-decoration: none; }
     .customer-nav a:not(.button):hover { color: var(--green); }
-    .customer-hero { grid-template-columns: 1fr 1.05fr; min-height: 490px; gap: 52px; padding-block: 48px; }
-    .customer-hero > :first-child { text-align: left; }
-    .customer-hero h1 { margin: 18px 0 16px; font-size: clamp(42px, 5.2vw, 66px); }
-    .customer-hero .hero-copy { margin: 0; }
-    .customer-hero .hero-actions, .customer-hero .locations { justify-content: flex-start; }
-    .customer-hero .hero-photo { min-height: 390px; }
+    .customer-hero { grid-template-columns: minmax(0, 760px); justify-content: center; min-height: 0; gap: 0; padding-block: 48px 40px; }
+    .customer-hero > :first-child { text-align: center; }
+    .customer-hero h1 { margin: 18px auto 16px; font-size: clamp(42px, 5.2vw, 66px); }
+    .customer-hero .hero-copy { margin: 0 auto; }
+    .customer-hero .hero-actions, .customer-hero .locations { justify-content: center; }
     .customer-section { padding-top: 40px; }
     .customer-section .section-heading { align-items: end; }
     .customer-section .section-kicker { color: var(--green); }
@@ -158,7 +154,6 @@
     .customer-footer-links { gap: 20px; }
     @media (max-width: 700px) {
       .customer-hero { grid-template-columns: 1fr; gap: 24px; padding-top: 34px; }
-      .customer-hero .hero-photo { min-height: 280px; }
       .customer-section .section-heading { align-items: flex-start; }
     }
     @media (max-width: 430px) {
@@ -170,10 +165,10 @@
       .meal-card .card-media { height: 190px; }
     }
     .customer-topline { color: #647064; font-size: 11px; font-weight: 700; }
-    .customer-hero { grid-template-columns: 1fr 1fr; min-height: 0; gap: 44px; padding-block: 48px 40px; }
+    .customer-hero { grid-template-columns: minmax(0, 760px); justify-content: center; min-height: 0; gap: 0; padding-block: 48px 40px; }
     .customer-hero h1 { max-width: 560px; font-size: clamp(40px, 5vw, 62px); }
-    .customer-hero .hero-copy { max-width: 510px; font-size: 14px; }
-    .delivery-finder { max-width: 540px; margin-top: 23px; padding: 18px; border: 1px solid #e6e2d8; border-radius: 20px; background: #fffefa; box-shadow: 0 12px 30px rgba(40, 35, 25, .08); }
+    .customer-hero .hero-copy { max-width: 510px; margin-inline: auto; font-size: 14px; }
+    .delivery-finder { max-width: 540px; margin: 23px auto 0; padding: 18px; border: 1px solid #e6e2d8; border-radius: 20px; background: #fffefa; box-shadow: 0 12px 30px rgba(40, 35, 25, .08); }
     .delivery-finder-title { display: flex; align-items: center; gap: 9px; margin-bottom: 13px; font-size: 13px; font-weight: 800; }
     .delivery-finder-title .material-symbols-outlined { color: var(--red); }
     .delivery-finder-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -184,8 +179,8 @@
     .delivery-finder .button:disabled { cursor: not-allowed; opacity: .56; transform: none; }
     .delivery-finder-status { min-height: 16px; margin: 9px 2px 0; color: var(--muted); font-size: 10px; line-height: 1.5; }
     .delivery-retry { display: block; margin: -4px 2px 6px; padding: 0; border: 0; background: none; color: var(--green); font: inherit; font-size: 10px; font-weight: 800; text-decoration: underline; cursor: pointer; }
+    .delivery-retry:hover { color: #194b30; text-decoration-thickness: 2px; }
     .delivery-retry[hidden] { display: none; }
-    .customer-hero .hero-photo { min-height: 410px; }
     .browse-section { padding-top: 23px; background: linear-gradient(180deg, rgba(248,246,241,.88), rgba(250,249,245,.98)), url('/images/foodizo-landing-hero.jpg') center/cover no-repeat; }
     .home-menu-groups { display: grid; gap: 24px; }
     .home-category-grid { align-items: stretch; }
@@ -215,20 +210,19 @@
     .footer-column a { display: flex; width: fit-content; margin: 9px 0; color: #59635a; font-size: 11px; font-weight: 600; }
     .footer-column a:hover { color: var(--green); text-decoration: underline; text-underline-offset: 3px; }
     .customer-footer-bottom { min-height: 55px; border-top: 1px solid var(--line); color: var(--muted); font-size: 10px; }
-    .customer-footer-bottom .wrap { min-height: 55px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .customer-footer-bottom .wrap { min-height: 55px; display: flex; align-items: center; justify-content: center; gap: 12px; }
     .info-dialog { width: min(680px, calc(100% - 32px)); max-height: min(82vh, 760px); margin: auto; padding: 0; overflow: auto; border: 1px solid #e6e2d8; border-radius: 20px; background: var(--paper); color: var(--ink); box-shadow: 0 24px 80px rgba(0,0,0,.24); }
     .info-dialog::backdrop { background: rgba(24, 31, 26, .55); backdrop-filter: blur(3px); }
     .info-dialog-header { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 17px 20px; border-bottom: 1px solid var(--line); background: rgba(248,246,241,.96); backdrop-filter: blur(10px); }
     .info-dialog-header h2 { margin: 0; font-size: 19px; letter-spacing: -.03em; }
     .info-dialog-close { display: grid; width: 38px; height: 38px; flex: 0 0 auto; place-items: center; border: 1px solid var(--line); border-radius: 50%; background: white; color: var(--ink); cursor: pointer; }
-    .info-dialog-close:hover { background: #eeece5; }
+    .info-dialog-close:hover { border-color: #9bb8a4; background: #edf4ee; color: var(--green); }
     .info-dialog-body { padding: 18px; }
     .info-dialog .info-panel { padding: 22px; }
     .info-dialog .info-panel h3 { margin-top: 6px; }
     .info-dialog a:focus-visible, .info-dialog button:focus-visible, .info-dialog summary:focus-visible { outline: 3px solid #e28a34; outline-offset: 3px; }
     @media (max-width: 700px) {
       .customer-hero { grid-template-columns: 1fr; gap: 24px; padding-top: 34px; }
-      .customer-hero .hero-photo { min-height: 280px; }
       .customer-footer-main { grid-template-columns: 1fr 1fr; gap: 25px 20px; }
       .footer-brand { grid-column: 1 / -1; }
     }
@@ -239,7 +233,6 @@
       .info-panel { padding: 19px; }
       .customer-footer-main { grid-template-columns: 1fr; }
       .footer-brand { grid-column: auto; }
-      .customer-footer-bottom .wrap { align-items: flex-start; flex-direction: column; justify-content: center; padding-block: 12px; }
     }
   </style>
 </head>
@@ -284,9 +277,6 @@
           <button class="delivery-retry" id="home-zone-retry" type="button" hidden>Try loading areas again</button>
           <button class="button button-primary" id="home-delivery-submit" type="submit" disabled>Choose an area to continue</button>
         </form>
-      </div>
-      <div class="hero-photo">
-        <img src="../images/foodizo-landing-hero.jpg" alt="Meals available at Foodizo and Obunuzi in Wandegeya" fetchpriority="high" />
       </div>
     </section>
 
