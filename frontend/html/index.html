@@ -55,7 +55,6 @@
     .eyebrow-dot { width: 7px; height: 7px; border-radius: 50%; background: #e49a39; }
     .hero > :first-child { text-align: center; }
     h1 { max-width: 610px; margin: 16px auto 14px; color: var(--green); font-size: clamp(36px, 5vw, 58px); line-height: 1.06; letter-spacing: -.055em; text-wrap: balance; }
-    .hero-copy { max-width: 520px; margin: 0 auto; color: var(--muted); font-size: 15px; line-height: 1.8; }
     .hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 23px; }
     .locations { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 25px; }
     .location-chip { display: inline-flex; align-items: center; gap: 6px; padding: 8px 11px; border: 1px solid var(--line); border-radius: 999px; background: rgba(255,255,255,.64); color: #58625a; font-size: 11px; font-weight: 600; }
@@ -143,7 +142,6 @@
     .customer-hero { grid-template-columns: minmax(0, 760px); justify-content: center; min-height: 0; gap: 0; padding-block: 48px 40px; }
     .customer-hero > :first-child { text-align: center; }
     .customer-hero h1 { margin: 18px auto 16px; font-size: clamp(42px, 5.2vw, 66px); }
-    .customer-hero .hero-copy { margin: 0 auto; }
     .customer-hero .hero-actions, .customer-hero .locations { justify-content: center; }
     .customer-section { padding-top: 40px; }
     .customer-section .section-heading { align-items: end; }
@@ -167,7 +165,6 @@
     .customer-topline { color: #647064; font-size: 11px; font-weight: 700; }
     .customer-hero { grid-template-columns: minmax(0, 760px); justify-content: center; min-height: 0; gap: 0; padding-block: 48px 40px; }
     .customer-hero h1 { max-width: 560px; font-size: clamp(40px, 5vw, 62px); }
-    .customer-hero .hero-copy { max-width: 510px; margin-inline: auto; font-size: 14px; }
     .delivery-finder { max-width: 540px; margin: 23px auto 0; padding: 18px; border: 1px solid #e6e2d8; border-radius: 20px; background: #fffefa; box-shadow: 0 12px 30px rgba(40, 35, 25, .08); }
     .delivery-finder-title { display: flex; align-items: center; gap: 9px; margin-bottom: 13px; font-size: 13px; font-weight: 800; }
     .delivery-finder-title .material-symbols-outlined { color: var(--red); }
@@ -257,7 +254,6 @@
     <section class="hero customer-hero" aria-labelledby="hero-title">
       <div>
         <h1 id="hero-title">Order from Foodizo or Obunuzi in Wandegeya.</h1>
-        <p class="hero-copy">Order from Foodizo or Obunuzi for pickup or delivery in Wandegeya, Kampala.</p>
         <form class="delivery-finder" id="delivery-finder">
           <div class="delivery-finder-title"><span class="material-symbols-outlined" aria-hidden="true">near_me</span><span>Set your delivery area</span></div>
           <div class="delivery-finder-fields">
@@ -283,7 +279,6 @@
     <section class="section browse-section customer-section" id="menu" aria-labelledby="browse-title">
       <div class="section-heading">
         <div>
-          <span class="section-kicker">Browse the menu</span>
           <h2 id="browse-title">Explore menu categories</h2>
         </div>
         <a class="button button-outline" href="/order">See all meals <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></a>
