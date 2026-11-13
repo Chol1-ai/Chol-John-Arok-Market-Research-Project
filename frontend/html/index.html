@@ -878,6 +878,8 @@
     }
 
     .customer-hero-empty {
+      position: relative;
+      isolation: isolate;
       height: clamp(150px, 23vw, 260px);
       margin: 0;
       padding: 0;
@@ -889,6 +891,62 @@
       animation: empty-hero-in 760ms ease-out both;
     }
 
+    .customer-hero-orbits {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+    }
+
+    .customer-hero-orbit {
+      position: absolute;
+      width: clamp(180px, 30vw, 340px);
+      height: clamp(78px, 14vw, 142px);
+      border: 1px solid rgba(200, 61, 45, .52);
+      border-radius: 50%;
+      box-shadow: 0 0 22px rgba(200, 61, 45, .1), inset 0 0 22px rgba(200, 61, 45, .08);
+      animation: hero-orbit-forward 18s linear infinite;
+    }
+
+    .customer-hero-orbit::after {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #e87959;
+      box-shadow: 0 0 16px 4px rgba(232, 121, 89, .58);
+      content: "";
+      transform: translate(-50%, -50%);
+    }
+
+    .customer-hero-orbit--inner {
+      width: clamp(130px, 21vw, 235px);
+      height: clamp(58px, 10vw, 102px);
+      border-color: rgba(83, 169, 112, .55);
+      box-shadow: 0 0 22px rgba(83, 169, 112, .1), inset 0 0 22px rgba(83, 169, 112, .08);
+      animation: hero-orbit-backward 13s linear infinite;
+    }
+
+    .customer-hero-orbit--inner::after {
+      width: 7px;
+      height: 7px;
+      background: #83c994;
+      box-shadow: 0 0 14px 4px rgba(131, 201, 148, .56);
+    }
+
+    .customer-hero-orbit-core {
+      width: 23px;
+      height: 23px;
+      border: 1px solid rgba(255, 242, 210, .78);
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #fff0c7, #d96b43 52%, #8e3f36);
+      box-shadow: 0 0 22px 8px rgba(214, 113, 70, .28);
+      animation: hero-core-pulse 2.4s ease-in-out infinite;
+    }
+
     @keyframes empty-hero-in {
       from {
         opacity: 0;
@@ -898,6 +956,39 @@
       to {
         opacity: 1;
         transform: translateY(0);
+      }
+    }
+
+    @keyframes hero-orbit-forward {
+      from {
+        transform: rotate(-18deg);
+      }
+
+      to {
+        transform: rotate(342deg);
+      }
+    }
+
+    @keyframes hero-orbit-backward {
+      from {
+        transform: rotate(24deg);
+      }
+
+      to {
+        transform: rotate(-336deg);
+      }
+    }
+
+    @keyframes hero-core-pulse {
+      0%,
+      100% {
+        transform: scale(.86);
+        box-shadow: 0 0 18px 5px rgba(214, 113, 70, .22);
+      }
+
+      50% {
+        transform: scale(1.16);
+        box-shadow: 0 0 28px 11px rgba(214, 113, 70, .42);
       }
     }
 
@@ -989,6 +1080,11 @@
 
     @media (prefers-reduced-motion: reduce) {
       .customer-hero-empty {
+        animation: none;
+      }
+
+      .customer-hero-orbit,
+      .customer-hero-orbit-core {
         animation: none;
       }
 
@@ -1345,7 +1441,13 @@
     </div>
   </header>
 
-  <section class="customer-hero customer-hero-empty" aria-hidden="true"></section>
+  <section class="customer-hero customer-hero-empty" aria-hidden="true">
+    <div class="customer-hero-orbits">
+      <span class="customer-hero-orbit customer-hero-orbit--outer"></span>
+      <span class="customer-hero-orbit customer-hero-orbit--inner"></span>
+      <span class="customer-hero-orbit-core"></span>
+    </div>
+  </section>
 
   <main class="wrap">
     <section class="section browse-section customer-section" id="menu" aria-labelledby="browse-title">
