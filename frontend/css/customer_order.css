@@ -32,7 +32,6 @@ button { cursor: pointer; }
 .customer-back-link:hover { color: #b8dfc0; }
 .customer-back-link:focus-visible, .customer-cart-nav:focus-visible, .customer-cart-toggle:focus-visible, .customer-cart-close:focus-visible { outline: 3px solid #e8bf79; outline-offset: 3px; }
 .customer-brand img { display: block; width: 184px; height: 40px; object-fit: contain; object-position: left center; filter: brightness(1.8); }
-.customer-pickup-label { color: #b8dfc0; font-size: 12px; font-weight: 700; }
 .customer-cart-nav { position: relative; display: inline-flex; min-height: 38px; align-items: center; gap: 5px; padding: 0 10px; border: 1px solid #4b4c44; border-radius: 999px; background: #2b2c27; color: #e4e4dc; font-size: 11px; font-weight: 800; text-decoration: none; }
 .customer-cart-nav:hover { border-color: #77937b; background: #292b25; color: #c3e3c9; }
 .customer-cart-nav .material-symbols-outlined { font-size: 17px; }
@@ -132,7 +131,6 @@ h1 { margin: 9px 0; font-size: clamp(30px, 5vw, 46px); line-height: 1.1; letter-
   .customer-topbar { min-height: 60px; padding-inline: 14px; }
   .customer-brand img { width: 142px; height: 34px; }
   .customer-topbar-actions { gap: 10px; }
-  .customer-pickup-label { display: none; }
   .customer-back-link { font-size: 11px; }
   .customer-main { width: calc(100% - 24px); padding-top: 22px; }
   .customer-controls { align-items: stretch; flex-direction: column; }

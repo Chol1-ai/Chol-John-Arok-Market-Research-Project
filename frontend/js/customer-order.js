@@ -339,10 +339,7 @@
   }
 
   function openCartFromNav() {
-    if (!state.cart.size) {
-      showNotice('Your cart is empty.');
-      return;
-    }
+    if (!state.cart.size) return;
     setCheckoutStep(false);
     setCartOpen(true);
     elements.cartPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
