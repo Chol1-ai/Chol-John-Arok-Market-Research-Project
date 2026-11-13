@@ -66,7 +66,7 @@
       <div class="cards home-category-grid">
         ${orderedNames.map((category) => {
           const categoryDetails = categoryByName.get(category);
-          const params = new URLSearchParams({ outlet: outlet.value });
+          const params = new URLSearchParams({ outlet: activeOutletValue() });
           if (category !== 'Other') params.set('category', category);
           const categoryQuery = `${escapeHtml(params.toString())}`;
           return `
