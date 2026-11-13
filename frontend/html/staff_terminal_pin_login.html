@@ -7,7 +7,7 @@
   <meta name="description" content="Secure staff sign-in for Foodizo and Obunuzi." />
   <title>Staff sign-in | Foodizo &amp; Obunuzi</title>
   <link rel="icon" type="image/svg+xml" href="/images/foodizo-brand-mark.svg" />
-  <link rel="stylesheet" href="/css/staff_terminal_pin_login.css?v=10" />
+  <link rel="stylesheet" href="/css/staff_terminal_pin_login.css?v=11" />
 </head>
 <body class="login-page">
   <div class="login-shell">
@@ -31,7 +31,6 @@
     <main class="login-main">
       <section class="login-intro" aria-labelledby="login-welcome-title">
         <div class="login-intro-copy">
-          <p class="login-eyebrow">Team access</p>
           <h1 id="login-welcome-title">Welcome back.<br />Your shift starts here.</h1>
           <p>One secure sign-in for Foodizo and Obunuzi. Your role opens the right workspace.</p>
         </div>
@@ -64,14 +63,12 @@
               </svg>
             </span>
             <div>
-              <p class="login-card-kicker">Staff sign-in</p>
               <h2 id="login-form-title">Open your workspace</h2>
-              <p class="login-card-description">Use the mobile number and PIN registered by your manager.</p>
             </div>
           </div>
 
           <label class="login-phone-entry" for="staff-phone-number">
-            <span>Staff mobile number</span>
+            <span class="visually-hidden">Staff mobile number</span>
             <input
               class="login-phone-input"
               id="staff-phone-number"
@@ -87,9 +84,8 @@
           <div class="login-pin-section">
             <div class="login-pin-heading">
               <span>Staff PIN</span>
-              <span>4 digits</span>
             </div>
-            <div class="login-pin-dots" role="group" aria-label="PIN entry progress">
+            <div class="login-pin-dots" role="group" aria-label="PIN entry progress, four digits required">
               <span class="pin-dot" aria-hidden="true"></span>
               <span class="pin-dot" aria-hidden="true"></span>
               <span class="pin-dot" aria-hidden="true"></span>
@@ -127,20 +123,12 @@
             <span>Sign in to workspace</span>
           </button>
 
-          <p class="login-card-note">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <circle cx="12" cy="12" r="9"></circle>
-              <path d="M12 11v5m0-8h.01"></path>
-            </svg>
-            <span>Need an account? Ask your manager to set up staff access.</span>
-          </p>
         </div>
       </section>
     </main>
 
     <footer class="login-footer">
       <span>Foodizo &amp; Obunuzi · Wandegeya, Kampala</span>
-      <span>Authorized team members only</span>
     </footer>
   </div>
 
