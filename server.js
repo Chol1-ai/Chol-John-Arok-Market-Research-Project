@@ -45,7 +45,7 @@ const MIME_TYPES = {
   '.ttf': 'font/ttf'
 };
 
-// Public customer pages and role-protected staff surfaces.
+// Public customer pages and staff surfaces gated by active session and role.
 const ROUTE_MAP = {
   '/': 'html/index.html',
   '/hub': 'html/index.html',
@@ -67,6 +67,23 @@ const ROUTE_MAP = {
   '/tracker': 'html/boda_landmark_delivery_tracker.html',
 
 };
+
+const STAFF_SURFACE_ROLES = {
+  '/pos': ['WAITER_FOH', 'MANAGER_ADMIN'],
+  '/waitress': ['WAITER_FOH', 'MANAGER_ADMIN'],
+  '/live/pos.html': ['WAITER_FOH', 'MANAGER_ADMIN'],
+  '/kds': ['KITCHEN_STAFF', 'MANAGER_ADMIN'],
+  '/kitchen': ['KITCHEN_STAFF', 'MANAGER_ADMIN'],
+  '/live/kds.html': ['KITCHEN_STAFF', 'MANAGER_ADMIN'],
+  '/dispatch': ['WAITER_FOH', 'MANAGER_ADMIN'],
+  '/boda': ['WAITER_FOH', 'MANAGER_ADMIN'],
+  '/live/dispatch.html': ['WAITER_FOH', 'MANAGER_ADMIN'],
+  '/admin': ['MANAGER_ADMIN'],
+  '/digest': ['MANAGER_ADMIN'],
+  '/live/admin.html': ['MANAGER_ADMIN']
+};
+
+const SESSION_COOKIE = 'foodizo_session';
 
 // Keep former prototype URLs usable by sending them to the live workflows.
 const LIVE_REDIRECTS = {
@@ -136,6 +153,113 @@ function proxyApiRequest(req, res) {
   req.pipe(proxyReq);
 }
 
+function getStaffUser(request) {
+  const sessionCookie = String(request.headers.cookie || '')
+    .split(';')
+    .map((part) => part.trim())
+    .find((part) => part.startsWith(`${SESSION_COOKIE}=`));
+  const authorization = request.headers.authorization;
+  const bearerToken = typeof authorization === 'string' && authorization.startsWith('Bearer ')
+    ? authorization
+    : null;
+  const authHeaders = { accept: 'application/json' };
+
+  if (bearerToken) {
+    authHeaders.authorization = bearerToken;
+  } else if (sessionCookie && sessionCookie.slice(SESSION_COOKIE.length + 1)) {
+    authHeaders.cookie = sessionCookie;
+  } else {
+    return Promise.resolve(null);
+  }
+
+  return new Promise((resolve, reject) => {
+    const authReq = http.request(
+      {
+        hostname: BACKEND_HOST,
+        port: BACKEND_PORT,
+        path: '/api/v1/auth/me',
+        method: 'GET',
+        headers: authHeaders,
+        timeout: 5000
+      },
+      (authRes) => {
+        let body = '';
+        authRes.setEncoding('utf8');
+        authRes.on('data', (chunk) => {
+          body += chunk;
+        });
+        authRes.on('error', reject);
+        authRes.on('end', () => {
+          if (authRes.statusCode === 401 || authRes.statusCode === 403) {
+            resolve(null);
+            return;
+          }
+          if (!authRes.statusCode || authRes.statusCode < 200 || authRes.statusCode >= 300) {
+            reject(new Error(`Session verification returned HTTP ${authRes.statusCode || 0}`));
+            return;
+          }
+
+          try {
+            const payload = JSON.parse(body);
+            if (!payload.user || typeof payload.user.role !== 'string') {
+              throw new Error('Session verification returned an invalid user.');
+            }
+            resolve(payload.user);
+          } catch (error) {
+            reject(error);
+          }
+        });
+      }
+    );
+
+    authReq.on('timeout', () => {
+      authReq.destroy(new Error('Session verification timed out.'));
+    });
+    authReq.on('error', reject);
+    authReq.end();
+  });
+}
+
+async function enforceStaffSurface(req, res, pathname, search) {
+  const normalizedPath = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
+  const allowedRoles = STAFF_SURFACE_ROLES[normalizedPath];
+  if (!allowedRoles) return false;
+
+  let user;
+  try {
+    user = await getStaffUser(req);
+  } catch (error) {
+    console.error('Staff route session verification failed:', error);
+    res.writeHead(503, {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Cache-Control': 'no-store'
+    });
+    res.end('Staff access verification is unavailable. Please try again.');
+    return true;
+  }
+
+  if (!user) {
+    const next = `${pathname}${search}`;
+    res.writeHead(302, {
+      Location: `/staff?next=${encodeURIComponent(next)}`,
+      'Cache-Control': 'no-store'
+    });
+    res.end();
+    return true;
+  }
+
+  if (!allowedRoles.includes(user.role)) {
+    res.writeHead(302, {
+      Location: user.homePath || '/',
+      'Cache-Control': 'no-store'
+    });
+    res.end();
+    return true;
+  }
+
+  return false;
+}
+
 function proxyWebSocketUpgrade(req, socket, head) {
   const urlObj = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
 
@@ -197,18 +321,14 @@ function renderNotFound(res, pathname) {
         <h1>404 - Page Not Found</h1>
         <p>Could not find <code>${pathname}</code> in the Kampala Fast-Casual suite.</p>
         <div class="routes">
-          <div><strong>Live Staff Surfaces:</strong><br>
-            • <a href="/login">Staff PIN Login</a><br>
-            • <a href="/pos">Floor POS Pad</a><br>
-            • <a href="/kds">Kitchen Display (KDS)</a><br>
-            • <a href="/dispatch">Boda Dispatch Queue</a><br>
-            • <a href="/admin">Manager EOD Audit</a>
-          </div>
-          <div><strong>Live Customer Workflows:</strong><br>
+          <div><strong>Customer Workflows:</strong><br>
             • <a href="/">Customer home</a><br>
             • <a href="/order">Menu, ordering &amp; checkout</a><br>
             • <a href="/tracker">Order token &amp; tracking</a><br>
             • <a href="/customer">Customer ordering</a>
+          </div>
+          <div><strong>Staff?</strong><br>
+            Sign in at <a href="/staff">/staff</a>. Dashboards require an active staff account.
           </div>
         </div>
       </div>
@@ -217,7 +337,7 @@ function renderNotFound(res, pathname) {
   `);
 }
 
-function serveStatic(pathname, res) {
+function serveStatic(pathname, res, options) {
   let relativePath = ROUTE_MAP[pathname];
 
   // Public read-only digest deep link: /d/<token>. The page itself validates
@@ -267,13 +387,15 @@ function serveStatic(pathname, res) {
 
     res.writeHead(200, {
       'Content-Type': contentType,
-      'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=300'
+      'Cache-Control': options && options.noStore
+        ? 'no-store'
+        : ext === '.html' ? 'no-cache' : 'public, max-age=300'
     });
     fs.createReadStream(filePath).pipe(res);
   });
 }
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
   const urlObj = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   const pathname = decodeURIComponent(urlObj.pathname);
   const origin = req.headers.origin;
@@ -311,7 +433,13 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  serveStatic(pathname, res);
+  const isStaffSurface = Object.prototype.hasOwnProperty.call(
+    STAFF_SURFACE_ROLES,
+    pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname
+  );
+  if (await enforceStaffSurface(req, res, pathname, urlObj.search)) return;
+
+  serveStatic(pathname, res, isStaffSurface ? { noStore: true } : undefined);
 });
 
 server.on('upgrade', (req, socket, head) => {
@@ -327,7 +455,7 @@ server.listen(PORT, '0.0.0.0', () => {
   console.log(` API + WS backend:  http://localhost:${BACKEND_PORT}`);
   console.log('===============================================================');
   console.log('LIVE STAFF SURFACES (API-backed):');
-  console.log(`   Staff PIN Login:        http://localhost:${PORT}/login`);
+  console.log(`   Staff PIN Login:        http://localhost:${PORT}/staff`);
   console.log(`    Floor POS Pad:          http://localhost:${PORT}/pos`);
   console.log(`   Kitchen Display (KDS):   http://localhost:${PORT}/kds`);
   console.log(`   Boda Dispatch Queue:    http://localhost:${PORT}/dispatch`);

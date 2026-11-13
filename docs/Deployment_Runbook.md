@@ -44,7 +44,7 @@ $env:BOOTSTRAP_MANAGER_OUTLET = 'FOODIZO_HAM_TOWERS'
 npm --prefix backend run bootstrap:manager
 ```
 
-Use `OBUNUZI_YMCA` for an Obunuzi manager. To create a manager for both outlets, run the command again with a different phone number and the other outlet. Afterward, sign in at `/login` with that manager's phone number and PIN, then use **Create staff access** to provision waiter and kitchen accounts. Do not share or commit the connection string or PIN; close the PowerShell window after the command to clear its temporary environment variables.
+Use `OBUNUZI_YMCA` for an Obunuzi manager. To create a manager for both outlets, run the command again with a different phone number and the other outlet. Afterward, sign in at `/staff` (`/login` is an alias) with that manager's phone number and PIN, then use **Create staff access** to provision waiter and kitchen accounts. Do not share or commit the connection string or PIN; close the PowerShell window after the command to clear its temporary environment variables.
 
 Free Render web services sleep after inactivity, have ephemeral local filesystems, and can take around a minute to wake. The free Neon database has its own usage and scale-to-zero limits. Uploaded files/local changes are not durable, backups and production reliability are not provided by this setup, and the app's live MoMo flow refuses simulated payments in production mode. Use it only to preview/share the application—not for actual restaurant operations or payments. For real operations, use the on-site edge deployment below and complete its acceptance checklist.
 
@@ -238,8 +238,9 @@ curl -fsS http://127.0.0.1:3000/api/v1/health       # proxied API
 
 On a tablet:
 
-1. Open `/login` and sign in with a manager-provisioned test account's registered phone number and PIN. Never use development seed credentials in production.
+1. Open `/staff` (`/login` is an alias) and sign in with a manager-provisioned test account's registered phone number and PIN. Never use development seed credentials in production.
 2. Confirm the waiter lands on `/pos`; a kitchen user lands on `/kds`; a manager lands on `/admin`.
+   Direct dashboard URLs require an active staff session and an allowed role; unauthenticated visitors are sent to `/staff`.
 3. Open a table tab, add an item, and confirm the ticket appears on `/kds`.
 4. Claim and bump the ticket; confirm the chit prints and the SMS result is reported honestly (`MOCK` in development/sandbox).
 5. Settle the tab and confirm the table moves to `NEEDS_CLEARING`.

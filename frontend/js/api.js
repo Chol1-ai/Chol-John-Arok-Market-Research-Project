@@ -180,6 +180,48 @@
     return data.user;
   }
 
+  async function navigateTo(path) {
+    const token = getToken();
+    if (!token) {
+      global.location.replace(path);
+      return;
+    }
+
+    const requestedDestination = new URL(path, global.location.href);
+    if (requestedDestination.origin !== global.location.origin) {
+      throw new Error('The staff workspace must stay on this site.');
+    }
+
+    const requestPath =
+      requestedDestination.pathname + requestedDestination.search + requestedDestination.hash;
+    const response = await fetch(requestPath, {
+      credentials: 'include',
+      headers: { Authorization: 'Bearer ' + token }
+    });
+    const destination = new URL(response.url || requestPath, global.location.href);
+
+    if (destination.origin !== global.location.origin) {
+      throw new Error('The staff workspace must stay on this site.');
+    }
+    if (!response.ok) {
+      const message = await response.text();
+      throw new Error(message || `Could not open the staff workspace (HTTP ${response.status}).`);
+    }
+    if (
+      destination.pathname === '/staff' ||
+      destination.pathname === '/login' ||
+      !(response.headers.get('Content-Type') || '').toLowerCase().includes('text/html')
+    ) {
+      throw new Error('Could not verify staff access. Please sign in again.');
+    }
+
+    const html = await response.text();
+    global.history.replaceState(null, '', destination.pathname + destination.search + destination.hash);
+    global.document.open();
+    global.document.write(html);
+    global.document.close();
+  }
+
   /**
    * Resolve the current session and enforce a role allow-list. Returns null
    * when the page is already navigating away.
@@ -410,6 +452,7 @@
     login,
     logout,
     me,
+    navigateTo,
     guard,
     getToken,
     getUser,

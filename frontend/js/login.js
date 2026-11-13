@@ -6,51 +6,31 @@
 
   const els = {
     phoneNumber: document.getElementById('staff-phone-number'),
-    name: document.getElementById('active-user-name'),
-    meta: document.getElementById('active-user-meta'),
-    initials: document.getElementById('active-user-initials'),
-    state: document.getElementById('active-user-state'),
     feedback: document.getElementById('pin-feedback'),
     unlock: document.getElementById('btn-unlock-pos'),
     clear: document.getElementById('pin-clear'),
     backspace: document.getElementById('pin-backspace'),
-    apiState: document.getElementById('login-api-state'),
     dots: Array.from(document.querySelectorAll('.pin-dot'))
   };
 
   function setFeedback(message, tone) {
     els.feedback.textContent = message;
-    const tones = {
-      idle: 'font-label-sm text-label-sm text-on-surface-variant h-4',
-      ready: 'font-label-sm text-label-sm text-tertiary font-bold h-4',
-      error: 'font-label-sm text-label-sm text-primary font-bold h-4',
-      success: 'font-label-sm text-label-sm text-tertiary font-bold h-4'
-    };
-    els.feedback.className = tones[tone] || tones.idle;
+    const supportedTone = ['idle', 'ready', 'error', 'success'].includes(tone) ? tone : 'idle';
+    els.feedback.className = `pin-feedback pin-feedback--${supportedTone}`;
   }
 
   function updateDots() {
     els.dots.forEach((dot, index) => {
-      if (index < STATE.pin.length) {
-        dot.classList.remove('bg-surface-container');
-        dot.classList.add('bg-primary', 'scale-125');
-      } else {
-        dot.classList.remove('bg-primary', 'scale-125');
-        dot.classList.add('bg-surface-container');
-      }
+      dot.classList.toggle('is-filled', index < STATE.pin.length);
     });
 
-    if (STATE.pin.length === 4) {
-      setFeedback('PIN ready. Tap Sign in.', 'ready');
-    } else {
-      setFeedback('Enter your 4-digit PIN.', 'idle');
-    }
+    setFeedback('', 'idle');
   }
 
   function shakeDots() {
-    els.dots.forEach((dot) => dot.classList.add('animate-bounce'));
+    els.dots.forEach((dot) => dot.classList.add('is-shaking'));
     window.setTimeout(() => {
-      els.dots.forEach((dot) => dot.classList.remove('animate-bounce'));
+      els.dots.forEach((dot) => dot.classList.remove('is-shaking'));
     }, 600);
   }
 
@@ -59,20 +39,6 @@
     if (!value) return null;
     if (!value.startsWith('/') || value.startsWith('//') || value.startsWith('/login')) return null;
     return value;
-  }
-
-  async function checkHealth() {
-    const started = performance.now();
-    try {
-      const health = await F.request('/api/v1/health', { skipAuthRedirect: true });
-      const latency = Math.max(1, Math.round(performance.now() - started));
-      const state = health.status === 'UP' ? 'UP' : 'DOWN';
-      els.apiState.textContent = state === 'UP' ? `API online · ${latency}ms` : 'API unavailable';
-      els.apiState.closest('[data-action="check-health"]').dataset.healthState = state;
-    } catch (_error) {
-      els.apiState.textContent = 'API unavailable';
-      els.apiState.closest('[data-action="check-health"]').dataset.healthState = 'DOWN';
-    }
   }
 
   async function unlock() {
@@ -92,26 +58,18 @@
     STATE.busy = true;
     els.unlock.disabled = true;
     setFeedback('Verifying sign-in…', 'ready');
-    els.state.textContent = 'Checking';
-    els.state.className =
-      'px-space-sm py-space-xs rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-bold flex-shrink-0';
 
     try {
       const user = await F.login(phoneNumber, STATE.pin);
       setFeedback(`Welcome ${user.fullName}. Opening ${user.roleLabel}…`, 'success');
-      els.state.textContent = 'Signed in';
-      els.state.className =
-        'px-space-sm py-space-xs rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm font-bold flex-shrink-0';
       const next = safeNextPath();
       const target = next || user.homePath || F.homePath(user);
-      window.setTimeout(() => window.location.replace(target), 350);
+      await new Promise((resolve) => window.setTimeout(resolve, 350));
+      await F.navigateTo(target);
     } catch (error) {
       STATE.pin = '';
       updateDots();
       setFeedback(error.message || 'Unable to sign in with those details.', 'error');
-      els.state.textContent = 'Retry';
-      els.state.className =
-        'px-space-sm py-space-xs rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm font-bold flex-shrink-0';
       shakeDots();
     } finally {
       STATE.busy = false;
@@ -120,7 +78,7 @@
   }
 
   function wireEvents() {
-    document.querySelectorAll('.pin-btn').forEach((button) => {
+    document.querySelectorAll('.pin-btn[data-digit]').forEach((button) => {
       button.addEventListener('click', () => {
         if (STATE.pin.length < 4) {
           STATE.pin += button.dataset.digit;
@@ -162,14 +120,31 @@
     });
   }
 
+  async function restoreSession() {
+    if (!F.getToken()) return;
+
+    STATE.busy = true;
+    els.unlock.disabled = true;
+    setFeedback('Restoring staff session…', 'ready');
+
+    try {
+      const user = await F.me();
+      const next = safeNextPath();
+      const target = next || user.homePath || F.homePath(user);
+      await F.navigateTo(target);
+    } catch (error) {
+      if (error.status === 401) F.clearSession();
+      setFeedback(error.message || 'Could not restore the staff session.', 'error');
+    } finally {
+      STATE.busy = false;
+      els.unlock.disabled = false;
+    }
+  }
+
   function init() {
     wireEvents();
-    els.name.textContent = 'Staff sign-in';
-    els.meta.textContent = 'Identity shown after sign-in';
-    els.initials.textContent = 'ST';
-    els.state.textContent = 'Ready';
     updateDots();
-    checkHealth();
+    restoreSession();
   }
 
   init();

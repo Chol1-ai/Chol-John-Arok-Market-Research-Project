@@ -1,236 +1,150 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-  <title>Staff PIN Terminal Login | Foodizo &amp; Obunuzi</title>
   <meta charset="utf-8" />
-  <meta content="width=device-width, initial-scale=1.0" name="viewport" /><link rel="icon" type="image/svg+xml" href="../images/foodizo-brand-mark.svg"/>
-  <meta content="web_standard" name="shell-type" />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap"
-    rel="stylesheet" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
-    rel="stylesheet" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-    rel="stylesheet" />
-  <style>
-    @layer base {
-
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-      }
-
-      body {
-        overscroll-behavior: none;
-      }
-
-      .ui-ico {
-        flex: none;
-        fill: none;
-        stroke: currentColor;
-        stroke-width: 1.8;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-      }
-
-      main>:first-child {
-        margin-top: 0 !important;
-      }
-
-      main>:last-child {
-        margin-bottom: 0 !important;
-      }
-    }
-
-    ::-webkit-scrollbar {
-      display: none;
-    }
-  </style>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="../css/staff_terminal_pin_login.css?v=5"/>
-  <script
-    id="tailwind-config">if (window.tailwind) tailwind.config = { darkMode: "class", theme: { extend: { colors: { "secondary-container": "#fea619", "on-primary-container": "#fff6f5", "inverse-primary": "#ffb4ab", "on-error": "#ffffff", "on-surface": "#141b2b", "inverse-surface": "#293040", "tertiary-fixed": "#7ffc97", "surface-container-high": "#e1e8fd", "on-primary-fixed": "#410002", "on-error-container": "#93000a", "tertiary": "#00682b", "primary-container": "#dc2626", "error": "#ba1a1a", "secondary-fixed-dim": "#ffb95f", "surface-container-highest": "#dce2f7", "background": "#f9f9ff", "on-secondary": "#ffffff", "surface-variant": "#dce2f7", "surface-container-lowest": "#ffffff", "on-background": "#141b2b", "error-container": "#ffdad6", "surface-container-low": "#f1f3ff", "secondary-fixed": "#ffddb8", "on-tertiary-fixed-variant": "#005320", "primary": "#b70011", "primary-fixed": "#ffdad6", "on-primary": "#ffffff", "surface": "#f9f9ff", "on-secondary-fixed-variant": "#653e00", "surface-dim": "#d3daef", "on-tertiary": "#ffffff", "outline-variant": "#e6bdb8", "on-tertiary-fixed": "#002109", "tertiary-container": "#008438", "surface-bright": "#f9f9ff", "inverse-on-surface": "#edf0ff", "surface-container": "#e9edff", "primary-fixed-dim": "#ffb4ab", "on-primary-fixed-variant": "#93000b", "on-surface-variant": "#5c403c", "on-secondary-container": "#684000", "outline": "#916f6b", "surface-tint": "#bf0715", "secondary": "#855300", "on-secondary-fixed": "#2a1700", "on-tertiary-container": "#e7ffe4", "tertiary-fixed-dim": "#62df7d" }, borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" }, spacing: { "space-lg": "1.5rem", "margin-lg": "1.5rem", "space-sm": "0.5rem", "space-xs": "0.25rem", margin: "1rem", "gutter-sm": "0.75rem", gutter: "1rem", "margin-sm": "0.75rem", "space-md": "1rem", "space-xl": "2rem" }, fontFamily: { "body-lg": ["Plus Jakarta Sans"], "headline-xl": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "headline-xl-mobile": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "currency-display": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"] }, fontSize: { "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }], "headline-xl": ["36px", { lineHeight: "44px", letterSpacing: "-0.02em", fontWeight: "800" }], "headline-lg": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "700" }], "headline-xl-mobile": ["28px", { lineHeight: "34px", letterSpacing: "-0.02em", fontWeight: "800" }], "label-lg": ["14px", { lineHeight: "18px", letterSpacing: "0.01em", fontWeight: "700" }], "body-sm": ["12px", { lineHeight: "16px", fontWeight: "400" }], "label-md": ["12px", { lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "700" }], "currency-display": ["22px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "800" }], "headline-sm": ["18px", { lineHeight: "24px", fontWeight: "600" }], "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }], "headline-md": ["20px", { lineHeight: "26px", fontWeight: "700" }], "label-sm": ["11px", { lineHeight: "14px", letterSpacing: "0.03em", fontWeight: "600" }] } } } };</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f5f6f2" />
+  <meta name="description" content="Secure staff sign-in for Foodizo and Obunuzi." />
+  <title>Staff sign-in | Foodizo &amp; Obunuzi</title>
+  <link rel="icon" type="image/svg+xml" href="/images/foodizo-brand-mark.svg" />
+  <link rel="stylesheet" href="/css/staff_terminal_pin_login.css?v=10" />
 </head>
-
-<body class="bg-surface font-body-md text-on-surface antialiased login-page">
-  <header class="fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
-    <div class="h-16 max-w-7xl mx-auto px-margin flex items-center justify-between gap-space-md login-header">
-      <div class="flex items-center gap-space-md">
-        <img class="h-9 w-auto object-contain" src="../images/foodizo-obunuzi-logo.svg" alt="Foodizo and Obunuzi"/>
+<body class="login-page">
+  <div class="login-shell">
+    <header class="login-header">
+      <a class="login-brand" href="/" aria-label="Foodizo and Obunuzi home">
+        <img src="/images/foodizo-brand-mark.svg" alt="" />
+        <span class="login-brand-copy">
+          <span>Foodizo <span aria-hidden="true">&amp;</span> Obunuzi</span>
+          <small>Wandegeya, Kampala</small>
+        </span>
+      </a>
+      <div class="login-portal-badge">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="4" y="10" width="16" height="11" rx="2"></rect>
+          <path d="M8 10V7a4 4 0 0 1 8 0v3m-4 5v2"></path>
+        </svg>
+        <span>Staff portal</span>
       </div>
-      <button class="login-api-status" type="button" data-action="check-health" data-health-state="CHECKING"
-        title="Check API status">
-        <span class="login-api-dot" aria-hidden="true"></span>
-        <span id="login-api-state" data-health-label aria-live="polite">Checking API…</span>
-      </button>
-    </div>
-  </header>
-  <main class="w-full pt-16 bg-surface min-h-[calc(100vh-4rem)] flex flex-col login-main">
-    <div class="flex flex-col w-full">
-      <div class="max-w-7xl mx-auto px-margin py-space-lg w-full login-shell">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start login-layout" id="login-layout">
-          <div class="lg:col-span-7 flex flex-col gap-space-md login-directory">
-            <div class="login-welcome">
-              <div class="login-welcome-copy">
-                <p class="login-welcome-brand">Foodizo <span>&amp;</span> Obunuzi <span class="login-welcome-label">STAFF PORTAL</span></p>
-                <h1>Welcome back</h1>
-                <div class="login-welcome-hint">
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15" r="1"/></svg>
-                  <span>Quick sign-in with your staff PIN</span>
-                </div>
-              </div>
-              <div class="login-welcome-art" aria-hidden="true">
-                <div class="login-welcome-orbit login-welcome-orbit-one"></div>
-                <div class="login-welcome-orbit login-welcome-orbit-two"></div>
-                <div class="login-welcome-card">
-                  <div class="login-welcome-card-top">
-                    <span class="login-welcome-card-icon">
-                      <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M16 11a3 3 0 1 0-1-5.8"/><path d="M16 14a5 5 0 0 1 4.5 5"/></svg>
-                    </span>
-                    <span class="login-welcome-online"><span></span> READY TO SIGN IN</span>
-                  </div>
-                  <div class="login-welcome-card-title">Secure staff<br>sign-in.</div>
-                  <div class="login-welcome-card-footer">Use your registered mobile number and PIN.</div>
-                </div>
-              </div>
-            </div>
-            <label class="login-phone-entry">
-              <span>Staff mobile number</span>
-              <input
-                class="login-phone-input"
-                id="staff-phone-number"
-                type="tel"
-                inputmode="tel"
-                autocomplete="username"
-                maxlength="24"
-                placeholder="+256 7XX XXX XXX"
-                required />
-            </label>
-          </div>
-          <div class="lg:col-span-5 flex flex-col gap-space-md login-auth" id="login-auth">
-            <div class="bg-surface-container-lowest rounded-xl shadow-xl p-space-lg flex flex-col items-center">
-              <div
-                class="w-full bg-surface-container-low p-space-md rounded-xl flex items-center justify-between mb-space-md"
-                id="active-user-badge">
-                <div class="flex items-center gap-space-sm min-w-0">
-                  <div
-                    class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold flex-shrink-0">
-                    <span class="font-label-lg text-label-lg" id="active-user-initials">ST</span>
-                  </div>
-                  <div class="min-w-0">
-                    <p class="font-label-lg text-label-lg text-on-surface truncate" id="active-user-name">Staff sign-in</p>
-                    <p class="font-body-sm text-body-sm text-on-surface-variant truncate" id="active-user-meta">Identity shown after sign-in</p>
-                  </div>
-                </div>
-                <span
-                  class="px-space-sm py-space-xs rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm font-bold flex-shrink-0" id="active-user-state">
-                  Ready
-                </span>
-              </div>
-              <!-- 4-Digit Masked Indicator Dots -->
-              <div class="flex flex-col items-center gap-space-xs my-space-sm w-full">
-                <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Enter your 4-digit PIN</span>
-                <div class="flex items-center justify-center gap-space-md py-space-sm">
-                  <div class="pin-dot w-4 h-4 rounded-full bg-surface-container transition-all"></div>
-                  <div class="pin-dot w-4 h-4 rounded-full bg-surface-container transition-all"></div>
-                  <div class="pin-dot w-4 h-4 rounded-full bg-surface-container transition-all"></div>
-                  <div class="pin-dot w-4 h-4 rounded-full bg-surface-container transition-all"></div>
-                </div>
-                <p class="font-label-sm text-label-sm text-on-surface-variant h-4" id="pin-feedback"></p>
-              </div>
-              <!-- Tactile 3x4 On-Screen POS Numeric PIN Pad -->
-              <div class="grid grid-cols-3 gap-space-sm w-full mt-space-sm max-w-sm">
-                <!-- Row 1: 1, 2, 3 -->
-                <button
-                  class="pin-btn h-16 rounded-xl bg-surface-container-low hover:bg-surface-container-high active:bg-surface-container-highest text-on-surface font-headline-lg text-headline-lg flex items-center justify-center shadow-sm active:translate-y-0.5 transition-all"
-                  data-digit="1" type="button">
-                  1
-                </button>
-                <button
-                  class="pin-btn h-16 rounded-xl bg-surface-container-low hover:bg-surface-container-high active:bg-surface-container-highest text-on-surface font-headline-lg text-headline-lg flex items-center justify-center shadow-sm active:translate-y-0.5 transition-all"
-                  data-digit="2" type="button">
-                  2
-                </button>
-                <button
-                  class="pin-btn h-16 rounded-xl bg-surface-container-low hover:bg-surface-container-high active:bg-surface-container-highest text-on-surface font-headline-lg text-headline-lg flex items-center justify-center shadow-sm active:translate-y-0.5 transition-all"
-                  data-digit="3" type="button">
-                  3
-                </button>
-                <!-- Row 2: 4, 5, 6 -->
-                <button
-                  class="pin-btn h-16 rounded-xl bg-surface-container-low hover:bg-surface-container-high active:bg-surface-container-highest text-on-surface font-headline-lg text-headline-lg flex items-center justify-center shadow-sm active:translate-y-0.5 transition-all"
-                  data-digit="4" type="button">
-                  4
-                </button>
-                <button
-                  class="pin-btn h-16 rounded-xl bg-surface-container-low hover:bg-surface-container-high active:bg-surface-container-highest text-on-surface font-headline-lg text-headline-lg flex items-center justify-center shadow-sm active:translate-y-0.5 transition-all"
-                  data-digit="5" type="button">
-                  5
-                </button>
-                <button
-                  class="pin-btn h-16 rounded-xl bg-surface-container-low hover:bg-surface-container-high active:bg-surface-container-highest text-on-surface font-headline-lg text-headline-lg flex items-center justify-center shadow-sm active:translate-y-0.5 transition-all"
-                  data-digit="6" type="button">
-                  6
-                </button>
-                <!-- Row 3: 7, 8, 9 -->
-                <button
-                  class="pin-btn h-16 rounded-xl bg-surface-container-low hover:bg-surface-container-high active:bg-surface-container-highest text-on-surface font-headline-lg text-headline-lg flex items-center justify-center shadow-sm active:translate-y-0.5 transition-all"
-                  data-digit="7" type="button">
-                  7
-                </button>
-                <button
-                  class="pin-btn h-16 rounded-xl bg-surface-container-low hover:bg-surface-container-high active:bg-surface-container-highest text-on-surface font-headline-lg text-headline-lg flex items-center justify-center shadow-sm active:translate-y-0.5 transition-all"
-                  data-digit="8" type="button">
-                  8
-                </button>
-                <button
-                  class="pin-btn h-16 rounded-xl bg-surface-container-low hover:bg-surface-container-high active:bg-surface-container-highest text-on-surface font-headline-lg text-headline-lg flex items-center justify-center shadow-sm active:translate-y-0.5 transition-all"
-                  data-digit="9" type="button">
-                  9
-                </button>
-                <!-- Row 4: Clear, 0, Backspace -->
-                <button
-                  class="h-16 rounded-xl bg-surface-container hover:bg-surface-container-high active:bg-surface-container-highest text-primary font-label-lg text-label-lg uppercase flex items-center justify-center shadow-sm active:translate-y-0.5 transition-all"
-                  id="pin-clear" type="button">
-                  Clear
-                </button>
-                <button
-                  class="pin-btn h-16 rounded-xl bg-surface-container-low hover:bg-surface-container-high active:bg-surface-container-highest text-on-surface font-headline-lg text-headline-lg flex items-center justify-center shadow-sm active:translate-y-0.5 transition-all"
-                  data-digit="0" type="button">
-                  0
-                </button>
-                <button
-                  class="h-16 rounded-xl bg-surface-container hover:bg-surface-container-high active:bg-surface-container-highest text-on-surface font-label-lg text-label-lg flex items-center justify-center shadow-sm active:translate-y-0.5 transition-all"
-                  id="pin-backspace" type="button">
-                  <svg class="ui-ico" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5h11a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H9L3 12l6-7Z"/><path d="m11 9 5 6"/><path d="m16 9-5 6"/></svg>
-                </button>
-              </div>
-              <div class="w-full max-w-sm mt-space-md flex flex-col gap-space-xs">
-                <button
-                  class="w-full h-14 rounded-full bg-primary-container text-on-primary-container font-label-lg text-label-lg shadow-md hover:brightness-105 active:scale-[0.98] transition-all flex items-center justify-center gap-space-sm"
-                  id="btn-unlock-pos" type="button">
-                  <svg class="ui-ico" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M3 12h12"/><path d="m10 7 5 5-5 5"/></svg>
-                  <span>Sign in to staff surface</span>
-                </button>
-              </div>
-            </div>
-          </div>
+    </header>
+
+    <main class="login-main">
+      <section class="login-intro" aria-labelledby="login-welcome-title">
+        <div class="login-intro-copy">
+          <p class="login-eyebrow">Team access</p>
+          <h1 id="login-welcome-title">Welcome back.<br />Your shift starts here.</h1>
+          <p>One secure sign-in for Foodizo and Obunuzi. Your role opens the right workspace.</p>
         </div>
-      </div>
-      <!-- Interactive Terminal Client Script -->
-        <script src="/js/api.js?v=2"></script>
-  <script src="/js/login.js?v=3"></script>
-    </div>
-  </main>
-  <footer class="w-full bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)] py-space-md">
-    <div class="max-w-7xl mx-auto px-margin flex items-center justify-center gap-space-sm text-on-surface-variant font-body-sm text-body-sm">
-      <span>© 2026 Foodizo &amp; Obunuzi</span>
-    </div>
-  </footer>
-</body>
 
+        <div class="login-workspace-card" aria-hidden="true">
+          <span class="login-workspace-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          </span>
+          <strong>One team workspace</strong>
+          <span>Floor, kitchen and management access in one place.</span>
+        </div>
+
+        <div class="login-locations" aria-label="Restaurant locations">
+          <span>Foodizo · Ham Towers</span>
+          <span>Obunuzi · YMCA</span>
+        </div>
+      </section>
+
+      <section class="login-auth" aria-labelledby="login-form-title">
+        <div class="login-card">
+          <div class="login-card-heading">
+            <span class="login-card-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <rect x="4" y="10" width="16" height="11" rx="2"></rect>
+                <path d="M8 10V7a4 4 0 0 1 8 0v3m-4 5v2"></path>
+              </svg>
+            </span>
+            <div>
+              <p class="login-card-kicker">Staff sign-in</p>
+              <h2 id="login-form-title">Open your workspace</h2>
+              <p class="login-card-description">Use the mobile number and PIN registered by your manager.</p>
+            </div>
+          </div>
+
+          <label class="login-phone-entry" for="staff-phone-number">
+            <span>Staff mobile number</span>
+            <input
+              class="login-phone-input"
+              id="staff-phone-number"
+              name="phoneNumber"
+              type="tel"
+              inputmode="tel"
+              autocomplete="tel"
+              maxlength="24"
+              placeholder="+256 7XX XXX XXX"
+              required />
+          </label>
+
+          <div class="login-pin-section">
+            <div class="login-pin-heading">
+              <span>Staff PIN</span>
+              <span>4 digits</span>
+            </div>
+            <div class="login-pin-dots" role="group" aria-label="PIN entry progress">
+              <span class="pin-dot" aria-hidden="true"></span>
+              <span class="pin-dot" aria-hidden="true"></span>
+              <span class="pin-dot" aria-hidden="true"></span>
+              <span class="pin-dot" aria-hidden="true"></span>
+            </div>
+            <p class="login-pin-help">Use the keypad or number keys.</p>
+            <p class="pin-feedback pin-feedback--idle" id="pin-feedback" role="status" aria-live="polite"></p>
+          </div>
+
+          <div class="login-keypad" role="group" aria-label="PIN keypad">
+            <button class="pin-btn" data-digit="1" type="button" aria-label="Enter 1">1</button>
+            <button class="pin-btn" data-digit="2" type="button" aria-label="Enter 2">2</button>
+            <button class="pin-btn" data-digit="3" type="button" aria-label="Enter 3">3</button>
+            <button class="pin-btn" data-digit="4" type="button" aria-label="Enter 4">4</button>
+            <button class="pin-btn" data-digit="5" type="button" aria-label="Enter 5">5</button>
+            <button class="pin-btn" data-digit="6" type="button" aria-label="Enter 6">6</button>
+            <button class="pin-btn" data-digit="7" type="button" aria-label="Enter 7">7</button>
+            <button class="pin-btn" data-digit="8" type="button" aria-label="Enter 8">8</button>
+            <button class="pin-btn" data-digit="9" type="button" aria-label="Enter 9">9</button>
+            <button class="pin-btn pin-btn--utility" id="pin-clear" type="button">Clear</button>
+            <button class="pin-btn" data-digit="0" type="button" aria-label="Enter 0">0</button>
+            <button class="pin-btn pin-btn--utility" id="pin-backspace" type="button" aria-label="Delete last digit">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M9 5h11a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H9L3 12l6-7Z"></path>
+                <path d="m11 9 5 6m0-6-5 6"></path>
+              </svg>
+            </button>
+          </div>
+
+          <button class="login-submit" id="btn-unlock-pos" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M10 17l5-5-5-5m5 5H3"></path>
+              <path d="M13 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"></path>
+            </svg>
+            <span>Sign in to workspace</span>
+          </button>
+
+          <p class="login-card-note">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="9"></circle>
+              <path d="M12 11v5m0-8h.01"></path>
+            </svg>
+            <span>Need an account? Ask your manager to set up staff access.</span>
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="login-footer">
+      <span>Foodizo &amp; Obunuzi · Wandegeya, Kampala</span>
+      <span>Authorized team members only</span>
+    </footer>
+  </div>
+
+  <script src="/js/api.js?v=4"></script>
+  <script src="/js/login.js?v=8"></script>
+</body>
 </html>
