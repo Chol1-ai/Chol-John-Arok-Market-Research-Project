@@ -6,22 +6,27 @@
   const status = document.getElementById('home-zone-status');
   const retry = document.getElementById('home-zone-retry');
   const submit = document.getElementById('home-delivery-submit');
+  const form = document.getElementById('delivery-finder');
   const menuGroups = document.getElementById('home-menu-groups');
   const allMealsLink = document.getElementById('see-all-meals');
   const OUTLETS = new Set(['FOODIZO_HAM_TOWERS', 'OBUNUZI_YMCA']);
+  const defaultOutlet = 'FOODIZO_HAM_TOWERS';
+  const activeOutletValue = () => (outlet && outlet.value ? outlet.value : defaultOutlet);
   let requestNumber = 0;
   let menuRequestNumber = 0;
   let zones = [];
 
-  const requestedOutlet = new URLSearchParams(location.search).get('outlet');
-  if (requestedOutlet && OUTLETS.has(requestedOutlet)) {
-    outlet.value = requestedOutlet;
-  } else {
-    try {
-      const savedOutlet = localStorage.getItem('foodizo-customer-last-outlet');
-      if (savedOutlet && OUTLETS.has(savedOutlet)) outlet.value = savedOutlet;
-    } catch (error) {
-      console.error('Could not restore the selected restaurant outlet.', error);
+  if (outlet) {
+    const requestedOutlet = new URLSearchParams(location.search).get('outlet');
+    if (requestedOutlet && OUTLETS.has(requestedOutlet)) {
+      outlet.value = requestedOutlet;
+    } else {
+      try {
+        const savedOutlet = localStorage.getItem('foodizo-customer-last-outlet');
+        if (savedOutlet && OUTLETS.has(savedOutlet)) outlet.value = savedOutlet;
+      } catch (error) {
+        console.error('Could not restore the selected restaurant outlet.', error);
+      }
     }
   }
 
@@ -63,8 +68,9 @@
           const categoryDetails = categoryByName.get(category);
           const params = new URLSearchParams({ outlet: outlet.value });
           if (category !== 'Other') params.set('category', category);
+          const categoryQuery = `${escapeHtml(params.toString())}`;
           return `
-            <a class="card home-category-card" href="/order?${escapeHtml(params.toString())}">
+                <a class="card home-category-card" href="/order?${categoryQuery}">
               <div class="card-media">
                 <img src="${escapeHtml(categoryDetails ? categoryDetails.image : '/images/foodizo-landing-hero.jpg')}"
                   alt="" loading="lazy" />
@@ -83,10 +89,11 @@
 
   async function loadMenu() {
     const currentRequest = ++menuRequestNumber;
+    if (!menuGroups) return;
     menuGroups.innerHTML = '<p class="section-description" role="status">Loading the current menu…</p>';
     try {
       const response = await fetch(
-        `/api/v1/menu-items?outlet=${encodeURIComponent(outlet.value)}`
+        `/api/v1/menu-items?outlet=${encodeURIComponent(activeOutletValue())}`
       );
       const data = await response.json();
       if (!response.ok) {
@@ -100,11 +107,12 @@
     } catch (error) {
       if (currentRequest !== menuRequestNumber) return;
       menuGroups.innerHTML =
-        `<p class="section-description" role="status">Could not load the current menu: ${escapeHtml(error.message)} <a href="/order?outlet=${encodeURIComponent(outlet.value)}">Open the full menu</a>.</p>`;
+        `<p class="section-description" role="status">Could not load the current menu: ${escapeHtml(error.message)} <a href="/order?outlet=${encodeURIComponent(activeOutletValue())}">Open the full menu</a>.</p>`;
     }
   }
 
   function updateSelection() {
+    if (!zoneSelect || !status || !submit) return;
     const zone = zones.find((item) => item.id === zoneSelect.value);
     submit.disabled = !zone;
     submit.textContent = zone ? 'Browse delivery menu' : 'Choose an area to continue';
@@ -117,10 +125,12 @@
   }
 
   function updateAllMealsLink() {
-    allMealsLink.href = `/order?outlet=${encodeURIComponent(outlet.value)}`;
+    if (!allMealsLink) return;
+    allMealsLink.href = `/order?outlet=${encodeURIComponent(activeOutletValue())}`;
   }
 
   async function loadZones() {
+    if (!zoneSelect || !status || !submit || !retry) return;
     const currentRequest = ++requestNumber;
     zoneSelect.disabled = true;
     submit.disabled = true;
@@ -131,7 +141,7 @@
 
     try {
       const response = await fetch(
-        `/api/v1/orders/delivery-zones?outlet=${encodeURIComponent(outlet.value)}`
+        `/api/v1/orders/delivery-zones?outlet=${encodeURIComponent(activeOutletValue())}`
       );
       const data = await response.json();
       if (!response.ok) {
@@ -170,13 +180,15 @@
     }
   }
 
-  outlet.addEventListener('change', () => {
-    updateAllMealsLink();
-    loadZones();
-    loadMenu();
-  });
-  zoneSelect.addEventListener('change', updateSelection);
-  retry.addEventListener('click', loadZones);
+  if (outlet) {
+    outlet.addEventListener('change', () => {
+      updateAllMealsLink();
+      loadZones();
+      loadMenu();
+    });
+  }
+  if (zoneSelect) zoneSelect.addEventListener('change', updateSelection);
+  if (retry) retry.addEventListener('click', loadZones);
   document.querySelectorAll('[data-info-dialog]').forEach((link) => {
     link.addEventListener('click', (event) => {
       const dialog = document.querySelector(link.getAttribute('href'));
@@ -188,18 +200,22 @@
   document.querySelectorAll('[data-dialog-close]').forEach((button) => {
     button.addEventListener('click', () => button.closest('dialog').close());
   });
-  document.getElementById('delivery-finder').addEventListener('submit', (event) => {
-    event.preventDefault();
-    if (submit.disabled || !zoneSelect.value) return;
-    const params = new URLSearchParams({
-      outlet: outlet.value,
-      fulfillment: 'PHONE_DELIVERY',
-      deliveryZoneId: zoneSelect.value
+  if (form) {
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (!submit || !zoneSelect || submit.disabled || !zoneSelect.value) return;
+      const params = new URLSearchParams({
+        outlet: activeOutletValue(),
+        fulfillment: 'PHONE_DELIVERY',
+        deliveryZoneId: zoneSelect.value
+      });
+      window.location.assign(`/order?${params.toString()}`);
     });
-    window.location.assign(`/order?${params.toString()}`);
-  });
+  }
 
   updateAllMealsLink();
-  loadZones();
+  if (outlet) {
+    loadZones();
+  }
   loadMenu();
 })();

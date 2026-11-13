@@ -89,8 +89,9 @@ Chol-John-Arok-Market-Research-Project/
 
 | Route | Serves |
 | :--- | :--- |
-| `/` | Launch hub linking to live customer and staff workflows |
-| `/login` | Staff directory + PIN login |
+| `/` | Customer homepage with delivery-area selection, menu browsing, restaurant information, FAQ, and ordering terms |
+| `/staff` | Staff PIN sign-in (also available at `/login`) |
+| `/login` | Staff PIN sign-in (alias of `/staff`) |
 | `/pos` | Floor POS and table tabs |
 | `/kds` | Kitchen Display System |
 | `/dispatch` | Boda dispatch queue |
@@ -251,7 +252,7 @@ npm --prefix backend run dev             # API on :4000
 npm start                                # frontend on :3000
 ```
 
-Open `http://127.0.0.1:3000/` for the launch hub. Staff sign in with their registered phone number and PIN; the login page does not display a public staff directory. Do not use development seed credentials in production.
+Open `http://127.0.0.1:3000/` for the customer homepage. Staff sign in separately at `/staff` with their registered phone number and PIN; the login page does not display a public staff directory. Do not use development seed credentials in production.
 
 ### 5.1 Quality Gate
 

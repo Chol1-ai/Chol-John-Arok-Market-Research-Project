@@ -7,7 +7,7 @@
 
 > **Authority:** This file is the visual contract for all four surfaces. If another document disagrees on a visual value, this file wins. If another document disagrees on a role permission, the RBAC matrix in `Foundational_Concept.md` wins.
 
-> **Implementation status:** The live, API-backed staff surfaces are `/login`, `/pos`, `/kds`, `/dispatch`, and `/admin`; `/` is the launch hub. Customer screens under `/prototype/*` (landing, menu, checkout, token, tracker) are static design prototypes and do not call the live API. Route paths in this document name the live surface wherever one exists; customer routes describe the design prototype unless explicitly marked Phase 2. The stack is static HTML, CSS, and vanilla JS served by the Node `server.js` process, with Tailwind CSS for the login surface — not Next.js.
+> **Implementation status:** The live customer homepage is `/`, ordering is available at `/order` and `/customer`, and tracking is available at `/tracker`. Staff sign in separately at `/staff` or `/login`; the API-backed staff surfaces are `/pos`, `/kds`, `/dispatch`, and `/admin`. Former `/prototype/*` customer and staff URLs redirect to the corresponding live workflows. The stack is static HTML, CSS, and vanilla JS served by the Node `server.js` process, with Tailwind CSS for the login surface — not Next.js.
 
 ---
 

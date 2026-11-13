@@ -23,14 +23,8 @@
     updated: document.getElementById('admin-updated'),
     live: document.getElementById('admin-live'),
     liveText: document.getElementById('admin-live-text'),
-    gross: document.getElementById('admin-gross'),
-    grossNote: document.getElementById('admin-gross-note'),
-    orders: document.getElementById('admin-orders'),
-    ordersNote: document.getElementById('admin-orders-note'),
-    cash: document.getElementById('admin-cash'),
-    cashNote: document.getElementById('admin-cash-note'),
-    flags: document.getElementById('admin-flags'),
-    flagsNote: document.getElementById('admin-flags-note'),
+    notification: document.getElementById('admin-notification'),
+    notificationCount: document.getElementById('admin-notification-count'),
     digestSub: document.getElementById('admin-digest-sub'),
     outlets: document.getElementById('admin-outlets'),
     ordersBody: document.getElementById('admin-orders-body'),
@@ -96,6 +90,8 @@
   };
 
   function setLiveState(state) {
+    if (!els.live || !els.liveText) return;
+
     const labels = {
       connecting: 'Connecting…',
       online: 'Live updates on',
@@ -158,29 +154,10 @@
     }
   }
 
-  function renderKpis() {
+  function renderOverviewSummary() {
     const summary = STATE.overview.summary;
-    const consolidated = summary.consolidated;
     const label = STATE.scope === 'ALL' ? 'Both outlets' : outletLabel(STATE.scope);
 
-    els.gross.textContent = F.formatUGX(consolidated.grossUgx);
-    const paymentCount = Number(consolidated.paymentCount || 0);
-    els.grossNote.textContent = `${paymentCount} successful payment${paymentCount === 1 ? '' : 's'} · ${label}`;
-    els.orders.textContent = String(consolidated.totalOrders);
-    els.ordersNote.textContent = `Business date ${summary.digestDate} · 05:00 EAT rollover`;
-    els.cash.textContent = F.formatUGX(consolidated.expectedCashUgx);
-    if (consolidated.cashCountStatus === 'SUBMITTED') {
-      const variance = Number(consolidated.cashVarianceUgx || 0);
-      els.cashNote.textContent = `Counted ${F.formatUGX(consolidated.countedCashUgx || 0)} · variance ${
-        variance === 0 ? 'balanced' : F.formatUGX(variance)
-      }`;
-    } else {
-      els.cashNote.textContent = 'Cash count missing for at least one outlet';
-    }
-    els.flags.textContent = String(summary.flagCount);
-    els.flagsNote.textContent = summary.flagCount
-      ? `${summary.flagCount} alert${summary.flagCount === 1 ? '' : 's'} need attention`
-      : 'No open alerts';
     els.digestSub.textContent = `${label} · business date ${summary.digestDate} · generated ${F.relativeTime(
       summary.generatedAt
     )}`;
@@ -228,6 +205,14 @@
 
   function renderFlags() {
     const flags = STATE.overview.summary.flags || [];
+    els.notificationCount.textContent = flags.length > 99 ? '99+' : String(flags.length);
+    els.notificationCount.hidden = flags.length === 0;
+    els.notification.setAttribute(
+      'aria-label',
+      flags.length === 0
+        ? 'No open alerts'
+        : `View ${flags.length} open alert${flags.length === 1 ? '' : 's'}`
+    );
     if (!flags.length) {
       els.flagsList.innerHTML =
         '<div class="ls-empty" style="min-height:72px">No open alerts.</div>';
@@ -394,7 +379,7 @@
   }
 
   function renderAll() {
-    renderKpis();
+    renderOverviewSummary();
     renderOutlets();
     renderFlags();
     renderOrders();

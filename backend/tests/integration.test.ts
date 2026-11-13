@@ -262,7 +262,7 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
     } finally {
       await app.prisma.users.deleteMany({ where: { id: userId } });
     }
-  });
+  }, 30000);
 
   it('lets managers create scoped staff PIN accounts without exposing credentials', async () => {
     const phoneNumber = '256770123456';

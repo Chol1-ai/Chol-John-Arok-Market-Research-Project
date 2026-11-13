@@ -40,7 +40,7 @@ As of 2026-11-10, C6 local verification passed: `npm run backend:build`, `npm te
 - The integration app uses a higher global rate limit only when `NODE_ENV=test`, preventing the suite's in-process requests from exhausting the production/development limit. Normal environments retain the 120-request limit.
 - Prisma schema validation and migration status passed; `git diff --check` passed. The local API health endpoint returned `UP`.
 - A current local customer pickup submission returned a token; direct requests to both the backend and same-origin frontend proxy returned the correct `AWAITING_PAYMENT` order. The shared browser displayed an unrelated fixture for that token, so tracker UI acceptance remains inconclusive and must be repeated in a clean/target browser.
-- The launch hub displays five live customer cards; browser smoke checks confirmed that former customer/staff prototype URLs redirect to live workflows, preserving order query parameters.
+- The customer homepage at `/` highlights menu items and restaurant locations; staff sign-in is separate at `/staff`. Browser smoke checks confirmed that former customer/staff prototype URLs redirect to live workflows, preserving order query parameters.
 - The deployment runbook now directs acceptance testing through the live customer order/tracker and requires MTN/Airtel sandbox verification before release.
 - The integration suite reseeded operational data as designed, then the canonical seed was run again successfully after testing and the local pickup smoke test. The database is left in its canonical seeded state.
 - Local migration/readiness checks are complete; C8 target-host setup, backup/restore rehearsal, and WAN-disconnection testing still require the intended deployment hardware and network.

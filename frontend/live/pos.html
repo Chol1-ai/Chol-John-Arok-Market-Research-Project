@@ -41,9 +41,9 @@
   <main class="ls-main" id="main-content">
     <div class="ls-page-head">
       <div>
-        <div class="ls-eyebrow">Postpay floor service</div>
-        <h1 class="ls-title">Table floor &amp; order pad</h1>
-        <p class="ls-subtitle">Select a table, add items, send the order to the kitchen and collect payment.</p>
+        <div class="ls-eyebrow">Waiter order pad</div>
+        <h1 class="ls-title">Create an order</h1>
+        <p class="ls-subtitle">Add menu items first. Choose a table only for dine-in orders.</p>
       </div>
       <div class="ls-head-actions">
         <label class="ls-field" id="pos-outlet-wrap" hidden>
@@ -61,20 +61,35 @@
       </div>
     </div>
 
-    <div class="pos-workspace">
+    <div class="pos-workspace" id="pos-workspace">
       <div class="pos-left">
-        <section class="ls-card">
-          <div class="ls-card-head">
-            <div>
-              <div class="ls-card-title">Table floor</div>
-              <div class="ls-card-sub" id="pos-floor-sub">Loading tables…</div>
-            </div>
+        <section class="ls-card pos-order-config" aria-label="Order type">
+          <label class="ls-field">
+            <span>Order type</span>
+            <select class="ls-select" id="pos-order-type">
+              <option value="TAKEAWAY_PICKUP">Takeaway</option>
+              <option value="DINE_IN">Dine-in</option>
+            </select>
+          </label>
+          <label class="ls-field" id="pos-table-wrap" hidden>
+            <span>Table</span>
+            <select class="ls-select" id="pos-table-select" disabled>
+              <option value="">Choose a table</option>
+            </select>
+          </label>
+          <div class="ls-help" id="pos-order-type-help">No table needed for takeaway.</div>
+        </section>
+
+        <details class="ls-card pos-floor-details">
+          <summary>
+            <span>Table availability</span>
+            <span class="ls-card-sub" id="pos-floor-sub">Loading tables…</span>
+          </summary>
+          <div class="pos-floor-details-body">
             <div class="ls-head-actions" id="pos-table-legend">
               <span class="pos-legend"><span class="ls-live-dot" style="background:var(--color-tertiary)"></span> Vacant</span>
               <span class="pos-legend"><span class="ls-live-dot" style="background:var(--color-primary)"></span> Seated</span>
             </div>
-          </div>
-          <div class="ls-card-body">
             <div class="pos-floor" id="pos-floor">
               <div class="ls-loading">Loading live floor…</div>
             </div>
@@ -95,10 +110,24 @@
           </div>
         </section>
 
+        <section class="ls-card pos-draft-card" id="pos-draft-card" hidden>
+          <div class="ls-card-head">
+            <div>
+              <div class="ls-card-title">Order in progress</div>
+              <div class="ls-card-sub" id="pos-draft-sub">Add items from the menu</div>
+            </div>
+            <strong class="ls-money" id="pos-draft-total">UGX 0</strong>
+          </div>
+          <div class="pos-draft-body">
+            <div id="pos-draft-lines" aria-live="polite"></div>
+            <button class="ls-btn ls-btn--block" type="button" id="pos-add-btn" disabled>Place order</button>
+          </div>
+        </section>
+
         <section class="ls-card pickup-orders-card">
           <div class="ls-card-head">
             <div>
-              <div class="ls-card-title">Customer pickup orders</div>
+              <div class="ls-card-title">Pickup orders awaiting payment</div>
               <div class="ls-card-sub" id="pos-pickup-sub">Cash collection required before kitchen preparation</div>
             </div>
             <button class="ls-btn ls-btn--ghost ls-btn--small" type="button" id="pos-pickup-refresh">Refresh</button>
@@ -109,13 +138,14 @@
         </section>
       </div>
 
-      <aside class="ls-card pos-ledger" id="pos-ledger">
+      <aside class="ls-card pos-ledger" id="pos-ledger" hidden>
         <div class="ls-card-head">
           <div>
             <div class="ls-card-title" id="pos-ledger-title">Order ledger</div>
             <div class="ls-card-sub" id="pos-ledger-sub">Select a table to begin</div>
           </div>
           <span class="ls-status" id="pos-ledger-status" data-status="VACANT" hidden></span>
+          <button class="ls-btn ls-btn--ghost ls-btn--small" type="button" id="pos-new-order-btn" hidden>New order</button>
         </div>
         <div class="pos-ledger-body" id="pos-ledger-body">
           <div class="pos-ledger-empty">Choose a table on the floor map.<br />Existing tabs load their full item ledger.</div>
@@ -126,7 +156,6 @@
           <div class="pos-summary-row pos-summary-total"><span>Bill total</span><span class="ls-money" id="pos-total">UGX 0</span></div>
         </div>
         <div class="pos-actions" id="pos-actions">
-          <button class="ls-btn ls-btn--block" type="button" id="pos-add-btn" disabled>Select a table and add items</button>
           <button class="ls-btn ls-btn--success ls-btn--block" type="button" id="pos-settle-btn" disabled hidden>Settle full bill</button>
           <div class="pos-actions-row">
             <button class="ls-btn ls-btn--ghost ls-btn--small" type="button" id="pos-print-btn" disabled>Reprint chit</button>

@@ -267,27 +267,24 @@ export const authRoutes: FastifyPluginAsync = async (fastify) => {
       const isPinValid = await bcrypt.compare(pin, user.pin_hash);
 
       if (!isPinValid) {
-        await fastify.prisma.$transaction(async (transaction) => {
-          const [current] = await transaction.$queryRaw<Array<{
-            failed_login_count: number;
-            locked_until: Date | null;
-          }>>`
-            SELECT failed_login_count, locked_until
-            FROM users
-            WHERE id = ${user.id}::uuid
-            FOR UPDATE
-          `;
-          if (!current || (current.locked_until && current.locked_until > new Date())) return;
-
-          const failedCount = current.failed_login_count + 1;
-          await transaction.users.update({
-            where: { id: user.id },
-            data: {
-              failed_login_count: failedCount,
-              locked_until: failedCount >= 5 ? new Date(Date.now() + 15 * 60 * 1000) : null
-            }
-          });
-        });
+        await fastify.prisma.$queryRaw<Array<{
+          failed_login_count: number;
+          locked_until: Date | null;
+        }>>`
+          UPDATE users
+          SET failed_login_count = CASE
+            WHEN users.locked_until IS NOT NULL AND users.locked_until > NOW() THEN users.failed_login_count
+            ELSE users.failed_login_count + 1
+          END,
+              locked_until = CASE
+            WHEN users.locked_until IS NOT NULL AND users.locked_until > NOW() THEN users.locked_until
+            WHEN users.failed_login_count + 1 >= 5 THEN NOW() + INTERVAL '15 minutes'
+            ELSE NULL
+          END
+          WHERE users.id = ${user.id}::uuid
+            AND (users.locked_until IS NULL OR users.locked_until <= NOW())
+          RETURNING failed_login_count, locked_until
+        `;
         return reply.status(401).send({
           statusCode: 401,
           error: 'Unauthorized',
