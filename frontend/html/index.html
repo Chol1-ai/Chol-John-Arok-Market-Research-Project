@@ -316,7 +316,11 @@
       </div>
       <nav class="footer-column" aria-label="Links of interest">
         <h2>Links of interest</h2>
+        <a href="#faq" data-info-dialog>FAQ</a>
         <a href="#contact" data-info-dialog>Contact us</a>
+        <a href="#about" data-info-dialog>About us</a>
+        <a href="#terms" data-info-dialog>Terms &amp; Conditions</a>
+        <a href="#privacy" data-info-dialog>Privacy Policy</a>
       </nav>
       <nav class="footer-column" aria-label="Customer orders">
         <h2>Your order</h2>
@@ -338,6 +342,7 @@
     </div>
     <div class="info-dialog-body">
       <div class="info-panel">
+        <p>For in-person help with an order, visit the restaurant you selected.</p>
         <h3>Restaurant locations</h3>
         <div class="contact-cards">
           <div class="contact-card">
@@ -349,6 +354,89 @@
             <a href="https://www.google.com/maps/search/?api=1&amp;query=YMCA+Wandegeya+Kampala" target="_blank" rel="noopener noreferrer">Get directions <span class="material-symbols-outlined" aria-hidden="true">arrow_outward</span></a>
           </div>
         </div>
+      </div>
+    </div>
+  </dialog>
+  <dialog class="info-dialog" id="faq" aria-labelledby="faq-title">
+    <div class="info-dialog-header">
+      <h2 id="faq-title">Frequently asked questions</h2>
+      <button class="info-dialog-close" type="button" aria-label="Close FAQ" data-dialog-close><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+    </div>
+    <div class="info-dialog-body">
+      <div class="info-panel">
+        <div class="faq-list">
+          <details>
+            <summary>How do I place an order?</summary>
+            <p>Choose a restaurant, add meals to your cart, and continue to checkout. For delivery, select an available area and enter a delivery landmark.</p>
+          </details>
+          <details>
+            <summary>Can I order from either restaurant?</summary>
+            <p>Yes. Choose Foodizo at Ham Towers or Obunuzi opposite YMCA. Menus and availability are shown for the selected outlet.</p>
+          </details>
+          <details>
+            <summary>How do I pay?</summary>
+            <p>Pickup orders are paid for at the outlet counter. Delivery orders are paid for in cash on delivery.</p>
+          </details>
+          <details>
+            <summary>How do I check my order status?</summary>
+            <p>Use the order token shown after placing your order to open its tracker. The tracker refreshes the status automatically.</p>
+          </details>
+          <details>
+            <summary>Where do you deliver?</summary>
+            <p>Delivery is available only in the areas listed for the selected outlet. Choose an area at checkout to see its fee.</p>
+          </details>
+          <details>
+            <summary>How can I ask about or change an order?</summary>
+            <p>Contact the restaurant you selected as soon as possible. Changes may not be possible once preparation or delivery has started.</p>
+          </details>
+        </div>
+      </div>
+    </div>
+  </dialog>
+  <dialog class="info-dialog" id="about" aria-labelledby="about-title">
+    <div class="info-dialog-header">
+      <h2 id="about-title">About Foodizo &amp; Obunuzi</h2>
+      <button class="info-dialog-close" type="button" aria-label="Close About us" data-dialog-close><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+    </div>
+    <div class="info-dialog-body">
+      <div class="info-panel">
+        <h3>Two Wandegeya restaurant locations</h3>
+        <p>Foodizo at Ham Towers and Obunuzi Restaurant &amp; Cafe opposite YMCA serve customers in Wandegeya, Kampala. Browse each outlet’s menu and choose pickup or delivery in an available area.</p>
+      </div>
+    </div>
+  </dialog>
+  <dialog class="info-dialog" id="terms" aria-labelledby="terms-title">
+    <div class="info-dialog-header">
+      <h2 id="terms-title">Terms &amp; Conditions</h2>
+      <button class="info-dialog-close" type="button" aria-label="Close Terms and Conditions" data-dialog-close><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+    </div>
+    <div class="info-dialog-body">
+      <div class="info-panel">
+        <p>Please review these ordering terms before submitting an order:</p>
+        <ul class="terms-list">
+          <li>Check the selected outlet, items, quantities, fulfillment method, and displayed total before placing your order.</li>
+          <li>Menu items and availability may differ between outlets and can change.</li>
+          <li>Pickup orders are paid for at the selected outlet’s counter. Delivery orders are paid for in cash on delivery; delivery is limited to the listed areas and fees.</li>
+          <li>Keep your order token available to check status. Contact the selected restaurant promptly if you need to ask about a submitted order; changes depend on its preparation or delivery status.</li>
+          <li>Provide accurate contact and delivery details so the restaurant can fulfill your order.</li>
+        </ul>
+      </div>
+    </div>
+  </dialog>
+  <dialog class="info-dialog" id="privacy" aria-labelledby="privacy-title">
+    <div class="info-dialog-header">
+      <h2 id="privacy-title">Privacy Policy</h2>
+      <button class="info-dialog-close" type="button" aria-label="Close Privacy Policy" data-dialog-close><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+    </div>
+    <div class="info-dialog-body">
+      <div class="info-panel">
+        <h3>Information used for your order</h3>
+        <p>When you place an order, the restaurant receives the details needed to fulfill it, such as your name, phone number, selected outlet, items, and fulfillment method. Delivery orders also include the selected delivery area and the landmark or address note you provide. Restaurant staff use these details to prepare, deliver, and help you track the order.</p>
+        <h3>Saved in your browser</h3>
+        <p>Your cart, selected outlet, active order token, and notification preferences may be saved in this browser so you can continue using the service. Clearing this browser’s site data removes those saved details, but does not cancel or delete an order already submitted to the restaurant.</p>
+        <h3>Ready notifications</h3>
+        <p>Ready notifications are optional. If enabled, your browser will ask for permission to show a notification when your order is ready. You can turn notifications off in your browser or device settings.</p>
+        <p>For questions about information connected with an order, contact the restaurant you selected.</p>
       </div>
     </div>
   </dialog>
