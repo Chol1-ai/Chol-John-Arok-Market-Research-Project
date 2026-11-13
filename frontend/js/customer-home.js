@@ -70,15 +70,13 @@
           if (category !== 'Other') params.set('category', category);
           const categoryQuery = `${escapeHtml(params.toString())}`;
           return `
-                <a class="card home-category-card" href="/order?${categoryQuery}">
+            <a class="card home-category-card" href="/order?${categoryQuery}">
               <div class="card-media">
                 <img src="${escapeHtml(categoryDetails ? categoryDetails.image : '/images/foodizo-landing-hero.jpg')}"
                   alt="" loading="lazy" />
               </div>
               <div class="card-content">
                 <h3>${escapeHtml(category)}</h3>
-                ${categoryDetails ? `<p>${escapeHtml(categoryDetails.description)}</p>` : ''}
-                <span class="card-link">Explore ${escapeHtml(category)} <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></span>
               </div>
             </a>
           `;
