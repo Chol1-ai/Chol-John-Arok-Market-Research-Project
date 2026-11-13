@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
   <link rel="stylesheet" href="/css/theme_tokens.css" />
-  <link rel="stylesheet" href="/css/live_surfaces.css?v=6" />
+  <link rel="stylesheet" href="/css/live_surfaces.css?v=11" />
 </head>
 <body class="ls-body" data-surface="kds">
   <a class="ls-skip" href="#main-content">Skip to main content</a>
@@ -38,16 +38,10 @@
   </header>
 
   <main class="ls-main" id="main-content">
-    <div class="ls-page-head">
+    <div class="ls-page-head kds-page-head">
       <div>
-        <div class="ls-eyebrow">Expo / station board</div>
         <h1 class="ls-title">Active kitchen tickets</h1>
         <p class="ls-subtitle">Take an order, prepare the items and mark it ready. Customer tokens update automatically.</p>
-      </div>
-      <div class="ls-head-actions">
-        <span class="ls-live" id="kds-live" data-state="connecting"><span class="ls-live-dot"></span><span id="kds-live-text">Connecting…</span></span>
-        <span class="ls-updated" id="kds-updated" aria-live="polite">Not loaded</span>
-        <button class="ls-btn ls-btn--ghost ls-btn--small" type="button" id="kds-refresh">Refresh board</button>
       </div>
     </div>
 
@@ -92,38 +86,13 @@
           <span>Wandegeya dining corridor · Kampala</span>
         </div>
       </div>
-      <nav class="ls-footer-nav" aria-label="Outlet locations">
-        <a href="https://www.google.com/maps/search/?api=1&amp;query=Ham+Towers+Wandegeya+Kampala" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
-          Foodizo · Ham Towers
-        </a>
-        <a href="https://www.google.com/maps/search/?api=1&amp;query=YMCA+Wandegeya+Kampala" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
-          Obunuzi · Opp. YMCA
-        </a>
-      </nav>
-      <div class="ls-footer-actions">
-        <button class="ls-footer-action" type="button" data-action="check-health" title="Check the live API health">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l2.4-6 4.2 12 2.1-6H21"/></svg>
-          <span data-health-label>API status</span>
-        </button>
-        <button class="ls-footer-action" type="button" data-action="scroll-top" title="Back to top">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
-          <span>Top</span>
-        </button>
-        <button class="ls-footer-action" type="button" data-action="logout" title="End this staff session">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>
-          <span>Log out</span>
-        </button>
-      </div>
     </div>
-    <div class="ls-footer-meta">
-      <span>Business day resets at 05:00 EAT · updates every 60 seconds</span>
+    <div class="ls-footer-meta kds-footer-meta">
       <span>© 2026 Foodizo &amp; Obunuzi</span>
     </div>
   </footer>
 
   <script src="/js/api.js"></script>
-  <script src="/js/kds.js?v=2"></script>
+  <script src="/js/kds.js?v=3"></script>
 </body>
 </html>

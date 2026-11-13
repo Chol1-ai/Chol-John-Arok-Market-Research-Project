@@ -13,26 +13,12 @@
 
   const els = {
     board: document.getElementById('kds-board'),
-    refresh: document.getElementById('kds-refresh'),
-    updated: document.getElementById('kds-updated'),
     filters: document.getElementById('kds-filters'),
-    live: document.getElementById('kds-live'),
-    liveText: document.getElementById('kds-live-text'),
     total: document.getElementById('kds-count-total'),
     queued: document.getElementById('kds-count-queued'),
     preparing: document.getElementById('kds-count-preparing'),
     overdue: document.getElementById('kds-count-overdue')
   };
-
-  function setLiveState(state) {
-    const labels = {
-      connecting: 'Connecting…',
-      online: 'Live updates on',
-      offline: 'Reconnecting…'
-    };
-    els.live.dataset.state = state;
-    els.liveText.textContent = labels[state] || state;
-  }
 
   function stationLabel(station) {
     return String(station || '')
@@ -131,9 +117,6 @@
     STATE.tickets = data.tickets || [];
     renderSummary();
     renderBoard();
-    if (els.updated) {
-      els.updated.textContent = `Updated ${F.formatTime(new Date().toISOString())} · auto 60s`;
-    }
   }
 
   function scheduleRefresh() {
@@ -179,7 +162,6 @@
     STATE.events = F.connectEvents({
       outlet: STATE.user.outlet || undefined,
       station: STATE.station === 'ALL' ? undefined : STATE.station,
-      onStatus: setLiveState,
       onEvent(message) {
         if (
           [
@@ -198,15 +180,6 @@
   }
 
   function wireEvents() {
-    els.refresh.addEventListener('click', async () => {
-      try {
-        await loadTickets();
-        F.toast('Kitchen board refreshed.', 'success');
-      } catch (error) {
-        F.toast(error.message || 'Refresh failed.', 'error');
-      }
-    });
-
     els.filters.addEventListener('click', async (event) => {
       const button = event.target.closest('[data-station]');
       if (!button) return;

@@ -3497,6 +3497,27 @@ body[data-surface='dispatch'] .dispatch-page-head {
   text-align: center;
 }
 
+body[data-surface='kds'] .kds-page-head {
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+body[data-surface='kds'] .kds-page-head > :first-child {
+  width: 100%;
+}
+
+body[data-surface='kds'] .kds-page-head .ls-subtitle {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+body[data-surface='kds'] .kds-footer-meta {
+  justify-content: center;
+  text-align: center;
+}
+
 body[data-surface='dispatch'] .dispatch-page-head > :first-child {
   width: 100%;
 }
