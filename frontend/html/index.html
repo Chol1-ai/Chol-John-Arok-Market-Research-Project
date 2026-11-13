@@ -89,6 +89,25 @@
       object-fit: contain;
       object-position: left center;
       filter: brightness(1.8);
+      transform-origin: left center;
+      animation: foodizo-logo-arrive 750ms cubic-bezier(.18, .75, .32, 1) both;
+    }
+
+    @keyframes foodizo-logo-arrive {
+      0% {
+        opacity: 0;
+        transform: translate3d(-12px, -4px, 0) rotate(-5deg) scale(.92);
+      }
+
+      68% {
+        opacity: 1;
+        transform: translate3d(2px, 2px, 0) rotate(1.5deg) scale(1.02);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) rotate(0) scale(1);
+      }
     }
 
     .brand-detail {
@@ -660,6 +679,7 @@
       *::after {
         scroll-behavior: auto !important;
         transition-duration: .01ms !important;
+        animation: none !important;
       }
     }
 
