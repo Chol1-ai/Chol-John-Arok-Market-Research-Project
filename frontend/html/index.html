@@ -891,7 +891,7 @@
       animation: empty-hero-in 760ms ease-out both;
     }
 
-    .customer-hero-orbits {
+    .customer-hero-food {
       position: absolute;
       inset: 0;
       display: grid;
@@ -899,52 +899,146 @@
       pointer-events: none;
     }
 
-    .customer-hero-orbit {
+    .customer-hero-burger {
+      position: relative;
+      width: 210px;
+      height: 138px;
+      animation: hero-burger-float 3.2s ease-in-out infinite;
+    }
+
+    .customer-hero-burger-glow {
       position: absolute;
-      width: clamp(180px, 30vw, 340px);
-      height: clamp(78px, 14vw, 142px);
-      border: 1px solid rgba(200, 61, 45, .52);
+      bottom: 5px;
+      left: 50%;
+      width: 154px;
+      height: 18px;
       border-radius: 50%;
-      box-shadow: 0 0 22px rgba(200, 61, 45, .1), inset 0 0 22px rgba(200, 61, 45, .08);
-      animation: hero-orbit-forward 18s linear infinite;
+      background: radial-gradient(ellipse, rgba(210, 115, 58, .42), transparent 70%);
+      filter: blur(3px);
+      transform: translateX(-50%);
+      animation: hero-burger-glow 3.2s ease-in-out infinite;
     }
 
-    .customer-hero-orbit::after {
+    .customer-hero-burger-layer {
       position: absolute;
-      top: 50%;
-      left: 0;
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      background: #e87959;
-      box-shadow: 0 0 16px 4px rgba(232, 121, 89, .58);
-      content: "";
-      transform: translate(-50%, -50%);
+      left: 50%;
+      border-radius: 12px;
+      transform: translateX(-50%);
     }
 
-    .customer-hero-orbit--inner {
-      width: clamp(130px, 21vw, 235px);
-      height: clamp(58px, 10vw, 102px);
-      border-color: rgba(83, 169, 112, .55);
-      box-shadow: 0 0 22px rgba(83, 169, 112, .1), inset 0 0 22px rgba(83, 169, 112, .08);
-      animation: hero-orbit-backward 13s linear infinite;
+    .customer-hero-bun--bottom {
+      bottom: 17px;
+      z-index: 1;
+      width: 154px;
+      height: 30px;
+      border-radius: 8px 8px 28px 28px;
+      background: linear-gradient(180deg, #edb45f, #b96630);
+      box-shadow: inset 0 -5px 0 rgba(112, 52, 23, .18), 0 4px 8px rgba(0, 0, 0, .24);
     }
 
-    .customer-hero-orbit--inner::after {
-      width: 7px;
-      height: 7px;
-      background: #83c994;
-      box-shadow: 0 0 14px 4px rgba(131, 201, 148, .56);
-    }
-
-    .customer-hero-orbit-core {
-      width: 23px;
+    .customer-hero-burger-patty {
+      bottom: 39px;
+      z-index: 2;
+      width: 164px;
       height: 23px;
-      border: 1px solid rgba(255, 242, 210, .78);
+      border: 1px solid rgba(52, 23, 14, .72);
+      border-radius: 9px;
+      background: linear-gradient(180deg, #713b28, #3e2118);
+      box-shadow: inset 0 3px 0 rgba(214, 152, 100, .18), 0 3px 5px rgba(0, 0, 0, .28);
+    }
+
+    .customer-hero-burger-cheese {
+      bottom: 53px;
+      z-index: 3;
+      width: 153px;
+      height: 19px;
+      background: linear-gradient(180deg, #ffd85f, #e99b2f);
+      clip-path: polygon(0 0, 100% 0, 98% 73%, 77% 73%, 68% 100%, 58% 74%, 35% 78%, 27% 100%, 18% 74%, 2% 74%);
+      filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .18));
+    }
+
+    .customer-hero-burger-tomato {
+      bottom: 64px;
+      z-index: 4;
+      width: 137px;
+      height: 11px;
+      border: 1px solid rgba(126, 37, 24, .45);
+      border-radius: 8px;
+      background: linear-gradient(180deg, #ef6d4c, #b8392d);
+      box-shadow: inset 0 2px 0 rgba(255, 205, 124, .3);
+    }
+
+    .customer-hero-burger-lettuce {
+      bottom: 63px;
+      z-index: 5;
+      width: 174px;
+      height: 17px;
+      background: linear-gradient(180deg, #9dca63, #427b3b);
+      clip-path: polygon(0 25%, 8% 0, 15% 23%, 24% 4%, 33% 24%, 42% 0, 52% 23%, 62% 3%, 71% 25%, 81% 0, 89% 23%, 100% 7%, 97% 78%, 88% 100%, 78% 76%, 67% 100%, 57% 77%, 47% 100%, 36% 76%, 26% 100%, 16% 78%, 6% 100%);
+      filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .22));
+    }
+
+    .customer-hero-bun--top {
+      bottom: 70px;
+      z-index: 6;
+      width: 168px;
+      height: 49px;
+      overflow: hidden;
+      border-radius: 86px 86px 18px 18px;
+      background: linear-gradient(155deg, #ffd883 4%, #e8a64d 63%, #b96730 100%);
+      box-shadow: inset 0 -6px 0 rgba(145, 75, 31, .18), 0 6px 10px rgba(0, 0, 0, .24);
+    }
+
+    .customer-hero-bun--top::after {
+      position: absolute;
+      top: 8px;
+      left: 16%;
+      width: 68%;
+      height: 12px;
       border-radius: 50%;
-      background: radial-gradient(circle at 35% 30%, #fff0c7, #d96b43 52%, #8e3f36);
-      box-shadow: 0 0 22px 8px rgba(214, 113, 70, .28);
-      animation: hero-core-pulse 2.4s ease-in-out infinite;
+      background: rgba(255, 235, 181, .28);
+      content: "";
+      transform: rotate(-5deg);
+    }
+
+    .customer-hero-burger-seed {
+      position: absolute;
+      z-index: 7;
+      width: 8px;
+      height: 3px;
+      border-radius: 50%;
+      background: #fff0c5;
+      box-shadow: 0 0 2px rgba(111, 63, 23, .4);
+      transform: rotate(-24deg);
+    }
+
+    .customer-hero-burger-seed--one {
+      top: 42px;
+      left: calc(50% - 34px);
+    }
+
+    .customer-hero-burger-seed--two {
+      top: 34px;
+      left: calc(50% - 12px);
+      transform: rotate(18deg);
+    }
+
+    .customer-hero-burger-seed--three {
+      top: 39px;
+      left: calc(50% + 10px);
+      transform: rotate(-14deg);
+    }
+
+    .customer-hero-burger-seed--four {
+      top: 47px;
+      left: calc(50% + 28px);
+      transform: rotate(22deg);
+    }
+
+    .customer-hero-burger-seed--five {
+      top: 51px;
+      left: calc(50% - 5px);
+      transform: rotate(-8deg);
     }
 
     @keyframes empty-hero-in {
@@ -959,36 +1053,30 @@
       }
     }
 
-    @keyframes hero-orbit-forward {
+    @keyframes hero-burger-float {
       from {
-        transform: rotate(-18deg);
-      }
-
-      to {
-        transform: rotate(342deg);
-      }
-    }
-
-    @keyframes hero-orbit-backward {
-      from {
-        transform: rotate(24deg);
-      }
-
-      to {
-        transform: rotate(-336deg);
-      }
-    }
-
-    @keyframes hero-core-pulse {
-      0%,
-      100% {
-        transform: scale(.86);
-        box-shadow: 0 0 18px 5px rgba(214, 113, 70, .22);
+        transform: translateY(3px) rotate(-1deg);
       }
 
       50% {
-        transform: scale(1.16);
-        box-shadow: 0 0 28px 11px rgba(214, 113, 70, .42);
+        transform: translateY(-7px) rotate(1deg);
+      }
+
+      to {
+        transform: translateY(3px) rotate(-1deg);
+      }
+    }
+
+    @keyframes hero-burger-glow {
+      0%,
+      100% {
+        opacity: .48;
+        transform: translateX(-50%) scale(.88);
+      }
+
+      50% {
+        opacity: .78;
+        transform: translateX(-50%) scale(1.08);
       }
     }
 
@@ -1083,8 +1171,8 @@
         animation: none;
       }
 
-      .customer-hero-orbit,
-      .customer-hero-orbit-core {
+      .customer-hero-burger,
+      .customer-hero-burger-glow {
         animation: none;
       }
 
@@ -1442,10 +1530,21 @@
   </header>
 
   <section class="customer-hero customer-hero-empty" aria-hidden="true">
-    <div class="customer-hero-orbits">
-      <span class="customer-hero-orbit customer-hero-orbit--outer"></span>
-      <span class="customer-hero-orbit customer-hero-orbit--inner"></span>
-      <span class="customer-hero-orbit-core"></span>
+    <div class="customer-hero-food">
+      <div class="customer-hero-burger">
+        <span class="customer-hero-burger-glow"></span>
+        <span class="customer-hero-burger-layer customer-hero-bun--bottom"></span>
+        <span class="customer-hero-burger-layer customer-hero-burger-patty"></span>
+        <span class="customer-hero-burger-layer customer-hero-burger-cheese"></span>
+        <span class="customer-hero-burger-layer customer-hero-burger-tomato"></span>
+        <span class="customer-hero-burger-layer customer-hero-burger-lettuce"></span>
+        <span class="customer-hero-burger-layer customer-hero-bun--top"></span>
+        <span class="customer-hero-burger-seed customer-hero-burger-seed--one"></span>
+        <span class="customer-hero-burger-seed customer-hero-burger-seed--two"></span>
+        <span class="customer-hero-burger-seed customer-hero-burger-seed--three"></span>
+        <span class="customer-hero-burger-seed customer-hero-burger-seed--four"></span>
+        <span class="customer-hero-burger-seed customer-hero-burger-seed--five"></span>
+      </div>
     </div>
   </section>
 
