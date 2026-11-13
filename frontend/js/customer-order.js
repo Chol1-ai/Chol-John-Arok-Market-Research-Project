@@ -255,8 +255,6 @@
           <div class="customer-meal-photo">${image}</div>
           <div class="customer-meal-info">
             <h3>${escapeHtml(item.name)}</h3>
-            <span class="customer-meal-category">${escapeHtml(item.category)}</span>
-            ${item.description ? `<p class="customer-meal-description">${escapeHtml(item.description)}</p>` : ''}
             ${available ? '' : '<span class="customer-meal-unavailable">Temporarily unavailable</span>'}
             <div class="customer-meal-bottom">
               <span class="customer-meal-price">${formatUgx(item.priceUgx)}</span>
