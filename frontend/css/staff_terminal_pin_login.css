@@ -120,10 +120,15 @@ input:focus-visible {
 .login-main {
   display: grid;
   flex: 1;
-  grid-template-columns: minmax(0, 1fr) minmax(340px, 0.78fr);
+  width: min(100%, 520px);
+  grid-template-columns: minmax(0, 1fr);
   align-items: center;
-  gap: clamp(1.25rem, 3vw, 2.25rem);
+  justify-items: center;
   padding: 1.25rem 0;
+}
+
+.login-auth {
+  width: 100%;
 }
 
 .login-intro {
