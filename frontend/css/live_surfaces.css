@@ -3488,6 +3488,27 @@ body[data-surface='admin'] #admin-stock-activity .admin-supplier-order-line > sp
 body[data-surface='admin'] #admin-stock-activity .admin-supplier-order-line > span:first-child {
   color: #3e4b40;
   font-size: 11px;
+}
+
+body[data-surface='dispatch'] .dispatch-page-head {
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+body[data-surface='dispatch'] .dispatch-page-head > :first-child {
+  width: 100%;
+}
+
+body[data-surface='dispatch'] .dispatch-page-head .ls-subtitle {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+body[data-surface='dispatch'] .dispatch-footer-meta {
+  justify-content: center;
+  text-align: center;
   font-weight: 600;
 }
 

@@ -314,10 +314,39 @@ body[data-surface='admin'] .admin-outlet-grid strong {
 }
 
 body[data-surface='admin'] .admin-flag {
+  align-items: center;
+  justify-content: space-between;
   border-color: #efdfbf;
   border-radius: 10px;
   background: #fff9eb;
   color: #735a2d;
+}
+
+body[data-surface='admin'] .admin-flag > span {
+  flex: 1;
+}
+
+body[data-surface='admin'] .admin-flag-dismiss {
+  flex: 0 0 auto;
+  padding: 5px 9px;
+  border: 1px solid #e8d4af;
+  border-radius: 7px;
+  background: #fffdf7;
+  color: #735a2d;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+body[data-surface='admin'] .admin-flag-dismiss:hover:not(:disabled) {
+  border-color: #b98531;
+  color: #543c18;
+}
+
+body[data-surface='admin'] .admin-flag-dismiss:disabled {
+  cursor: wait;
+  opacity: 0.6;
 }
 
 body[data-surface='admin'] .admin-inventory-card {

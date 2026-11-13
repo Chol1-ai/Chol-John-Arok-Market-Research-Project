@@ -14,6 +14,21 @@ const outletQuerySchema = z.object({
   outlet: z.enum(['FOODIZO_HAM_TOWERS', 'OBUNUZI_YMCA']).optional()
 });
 
+const flagCodeSchema = z.enum([
+  'CASH_COUNT_MISSING',
+  'CASH_VARIANCE',
+  'REFUND_PENDING',
+  'FAILED_PAYMENTS',
+  'FAILED_DELIVERIES',
+  'STALE_ORDERS',
+  'LOW_STOCK'
+]);
+
+const dismissFlagsSchema = z.object({
+  outlet: z.enum(['FOODIZO_HAM_TOWERS', 'OBUNUZI_YMCA']).optional(),
+  codes: z.array(flagCodeSchema).min(1).max(7)
+});
+
 function resolveOutlet(
   actorOutlet: OutletLocation | null,
   requested: OutletLocation | undefined,
@@ -32,6 +47,30 @@ function resolveOutlet(
 }
 
 export const digestRoutes: FastifyPluginAsync = async (fastify) => {
+  async function dismissedFlagCodes(outlet: OutletLocation | undefined, businessDate: Date) {
+    const start = new Date(businessDate.getTime() + 2 * 60 * 60 * 1000);
+    const end = new Date(start.getTime() + 24 * 60 * 60 * 1000);
+    const dismissals = await fastify.prisma.audit_log.findMany({
+      where: {
+        action: 'DIGEST_FLAG_DISMISSED',
+        entity_type: 'DIGEST_FLAG',
+        outlet: outlet || null,
+        occurred_at: { gte: start, lt: end }
+      },
+      select: { after_json: true }
+    });
+
+    const codes = new Set<string>();
+    for (const dismissal of dismissals) {
+      const payload = dismissal.after_json;
+      if (payload && typeof payload === 'object' && !Array.isArray(payload)) {
+        const code = Reflect.get(payload, 'flagCode');
+        if (typeof code === 'string') codes.add(code);
+      }
+    }
+    return codes;
+  }
+
   // GET /api/v1/digest/preview?outlet=... — manager-only computed report.
   fastify.get(
     '/preview',
@@ -75,6 +114,9 @@ export const digestRoutes: FastifyPluginAsync = async (fastify) => {
         businessDate,
         outlet
       );
+      const dismissedCodes = await dismissedFlagCodes(outlet, businessDate);
+      summary.flags = summary.flags.filter((flag) => !dismissedCodes.has(flag.code));
+      summary.flagCount = summary.flags.length;
 
       const recentOrders = await fastify.prisma.orders.findMany({
         where: outlet ? { outlet } : undefined,
@@ -145,6 +187,55 @@ export const digestRoutes: FastifyPluginAsync = async (fastify) => {
           loggedBy: log.user?.full_name || 'Former staff member',
           createdAt: log.created_at
         }))
+      });
+    }
+  );
+
+  // POST /api/v1/digest/flags/dismiss — dismiss active alerts through the
+  // current Kampala business day. The audit log keeps the action attributable.
+  fastify.post(
+    '/flags/dismiss',
+    { preHandler: [fastify.requireRole(['MANAGER_ADMIN'])] },
+    async (request, reply) => {
+      const body = dismissFlagsSchema.parse(request.body);
+      const { outlet, error } = resolveOutlet(request.user!.outlet, body.outlet, true);
+      if (error) {
+        return reply.status(403).send({
+          statusCode: 403,
+          error: 'Forbidden',
+          code: 'OUTLET_FORBIDDEN',
+          message: error
+        });
+      }
+
+      const businessDate = getKampalaBusinessDate();
+      const summary = await DigestService.generateDigest(fastify.prisma, businessDate, outlet);
+      const activeCodes = new Set(summary.flags.map((flag) => flag.code));
+      const dismissedCodes = await dismissedFlagCodes(outlet, businessDate);
+      const codes = Array.from(new Set(body.codes)).filter(
+        (code) => activeCodes.has(code) && !dismissedCodes.has(code)
+      );
+
+      for (const code of codes) {
+        await fastify.prisma.audit_log.create({
+          data: {
+            actor_user_id: request.user!.userId,
+            actor_role: request.user!.role,
+            outlet: outlet || null,
+            action: 'DIGEST_FLAG_DISMISSED',
+            entity_type: 'DIGEST_FLAG',
+            after_json: { flagCode: code, businessDate: businessDate.toISOString().slice(0, 10) },
+            ip_address: request.ip
+          }
+        });
+      }
+
+      return reply.send({
+        success: true,
+        dismissedCodes: codes,
+        message: codes.length
+          ? 'Selected alerts cleared for the rest of this business day.'
+          : 'No matching open alerts remain.'
       });
     }
   );

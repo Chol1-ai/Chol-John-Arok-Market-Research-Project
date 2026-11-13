@@ -25,6 +25,7 @@
     liveText: document.getElementById('admin-live-text'),
     notification: document.getElementById('admin-notification'),
     notificationCount: document.getElementById('admin-notification-count'),
+    clearAlerts: document.getElementById('admin-clear-alerts'),
     digestSub: document.getElementById('admin-digest-sub'),
     outlets: document.getElementById('admin-outlets'),
     ordersBody: document.getElementById('admin-orders-body'),
@@ -205,6 +206,7 @@
 
   function renderFlags() {
     const flags = STATE.overview.summary.flags || [];
+    els.clearAlerts.hidden = flags.length === 0;
     els.notificationCount.textContent = flags.length > 99 ? '99+' : String(flags.length);
     els.notificationCount.hidden = flags.length === 0;
     els.notification.setAttribute(
@@ -221,9 +223,37 @@
     els.flagsList.innerHTML = flags
       .map(
         (flag) =>
-          `<div class="admin-flag"><span>${F.escapeHtml(flag.message)}</span></div>`
+          `<div class="admin-flag">
+            <span>${F.escapeHtml(flag.message)}</span>
+            <button type="button" class="admin-flag-dismiss" data-dismiss-flag="${F.escapeHtml(
+              flag.code
+            )}" aria-label="Clear alert: ${F.escapeHtml(flag.message)}">Clear</button>
+          </div>`
       )
       .join('');
+  }
+
+  async function dismissAlerts(codes, button) {
+    const activeCodes = Array.from(new Set(codes)).filter(Boolean);
+    if (!activeCodes.length || button.disabled) return;
+
+    button.disabled = true;
+    try {
+      const payload = {
+        codes: activeCodes,
+        ...(STATE.scope !== 'ALL' ? { outlet: STATE.scope } : {})
+      };
+      const result = await F.request('/api/v1/digest/flags/dismiss', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+      await loadOverview(false);
+      F.toast(result.message || 'Alerts cleared for this business day.', 'success');
+    } catch (error) {
+      F.toast(error.message || 'Alerts could not be cleared.', 'error');
+    } finally {
+      if (button.isConnected) button.disabled = false;
+    }
   }
 
   function renderOrders() {
@@ -1299,6 +1329,14 @@
     els.staffBody.addEventListener('click', (event) => {
       const button = event.target.closest('[data-staff-remove]');
       if (button) removeStaffAccount(button);
+    });
+    els.flagsList.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-dismiss-flag]');
+      if (button) dismissAlerts([button.dataset.dismissFlag], button);
+    });
+    els.clearAlerts.addEventListener('click', () => {
+      const codes = (STATE.overview?.summary?.flags || []).map((flag) => flag.code);
+      dismissAlerts(codes, els.clearAlerts);
     });
     els.menuCreateForm.addEventListener('submit', submitMenuItem);
     els.menuOutlet.addEventListener('change', () => {

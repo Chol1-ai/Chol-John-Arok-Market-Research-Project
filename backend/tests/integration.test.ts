@@ -1062,6 +1062,34 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
     );
     expect(tableTotal).toBe(16);
 
+    const foodizoOverview = await inject(
+      'GET',
+      '/api/v1/digest/overview?outlet=FOODIZO_HAM_TOWERS',
+      { token: tokens.cyrus }
+    );
+    const foodizoFlags = (foodizoOverview.json() as Json).summary.flags as Json[];
+    expect(foodizoFlags.length).toBeGreaterThan(0);
+    const dismissedCode = foodizoFlags[0].code as string;
+    const nonManagerDismissal = await inject('POST', '/api/v1/digest/flags/dismiss', {
+      token: tokens.sarah,
+      payload: { codes: [dismissedCode] }
+    });
+    expect(nonManagerDismissal.statusCode).toBe(403);
+
+    const dismissal = await inject('POST', '/api/v1/digest/flags/dismiss', {
+      token: tokens.cyrus,
+      payload: { codes: [dismissedCode] }
+    });
+    expect(dismissal.statusCode).toBe(200);
+    expect((dismissal.json() as Json).dismissedCodes).toContain(dismissedCode);
+    const refreshedOverview = await inject(
+      'GET',
+      '/api/v1/digest/overview?outlet=FOODIZO_HAM_TOWERS',
+      { token: tokens.cyrus }
+    );
+    const refreshedFlags = (refreshedOverview.json() as Json).summary.flags as Json[];
+    expect(refreshedFlags.some((flag) => flag.code === dismissedCode)).toBe(false);
+
     const expected = Number(summary.outlets[0].expectedCashUgx);
     const reconcile = await inject('POST', '/api/v1/digest/reconcile-cash', {
       token: tokens.cyrus,

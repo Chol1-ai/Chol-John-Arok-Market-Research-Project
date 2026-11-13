@@ -17,10 +17,6 @@
     review: document.getElementById('dispatch-review'),
     activeSub: document.getElementById('dispatch-active-sub'),
     reviewSub: document.getElementById('dispatch-review-sub'),
-    refresh: document.getElementById('dispatch-refresh'),
-    updated: document.getElementById('dispatch-updated'),
-    live: document.getElementById('dispatch-live'),
-    liveText: document.getElementById('dispatch-live-text'),
     awaiting: document.getElementById('dispatch-awaiting'),
     transit: document.getElementById('dispatch-transit'),
     reviewCount: document.getElementById('dispatch-review-count'),
@@ -51,16 +47,6 @@
     completeClose: document.getElementById('dispatch-complete-close'),
     completeCancel: document.getElementById('dispatch-complete-cancel')
   };
-
-  function setLiveState(state) {
-    const labels = {
-      connecting: 'Connecting…',
-      online: 'Live updates on',
-      offline: 'Reconnecting…'
-    };
-    els.live.dataset.state = state;
-    els.liveText.textContent = labels[state] || state;
-  }
 
   function renderSummary() {
     const awaiting = STATE.active.filter((row) => row.handoffState === 'AWAITING_RIDER').length;
@@ -211,9 +197,6 @@
     renderSummary();
     renderActive();
     renderReview();
-    if (els.updated) {
-      els.updated.textContent = `Updated ${F.formatTime(new Date().toISOString())} · auto 60s`;
-    }
   }
 
   function scheduleRefresh() {
@@ -357,7 +340,6 @@
     if (STATE.events) STATE.events.close();
     STATE.events = F.connectEvents({
       outlet: STATE.user.outlet || undefined,
-      onStatus: setLiveState,
       onEvent(message) {
         if (
           ['DELIVERY_UPDATED', 'ORDER_SETTLED', 'TOKEN_READY', 'TICKET_UPDATED', 'ORDER_CANCELLED'].includes(
@@ -371,15 +353,6 @@
   }
 
   function wireEvents() {
-    els.refresh.addEventListener('click', async () => {
-      try {
-        await loadQueues();
-        F.toast('Dispatch queues refreshed.', 'success');
-      } catch (error) {
-        F.toast(error.message || 'Refresh failed.', 'error');
-      }
-    });
-
     els.active.addEventListener('click', (event) => {
       const button = event.target.closest('[data-action][data-order-id]');
       if (!button) return;

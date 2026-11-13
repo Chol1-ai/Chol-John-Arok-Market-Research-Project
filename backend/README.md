@@ -191,6 +191,7 @@ Managers use the Admin dashboard to review on-hand quantities and reorder alerts
 | `POST` | `/api/v1/surplus/log` | Log leftover portions with a resolution and audit entry | Manager only |
 | `GET` | `/api/v1/digest/preview` | Computed shift digest and cash variance without persisting or sending | Manager only |
 | `GET` | `/api/v1/digest/overview` | Live manager dashboard payload: digest summary, recent orders, table counts, staff, surplus logs | Manager only |
+| `POST` | `/api/v1/digest/flags/dismiss` | Dismiss active dashboard alerts for the current Kampala business day; each dismissal is audit logged | Manager only; outlet-scoped |
 | `POST` | `/api/v1/digest/reconcile-cash` | Upsert the physical drawer count and variance for the business date | Manager only |
 | `POST` | `/api/v1/digest/dispatch-now` | Generate and dispatch the digest on demand; reports real channel outcomes | Manager only |
 | `GET` | `/api/v1/digest/view/:token` | Read-only 72-hour digest link payload | Public, link token |

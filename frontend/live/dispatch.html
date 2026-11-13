@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
   <link rel="stylesheet" href="/css/theme_tokens.css" />
-  <link rel="stylesheet" href="/css/live_surfaces.css?v=7" />
+  <link rel="stylesheet" href="/css/live_surfaces.css?v=10" />
 </head>
 <body class="ls-body" data-surface="dispatch">
   <a class="ls-skip" href="#main-content">Skip to main content</a>
@@ -30,7 +30,6 @@
     <div class="ls-session">
       <div class="ls-session-copy">
         <div class="ls-session-name" data-session-name>Loading…</div>
-        <div class="ls-session-role"><span data-session-role>FOH</span> · <span data-session-outlet>Outlet</span></div>
       </div>
       <div class="ls-avatar" data-session-initials>--</div>
       <button class="ls-logout" type="button" data-action="logout">Log out</button>
@@ -38,16 +37,10 @@
   </header>
 
   <main class="ls-main" id="main-content">
-    <div class="ls-page-head">
+    <div class="ls-page-head dispatch-page-head">
       <div>
-        <div class="ls-eyebrow">Phone delivery handoff</div>
         <h1 class="ls-title">Boda dispatch queue</h1>
         <p class="ls-subtitle">Assign riders to ready deliveries and record each delivery outcome.</p>
-      </div>
-      <div class="ls-head-actions">
-        <span class="ls-live" id="dispatch-live" data-state="connecting"><span class="ls-live-dot"></span><span id="dispatch-live-text">Connecting…</span></span>
-        <span class="ls-updated" id="dispatch-updated" aria-live="polite">Not loaded</span>
-        <button class="ls-btn ls-btn--ghost ls-btn--small" type="button" id="dispatch-refresh">Refresh queues</button>
       </div>
     </div>
 
@@ -201,13 +194,12 @@
         </button>
       </div>
     </div>
-    <div class="ls-footer-meta">
-      <span>Business day resets at 05:00 EAT · updates every 60 seconds</span>
+    <div class="ls-footer-meta dispatch-footer-meta">
       <span>© 2026 Foodizo &amp; Obunuzi</span>
     </div>
   </footer>
 
   <script src="/js/api.js"></script>
-  <script src="/js/dispatch.js?v=4"></script>
+  <script src="/js/dispatch.js?v=5"></script>
 </body>
 </html>
