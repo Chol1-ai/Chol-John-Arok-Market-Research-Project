@@ -880,7 +880,8 @@
     .customer-hero-empty {
       position: relative;
       isolation: isolate;
-      height: clamp(150px, 23vw, 260px);
+      perspective: 900px;
+      height: clamp(220px, 23vw, 260px);
       margin: 0;
       padding: 0;
       overflow: hidden;
@@ -900,145 +901,50 @@
     }
 
     .customer-hero-burger {
-      position: relative;
-      width: 210px;
-      height: 138px;
-      animation: hero-burger-float 3.2s ease-in-out infinite;
+      display: block;
+      width: auto;
+      height: clamp(150px, 22vw, 230px);
+      max-width: 90vw;
+      object-fit: contain;
+      mix-blend-mode: lighten;
+      filter: drop-shadow(0 14px 18px rgba(0, 0, 0, .34));
+      animation: hero-burger-turn 9s ease-in-out infinite;
     }
 
-    .customer-hero-burger-glow {
+    .customer-hero-sauce-drip {
       position: absolute;
-      bottom: 5px;
-      left: 50%;
-      width: 154px;
-      height: 18px;
-      border-radius: 50%;
-      background: radial-gradient(ellipse, rgba(210, 115, 58, .42), transparent 70%);
-      filter: blur(3px);
-      transform: translateX(-50%);
-      animation: hero-burger-glow 3.2s ease-in-out infinite;
-    }
-
-    .customer-hero-burger-layer {
-      position: absolute;
-      left: 50%;
-      border-radius: 12px;
-      transform: translateX(-50%);
-    }
-
-    .customer-hero-bun--bottom {
-      bottom: 17px;
-      z-index: 1;
-      width: 154px;
-      height: 30px;
-      border-radius: 8px 8px 28px 28px;
-      background: linear-gradient(180deg, #edb45f, #b96630);
-      box-shadow: inset 0 -5px 0 rgba(112, 52, 23, .18), 0 4px 8px rgba(0, 0, 0, .24);
-    }
-
-    .customer-hero-burger-patty {
-      bottom: 39px;
-      z-index: 2;
-      width: 164px;
-      height: 23px;
-      border: 1px solid rgba(52, 23, 14, .72);
-      border-radius: 9px;
-      background: linear-gradient(180deg, #713b28, #3e2118);
-      box-shadow: inset 0 3px 0 rgba(214, 152, 100, .18), 0 3px 5px rgba(0, 0, 0, .28);
-    }
-
-    .customer-hero-burger-cheese {
-      bottom: 53px;
-      z-index: 3;
-      width: 153px;
-      height: 19px;
-      background: linear-gradient(180deg, #ffd85f, #e99b2f);
-      clip-path: polygon(0 0, 100% 0, 98% 73%, 77% 73%, 68% 100%, 58% 74%, 35% 78%, 27% 100%, 18% 74%, 2% 74%);
-      filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .18));
-    }
-
-    .customer-hero-burger-tomato {
-      bottom: 64px;
-      z-index: 4;
-      width: 137px;
-      height: 11px;
-      border: 1px solid rgba(126, 37, 24, .45);
-      border-radius: 8px;
-      background: linear-gradient(180deg, #ef6d4c, #b8392d);
-      box-shadow: inset 0 2px 0 rgba(255, 205, 124, .3);
-    }
-
-    .customer-hero-burger-lettuce {
-      bottom: 63px;
-      z-index: 5;
-      width: 174px;
-      height: 17px;
-      background: linear-gradient(180deg, #9dca63, #427b3b);
-      clip-path: polygon(0 25%, 8% 0, 15% 23%, 24% 4%, 33% 24%, 42% 0, 52% 23%, 62% 3%, 71% 25%, 81% 0, 89% 23%, 100% 7%, 97% 78%, 88% 100%, 78% 76%, 67% 100%, 57% 77%, 47% 100%, 36% 76%, 26% 100%, 16% 78%, 6% 100%);
-      filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .22));
-    }
-
-    .customer-hero-bun--top {
-      bottom: 70px;
-      z-index: 6;
-      width: 168px;
-      height: 49px;
-      overflow: hidden;
-      border-radius: 86px 86px 18px 18px;
-      background: linear-gradient(155deg, #ffd883 4%, #e8a64d 63%, #b96730 100%);
-      box-shadow: inset 0 -6px 0 rgba(145, 75, 31, .18), 0 6px 10px rgba(0, 0, 0, .24);
-    }
-
-    .customer-hero-bun--top::after {
-      position: absolute;
-      top: 8px;
-      left: 16%;
-      width: 68%;
-      height: 12px;
-      border-radius: 50%;
-      background: rgba(255, 235, 181, .28);
-      content: "";
-      transform: rotate(-5deg);
-    }
-
-    .customer-hero-burger-seed {
-      position: absolute;
-      z-index: 7;
+      top: 74%;
       width: 8px;
-      height: 3px;
-      border-radius: 50%;
-      background: #fff0c5;
-      box-shadow: 0 0 2px rgba(111, 63, 23, .4);
-      transform: rotate(-24deg);
+      height: 14px;
+      border-radius: 35% 35% 55% 55%;
+      background: linear-gradient(90deg, #d95d08, #ffae2c 48%, #e96d08);
+      box-shadow: 0 0 8px rgba(255, 142, 24, .42);
+      transform-origin: top center;
+      animation: hero-sauce-drip 2.8s ease-in infinite;
     }
 
-    .customer-hero-burger-seed--one {
-      top: 42px;
-      left: calc(50% - 34px);
+    .customer-hero-sauce-drip::after {
+      position: absolute;
+      bottom: -3px;
+      left: 50%;
+      width: 8px;
+      height: 9px;
+      border-radius: 55% 45% 60% 40%;
+      background: inherit;
+      content: "";
+      transform: translateX(-50%) rotate(45deg);
     }
 
-    .customer-hero-burger-seed--two {
-      top: 34px;
-      left: calc(50% - 12px);
-      transform: rotate(18deg);
+    .customer-hero-sauce-drip--one {
+      left: calc(50% - 36px);
+      animation-delay: -.6s;
     }
 
-    .customer-hero-burger-seed--three {
-      top: 39px;
-      left: calc(50% + 10px);
-      transform: rotate(-14deg);
-    }
-
-    .customer-hero-burger-seed--four {
-      top: 47px;
-      left: calc(50% + 28px);
-      transform: rotate(22deg);
-    }
-
-    .customer-hero-burger-seed--five {
-      top: 51px;
-      left: calc(50% - 5px);
-      transform: rotate(-8deg);
+    .customer-hero-sauce-drip--two {
+      left: calc(50% + 27px);
+      width: 6px;
+      height: 11px;
+      animation-delay: -1.7s;
     }
 
     @keyframes empty-hero-in {
@@ -1053,30 +959,39 @@
       }
     }
 
-    @keyframes hero-burger-float {
+    @keyframes hero-burger-turn {
       from {
-        transform: translateY(3px) rotate(-1deg);
+        transform: rotateY(-7deg) rotateZ(-1deg) translateY(3px);
       }
 
       50% {
-        transform: translateY(-7px) rotate(1deg);
+        transform: rotateY(7deg) rotateZ(1deg) translateY(-3px);
       }
 
       to {
-        transform: translateY(3px) rotate(-1deg);
+        transform: rotateY(-7deg) rotateZ(-1deg) translateY(3px);
       }
     }
 
-    @keyframes hero-burger-glow {
+    @keyframes hero-sauce-drip {
       0%,
-      100% {
-        opacity: .48;
-        transform: translateX(-50%) scale(.88);
+      12% {
+        height: 7px;
+        opacity: .3;
+        transform: scaleY(.7);
       }
 
-      50% {
-        opacity: .78;
-        transform: translateX(-50%) scale(1.08);
+      55% {
+        height: 25px;
+        opacity: .95;
+        transform: scaleY(1);
+      }
+
+      78%,
+      100% {
+        height: 8px;
+        opacity: 0;
+        transform: translateY(12px) scaleY(.7);
       }
     }
 
@@ -1172,7 +1087,7 @@
       }
 
       .customer-hero-burger,
-      .customer-hero-burger-glow {
+      .customer-hero-sauce-drip {
         animation: none;
       }
 
@@ -1531,20 +1446,9 @@
 
   <section class="customer-hero customer-hero-empty" aria-hidden="true">
     <div class="customer-hero-food">
-      <div class="customer-hero-burger">
-        <span class="customer-hero-burger-glow"></span>
-        <span class="customer-hero-burger-layer customer-hero-bun--bottom"></span>
-        <span class="customer-hero-burger-layer customer-hero-burger-patty"></span>
-        <span class="customer-hero-burger-layer customer-hero-burger-cheese"></span>
-        <span class="customer-hero-burger-layer customer-hero-burger-tomato"></span>
-        <span class="customer-hero-burger-layer customer-hero-burger-lettuce"></span>
-        <span class="customer-hero-burger-layer customer-hero-bun--top"></span>
-        <span class="customer-hero-burger-seed customer-hero-burger-seed--one"></span>
-        <span class="customer-hero-burger-seed customer-hero-burger-seed--two"></span>
-        <span class="customer-hero-burger-seed customer-hero-burger-seed--three"></span>
-        <span class="customer-hero-burger-seed customer-hero-burger-seed--four"></span>
-        <span class="customer-hero-burger-seed customer-hero-burger-seed--five"></span>
-      </div>
+      <img class="customer-hero-burger" src="../images/landing-burger-dripping.png" alt="" />
+      <span class="customer-hero-sauce-drip customer-hero-sauce-drip--one"></span>
+      <span class="customer-hero-sauce-drip customer-hero-sauce-drip--two"></span>
     </div>
   </section>
 
