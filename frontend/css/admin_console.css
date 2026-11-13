@@ -4,8 +4,8 @@ body[data-surface='admin'] {
   --surface-chrome-text: #263b2d;
   --surface-accent: #32734b;
   --surface-accent-soft: #edf5ed;
-  background: #f4f5f1;
-  color: #26352b;
+  background: #22231f;
+  color: #f3f1ea;
 }
 
 body[data-surface='admin'] .ls-topbar {

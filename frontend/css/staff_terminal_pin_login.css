@@ -23,7 +23,7 @@ body {
 
 body {
   color: var(--login-ink);
-  background: #f5f6f2;
+  background: #22231f;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -59,14 +59,14 @@ input:focus-visible {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  border-bottom: 1px solid rgba(26, 48, 36, 0.07);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .login-brand {
   display: inline-flex;
   align-items: center;
   gap: 0.75rem;
-  color: var(--login-ink);
+  color: #f3f1ea;
   text-decoration: none;
 }
 
@@ -84,7 +84,7 @@ input:focus-visible {
 }
 
 .login-brand-copy small {
-  color: var(--login-muted);
+  color: #b6b7ae;
   font-size: 0.63rem;
   font-weight: 650;
   letter-spacing: 0.11em;
@@ -587,7 +587,7 @@ input:focus-visible {
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  color: #7a857c;
+  color: #b6b7ae;
   font-size: 0.68rem;
   text-align: center;
 }
