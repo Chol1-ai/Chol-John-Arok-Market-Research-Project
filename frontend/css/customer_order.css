@@ -38,7 +38,7 @@ button { cursor: pointer; }
 .customer-cart-nav .material-symbols-outlined { font-size: 17px; }
 .customer-cart-nav-count { min-width: 16px; height: 16px; display: inline-grid; place-items: center; padding: 0 4px; border-radius: 999px; background: #c83d2d; color: #fff; font-size: 9px; font-weight: 800; }
 .customer-main { width: min(1200px, calc(100% - 36px)); min-height: calc(100vh - 124px); margin: 0 auto; padding: 34px 0 56px; }
-.customer-intro { max-width: 700px; margin-bottom: 24px; }
+
 .customer-eyebrow { color: #a63c2b; font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
 h1 { margin: 9px 0; font-size: clamp(30px, 5vw, 46px); line-height: 1.1; letter-spacing: -.05em; }
 .customer-controls { display: flex; gap: 14px; align-items: end; margin-bottom: 18px; }
@@ -60,7 +60,7 @@ h1 { margin: 9px 0; font-size: clamp(30px, 5vw, 46px); line-height: 1.1; letter-
 .customer-menu, .customer-cart, .tracking-card { border: 1px solid #41423b; border-radius: 18px; background: #292a25; color: #f3f1ea; box-shadow: 0 8px 26px rgba(0, 0, 0, .24); }
 .customer-menu { padding: 16px; }
 .customer-menu-heading { margin: 0 0 13px; }
-.customer-menu-heading h2 { margin: 0; font-size: clamp(20px, 3vw, 26px); letter-spacing: -.04em; }
+.customer-menu-heading h1 { margin: 0; font-size: clamp(20px, 3vw, 26px); letter-spacing: -.04em; }
 .customer-menu-heading p { max-width: 700px; margin: 7px 0 0; color: #b6b7ae; font-size: 12px; line-height: 1.65; }
 .customer-menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); align-items: start; gap: 12px; }
 .customer-meal { position: relative; display: flex; min-width: 0; min-height: 0; width: 100%; aspect-ratio: .92; flex-direction: column; gap: 0; padding: 0; overflow: hidden; border: 1px solid #eeeae2; border-radius: 14px; background: #11130f; }
@@ -222,69 +222,6 @@ h1 { margin: 9px 0; font-size: clamp(30px, 5vw, 46px); line-height: 1.1; letter-
   }
 }
 
-.customer-intro {
-  position: relative;
-  max-width: none;
-  margin: 0 0 26px;
-  padding: clamp(30px, 5vw, 54px) 24px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, .18);
-  border-radius: 26px;
-  background:
-    radial-gradient(ellipse at 12% 0%, rgba(255, 205, 132, .2), transparent 38%),
-    radial-gradient(ellipse at 92% 100%, rgba(83, 169, 112, .25), transparent 40%),
-    linear-gradient(125deg, #183d2d 0%, #245c3e 52%, #326b48 100%);
-  box-shadow: 0 22px 42px -26px rgba(24, 61, 45, .55);
-  text-align: center;
-}
-
-.customer-intro::before,
-.customer-intro::after {
-  position: absolute;
-  width: 190px;
-  height: 190px;
-  border: 1px solid rgba(255, 255, 255, .12);
-  border-radius: 50%;
-  content: "";
-  pointer-events: none;
-}
-
-.customer-intro::before {
-  top: -128px;
-  left: -48px;
-}
-
-.customer-intro::after {
-  right: -72px;
-  bottom: -148px;
-}
-
-.customer-eyebrow {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  min-height: 30px;
-  margin: 0 auto 13px;
-  padding: 6px 13px;
-  border: 1px solid rgba(255, 232, 199, .3);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, .1);
-  color: #ffe2b7;
-  font-size: 10px;
-  letter-spacing: .14em;
-}
-
-.customer-intro h1 {
-  position: relative;
-  max-width: 760px;
-  margin: 0 auto 12px;
-  color: #fffaf1;
-  font-size: clamp(34px, 5.2vw, 56px);
-  letter-spacing: -.055em;
-  line-height: 1.06;
-  text-wrap: balance;
-}
-
 .tracking-card {
   background:
     radial-gradient(ellipse at 100% 0, rgba(83, 169, 112, .12), transparent 42%),
@@ -296,29 +233,4 @@ h1 { margin: 9px 0; font-size: clamp(30px, 5vw, 46px); line-height: 1.1; letter-
   color: #f3f1ea;
   font-size: clamp(32px, 5vw, 44px);
   text-wrap: balance;
-}
-
-.customer-intro p {
-  position: relative;
-  max-width: 650px;
-  margin: 0 auto;
-  color: rgba(246, 250, 241, .82);
-  font-size: clamp(13px, 1.5vw, 15px);
-  line-height: 1.75;
-}
-
-@media (max-width: 540px) {
-  .customer-intro {
-    margin-bottom: 20px;
-    padding: 32px 18px;
-    border-radius: 20px;
-  }
-
-  .customer-intro h1 {
-    font-size: clamp(32px, 9vw, 42px);
-  }
-
-  .customer-intro p {
-    line-height: 1.65;
-  }
 }

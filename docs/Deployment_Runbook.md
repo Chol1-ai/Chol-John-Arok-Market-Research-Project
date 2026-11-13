@@ -14,7 +14,7 @@ The repository includes a Render Blueprint at [`render.yaml`](../render.yaml) fo
 1. Push the repository to GitHub and create a Neon project. Choose a database region close to the Render region you plan to use.
 2. Copy the Neon **direct (non-pooled) PostgreSQL connection string** with SSL enabled. Do not commit it or paste it into source files.
 3. In Render, choose **New → Blueprint**, select this repository, and apply `render.yaml`. Provide the Neon connection string as `DATABASE_URL`; Render generates the JWT and webhook secrets.
-4. Render builds the Prisma client and backend, then the start command applies pending Prisma migrations before starting both servers. The app uses Render's HTTPS service URL for same-origin CORS and digest links automatically. A health check at `/api/v1/health` verifies API and database readiness.
+4. Render builds the Prisma client and backend, then the start command applies pending Prisma migrations, starts the API, and waits up to 30 seconds for `/api/v1/health` to verify API and database readiness before starting the frontend. The app uses Render's HTTPS service URL for same-origin CORS and digest links automatically.
 5. The first deploy creates an empty schema. For a real setup, bootstrap the first manager as described below. Seeding is only for a fresh, disposable demo database:
 
    ```powershell

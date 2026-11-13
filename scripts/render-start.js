@@ -1,3 +1,4 @@
+import http from 'node:http';
 import { spawn, spawnSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -5,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const backendDir = path.join(root, 'backend');
 const backendPort = process.env.BACKEND_PORT || '4000';
+const backendStartupTimeoutMs = 30_000;
 const externalUrl = process.env.RENDER_EXTERNAL_URL;
 let externalOrigin;
 try {
@@ -84,6 +86,52 @@ function monitor(child, name) {
   });
 }
 
+function checkBackendHealth() {
+  return new Promise((resolve, reject) => {
+    const request = http.get(
+      {
+        hostname: '127.0.0.1',
+        port: backendPort,
+        path: '/api/v1/health',
+        timeout: 1_000
+      },
+      (response) => {
+        response.resume();
+        if (response.statusCode === 200) {
+          resolve();
+        } else {
+          reject(new Error(`Health check returned HTTP ${response.statusCode}.`));
+        }
+      }
+    );
+    request.on('timeout', () => request.destroy(new Error('Health check timed out.')));
+    request.on('error', reject);
+  });
+}
+
+async function waitForBackendHealth() {
+  const deadline = Date.now() + backendStartupTimeoutMs;
+  let lastError;
+
+  while (Date.now() < deadline) {
+    try {
+      await checkBackendHealth();
+      console.log('Backend API is healthy; starting the frontend server.');
+      return;
+    } catch (error) {
+      lastError = error;
+      if (backend.exitCode !== null) {
+        throw new Error(`Backend exited before becoming healthy: ${error.message}`);
+      }
+      await new Promise((resolve) => setTimeout(resolve, 250));
+    }
+  }
+
+  throw new Error(
+    `Backend API did not become healthy within ${backendStartupTimeoutMs}ms: ${lastError.message}`
+  );
+}
+
 process.once('SIGINT', () => stop('SIGINT'));
 process.once('SIGTERM', () => stop('SIGTERM'));
 
@@ -94,14 +142,28 @@ backend = spawn(process.execPath, [path.join(backendDir, 'dist', 'index.js')], {
 });
 monitor(backend, 'Backend API');
 
-frontend = spawn(process.execPath, [path.join(root, 'server.js')], {
-  cwd: root,
-  env: {
-    ...process.env,
-    PORT: process.env.PORT || '10000',
-    BACKEND_PORT: backendPort,
-    BACKEND_HOST: '127.0.0.1'
-  },
-  stdio: 'inherit'
-});
-monitor(frontend, 'Frontend server');
+async function startFrontendWhenBackendIsHealthy() {
+  try {
+    await waitForBackendHealth();
+  } catch (error) {
+    console.error(error.message);
+    stop('SIGTERM', 1);
+    return;
+  }
+
+  if (stopping) return;
+
+  frontend = spawn(process.execPath, [path.join(root, 'server.js')], {
+    cwd: root,
+    env: {
+      ...process.env,
+      PORT: process.env.PORT || '10000',
+      BACKEND_PORT: backendPort,
+      BACKEND_HOST: '127.0.0.1'
+    },
+    stdio: 'inherit'
+  });
+  monitor(frontend, 'Frontend server');
+}
+
+startFrontendWhenBackendIsHealthy();
