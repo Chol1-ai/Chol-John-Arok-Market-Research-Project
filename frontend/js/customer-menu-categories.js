@@ -5,67 +5,67 @@
     {
       name: 'African & Local Cuisine',
       description: 'Enjoy authentic campus and traditional favourites, slow-cooked to perfection with rich local flavors.',
-      image: '/images/menu-categories/african-local.svg'
+      image: '/images/foodizo-luwombo.jpg'
     },
     {
       name: 'American',
       description: 'Crispy fries, loaded platters, and golden fried chicken to satisfy your quick-service cravings.',
-      image: '/images/menu-categories/american.svg'
+      image: '/images/american-wings-and-fries.jpg'
     },
     {
       name: 'Asian',
       description: 'Savory stir-fried noodles, fragrant rice bowls, and savory oriental bites delivered hot.',
-      image: '/images/menu-categories/asian.svg'
+      image: '/images/category-asian-photo.jpg'
     },
     {
       name: 'Bakery & Pastries',
       description: 'Freshly baked treats, sweet cakes, and flaky pastries straight from the oven every morning.',
-      image: '/images/menu-categories/bakery-pastries.svg'
+      image: '/images/category-bakery-photo.jpg'
     },
     {
       name: 'Breakfast & Morning Combos',
       description: 'Kickstart your campus morning with filling omelettes, pancakes, and hot morning tea combos.',
-      image: '/images/menu-categories/breakfast-combos.svg'
+      image: '/images/category-breakfast-photo.jpg'
     },
     {
       name: 'Burgers',
       description: 'Grilled beef patties, crispy chicken burgers, and stacked buns loaded with flavor.',
-      image: '/images/menu-categories/burgers.svg'
+      image: '/images/category-burger-photo.jpg'
     },
     {
       name: 'Coffee & Hot Teas',
       description: 'Rich espressos, frothy lattes, and spiced African teas to keep you energized through lectures.',
-      image: '/images/menu-categories/coffee-hot-teas.svg'
+      image: '/images/category-coffee-photo.jpg'
     },
     {
       name: 'Cold Drinks & Beverages',
       description: 'Ice-cold sodas, refreshing bottled waters, and energy drinks to beat the Kampala heat.',
-      image: '/images/menu-categories/cold-drinks.svg'
+      image: '/images/category-drinks-photo.jpg'
     },
     {
       name: 'Juices & Smoothies',
       description: '100% natural, freshly squeezed tropical fruit juices and creamy yogurt blends.',
-      image: '/images/menu-categories/juices-smoothies.svg'
+      image: '/images/foodizo-juice.jpg'
     },
     {
       name: 'Kampala Street Food Favourites',
       description: 'The undisputed campus champions—hot Rolexes, Kikkomandos, and muchomo joints.',
-      image: '/images/menu-categories/kampala-street-food.svg'
+      image: '/images/foodizo-rolex.jpg'
     },
     {
       name: 'Pizza & Wraps',
       description: 'Oven-baked pizzas with rich toppings and tightly rolled, flavor-packed wraps.',
-      image: '/images/menu-categories/pizza-wraps.svg'
+      image: '/images/category-pizza-photo.jpg'
     },
     {
       name: 'Snacks & Quick Bites',
       description: 'Quick, bite-sized snacks like crunchy samosas, cassava fries, and sweet gonja.',
-      image: '/images/menu-categories/snacks-quick-bites.svg'
+      image: '/images/category-snacks-photo.jpg'
     },
     {
       name: 'Sweets & Desserts',
       description: 'Sweet treats, cold ice cream, and decadent waffles to finish your meal on a high note.',
-      image: '/images/menu-categories/sweets-desserts.svg'
+      image: '/images/category-dessert-photo.jpg'
     }
   ];
 
