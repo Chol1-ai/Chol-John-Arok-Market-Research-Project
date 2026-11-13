@@ -15,6 +15,18 @@
   let requestNumber = 0;
   let menuRequestNumber = 0;
   let zones = [];
+  const prefersReducedMotion = Boolean(
+    window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  );
+  const categoryRevealObserver = !prefersReducedMotion && 'IntersectionObserver' in window
+    ? new window.IntersectionObserver((entries, observer) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      });
+    }, { rootMargin: '0px 0px -24px 0px', threshold: 0.12 })
+    : null;
 
   if (outlet) {
     const requestedOutlet = new URLSearchParams(location.search).get('outlet');
@@ -41,6 +53,12 @@
   }
 
   function renderMenuGroups(items) {
+    if (categoryRevealObserver && menuGroups) {
+      menuGroups.querySelectorAll('.home-category-reveal').forEach((card) => {
+        categoryRevealObserver.unobserve(card);
+      });
+    }
+
     const groups = new Map();
     items.forEach((item) => {
       const category = typeof item.category === 'string' && item.category.trim()
@@ -83,6 +101,14 @@
         }).join('')}
       </div>
     `;
+
+    if (categoryRevealObserver) {
+      menuGroups.querySelectorAll('.home-category-card').forEach((card, index) => {
+        card.style.setProperty('--reveal-delay', `${Math.min(index * 70, 280)}ms`);
+        categoryRevealObserver.observe(card);
+        card.classList.add('home-category-reveal');
+      });
+    }
   }
 
   async function loadMenu() {

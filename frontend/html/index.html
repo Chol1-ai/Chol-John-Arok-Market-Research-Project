@@ -877,6 +877,30 @@
       font-size: clamp(40px, 5vw, 74px);
     }
 
+    .customer-hero-empty {
+      height: clamp(150px, 23vw, 260px);
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse at 16% 0%, rgba(200, 61, 45, .14), transparent 38%),
+        radial-gradient(ellipse at 88% 100%, rgba(83, 169, 112, .16), transparent 42%),
+        linear-gradient(135deg, #2b2c27, #22231f 72%);
+      animation: empty-hero-in 760ms ease-out both;
+    }
+
+    @keyframes empty-hero-in {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
     .browse-section {
       padding-top: 23px;
     }
@@ -901,6 +925,27 @@
       border-radius: 18px;
       background: #11130f;
       box-shadow: 0 12px 28px rgba(20, 25, 20, .14);
+    }
+
+    .home-category-card.home-category-reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition:
+        opacity .55s ease,
+        transform .55s cubic-bezier(.2, .7, .2, 1),
+        box-shadow .2s ease,
+        border-color .2s ease;
+      transition-delay: var(--reveal-delay, 0ms);
+    }
+
+    .home-category-card.home-category-reveal.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .home-category-card.home-category-reveal.is-visible:hover,
+    .home-category-card.home-category-reveal.is-visible:focus-visible {
+      transform: translateY(-4px);
     }
 
     .home-category-card .card-media {
@@ -940,6 +985,19 @@
 
     .home-category-card:hover {
       border-color: #b98531;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .customer-hero-empty {
+        animation: none;
+      }
+
+      .home-category-card.home-category-reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+        transition-delay: 0ms;
+      }
     }
 
     @media (max-width: 700px) {
@@ -1287,6 +1345,8 @@
     </div>
   </header>
 
+  <section class="customer-hero customer-hero-empty" aria-hidden="true"></section>
+
   <main class="wrap">
     <section class="section browse-section customer-section" id="menu" aria-labelledby="browse-title">
       <div class="section-heading">
@@ -1459,7 +1519,7 @@
     </div>
   </dialog>
   <script src="/js/customer-menu-categories.js?v=3"></script>
-  <script src="/js/customer-home.js?v=20261115"></script>
+  <script src="/js/customer-home.js?v=20261116"></script>
   <script src="/js/customer-cart-navigation.js?v=1" defer></script>
   <script src="/js/customer-notifications.js?v=1" defer></script>
   <script src="/js/customer-navigation.js" defer></script>
