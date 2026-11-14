@@ -3,102 +3,107 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#22231f" />
+  <meta name="theme-color" content="#F7F3EC" />
   <meta name="description" content="Secure staff sign-in for Foodizo and Obunuzi." />
   <title>Staff sign-in | Foodizo &amp; Obunuzi</title>
   <link rel="icon" type="image/svg+xml" href="/images/foodizo-brand-mark.svg" />
-  <link rel="stylesheet" href="/css/staff_terminal_pin_login.css?v=14" />
+  <link rel="stylesheet" href="/css/staff_terminal_pin_login.css?v=15" />
 </head>
 <body class="login-page">
   <div class="login-shell">
-    <header class="login-header">
-      <a class="login-brand" href="/" aria-label="Foodizo and Obunuzi home">
-        <img src="/images/foodizo-brand-mark.svg" alt="" />
-        <span class="login-brand-copy">
-          <span>Foodizo <span aria-hidden="true">&amp;</span> Obunuzi</span>
-          <small>Wandegeya, Kampala</small>
-        </span>
-      </a>
-    </header>
+    <aside class="login-visual" aria-labelledby="login-visual-title">
+      <div class="login-visual-copy">
+        <p class="login-visual-eyebrow">Foodizo &amp; Obunuzi · Staff portal</p>
+        <h1 id="login-visual-title">Good food starts with a great team.</h1>
+        <p>Sign in to continue serving our Wandegeya community.</p>
+      </div>
+    </aside>
 
-    <main class="login-main">
-      <section class="login-auth" aria-labelledby="login-form-title">
-        <div class="login-card">
-          <div class="login-card-heading">
-            <span class="login-card-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24">
-                <rect x="4" y="10" width="16" height="11" rx="2"></rect>
-                <path d="M8 10V7a4 4 0 0 1 8 0v3m-4 5v2"></path>
-              </svg>
-            </span>
-            <div>
-              <h2 id="login-form-title">Open your workspace</h2>
+    <div class="login-content">
+      <header class="login-header">
+        <a class="login-brand" href="/" aria-label="Foodizo and Obunuzi home">
+          <img src="/images/foodizo-brand-mark.svg" alt="" />
+          <span class="login-brand-copy">
+            <span>Foodizo <span aria-hidden="true">&amp;</span> Obunuzi</span>
+            <small>Wandegeya, Kampala</small>
+          </span>
+        </a>
+      </header>
+
+      <main class="login-main">
+        <section class="login-auth" aria-labelledby="login-form-title">
+          <div class="login-card">
+            <div class="login-card-heading">
+              <p class="login-card-kicker">Staff sign-in</p>
+              <h2 id="login-form-title">Welcome back</h2>
+              <p class="login-card-description">Sign in with your staff mobile number and PIN.</p>
             </div>
-          </div>
 
-          <label class="login-phone-entry" for="staff-phone-number">
-            <span class="visually-hidden">Staff mobile number</span>
-            <input
-              class="login-phone-input"
-              id="staff-phone-number"
-              name="phoneNumber"
-              type="tel"
-              inputmode="tel"
-              autocomplete="tel"
-              maxlength="24"
-              placeholder="+256 7XX XXX XXX"
-              required />
-          </label>
+            <label class="login-phone-entry" for="staff-phone-number">
+              <span>Staff mobile number</span>
+              <input
+                class="login-phone-input"
+                id="staff-phone-number"
+                name="phoneNumber"
+                type="tel"
+                inputmode="tel"
+                autocomplete="tel"
+                maxlength="24"
+                placeholder="+256 7XX XXX XXX"
+                required />
+            </label>
 
-          <div class="login-pin-section">
-            <div class="login-pin-heading">
-              <span>Staff PIN</span>
+            <div class="login-pin-section">
+              <div class="login-pin-heading">
+                <span>4-digit staff PIN</span>
+              </div>
+              <div class="login-pin-dots" role="group" aria-label="PIN entry progress, four digits required">
+                <span class="pin-dot" aria-hidden="true"></span>
+                <span class="pin-dot" aria-hidden="true"></span>
+                <span class="pin-dot" aria-hidden="true"></span>
+                <span class="pin-dot" aria-hidden="true"></span>
+              </div>
+              <p class="login-pin-help">Use the keypad or number keys.</p>
+              <p class="pin-feedback pin-feedback--idle" id="pin-feedback" role="status" aria-live="polite"></p>
             </div>
-            <div class="login-pin-dots" role="group" aria-label="PIN entry progress, four digits required">
-              <span class="pin-dot" aria-hidden="true"></span>
-              <span class="pin-dot" aria-hidden="true"></span>
-              <span class="pin-dot" aria-hidden="true"></span>
-              <span class="pin-dot" aria-hidden="true"></span>
-            </div>
-            <p class="login-pin-help">Use the keypad or number keys.</p>
-            <p class="pin-feedback pin-feedback--idle" id="pin-feedback" role="status" aria-live="polite"></p>
-          </div>
 
-          <div class="login-keypad" role="group" aria-label="PIN keypad">
-            <button class="pin-btn" data-digit="1" type="button" aria-label="Enter 1">1</button>
-            <button class="pin-btn" data-digit="2" type="button" aria-label="Enter 2">2</button>
-            <button class="pin-btn" data-digit="3" type="button" aria-label="Enter 3">3</button>
-            <button class="pin-btn" data-digit="4" type="button" aria-label="Enter 4">4</button>
-            <button class="pin-btn" data-digit="5" type="button" aria-label="Enter 5">5</button>
-            <button class="pin-btn" data-digit="6" type="button" aria-label="Enter 6">6</button>
-            <button class="pin-btn" data-digit="7" type="button" aria-label="Enter 7">7</button>
-            <button class="pin-btn" data-digit="8" type="button" aria-label="Enter 8">8</button>
-            <button class="pin-btn" data-digit="9" type="button" aria-label="Enter 9">9</button>
-            <button class="pin-btn pin-btn--utility" id="pin-clear" type="button">Clear</button>
-            <button class="pin-btn" data-digit="0" type="button" aria-label="Enter 0">0</button>
-            <button class="pin-btn pin-btn--utility" id="pin-backspace" type="button" aria-label="Delete last digit">
+            <div class="login-keypad" role="group" aria-label="PIN keypad">
+              <button class="pin-btn" data-digit="1" type="button" aria-label="Enter 1">1</button>
+              <button class="pin-btn" data-digit="2" type="button" aria-label="Enter 2">2</button>
+              <button class="pin-btn" data-digit="3" type="button" aria-label="Enter 3">3</button>
+              <button class="pin-btn" data-digit="4" type="button" aria-label="Enter 4">4</button>
+              <button class="pin-btn" data-digit="5" type="button" aria-label="Enter 5">5</button>
+              <button class="pin-btn" data-digit="6" type="button" aria-label="Enter 6">6</button>
+              <button class="pin-btn" data-digit="7" type="button" aria-label="Enter 7">7</button>
+              <button class="pin-btn" data-digit="8" type="button" aria-label="Enter 8">8</button>
+              <button class="pin-btn" data-digit="9" type="button" aria-label="Enter 9">9</button>
+              <button class="pin-btn pin-btn--utility" id="pin-clear" type="button">Clear</button>
+              <button class="pin-btn" data-digit="0" type="button" aria-label="Enter 0">0</button>
+              <button class="pin-btn pin-btn--utility" id="pin-backspace" type="button" aria-label="Delete last digit">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M9 5h11a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H9L3 12l6-7Z"></path>
+                  <path d="m11 9 5 6m0-6-5 6"></path>
+                </svg>
+              </button>
+            </div>
+
+            <button class="login-submit" id="btn-unlock-pos" type="button">
               <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M9 5h11a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H9L3 12l6-7Z"></path>
-                <path d="m11 9 5 6m0-6-5 6"></path>
+                <path d="M10 17l5-5-5-5m5 5H3"></path>
+                <path d="M13 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"></path>
               </svg>
+              <span>Sign in to workspace</span>
             </button>
+
+            <p class="login-card-note">Need staff access? Contact your manager.</p>
           </div>
+        </section>
+      </main>
 
-          <button class="login-submit" id="btn-unlock-pos" type="button">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M10 17l5-5-5-5m5 5H3"></path>
-              <path d="M13 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"></path>
-            </svg>
-            <span>Sign in to workspace</span>
-          </button>
-
-        </div>
-      </section>
-    </main>
-
-    <footer class="login-footer">
-      <span>Foodizo &amp; Obunuzi · Wandegeya, Kampala</span>
-    </footer>
+      <footer class="login-footer">
+        <span>Authorized staff only · Foodizo &amp; Obunuzi</span>
+      </footer>
+    </div>
   </div>
 
   <script src="/js/api.js?v=4"></script>

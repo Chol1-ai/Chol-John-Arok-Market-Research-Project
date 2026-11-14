@@ -1019,12 +1019,11 @@
       top: 0;
       left: clamp(76%, 78vw, 83%);
       z-index: 2;
-      width: clamp(210px, 27vw, 340px);
+      width: clamp(210px, 25vw, 320px);
       height: 100%;
-      transform: translateX(-50%) scale(.9);
+      transform: translateX(-50%);
       transform-origin: bottom center;
       pointer-events: none;
-      animation: hero-burger-float 5.4s ease-in-out infinite;
     }
 
     .customer-hero-burger-build::before {
@@ -1040,68 +1039,18 @@
       transform: translate(-50%, -50%);
     }
 
-    .customer-hero-burger-piece {
+    .customer-hero-burger-art {
       position: absolute;
-      bottom: var(--piece-bottom);
+      bottom: 12px;
       left: 50%;
-      z-index: var(--piece-layer);
       display: block;
-      width: var(--piece-width);
+      width: 100%;
       height: auto;
       opacity: 0;
-      transform: translateX(-50%);
+      transform: translate3d(-50%, -190px, 0) rotate(-8deg) scale(.9);
       filter: drop-shadow(0 7px 8px rgba(0, 0, 0, .2));
-      animation: hero-burger-piece-drop 4s cubic-bezier(.18, .72, .24, 1) 0s 1 both;
-      animation-delay: var(--piece-delay);
+      animation: hero-burger-drop 1.65s cubic-bezier(.18, .72, .24, 1) .25s 1 both;
       will-change: transform, opacity;
-    }
-
-    .customer-hero-burger-piece--base {
-      --piece-bottom: 12px;
-      --piece-width: clamp(132px, 15vw, 182px);
-      --piece-delay: 0s;
-      --piece-layer: 1;
-      --start-angle: 9deg;
-    }
-
-    .customer-hero-burger-piece--cheese {
-      --piece-bottom: 49px;
-      --piece-width: clamp(146px, 17.5vw, 198px);
-      --piece-delay: .2s;
-      --piece-layer: 2;
-      --start-angle: -12deg;
-    }
-
-    .customer-hero-burger-piece--onion {
-      --piece-bottom: 94px;
-      --piece-width: clamp(138px, 16vw, 188px);
-      --piece-delay: .4s;
-      --piece-layer: 3;
-      --start-angle: 10deg;
-    }
-
-    .customer-hero-burger-piece--tomato {
-      --piece-bottom: 102px;
-      --piece-width: clamp(120px, 14vw, 165px);
-      --piece-delay: .6s;
-      --piece-layer: 4;
-      --start-angle: -8deg;
-    }
-
-    .customer-hero-burger-piece--lettuce {
-      --piece-bottom: 125px;
-      --piece-width: clamp(154px, 19vw, 210px);
-      --piece-delay: .8s;
-      --piece-layer: 5;
-      --start-angle: 14deg;
-    }
-
-    .customer-hero-burger-piece--top-bun {
-      --piece-bottom: 142px;
-      --piece-width: clamp(132px, 15.5vw, 180px);
-      --piece-delay: 1s;
-      --piece-layer: 6;
-      --start-angle: -11deg;
     }
 
     @keyframes empty-hero-in {
@@ -1116,42 +1065,25 @@
       }
     }
 
-    @keyframes hero-burger-piece-drop {
+    @keyframes hero-burger-drop {
       0%,
-      4% {
+      8% {
         opacity: 0;
-        transform: translate3d(-50%, -190px, 0) rotate(var(--start-angle)) scale(.84);
+        transform: translate3d(-50%, -190px, 0) rotate(-8deg) scale(.9);
       }
 
-      14% {
+      58% {
         opacity: 1;
-        transform: translate3d(-50%, -90px, 0) rotate(var(--start-angle)) scale(.95);
+        transform: translate3d(-50%, 7px, 0) rotate(2deg) scale(1.02);
       }
 
-      36% {
-        opacity: 1;
-        transform: translate3d(-50%, 2px, 0) rotate(0) scale(1.02);
+      76% {
+        transform: translate3d(-50%, -3px, 0) rotate(-1deg) scale(.99);
       }
 
-      43% {
-        transform: translate3d(-50%, -1px, 0) rotate(0) scale(.99);
-      }
-
-      48%,
       100% {
         opacity: 1;
         transform: translate3d(-50%, 0, 0) rotate(0) scale(1);
-      }
-    }
-
-    @keyframes hero-burger-float {
-      0%,
-      100% {
-        transform: translate(-50%, 0) scale(.9);
-      }
-
-      50% {
-        transform: translate(-50%, -5px) scale(.9);
       }
     }
 
@@ -1267,14 +1199,10 @@
         animation: none;
       }
 
-      .customer-hero-burger-piece {
+      .customer-hero-burger-art {
         opacity: 1;
         animation: none;
         transform: translateX(-50%);
-      }
-
-      .customer-hero-burger-build {
-        animation: none;
       }
 
       .home-category-card.home-category-reveal {
@@ -1314,7 +1242,7 @@
       }
 
       .customer-hero-copy .hero-actions {
-        justify-content: center;
+        justify-content: flex-end;
       }
 
       .customer-hero-food {
@@ -1338,37 +1266,7 @@
 
       .customer-hero-burger-build {
         left: 82%;
-        width: 120px;
-      }
-
-      .customer-hero-burger-piece--base {
-        --piece-bottom: 12px;
-        width: 108px;
-      }
-
-      .customer-hero-burger-piece--cheese {
-        --piece-bottom: 42px;
-        width: 118px;
-      }
-
-      .customer-hero-burger-piece--onion {
-        --piece-bottom: 77px;
-        width: 114px;
-      }
-
-      .customer-hero-burger-piece--tomato {
-        --piece-bottom: 87px;
-        width: 100px;
-      }
-
-      .customer-hero-burger-piece--lettuce {
-        --piece-bottom: 106px;
-        width: 128px;
-      }
-
-      .customer-hero-burger-piece--top-bun {
-        --piece-bottom: 136px;
-        width: 118px;
+        width: clamp(140px, 34vw, 220px);
       }
 
       .home-category-grid {
@@ -1765,12 +1663,7 @@
         <img class="customer-hero-man-art" src="../images/hero-man-cutout.png" alt="" />
       </div>
       <div class="customer-hero-burger-build">
-        <img class="customer-hero-burger-piece customer-hero-burger-piece--base" src="../images/hero-pieces/burger-base.png" alt="" />
-        <img class="customer-hero-burger-piece customer-hero-burger-piece--cheese" src="../images/hero-pieces/burger-cheese.png" alt="" />
-        <img class="customer-hero-burger-piece customer-hero-burger-piece--onion" src="../images/hero-pieces/burger-onion.png" alt="" />
-        <img class="customer-hero-burger-piece customer-hero-burger-piece--tomato" src="../images/hero-pieces/burger-tomato.png" alt="" />
-        <img class="customer-hero-burger-piece customer-hero-burger-piece--lettuce" src="../images/hero-pieces/burger-lettuce.png" alt="" />
-        <img class="customer-hero-burger-piece customer-hero-burger-piece--top-bun" src="../images/hero-pieces/burger-top-bun.png" alt="" />
+        <img class="customer-hero-burger-art" src="../images/hero-burger.png" alt="" />
       </div>
     </div>
   </section>
