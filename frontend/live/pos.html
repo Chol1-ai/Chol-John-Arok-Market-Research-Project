@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="icon" type="image/svg+xml" href="../images/foodizo-brand-mark.svg"/>
-  <title>Table Floor &amp; Order Pad | Foodizo &amp; Obunuzi</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="../images/foodizo-brand-mark.svg" />
+  <title>Waiter Dashboard | Foodizo &amp; Obunuzi</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -11,163 +12,237 @@
   <link rel="stylesheet" href="/css/theme_tokens.css" />
   <link rel="stylesheet" href="/css/live_surfaces.css?v=13" />
   <link rel="stylesheet" href="/css/pickup_orders.css" />
+  <link rel="stylesheet" href="/css/waiter_dashboard.css?v=1" />
 </head>
-<body class="ls-body" data-surface="pos">
+<body class="ls-body waiter-dashboard" data-surface="pos">
   <a class="ls-skip" href="#main-content">Skip to main content</a>
-  <header class="ls-topbar">
-    <a class="ls-brand" href="/pos" data-session-home aria-label="Go to my home surface">
-      <div class="ls-brand-mark">F&amp;O</div>
-      <div>
-        <div class="ls-brand-title">Floor POS</div>
-        <div class="ls-brand-sub">Tables · orders · payments</div>
-      </div>
+
+  <aside class="waiter-sidebar" aria-label="Waiter navigation">
+    <a class="waiter-brand" href="/pos" data-session-home aria-label="Waiter dashboard home">
+      <img src="/images/foodizo-brand-mark.svg" alt="" />
+      <span><strong>FOODIZO</strong><small>Good Food. Great Mood.</small></span>
     </a>
-    <nav class="ls-topnav" aria-label="Staff surfaces">
-      <a href="/pos" aria-current="page">Floor POS</a>
-      <a href="/kds">Kitchen</a>
-      <a href="/dispatch">Dispatch</a>
-      <a href="/admin">Admin</a>
+    <div class="waiter-profile">
+      <span class="waiter-avatar" data-session-initials>--</span>
+      <span>
+        <strong data-session-name>Loading…</strong>
+        <small data-session-role>Waiter</small>
+        <em><i></i><span id="pos-sidebar-live">Connecting</span></em>
+      </span>
+    </div>
+    <nav class="waiter-nav" aria-label="Waiter workspace">
+      <a class="is-active" href="#pos-menu-section" aria-label="New order"><span class="material-symbols-outlined" aria-hidden="true">add_circle</span><span>New Order</span></a>
+      <a href="#pos-table-overview" aria-label="Tables"><span class="material-symbols-outlined" aria-hidden="true">table_restaurant</span><span>Tables</span></a>
+      <a href="#pos-pickup-orders-card" aria-label="Orders"><span class="material-symbols-outlined" aria-hidden="true">receipt_long</span><span>Orders</span></a>
+      <button type="button" id="pos-nav-kitchen" aria-label="Send to kitchen" disabled><span class="material-symbols-outlined" aria-hidden="true">soup_kitchen</span><span>Send to Kitchen</span></button>
+      <a href="/dispatch" aria-label="Delivery and dispatch"><span class="material-symbols-outlined" aria-hidden="true">delivery_dining</span><span>Delivery &amp; Dispatch</span></a>
+      <a href="#pos-menu-section" aria-label="Menu"><span class="material-symbols-outlined" aria-hidden="true">restaurant_menu</span><span>Menu</span></a>
     </nav>
-    <div class="ls-session">
-      <div class="ls-session-copy">
-        <div class="ls-session-name" data-session-name>Loading…</div>
-        <div class="ls-session-role"><span data-session-role>Staff</span> · <span data-session-outlet>Outlet</span></div>
-      </div>
-      <div class="ls-avatar" data-session-initials>--</div>
-      <button class="ls-logout" type="button" data-action="logout">Log out</button>
+    <div class="waiter-sidebar-footer">
+      <span class="material-symbols-outlined" aria-hidden="true">restaurant</span>
+      <strong>Great food,<br />better together.</strong>
+      <small data-session-outlet>Foodizo</small>
+    </div>
+    <button class="waiter-logout" type="button" data-action="logout" aria-label="Log out">
+      <span class="material-symbols-outlined" aria-hidden="true">logout</span>Log out
+    </button>
+  </aside>
+
+  <header class="waiter-topbar">
+    <div class="waiter-greeting">
+      <h1>Good afternoon, <span data-session-name>Waiter</span>! <span aria-hidden="true">👋</span></h1>
+      <p>Take orders, manage tables and delight your customers.</p>
+    </div>
+    <div class="waiter-topbar-actions">
+      <label class="ls-field waiter-outlet-wrap" id="pos-outlet-wrap" hidden>
+        <span class="sr-only">Outlet</span>
+        <select class="ls-select" id="pos-outlet">
+          <option value="FOODIZO_HAM_TOWERS">Foodizo Restaurant</option>
+          <option value="OBUNUZI_YMCA">Obunuzi Restaurant</option>
+        </select>
+      </label>
+      <div class="waiter-outlet-pill"><i></i><span data-session-outlet>Restaurant</span></div>
+      <div class="waiter-clock"><span class="material-symbols-outlined" aria-hidden="true">schedule</span><span id="pos-current-date">Today</span></div>
+      <a class="waiter-notification-button" href="#pos-notifications-panel" aria-label="View order notifications">
+        <span class="material-symbols-outlined" aria-hidden="true">notifications</span>
+        <span id="pos-notification-count" hidden></span>
+      </a>
+      <button class="waiter-refresh" type="button" id="pos-refresh" aria-label="Refresh tables, menu, and orders" title="Refresh dashboard">
+        <span class="material-symbols-outlined" aria-hidden="true">refresh</span>
+      </button>
+      <span class="waiter-live" id="pos-live" data-state="connecting" aria-label="Connecting to live updates" title="Connecting to live updates">
+        <span class="ls-live-dot" aria-hidden="true"></span><span id="pos-live-text">Connecting…</span>
+      </span>
+      <span class="sr-only" id="pos-updated" aria-live="polite">Not loaded</span>
     </div>
   </header>
 
-  <main class="ls-main" id="main-content">
-    <div class="ls-page-head">
-      <div>
-        <div class="ls-eyebrow">Waiter order pad</div>
-        <h1 class="ls-title">Create an order</h1>
-        <p class="ls-subtitle">Add menu items first. Choose a table only for dine-in orders.</p>
-      </div>
-      <div class="ls-head-actions">
-        <label class="ls-field" id="pos-outlet-wrap" hidden>
-          <span>Outlet</span>
-          <select class="ls-select" id="pos-outlet">
-            <option value="FOODIZO_HAM_TOWERS">Foodizo · Ham Towers</option>
-            <option value="OBUNUZI_YMCA">Obunuzi · Opp. YMCA</option>
-          </select>
-        </label>
-        <span class="ls-live" id="pos-live" data-state="connecting"><span class="ls-live-dot"></span><span id="pos-live-text">Connecting…</span></span>
-        <span class="ls-updated" id="pos-updated" aria-live="polite">Not loaded</span>
-        <button class="ls-btn ls-btn--ghost ls-btn--small" type="button" id="pos-refresh">
-          <span class="material-symbols-outlined" style="font-size:16px" aria-hidden="true">refresh</span> Refresh
-        </button>
-      </div>
-    </div>
+  <main class="waiter-main" id="main-content">
+    <section class="waiter-kpis" aria-label="Live service summary">
+      <article class="waiter-kpi is-green">
+        <span class="waiter-kpi-icon material-symbols-outlined" aria-hidden="true">shopping_cart</span>
+        <div><small>Open Orders</small><strong id="pos-kpi-orders">—</strong><span>Active in this outlet</span></div>
+      </article>
+      <article class="waiter-kpi is-teal">
+        <span class="waiter-kpi-icon material-symbols-outlined" aria-hidden="true">payments</span>
+        <div><small>Open Order Value</small><strong id="pos-kpi-value">UGX —</strong><span>Current tabs &amp; unpaid pickups</span></div>
+      </article>
+      <article class="waiter-kpi is-purple">
+        <span class="waiter-kpi-icon material-symbols-outlined" aria-hidden="true">table_bar</span>
+        <div><small>Active Tables</small><strong id="pos-kpi-tables">—</strong><span id="pos-kpi-tables-note">Live floor status</span></div>
+      </article>
+      <article class="waiter-kpi is-amber">
+        <span class="waiter-kpi-icon material-symbols-outlined" aria-hidden="true">takeout_dining</span>
+        <div><small>Pickup Payments</small><strong id="pos-kpi-pickups">—</strong><span>Waiting for cash collection</span></div>
+      </article>
+    </section>
 
-    <div class="pos-workspace" id="pos-workspace">
-      <div class="pos-left">
-        <section class="ls-card pos-order-config" aria-label="Order type">
-          <label class="ls-field">
-            <span>Order type</span>
-            <select class="ls-select" id="pos-order-type">
-              <option value="TAKEAWAY_PICKUP">Takeaway</option>
-              <option value="DINE_IN">Dine-in</option>
-            </select>
-          </label>
-          <label class="ls-field" id="pos-table-wrap" hidden>
-            <span>Table</span>
-            <select class="ls-select" id="pos-table-select" disabled>
-              <option value="">Choose a table</option>
-            </select>
-          </label>
-          <div class="ls-help" id="pos-order-type-help">No table needed for takeaway.</div>
-        </section>
-
-        <details class="ls-card pos-floor-details">
-          <summary>
-            <span>Table availability</span>
-            <span class="ls-card-sub" id="pos-floor-sub">Loading tables…</span>
-          </summary>
-          <div class="pos-floor-details-body">
-            <div class="ls-head-actions" id="pos-table-legend">
-              <span class="pos-legend"><span class="ls-live-dot" style="background:var(--color-tertiary)"></span> Vacant</span>
-              <span class="pos-legend"><span class="ls-live-dot" style="background:var(--color-primary)"></span> Seated</span>
+    <div class="pos-workspace waiter-workspace" id="pos-workspace">
+      <div class="waiter-main-column">
+        <section class="waiter-panel waiter-floor-panel" id="pos-table-overview" aria-labelledby="pos-floor-title">
+          <div class="waiter-panel-heading">
+            <div><h2 id="pos-floor-title">Table overview</h2><p id="pos-floor-sub">Loading tables…</p></div>
+            <span class="waiter-live-label"><i></i>Live</span>
+          </div>
+          <div class="waiter-floor-content">
+            <div class="waiter-floor-legend" id="pos-table-legend" aria-label="Table status legend">
+              <span><i class="is-occupied"></i>Occupied</span>
+              <span><i class="is-available"></i>Available</span>
+              <span><i class="is-bill"></i>Bill requested</span>
+              <span><i class="is-cleaning"></i>Needs clearing</span>
             </div>
-            <div class="pos-floor" id="pos-floor">
+            <div class="pos-floor" id="pos-floor" aria-live="polite">
               <div class="ls-loading">Loading live floor…</div>
             </div>
           </div>
         </section>
 
-        <section class="ls-card">
-          <div class="ls-card-head">
-            <div>
-              <div class="ls-card-title">Menu</div>
-              <div class="ls-card-sub" id="pos-menu-sub">Menu availability at this outlet</div>
-            </div>
-            <button class="ls-btn ls-btn--ghost ls-btn--small" type="button" id="pos-menu-refresh">Refresh menu</button>
+        <section class="waiter-panel waiter-menu-panel" id="pos-menu-section" aria-labelledby="pos-menu-title">
+          <div class="waiter-menu-heading">
+            <div><h2 id="pos-menu-title">Menu</h2><p id="pos-menu-sub">Menu availability at this outlet</p></div>
+            <button class="waiter-menu-refresh" type="button" id="pos-menu-refresh" aria-label="Refresh menu" title="Refresh menu">
+              <span class="material-symbols-outlined" aria-hidden="true">refresh</span>
+            </button>
           </div>
-          <div class="pos-menu-toolbar" id="pos-categories"></div>
-          <div class="pos-menu-grid" id="pos-menu">
+          <div class="pos-menu-toolbar waiter-category-toolbar" id="pos-categories" aria-label="Menu categories"></div>
+          <div class="waiter-menu-tools">
+            <label class="waiter-menu-search">
+              <span class="material-symbols-outlined" aria-hidden="true">search</span>
+              <input id="pos-menu-search" type="search" placeholder="Search menu items…" aria-label="Search menu items" />
+            </label>
+            <div class="waiter-view-toggle" role="group" aria-label="Menu layout">
+              <button type="button" class="is-active" data-pos-menu-view="grid" aria-pressed="true" aria-label="Grid view">
+                <span class="material-symbols-outlined" aria-hidden="true">grid_view</span>
+              </button>
+              <button type="button" data-pos-menu-view="list" aria-pressed="false" aria-label="List view">
+                <span class="material-symbols-outlined" aria-hidden="true">view_list</span>
+              </button>
+            </div>
+          </div>
+          <div class="pos-menu-grid" id="pos-menu" aria-live="polite">
             <div class="ls-loading">Loading menu…</div>
           </div>
         </section>
+      </div>
 
-        <section class="ls-card pos-draft-card" id="pos-draft-card" hidden>
-          <div class="ls-card-head">
-            <div>
-              <div class="ls-card-title">Order in progress</div>
-              <div class="ls-card-sub" id="pos-draft-sub">Add items from the menu</div>
-            </div>
-            <strong class="ls-money" id="pos-draft-total">UGX 0</strong>
+      <aside class="waiter-right-column" aria-label="Order and service actions">
+        <section class="waiter-panel waiter-current-order" aria-labelledby="pos-current-order-title">
+          <div class="waiter-panel-heading">
+            <div><h2 id="pos-current-order-title">Current order</h2><p id="pos-current-order-sub">Choose a table or add pickup items</p></div>
+            <span class="waiter-table-pill" id="pos-current-table">Pickup</span>
           </div>
-          <div class="pos-draft-body">
-            <div id="pos-draft-lines" aria-live="polite"></div>
-            <button class="ls-btn ls-btn--block" type="button" id="pos-add-btn" disabled>Place order</button>
+          <div class="waiter-order-config pos-order-config" aria-label="Order type">
+            <label class="ls-field">
+              <span>Order type</span>
+              <select class="ls-select" id="pos-order-type">
+                <option value="TAKEAWAY_PICKUP">Takeaway pickup</option>
+                <option value="DINE_IN">Dine-in</option>
+              </select>
+            </label>
+            <label class="ls-field" id="pos-table-wrap" hidden>
+              <span>Table</span>
+              <select class="ls-select" id="pos-table-select" disabled>
+                <option value="">Choose a table</option>
+              </select>
+            </label>
+            <div class="ls-help" id="pos-order-type-help">No table needed for takeaway.</div>
+          </div>
+          <div class="waiter-order-empty" id="pos-order-empty">
+            <span class="material-symbols-outlined" aria-hidden="true">add_shopping_cart</span>
+            <strong>Your order is empty</strong>
+            <span>Select a menu item to get started.</span>
+          </div>
+          <section class="waiter-draft-card pos-draft-card" id="pos-draft-card" hidden>
+            <div class="waiter-order-subhead"><div><strong>Order in progress</strong><span id="pos-draft-sub">Add items from the menu</span></div><strong class="ls-money" id="pos-draft-total">UGX 0</strong></div>
+            <div class="pos-draft-body">
+              <div id="pos-draft-lines" aria-live="polite"></div>
+              <button class="waiter-primary-action ls-btn ls-btn--block" type="button" id="pos-add-btn" disabled>Place order</button>
+            </div>
+          </section>
+          <aside class="waiter-ledger pos-ledger" id="pos-ledger" hidden>
+            <div class="waiter-ledger-heading">
+              <div><strong id="pos-ledger-title">Order ledger</strong><span id="pos-ledger-sub">Select a table to begin</span></div>
+              <span class="ls-status" id="pos-ledger-status" data-status="VACANT" hidden></span>
+              <button class="waiter-new-order" type="button" id="pos-new-order-btn" hidden>New</button>
+            </div>
+            <div class="pos-ledger-body" id="pos-ledger-body">
+              <div class="pos-ledger-empty">Choose a table on the floor map. Existing tabs load their full item ledger.</div>
+            </div>
+            <div class="pos-summary" id="pos-summary" hidden>
+              <div class="pos-summary-row"><span>Subtotal</span><span class="ls-money" id="pos-subtotal">UGX 0</span></div>
+              <div class="pos-summary-row"><span>Delivery fee</span><span class="ls-money" id="pos-delivery">UGX 0</span></div>
+              <div class="pos-summary-row pos-summary-total"><span>Bill total</span><span class="ls-money" id="pos-total">UGX 0</span></div>
+            </div>
+            <div class="pos-actions" id="pos-actions">
+              <button class="waiter-primary-action ls-btn ls-btn--success ls-btn--block" type="button" id="pos-settle-btn" disabled hidden>Settle full bill</button>
+              <div class="waiter-ledger-actions">
+                <button class="ls-btn ls-btn--ghost ls-btn--small" type="button" id="pos-print-btn" disabled>Reprint chit</button>
+                <button class="ls-btn ls-btn--ghost ls-btn--small" type="button" id="pos-clear-btn" hidden>Clear table</button>
+                <button class="ls-btn ls-btn--danger ls-btn--small" type="button" id="pos-cancel-btn" hidden>Cancel order</button>
+              </div>
+              <p class="ls-help" id="pos-help">Full settlement only. Split tender is not enabled in this phase.</p>
+            </div>
+          </aside>
+        </section>
+
+        <section class="waiter-panel waiter-quick-panel" aria-labelledby="pos-quick-title">
+          <div class="waiter-panel-heading"><h2 id="pos-quick-title">Quick actions</h2></div>
+          <div class="waiter-quick-actions">
+            <a href="#pos-pickup-orders-card"><span class="material-symbols-outlined is-green" aria-hidden="true">receipt_long</span>View orders</a>
+            <button type="button" id="pos-quick-kitchen" disabled><span class="material-symbols-outlined is-amber" aria-hidden="true">soup_kitchen</span>Send to kitchen</button>
+            <button type="button" id="pos-browser-print" disabled><span class="material-symbols-outlined is-blue" aria-hidden="true">print</span>Print bill</button>
+            <a href="/dispatch"><span class="material-symbols-outlined is-teal" aria-hidden="true">delivery_dining</span>Send to delivery</a>
+            <button type="button" id="pos-drawer-btn"><span class="material-symbols-outlined is-purple" aria-hidden="true">point_of_sale</span>Open cash drawer</button>
           </div>
         </section>
 
-        <section class="ls-card pickup-orders-card">
-          <div class="ls-card-head">
-            <div>
-              <div class="ls-card-title">Pickup orders awaiting payment</div>
-              <div class="ls-card-sub" id="pos-pickup-sub">Cash collection required before kitchen preparation</div>
-            </div>
-            <button class="ls-btn ls-btn--ghost ls-btn--small" type="button" id="pos-pickup-refresh">Refresh</button>
+        <section class="waiter-panel pickup-orders-card waiter-pickup-panel" id="pos-pickup-orders-card">
+          <div class="waiter-panel-heading">
+            <div><h2>Pickup payments</h2><p id="pos-pickup-sub">Cash collection required before kitchen preparation</p></div>
+            <button class="waiter-menu-refresh" type="button" id="pos-pickup-refresh" aria-label="Refresh pickup orders" title="Refresh pickup orders">
+              <span class="material-symbols-outlined" aria-hidden="true">refresh</span>
+            </button>
           </div>
           <div class="pickup-orders-list" id="pos-pickup-orders" aria-live="polite">
             <div class="ls-loading">Loading unpaid pickup orders…</div>
           </div>
         </section>
-      </div>
 
-      <aside class="ls-card pos-ledger" id="pos-ledger" hidden>
-        <div class="ls-card-head">
-          <div>
-            <div class="ls-card-title" id="pos-ledger-title">Order ledger</div>
-            <div class="ls-card-sub" id="pos-ledger-sub">Select a table to begin</div>
+        <section class="waiter-panel waiter-notifications-panel" id="pos-notifications-panel" aria-labelledby="pos-notifications-title">
+          <div class="waiter-panel-heading">
+            <div><h2 id="pos-notifications-title">Notifications</h2><p>Live table and order updates</p></div>
+            <span class="waiter-live-label"><i></i>Live</span>
           </div>
-          <span class="ls-status" id="pos-ledger-status" data-status="VACANT" hidden></span>
-          <button class="ls-btn ls-btn--ghost ls-btn--small" type="button" id="pos-new-order-btn" hidden>New order</button>
-        </div>
-        <div class="pos-ledger-body" id="pos-ledger-body">
-          <div class="pos-ledger-empty">Choose a table on the floor map.<br />Existing tabs load their full item ledger.</div>
-        </div>
-        <div class="pos-summary" id="pos-summary" hidden>
-          <div class="pos-summary-row"><span>Subtotal</span><span class="ls-money" id="pos-subtotal">UGX 0</span></div>
-          <div class="pos-summary-row"><span>Delivery fee</span><span class="ls-money" id="pos-delivery">UGX 0</span></div>
-          <div class="pos-summary-row pos-summary-total"><span>Bill total</span><span class="ls-money" id="pos-total">UGX 0</span></div>
-        </div>
-        <div class="pos-actions" id="pos-actions">
-          <button class="ls-btn ls-btn--success ls-btn--block" type="button" id="pos-settle-btn" disabled hidden>Settle full bill</button>
-          <div class="pos-actions-row">
-            <button class="ls-btn ls-btn--ghost ls-btn--small" type="button" id="pos-print-btn" disabled>Reprint chit</button>
-            <button class="ls-btn ls-btn--ghost ls-btn--small" type="button" id="pos-drawer-btn">Kick drawer</button>
+          <div class="waiter-notification-list" id="pos-notification-list" aria-live="polite">
+            <div class="ls-loading">Checking for updates…</div>
           </div>
-          <div class="pos-actions-row">
-            <button class="ls-btn ls-btn--ghost ls-btn--small" type="button" id="pos-clear-btn" hidden>Clear table</button>
-            <button class="ls-btn ls-btn--danger ls-btn--small" type="button" id="pos-cancel-btn" hidden>Cancel order</button>
-          </div>
-          <p class="ls-help" id="pos-help">Full settlement only. Split tender is not enabled in this phase.</p>
-        </div>
+        </section>
       </aside>
+    </div>
+    <div class="waiter-bottom-status">
+      <span class="waiter-status-check material-symbols-outlined" aria-hidden="true">check_circle</span>
+      <span id="pos-bottom-message">Ready to take your next order.</span>
+      <img src="/images/foodizo-brand-mark.svg" alt="" />
     </div>
   </main>
 
@@ -205,47 +280,7 @@
     </div>
   </div>
 
-  <footer class="ls-footer" aria-label="Site footer">
-    <div class="ls-footer-inner">
-      <div class="ls-footer-brand">
-        <span class="ls-footer-mark" aria-hidden="true">F&amp;O</span>
-        <div>
-          <strong>Foodizo &amp; Obunuzi</strong>
-          <span>Wandegeya dining corridor · Kampala</span>
-        </div>
-      </div>
-      <nav class="ls-footer-nav" aria-label="Outlet locations">
-        <a href="https://www.google.com/maps/search/?api=1&amp;query=Ham+Towers+Wandegeya+Kampala" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
-          Foodizo · Ham Towers
-        </a>
-        <a href="https://www.google.com/maps/search/?api=1&amp;query=YMCA+Wandegeya+Kampala" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
-          Obunuzi · Opp. YMCA
-        </a>
-      </nav>
-      <div class="ls-footer-actions">
-        <button class="ls-footer-action" type="button" data-action="check-health" title="Check the live API health">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l2.4-6 4.2 12 2.1-6H21"/></svg>
-          <span data-health-label>API status</span>
-        </button>
-        <button class="ls-footer-action" type="button" data-action="scroll-top" title="Back to top">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
-          <span>Top</span>
-        </button>
-        <button class="ls-footer-action" type="button" data-action="logout" title="End this staff session">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>
-          <span>Log out</span>
-        </button>
-      </div>
-    </div>
-    <div class="ls-footer-meta">
-      <span>Business day resets at 05:00 EAT · updates every 60 seconds</span>
-      <span>© 2026 Foodizo &amp; Obunuzi</span>
-    </div>
-  </footer>
-
   <script src="/js/api.js"></script>
-  <script src="/js/pos.js?v=3"></script>
+  <script src="/js/pos.js?v=5"></script>
 </body>
 </html>

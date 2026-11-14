@@ -8,6 +8,8 @@
     outlet: null,
     tables: [],
     menu: [],
+    menuSearch: '',
+    menuView: 'grid',
     pickupOrders: [],
     orderType: 'TAKEAWAY_PICKUP',
     category: 'ALL',
@@ -33,6 +35,24 @@
     updated: document.getElementById('pos-updated'),
     floor: document.getElementById('pos-floor'),
     floorSub: document.getElementById('pos-floor-sub'),
+    sidebarLive: document.getElementById('pos-sidebar-live'),
+    currentDate: document.getElementById('pos-current-date'),
+    notificationCount: document.getElementById('pos-notification-count'),
+    notificationList: document.getElementById('pos-notification-list'),
+    kpiOrders: document.getElementById('pos-kpi-orders'),
+    kpiValue: document.getElementById('pos-kpi-value'),
+    kpiTables: document.getElementById('pos-kpi-tables'),
+    kpiTablesNote: document.getElementById('pos-kpi-tables-note'),
+    kpiPickups: document.getElementById('pos-kpi-pickups'),
+    menuSearch: document.getElementById('pos-menu-search'),
+    menuViewButtons: document.querySelectorAll('[data-pos-menu-view]'),
+    currentTable: document.getElementById('pos-current-table'),
+    currentOrderSub: document.getElementById('pos-current-order-sub'),
+    orderEmpty: document.getElementById('pos-order-empty'),
+    quickKitchen: document.getElementById('pos-quick-kitchen'),
+    browserPrint: document.getElementById('pos-browser-print'),
+    navKitchen: document.getElementById('pos-nav-kitchen'),
+    bottomMessage: document.getElementById('pos-bottom-message'),
     orderType: document.getElementById('pos-order-type'),
     orderTypeHelp: document.getElementById('pos-order-type-help'),
     tableWrap: document.getElementById('pos-table-wrap'),
@@ -103,7 +123,10 @@
       offline: 'Reconnecting…'
     };
     els.live.dataset.state = state;
+    els.live.setAttribute('aria-label', labels[state] || state);
+    els.live.title = labels[state] || state;
     els.liveText.textContent = labels[state] || state;
+    els.sidebarLive.textContent = state === 'online' ? 'Live' : state === 'offline' ? 'Reconnecting' : 'Connecting';
   }
 
   function sortTables(a, b) {
@@ -170,7 +193,10 @@
   function renderDraft() {
     const hasDraft = STATE.draft.length > 0;
     els.draftCard.hidden = !hasDraft;
-    if (!hasDraft) return;
+    if (!hasDraft) {
+      renderDashboard();
+      return;
+    }
 
     const channel = STATE.activeOrder?.channel || STATE.orderType;
     const table = selectedTable();
@@ -188,6 +214,7 @@
       : channel === 'DINE_IN'
           ? 'Place dine-in order'
           : 'Place takeaway order';
+    renderDashboard();
   }
 
   function renderCategories() {
@@ -215,12 +242,18 @@
   }
 
   function renderMenu() {
-    const items = STATE.menu.filter(
-      (item) => STATE.category === 'ALL' || item.category === STATE.category
-    );
+    const search = STATE.menuSearch.trim().toLocaleLowerCase();
+    const items = STATE.menu.filter((item) => {
+      const matchesCategory = STATE.category === 'ALL' || item.category === STATE.category;
+      const searchable = `${item.name} ${item.category} ${stationLabel(item.station)}`.toLocaleLowerCase();
+      return matchesCategory && (!search || searchable.includes(search));
+    });
+    els.menu.classList.toggle('is-list', STATE.menuView === 'list');
     els.menuSub.textContent = `${items.length} item(s) · ${STATE.category === 'ALL' ? 'all categories' : STATE.category}`;
     if (!items.length) {
-      els.menu.innerHTML = '<div class="ls-empty">No menu items match this category.</div>';
+      els.menu.innerHTML = `<div class="ls-empty">${
+        search ? 'No menu items match your search.' : 'No menu items match this category.'
+      }</div>`;
       return;
     }
 
@@ -232,11 +265,12 @@
           ${
             item.imageUrl
               ? `<img class="pos-menu-image" src="${F.escapeHtml(item.imageUrl)}" alt="" loading="lazy" />`
-              : ''
+              : '<span class="pos-menu-image-placeholder"><span class="material-symbols-outlined" aria-hidden="true">restaurant</span></span>'
           }
           <span class="pos-menu-name">${F.escapeHtml(item.name)}</span>
           <span class="pos-menu-station">${F.escapeHtml(stationLabel(item.station))} · ${F.escapeHtml(item.category)}</span>
           <span class="pos-menu-price">${F.formatUGX(item.priceUgx)}</span>
+          ${item.isAvailable ? '<span class="waiter-menu-add material-symbols-outlined" aria-hidden="true">add</span>' : ''}
           ${item.isAvailable ? '' : `<span class="ls-status" data-status="CANCELLED">${
             item.is86 ? 'Unavailable by manager' : 'Temporarily unavailable'
           }</span>`}
@@ -354,6 +388,117 @@
     renderDraft();
     renderLedger();
     renderPickupOrders();
+    renderDashboard();
+  }
+
+  function renderDashboard() {
+    const activeOrders = new Map();
+    STATE.tables.forEach((table) => {
+      (table.activeOrders || []).forEach((order) => {
+        if (!['COMPLETED', 'CANCELLED'].includes(order.status)) activeOrders.set(order.id, order);
+      });
+    });
+    STATE.pickupOrders.forEach((order) => activeOrders.set(order.id, order));
+
+    const activeTables = STATE.tables.filter((table) => table.status !== 'VACANT').length;
+    const orders = Array.from(activeOrders.values());
+    const openValue = orders.reduce((sum, order) => sum + Number(order.totalUgx || 0), 0);
+    els.kpiOrders.textContent = String(orders.length);
+    els.kpiValue.textContent = F.formatUGX(openValue);
+    els.kpiTables.textContent = String(activeTables);
+    els.kpiTablesNote.textContent = `${activeTables} of ${STATE.tables.length} tables in service`;
+    els.kpiPickups.textContent = String(STATE.pickupOrders.length);
+
+    const tableLabel = selectedTable()
+      ? selectedTable().label
+      : STATE.activeOrder
+        ? `Pickup · ${STATE.activeOrder.tokenNumber}`
+        : 'Pickup';
+    els.currentTable.textContent = tableLabel;
+    if (STATE.activeOrder) {
+      els.currentOrderSub.textContent = `${STATE.activeOrder.tokenNumber} · ${F.statusLabel(STATE.activeOrder.status)}`;
+    } else if (STATE.draft.length) {
+      els.currentOrderSub.textContent = `${STATE.draft.reduce((sum, line) => sum + line.quantity, 0)} item(s) in draft`;
+    } else if (selectedTable()) {
+      els.currentOrderSub.textContent = `${F.statusLabel(selectedTable().status)} · ${selectedTable().capacity} seats`;
+    } else {
+      els.currentOrderSub.textContent = 'Choose a table or add pickup items';
+    }
+    els.orderEmpty.hidden = STATE.draft.length > 0 || Boolean(STATE.activeOrder);
+
+    const notices = [];
+    STATE.tables.forEach((table) => {
+      const order = (table.activeOrders || []).find((row) => !['COMPLETED', 'CANCELLED'].includes(row.status));
+      if (table.status === 'BILL_REQUESTED') {
+        notices.push({
+          icon: 'request_quote',
+          kind: '',
+          title: `${table.label} requested the bill`,
+          detail: 'Tap to open the table',
+          tableId: table.id
+        });
+      } else if (table.status === 'NEEDS_CLEARING') {
+        notices.push({
+          icon: 'cleaning_services',
+          kind: 'is-payment',
+          title: `${table.label} needs clearing`,
+          detail: 'Table is ready to be reset',
+          tableId: table.id
+        });
+      } else if (order && order.status === 'READY') {
+        notices.push({
+          icon: 'soup_kitchen',
+          kind: 'is-ready',
+          title: `${order.tokenNumber} is ready`,
+          detail: `${table.label} · collect from kitchen`,
+          tableId: table.id
+        });
+      }
+    });
+    STATE.pickupOrders.forEach((order) => {
+      notices.push({
+        icon: 'payments',
+        kind: 'is-payment',
+        title: `${order.tokenNumber} awaiting payment`,
+        detail: 'Cash collection before kitchen preparation',
+        pickup: true
+      });
+    });
+
+    const shownNotices = notices.slice(0, 8);
+    els.notificationCount.textContent = notices.length > 99 ? '99+' : String(notices.length);
+    els.notificationCount.hidden = notices.length === 0;
+    els.notificationList.innerHTML = shownNotices.length
+      ? shownNotices.map((notice) => `
+        <button class="waiter-notification" type="button"
+          ${notice.tableId ? `data-notification-table="${F.escapeHtml(notice.tableId)}"` : 'data-notification-pickup="true"'}>
+          <span class="waiter-notification-icon ${notice.kind}"><span class="material-symbols-outlined" aria-hidden="true">${notice.icon}</span></span>
+          <span><strong>${F.escapeHtml(notice.title)}</strong><small>${F.escapeHtml(notice.detail)}</small></span>
+          <time>Now</time>
+        </button>`).join('')
+      : '<div class="waiter-notifications-empty">No service alerts right now.</div>';
+
+    const pickupCount = STATE.pickupOrders.length;
+    const attentionCount = STATE.tables.filter((table) => ['BILL_REQUESTED', 'NEEDS_CLEARING'].includes(table.status)).length;
+    els.bottomMessage.textContent = attentionCount
+      ? `${attentionCount} table${attentionCount === 1 ? '' : 's'} need attention${pickupCount ? ` · ${pickupCount} pickup payment${pickupCount === 1 ? '' : 's'} waiting` : ''}.`
+      : pickupCount
+        ? `${pickupCount} pickup payment${pickupCount === 1 ? '' : 's'} waiting for collection.`
+        : `${orders.length} open order${orders.length === 1 ? '' : 's'} · service is ready.`;
+
+    const now = new Date();
+    els.currentDate.textContent = new Intl.DateTimeFormat(undefined, {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric'
+    }).format(now);
+    const canSend = STATE.draft.length > 0 &&
+      (STATE.activeOrder?.channel || STATE.orderType) === 'DINE_IN' &&
+      !STATE.busy &&
+      Boolean(selectedTable());
+    els.quickKitchen.disabled = !canSend;
+    els.navKitchen.disabled = !canSend;
+    els.browserPrint.disabled = !STATE.activeOrder;
   }
 
   function renderPickupOrders() {
@@ -425,8 +570,7 @@
     }
   }
 
-  async function refreshAll(options) {
-    const opts = options || {};
+  async function refreshAll() {
     await Promise.all([loadTables(), loadMenu(), loadPickupOrders()]);
     if (STATE.selectedTableId || STATE.activeOrder) {
       await loadSelectedOrder();
@@ -434,10 +578,6 @@
     renderAll();
     if (els.updated) {
       els.updated.textContent = `Updated ${F.formatTime(new Date().toISOString())} · auto 60s`;
-    }
-    if (opts.toastOnError !== false) {
-      // Errors are surfaced by the caller; this branch only keeps the linter
-      // from treating the option as unused.
     }
   }
 
@@ -551,6 +691,7 @@
     els.add.disabled = true;
     const originalLabel = els.add.textContent;
     els.add.textContent = 'Sending to kitchen…';
+    renderDashboard();
 
     const items = STATE.draft.map((line) => ({
       menuItemId: line.menuItemId,
@@ -589,7 +730,9 @@
     } catch (error) {
       F.toast(error.message || 'Could not fire the order.', 'error');
       if (error.code === 'TABLE_ALREADY_OCCUPIED') {
-        await refreshAll().catch(() => {});
+        await refreshAll().catch((refreshError) => {
+          F.toast(refreshError.message || 'Could not refresh the floor after that conflict.', 'error');
+        });
       }
     } finally {
       STATE.busy = false;
@@ -667,6 +810,7 @@
     STATE.busy = true;
     els.settleSubmit.disabled = true;
     els.settleSubmit.textContent = 'Recording…';
+    renderDashboard();
 
     try {
       const payload = {
@@ -855,6 +999,7 @@
       try {
         await loadPickupOrders();
         renderPickupOrders();
+        renderDashboard();
         F.toast('Customer pickup orders refreshed.', 'success');
       } catch (error) {
         F.toast(error.message || 'Could not refresh customer pickup orders.', 'error');
@@ -901,6 +1046,37 @@
       renderCategories();
       renderMenu();
     });
+
+    els.menuSearch.addEventListener('input', () => {
+      STATE.menuSearch = els.menuSearch.value;
+      renderMenu();
+    });
+
+    els.menuViewButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        STATE.menuView = button.dataset.posMenuView === 'list' ? 'list' : 'grid';
+        els.menuViewButtons.forEach((viewButton) => {
+          const selected = viewButton.dataset.posMenuView === STATE.menuView;
+          viewButton.classList.toggle('is-active', selected);
+          viewButton.setAttribute('aria-pressed', selected ? 'true' : 'false');
+        });
+        renderMenu();
+      });
+    });
+
+    els.notificationList.addEventListener('click', (event) => {
+      const notice = event.target.closest('[data-notification-table], [data-notification-pickup]');
+      if (!notice) return;
+      if (notice.dataset.notificationTable) {
+        selectTable(notice.dataset.notificationTable);
+      } else {
+        document.getElementById('pos-pickup-orders-card').scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+
+    els.quickKitchen.addEventListener('click', fireDraft);
+    els.navKitchen.addEventListener('click', fireDraft);
+    els.browserPrint.addEventListener('click', () => window.print());
 
     els.draftLines.addEventListener('click', (event) => {
       const remove = event.target.closest('[data-remove-menu-id]');
@@ -971,7 +1147,9 @@
     startEvents();
     window.setInterval(() => {
       if (!STATE.refreshTimer && !STATE.busy) {
-        refreshAll().catch(() => {});
+        refreshAll().catch((error) => {
+          F.toast(error.message || 'Live refresh failed.', 'error');
+        });
       }
     }, 60000);
   }
