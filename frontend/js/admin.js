@@ -19,6 +19,7 @@
   const els = {
     outletWrap: document.getElementById('admin-outlet-wrap'),
     outletFilter: document.getElementById('admin-outlet-filter'),
+    search: document.getElementById('admin-dashboard-search'),
     refresh: document.getElementById('admin-refresh'),
     updated: document.getElementById('admin-updated'),
     live: document.getElementById('admin-live'),
@@ -164,6 +165,109 @@
     )}`;
   }
 
+  function renderDashboard() {
+    const summary = STATE.overview.summary;
+    const totals = summary.consolidated;
+    const lowStock = totals.lowStock || [];
+    const completedOrders = Number(totals.totalOrders) || 0;
+    const averageOrder = completedOrders
+      ? F.formatUGX(totals.grossUgx / completedOrders)
+      : '—';
+
+    document.getElementById('admin-kpi-sales').textContent = F.formatUGX(totals.grossUgx);
+    document.getElementById('admin-kpi-orders').textContent = F.formatNumber(completedOrders);
+    document.getElementById('admin-kpi-average').textContent = averageOrder;
+    document.getElementById('admin-kpi-alerts').textContent = F.formatNumber(
+      (summary.flags || []).length
+    );
+    document.getElementById('admin-kpi-payments').textContent = F.formatNumber(totals.paymentCount);
+    document.getElementById('admin-current-date').textContent = F.formatDate(
+      `${summary.digestDate}T12:00:00Z`
+    );
+
+    const deliveryCount = Number(totals.failedDeliveryCount) || 0;
+    document.getElementById('admin-delivery-status').textContent = deliveryCount
+      ? `${F.formatNumber(deliveryCount)} failed deliveries`
+      : 'No delivery issues';
+
+    const tables = STATE.overview.tables || [];
+    const totalTables = tables.reduce((sum, row) => sum + row.count, 0);
+    const activeTables = tables
+      .filter((row) => ['OCCUPIED', 'BILL_REQUESTED', 'NEEDS_CLEARING'].includes(row.status))
+      .reduce((sum, row) => sum + row.count, 0);
+    document.getElementById('admin-table-status').textContent =
+      `${F.formatNumber(activeTables)} / ${F.formatNumber(totalTables)}`;
+    document.getElementById('admin-dashboard-floor').innerHTML = tables.length
+      ? tables.map((row) => `
+          <div class="manager-floor-row">
+            <span>${F.escapeHtml(F.statusLabel(row.status))}</span>
+            <strong>${F.formatNumber(row.count)}</strong>
+          </div>`).join('')
+      : '<span>No table activity recorded.</span>';
+
+    renderDashboardInventory(lowStock);
+    renderDashboardChart(STATE.overview.recentOrders || []);
+    applyDashboardSearch();
+  }
+
+  function renderDashboardChart(orders) {
+    const points = orders.slice(0, 12).reverse().map((order) => Number(order.totalUgx) || 0);
+    const line = document.getElementById('admin-chart-line');
+    const area = document.getElementById('admin-chart-area');
+    const marker = document.getElementById('admin-chart-point');
+    const maximum = Math.max(...points, 0);
+
+    document.getElementById('admin-chart-max').textContent = maximum
+      ? F.formatUGX(maximum)
+      : 'UGX 0';
+    if (!points.length) {
+      line.setAttribute('d', '');
+      area.setAttribute('d', '');
+      marker.setAttribute('r', '0');
+      return;
+    }
+
+    const ceiling = maximum || 1;
+    const coordinates = points.map((value, index) => ({
+      x: points.length === 1 ? 350 : index * (700 / (points.length - 1)),
+      y: 144 - (value / ceiling) * 112
+    }));
+    const path = coordinates
+      .map((point, index) => `${index ? 'L' : 'M'}${point.x.toFixed(1)} ${point.y.toFixed(1)}`)
+      .join(' ');
+    line.setAttribute('d', path);
+    area.setAttribute('d', `${path} L700 144 L0 144 Z`);
+    marker.setAttribute('cx', coordinates[coordinates.length - 1].x.toFixed(1));
+    marker.setAttribute('cy', coordinates[coordinates.length - 1].y.toFixed(1));
+    marker.setAttribute('r', '4');
+  }
+
+  function renderDashboardInventory(items) {
+    const list = document.getElementById('admin-dashboard-inventory');
+    const count = items.length;
+    document.getElementById('admin-inventory-status').textContent =
+      `${F.formatNumber(count)} ${count === 1 ? 'item' : 'items'}`;
+    if (!count) {
+      list.innerHTML = '<span>All tracked stock is above its reorder level.</span>';
+      return;
+    }
+
+    list.innerHTML = items.slice(0, 4).map((item) => `
+      <div class="manager-inventory-alert manager-searchable">
+        <span>${F.escapeHtml(item.itemName)}</span>
+        <strong>${F.escapeHtml(String(item.currentStock))} ${F.escapeHtml(item.unit || '')} left</strong>
+      </div>`).join('');
+    applyDashboardSearch();
+  }
+
+  function applyDashboardSearch() {
+    if (!els.search) return;
+    const query = els.search.value.trim().toLocaleLowerCase();
+    document.querySelectorAll('.manager-searchable').forEach((row) => {
+      row.hidden = Boolean(query) && !row.textContent.toLocaleLowerCase().includes(query);
+    });
+  }
+
   function renderOutlets() {
     const outlets = STATE.overview.summary.outlets || [];
     if (!outlets.length) {
@@ -183,7 +287,7 @@
                   : ` (${Number(variance) === 0 ? 'balanced' : F.formatUGX(variance)})`
               }`;
         return `
-          <article class="admin-outlet-card" style="border-color:var(--color-border-default)">
+          <article class="admin-outlet-card manager-searchable" style="border-color:var(--color-border-default)">
             <div class="admin-outlet-name">${F.escapeHtml(outletLabel(row.outlet))}</div>
             <div class="admin-outlet-grid">
               <div><span>Gross</span><strong>${F.formatUGX(row.grossUgx)}</strong></div>
@@ -223,7 +327,7 @@
     els.flagsList.innerHTML = flags
       .map(
         (flag) =>
-          `<div class="admin-flag">
+          `<div class="admin-flag manager-searchable">
             <span>${F.escapeHtml(flag.message)}</span>
             <button type="button" class="admin-flag-dismiss" data-dismiss-flag="${F.escapeHtml(
               flag.code
@@ -231,6 +335,7 @@
           </div>`
       )
       .join('');
+    applyDashboardSearch();
   }
 
   async function dismissAlerts(codes, button) {
@@ -258,14 +363,28 @@
 
   function renderOrders() {
     const orders = STATE.overview.recentOrders || [];
+    const dashboardOrders = document.getElementById('admin-dashboard-orders');
     if (!orders.length) {
       els.ordersBody.innerHTML = '<tr><td colspan="9" class="ls-help">No orders recorded yet.</td></tr>';
+      dashboardOrders.innerHTML = '<tr><td data-empty="true" colspan="5">No orders recorded yet.</td></tr>';
       return;
     }
+    dashboardOrders.innerHTML = orders.slice(0, 5).map((order) => `
+      <tr class="manager-searchable">
+        <td>${F.escapeHtml(order.tokenNumber || order.orderNumber || '—')}</td>
+        <td>${F.escapeHtml(outletLabel(order.outlet))} · ${F.escapeHtml(
+          String(order.channel).replace(/_/g, ' ')
+        )}</td>
+        <td class="ls-money">${F.formatUGX(order.totalUgx)}</td>
+        <td><span class="manager-order-status" data-status="${F.escapeHtml(order.status)}">${F.escapeHtml(
+          F.statusLabel(order.status)
+        )}</span></td>
+        <td>${F.escapeHtml(F.relativeTime(order.createdAt))}</td>
+      </tr>`).join('');
     els.ordersBody.innerHTML = orders
       .map(
         (order) => `
-        <tr>
+        <tr class="manager-searchable">
           <td>${F.escapeHtml(order.tokenNumber || '—')}</td>
           <td>${F.escapeHtml(order.orderNumber)}</td>
           <td>${F.escapeHtml(outletLabel(order.outlet))}</td>
@@ -410,6 +529,7 @@
 
   function renderAll() {
     renderOverviewSummary();
+    renderDashboard();
     renderOutlets();
     renderFlags();
     renderOrders();
@@ -417,6 +537,7 @@
     renderStaff();
     renderSurplusLogs();
     markUpdated();
+    applyDashboardSearch();
     updateCashExpected(false).catch(() => {});
   }
 
@@ -457,7 +578,7 @@
     els.menuItems.innerHTML = items
       .map(
         (item) => `
-          <article class="menu-item-editor" data-menu-item-id="${F.escapeHtml(item.id)}">
+          <article class="menu-item-editor manager-searchable" data-menu-item-id="${F.escapeHtml(item.id)}">
             ${
               item.imageUrl
                 ? `<img src="${F.escapeHtml(item.imageUrl)}" alt="" loading="lazy" />`
@@ -779,7 +900,7 @@
               ? '<span class="admin-inventory-status is-low">Reorder needed</span>'
               : '<span class="admin-inventory-status">In stock</span>'
           ].filter(Boolean).join(' ');
-          return `<tr>
+          return `<tr class="manager-searchable">
             <td><strong>${F.escapeHtml(item.itemName)}</strong></td>
             <td>${F.escapeHtml(outletLabel(item.outlet))}</td>
             <td>${Number(item.currentStock).toLocaleString()} ${F.escapeHtml(unit)}</td>
@@ -811,6 +932,17 @@
 
     renderSupplierOrders();
     updateInventorySelectors();
+    if (STATE.overview) {
+      const items = (STATE.inventory?.items || [])
+        .filter((item) => item.isLow)
+        .map((item) => ({
+          itemName: item.itemName,
+          currentStock: Number(item.currentStock).toLocaleString(),
+          unit: inventoryUnitLabel(item.unitOfMeasure),
+          alertThreshold: item.alertThreshold
+        }));
+      renderDashboardInventory(items);
+    }
   }
 
   function renderSupplierOrders() {
@@ -1265,6 +1397,14 @@
   }
 
   function wireEvents() {
+    els.search.addEventListener('input', applyDashboardSearch);
+    window.addEventListener('keydown', (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        els.search.focus();
+      }
+    });
+
     els.inventoryRefresh.addEventListener('click', () => {
       loadInventory().then(() => F.toast('Kitchen stock refreshed.', 'success')).catch((error) => {
         F.toast(error.message || 'Kitchen stock could not be refreshed.', 'error');
@@ -1303,7 +1443,7 @@
 
     els.refresh.addEventListener('click', async () => {
       try {
-        await loadOverview(true);
+        await Promise.all([loadOverview(true), loadInventory()]);
         F.toast('Manager data refreshed.', 'success');
       } catch (error) {
         F.toast(error.message || 'Refresh failed.', 'error');

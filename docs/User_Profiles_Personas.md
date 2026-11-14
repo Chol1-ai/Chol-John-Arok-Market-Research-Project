@@ -94,6 +94,7 @@ Enters table order on handheld  →  checks live table occupancy grid
 
 | Permission | Description |
 | :--- | :--- |
+| Kitchen Dashboard | Use Kitchen Home for the live queue, Order Status to filter active and ready tickets, Completed for ready and handed-off tickets, and Settings for this device's station, sound, refresh, and density preferences |
 | Station Queue View | View tickets filtered to their assigned station (Fryer, Grill, Rolex, Steam) |
 | Channel Filter | Toggle queue to isolate `DINE_IN`, `TAKEAWAY_PICKUP`, or `PHONE_DELIVERY` |
 | Ticket Lifecycle | Bump tickets through stages: `PENDING` → `PREPARING` → `READY` |

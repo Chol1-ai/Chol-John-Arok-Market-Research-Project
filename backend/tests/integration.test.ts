@@ -430,6 +430,8 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
 
     const waiterKds = await inject('GET', '/api/v1/kds/tickets', { token: tokens.prossy });
     expect(waiterKds.statusCode).toBe(403);
+    const waiterKdsSummary = await inject('GET', '/api/v1/kds/summary', { token: tokens.prossy });
+    expect(waiterKdsSummary.statusCode).toBe(403);
 
     const wrongOutlet = await inject('GET', `/api/v1/orders/${foodizoOrder.id}`, {
       token: tokens.prossy
@@ -742,6 +744,42 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
     });
     expect(bump.statusCode).toBe(200);
     expect((bump.json() as Json).order.status).toBe('READY');
+
+    const readyQueue = await inject(
+      'GET',
+      '/api/v1/kds/tickets?status=READY&outlet=FOODIZO_HAM_TOWERS',
+      { token: tokens.juma }
+    );
+    expect(readyQueue.statusCode).toBe(200);
+    const readyTicket = (readyQueue.json() as Json).tickets.find((row: Json) => row.id === paid.id);
+    expect(readyTicket.status).toBe('READY');
+    expect(JSON.stringify(readyTicket)).not.toContain('256770555444');
+
+    const completed = await inject('POST', `/api/v1/orders/${paid.id}/status`, {
+      token: tokens.juma,
+      payload: { status: 'COMPLETED' }
+    });
+    expect(completed.statusCode).toBe(200);
+    const completedQueue = await inject(
+      'GET',
+      '/api/v1/kds/tickets?status=COMPLETED&outlet=FOODIZO_HAM_TOWERS',
+      { token: tokens.juma }
+    );
+    expect(completedQueue.statusCode).toBe(200);
+    expect((completedQueue.json() as Json).tickets.some((row: Json) => row.id === paid.id)).toBe(true);
+
+    const summary = await inject('GET', '/api/v1/kds/summary?outlet=FOODIZO_HAM_TOWERS', {
+      token: tokens.juma
+    });
+    expect(summary.statusCode).toBe(200);
+    const summaryBody = summary.json() as Json;
+    expect(summaryBody.summary.ordersToday).toBeGreaterThan(0);
+    expect(summaryBody.summary.serviceRate).not.toBeUndefined();
+    expect(JSON.stringify(summaryBody)).not.toContain('256770555444');
+    const foreignSummary = await inject('GET', '/api/v1/kds/summary?outlet=OBUNUZI_YMCA', {
+      token: tokens.juma
+    });
+    expect(foreignSummary.statusCode).toBe(403);
   });
 
   it('handles manager cancellation and closes a mobile-money refund', async () => {

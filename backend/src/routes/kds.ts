@@ -3,11 +3,14 @@ import { z } from 'zod';
 import { BomService } from '../services/bomService.js';
 import { PrinterService } from '../services/printerService.js';
 import { SmsService } from '../services/smsService.js';
+import { getKampalaBusinessDate } from '../services/tokenService.js';
 import { OutletLocation } from '../types/index.js';
 
 const kdsQuerySchema = z.object({
   outlet: z.enum(['FOODIZO_HAM_TOWERS', 'OBUNUZI_YMCA']).optional(),
-  station: z.enum(['STEAM_LINE', 'GRILL_FRYER', 'ROLEX_GRIDDLE', 'BAR_BEVERAGE']).optional()
+  station: z.enum(['STEAM_LINE', 'GRILL_FRYER', 'ROLEX_GRIDDLE', 'BAR_BEVERAGE']).optional(),
+  status: z.enum(['PENDING', 'PREPARING', 'READY', 'COMPLETED']).optional(),
+  limit: z.coerce.number().int().min(1).max(100).default(50)
 });
 
 const stationBodySchema = z.object({
@@ -32,6 +35,72 @@ function assertOrderOutlet(actorOutlet: OutletLocation | null, orderOutlet: Outl
 }
 
 export const kdsRoutes: FastifyPluginAsync = async (fastify) => {
+  fastify.get(
+    '/summary',
+    { preHandler: [fastify.requireRole(['KITCHEN_STAFF', 'MANAGER_ADMIN'])] },
+    async (request, reply) => {
+      const { outlet: requestedOutlet } = z.object({
+        outlet: z.enum(['FOODIZO_HAM_TOWERS', 'OBUNUZI_YMCA']).optional()
+      }).parse(request.query);
+      const { outlet, error } = resolveOutlet(request.user!.outlet, requestedOutlet);
+      if (error) {
+        return reply.status(403).send({
+          statusCode: 403,
+          error: 'Forbidden',
+          code: 'OUTLET_FORBIDDEN',
+          message: error
+        });
+      }
+
+      const businessDate = getKampalaBusinessDate();
+      const orders = await fastify.prisma.orders.findMany({
+        where: {
+          business_date: businessDate,
+          ...(outlet && { outlet })
+        },
+        select: {
+          status: true,
+          created_at: true,
+          ready_at: true,
+          estimated_prep_minutes: true
+        }
+      });
+      const activeStatuses = new Set(['PENDING', 'PREPARING']);
+      const kitchenDone = orders.filter(
+        (order) => ['READY', 'COMPLETED'].includes(order.status) && order.ready_at
+      );
+      const prepDurations = kitchenDone.map((order) =>
+        Math.max(0, (order.ready_at!.getTime() - order.created_at.getTime()) / 60000)
+      );
+      const onTime = kitchenDone.filter((order) => {
+        const duration = (order.ready_at!.getTime() - order.created_at.getTime()) / 60000;
+        return duration <= (order.estimated_prep_minutes || 10);
+      }).length;
+      const overdueCutoff = Date.now() - 10 * 60 * 1000;
+
+      return reply.send({
+        success: true,
+        outlet: outlet || 'ALL',
+        businessDate,
+        summary: {
+          newOrders: orders.filter((order) => order.status === 'PENDING').length,
+          preparing: orders.filter((order) => order.status === 'PREPARING').length,
+          ready: orders.filter((order) => order.status === 'READY').length,
+          overdue: orders.filter(
+            (order) => activeStatuses.has(order.status) && order.created_at.getTime() <= overdueCutoff
+          ).length,
+          ordersToday: orders.filter(
+            (order) => !['AWAITING_PAYMENT', 'CANCELLED'].includes(order.status)
+          ).length,
+          averagePrepMinutes: prepDurations.length
+            ? Math.round(prepDurations.reduce((total, value) => total + value, 0) / prepDurations.length)
+            : null,
+          serviceRate: kitchenDone.length ? Math.round((onTime / kitchenDone.length) * 100) : null
+        }
+      });
+    }
+  );
+
   // GET /api/v1/kds/tickets — kitchen staff only, outlet-scoped.
   fastify.get(
     '/tickets',
@@ -50,7 +119,10 @@ export const kdsRoutes: FastifyPluginAsync = async (fastify) => {
 
       const activeOrders = await fastify.prisma.orders.findMany({
         where: {
-          status: { in: ['PENDING', 'PREPARING'] },
+          status: query.status || { in: ['PENDING', 'PREPARING'] },
+          ...(query.status && ['READY', 'COMPLETED'].includes(query.status) && {
+            business_date: getKampalaBusinessDate()
+          }),
           ...(outlet && { outlet }),
           ...(query.station && {
             order_items: {
@@ -63,7 +135,8 @@ export const kdsRoutes: FastifyPluginAsync = async (fastify) => {
           table: true,
           delivery_zone: true
         },
-        orderBy: { created_at: 'asc' }
+        orderBy: { created_at: query.status ? 'desc' : 'asc' },
+        ...(query.status && { take: query.limit })
       });
 
       const now = Date.now();
@@ -80,6 +153,10 @@ export const kdsRoutes: FastifyPluginAsync = async (fastify) => {
           outlet: order.outlet,
           channel: order.channel,
           status: order.status,
+          createdAt: order.created_at,
+          readyAt: order.ready_at,
+          completedAt: order.completed_at,
+          estimatedPrepMinutes: order.estimated_prep_minutes,
           elapsedMinutes,
           isOverdue: elapsedMinutes >= 10,
           destination:

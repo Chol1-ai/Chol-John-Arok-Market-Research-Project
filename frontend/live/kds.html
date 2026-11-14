@@ -2,97 +2,254 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="icon" type="image/svg+xml" href="../images/foodizo-brand-mark.svg"/>
-  <title>Kitchen Display | Foodizo &amp; Obunuzi</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#171411" />
+  <title>Kitchen Command Center | Foodizo &amp; Obunuzi</title>
+  <link rel="icon" type="image/svg+xml" href="/images/foodizo-brand-mark.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
   <link rel="stylesheet" href="/css/theme_tokens.css" />
   <link rel="stylesheet" href="/css/live_surfaces.css?v=13" />
+  <link rel="stylesheet" href="/css/kds_dashboard.css?v=1" />
 </head>
-<body class="ls-body" data-surface="kds">
+<body class="ls-body kds-body" data-surface="kds">
   <a class="ls-skip" href="#main-content">Skip to main content</a>
-  <header class="ls-topbar">
-    <a class="ls-brand" href="/kds" data-session-home aria-label="Go to my home surface">
-      <div class="ls-brand-mark">KDS</div>
-      <div>
-        <div class="ls-brand-title">Kitchen Display</div>
-        <div class="ls-brand-sub">Orders · stations · preparation</div>
-      </div>
-    </a>
-    <nav class="ls-topnav" aria-label="Staff surfaces">
-      <a href="/pos">Floor POS</a>
-      <a href="/kds" aria-current="page">Kitchen</a>
-      <a href="/dispatch">Dispatch</a>
-      <a href="/admin">Admin</a>
-    </nav>
-    <div class="ls-session">
-      <div class="ls-session-copy">
-        <div class="ls-session-name" data-session-name>Loading…</div>
-        <div class="ls-session-role"><span data-session-role>Kitchen</span> · <span data-session-outlet>Outlet</span></div>
-      </div>
-      <div class="ls-avatar" data-session-initials>--</div>
-      <button class="ls-logout" type="button" data-action="logout">Log out</button>
-    </div>
-  </header>
+  <div class="kds-app">
+    <aside class="kds-sidebar">
+      <a class="kds-brand" href="/kds" data-session-home aria-label="Kitchen home">
+        <span class="kds-brand-mark">F</span>
+        <span class="kds-brand-copy">
+          <strong>Foodizo <span>&amp; Obunuzi</span></strong>
+          <small>Kitchen Command Center</small>
+        </span>
+      </a>
 
-  <main class="ls-main" id="main-content">
-    <div class="ls-page-head kds-page-head">
-      <div>
-        <h1 class="ls-title">Active kitchen tickets</h1>
-        <p class="ls-subtitle">Take an order, prepare the items and mark it ready. Customer tokens update automatically.</p>
-      </div>
-    </div>
+      <nav class="kds-sidebar-nav" aria-label="Kitchen dashboard">
+        <button class="kds-nav-item is-active" type="button" data-view-button="home" aria-current="page">
+          <span class="material-symbols-outlined" aria-hidden="true">restaurant</span>
+          <span>Kitchen Home</span>
+        </button>
+        <button class="kds-nav-item" type="button" data-view-button="status">
+          <span class="material-symbols-outlined" aria-hidden="true">monitoring</span>
+          <span>Order Status</span>
+          <span class="kds-nav-count" id="kds-nav-active-count">—</span>
+        </button>
+        <button class="kds-nav-item" type="button" data-view-button="completed">
+          <span class="material-symbols-outlined" aria-hidden="true">task_alt</span>
+          <span>Completed</span>
+        </button>
+        <button class="kds-nav-item" type="button" data-view-button="settings">
+          <span class="material-symbols-outlined" aria-hidden="true">tune</span>
+          <span>Settings</span>
+        </button>
+      </nav>
 
-    <section class="kds-summary" aria-label="Kitchen board summary">
-      <div class="kds-stat">
-        <div class="kds-stat-label">Visible tickets</div>
-        <div class="kds-stat-value" id="kds-count-total">—</div>
+      <div class="kds-sidebar-promo" aria-label="Kitchen motto">
+        <span>Cook well,</span>
+        <strong>serve better.</strong>
+        <i aria-hidden="true"></i>
       </div>
-      <div class="kds-stat">
-        <div class="kds-stat-label">Queued</div>
-        <div class="kds-stat-value" id="kds-count-queued">—</div>
-      </div>
-      <div class="kds-stat">
-        <div class="kds-stat-label">Preparing</div>
-        <div class="kds-stat-value" id="kds-count-preparing">—</div>
-      </div>
-      <div class="kds-stat">
-        <div class="kds-stat-label">Overdue ≥ 10m</div>
-        <div class="kds-stat-value" id="kds-count-overdue">—</div>
-      </div>
-    </section>
 
-    <div class="kds-filters" id="kds-filters" aria-label="Station filter">
-      <button class="ls-chip" type="button" data-station="ALL" aria-pressed="true">All stations</button>
-      <button class="ls-chip" type="button" data-station="STEAM_LINE" aria-pressed="false">Steam line</button>
-      <button class="ls-chip" type="button" data-station="GRILL_FRYER" aria-pressed="false">Grill &amp; fryer</button>
-      <button class="ls-chip" type="button" data-station="ROLEX_GRIDDLE" aria-pressed="false">Rolex griddle</button>
-      <button class="ls-chip" type="button" data-station="BAR_BEVERAGE" aria-pressed="false">Bar &amp; beverage</button>
-    </div>
+      <div class="kds-sidebar-location">
+        <span class="material-symbols-outlined" aria-hidden="true">location_on</span>
+        <span data-session-outlet>Loading outlet…</span>
+      </div>
+    </aside>
 
-    <div class="kds-board" id="kds-board">
-      <div class="ls-loading" style="color:#b7c0cf">Loading live kitchen tickets…</div>
-    </div>
-  </main>
-
-  <footer class="ls-footer" aria-label="Site footer">
-    <div class="ls-footer-inner">
-      <div class="ls-footer-brand">
-        <span class="ls-footer-mark" aria-hidden="true">KDS</span>
-        <div>
-          <strong>Foodizo &amp; Obunuzi</strong>
-          <span>Wandegeya dining corridor · Kampala</span>
+    <div class="kds-workspace">
+      <header class="kds-topbar">
+        <div class="kds-topbar-title">
+          <span class="kds-topbar-kicker">Kitchen operations</span>
+          <p>Great food. Happy customers.</p>
         </div>
-      </div>
+        <div class="kds-topbar-tools">
+          <div class="kds-clock" aria-label="Kampala local time">
+            <span class="material-symbols-outlined" aria-hidden="true">schedule</span>
+            <span><strong id="kds-clock-time">--:--</strong><small id="kds-clock-date">Loading date…</small></span>
+          </div>
+          <div class="kds-profile">
+            <span class="kds-profile-avatar" data-session-initials>--</span>
+            <span class="kds-profile-copy">
+              <strong data-session-name>Loading…</strong>
+              <small><span class="kds-connection-dot" id="kds-connection-dot"></span><span data-session-role>Kitchen staff</span></small>
+            </span>
+          </div>
+          <button class="kds-icon-button" id="kds-sound-button" type="button" aria-pressed="false" aria-label="Turn sound alerts on">
+            <span class="material-symbols-outlined" aria-hidden="true">volume_off</span>
+          </button>
+          <button class="kds-logout" type="button" data-action="logout">
+            <span class="material-symbols-outlined" aria-hidden="true">logout</span>
+            <span>Log out</span>
+          </button>
+        </div>
+      </header>
+
+      <main class="kds-main" id="main-content">
+        <section class="kds-summary" aria-label="Today's kitchen summary">
+          <button class="kds-stat kds-stat--new" type="button" data-summary-filter="PENDING">
+            <span class="kds-stat-icon material-symbols-outlined" aria-hidden="true">notifications_active</span>
+            <span class="kds-stat-copy"><small>New orders</small><strong id="kds-count-new">—</strong></span>
+            <span class="kds-stat-arrow material-symbols-outlined" aria-hidden="true">chevron_right</span>
+          </button>
+          <button class="kds-stat kds-stat--preparing" type="button" data-summary-filter="PREPARING">
+            <span class="kds-stat-icon material-symbols-outlined" aria-hidden="true">soup_kitchen</span>
+            <span class="kds-stat-copy"><small>Preparing</small><strong id="kds-count-preparing">—</strong></span>
+            <span class="kds-stat-arrow material-symbols-outlined" aria-hidden="true">chevron_right</span>
+          </button>
+          <button class="kds-stat kds-stat--ready" type="button" data-summary-filter="READY">
+            <span class="kds-stat-icon material-symbols-outlined" aria-hidden="true">check_circle</span>
+            <span class="kds-stat-copy"><small>Ready</small><strong id="kds-count-ready">—</strong></span>
+            <span class="kds-stat-arrow material-symbols-outlined" aria-hidden="true">chevron_right</span>
+          </button>
+          <button class="kds-stat kds-stat--overdue" type="button" data-summary-filter="OVERDUE">
+            <span class="kds-stat-icon material-symbols-outlined" aria-hidden="true">timer</span>
+            <span class="kds-stat-copy"><small>Overdue · 10+ min</small><strong id="kds-count-overdue">—</strong></span>
+            <span class="kds-stat-arrow material-symbols-outlined" aria-hidden="true">chevron_right</span>
+          </button>
+        </section>
+
+        <section class="kds-filterbar" aria-label="Ticket filters">
+          <div class="kds-filter-group">
+            <h2><span class="material-symbols-outlined" aria-hidden="true">restaurant_menu</span> Kitchen stations</h2>
+            <div class="kds-filter-options" id="kds-station-filters" role="group" aria-label="Filter by kitchen station">
+              <button type="button" data-station="ALL" aria-pressed="true">All stations</button>
+              <button type="button" data-station="GRILL_FRYER" aria-pressed="false">Grill &amp; Fryer</button>
+              <button type="button" data-station="ROLEX_GRIDDLE" aria-pressed="false">Rolex</button>
+              <button type="button" data-station="STEAM_LINE" aria-pressed="false">Steam</button>
+              <button type="button" data-station="BAR_BEVERAGE" aria-pressed="false">Bar</button>
+            </div>
+          </div>
+          <div class="kds-filter-divider" aria-hidden="true"></div>
+          <div class="kds-filter-group">
+            <h2><span class="material-symbols-outlined" aria-hidden="true">sell</span> Order type</h2>
+            <div class="kds-filter-options" id="kds-channel-filters" role="group" aria-label="Filter by order type">
+              <button type="button" data-channel="ALL" aria-pressed="true">All</button>
+              <button type="button" data-channel="DINE_IN" aria-pressed="false">Dine in</button>
+              <button type="button" data-channel="TAKEAWAY_PICKUP" aria-pressed="false">Takeaway</button>
+              <button type="button" data-channel="PHONE_DELIVERY" aria-pressed="false">Delivery</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="kds-view" id="kds-view-home" aria-labelledby="kds-home-title">
+          <div class="kds-view-heading">
+            <div>
+              <p class="kds-eyebrow"><span class="kds-live-dot"></span> Live kitchen queue</p>
+              <h1 id="kds-home-title">Active kitchen tickets</h1>
+              <p>Claim a new order, prepare it, and mark it ready for handoff.</p>
+            </div>
+            <div class="kds-view-actions">
+              <span class="kds-updated" id="kds-last-updated">Waiting for tickets…</span>
+              <button class="kds-secondary-button" type="button" id="kds-refresh-button">
+                <span class="material-symbols-outlined" aria-hidden="true">refresh</span> Refresh
+              </button>
+            </div>
+          </div>
+          <div class="kds-ticket-grid" id="kds-board" aria-live="polite" aria-busy="true"></div>
+        </section>
+
+        <section class="kds-view" id="kds-view-status" aria-labelledby="kds-status-title" hidden>
+          <div class="kds-view-heading">
+            <div>
+              <p class="kds-eyebrow">Real-time overview</p>
+              <h1 id="kds-status-title">Order status</h1>
+              <p>Track every active ticket through the kitchen queue.</p>
+            </div>
+            <label class="kds-search">
+              <span class="material-symbols-outlined" aria-hidden="true">search</span>
+              <span class="visually-hidden">Search tickets</span>
+              <input id="kds-status-search" type="search" placeholder="Search token or item" autocomplete="off" />
+            </label>
+          </div>
+          <div class="kds-status-filters" id="kds-status-filters" role="group" aria-label="Filter by order status">
+            <button type="button" data-status-filter="ALL" aria-pressed="true">All active</button>
+            <button type="button" data-status-filter="PENDING" aria-pressed="false">New</button>
+            <button type="button" data-status-filter="PREPARING" aria-pressed="false">Preparing</button>
+            <button type="button" data-status-filter="READY" aria-pressed="false">Ready</button>
+            <button type="button" data-status-filter="OVERDUE" aria-pressed="false">Overdue</button>
+          </div>
+          <div class="kds-ticket-grid" id="kds-status-board" aria-live="polite" aria-busy="true"></div>
+        </section>
+
+        <section class="kds-view" id="kds-view-completed" aria-labelledby="kds-completed-title" hidden>
+          <div class="kds-view-heading">
+            <div>
+              <p class="kds-eyebrow">Today's kitchen history</p>
+              <h1 id="kds-completed-title">Completed tickets</h1>
+              <p>Orders ready for handoff and orders already completed.</p>
+            </div>
+            <label class="kds-search">
+              <span class="material-symbols-outlined" aria-hidden="true">search</span>
+              <span class="visually-hidden">Search completed tickets</span>
+              <input id="kds-completed-search" type="search" placeholder="Search token or item" autocomplete="off" />
+            </label>
+          </div>
+          <div class="kds-status-filters" id="kds-history-filters" role="group" aria-label="Filter completed tickets">
+            <button type="button" data-history-filter="ALL" aria-pressed="true">All completed</button>
+            <button type="button" data-history-filter="READY" aria-pressed="false">Ready for handoff</button>
+            <button type="button" data-history-filter="COMPLETED" aria-pressed="false">Handed off</button>
+          </div>
+          <div class="kds-ticket-grid" id="kds-completed-board" aria-live="polite" aria-busy="true"></div>
+        </section>
+
+        <section class="kds-view" id="kds-view-settings" aria-labelledby="kds-settings-title" hidden>
+          <div class="kds-view-heading">
+            <div>
+              <p class="kds-eyebrow">Your kitchen display</p>
+              <h1 id="kds-settings-title">Settings</h1>
+              <p>Set the defaults for this screen. Preferences stay on this device.</p>
+            </div>
+          </div>
+          <form class="kds-settings" id="kds-settings-form">
+            <label class="kds-setting-row" for="kds-default-station">
+              <span class="kds-setting-icon material-symbols-outlined" aria-hidden="true">table_restaurant</span>
+              <span class="kds-setting-copy"><strong>Default station</strong><small>Choose the station selected when this dashboard opens.</small></span>
+              <select id="kds-default-station" name="defaultStation">
+                <option value="ALL">All stations</option>
+                <option value="GRILL_FRYER">Grill &amp; Fryer</option>
+                <option value="ROLEX_GRIDDLE">Rolex</option>
+                <option value="STEAM_LINE">Steam</option>
+                <option value="BAR_BEVERAGE">Bar</option>
+              </select>
+            </label>
+            <label class="kds-setting-row" for="kds-sound-enabled">
+              <span class="kds-setting-icon material-symbols-outlined" aria-hidden="true">notifications_active</span>
+              <span class="kds-setting-copy"><strong>New-order sound</strong><small>Play a short alert when a new ticket arrives. Use Test sound once to enable audio.</small></span>
+              <input class="kds-switch" id="kds-sound-enabled" name="soundEnabled" type="checkbox" />
+            </label>
+            <label class="kds-setting-row" for="kds-auto-refresh">
+              <span class="kds-setting-icon material-symbols-outlined" aria-hidden="true">sync</span>
+              <span class="kds-setting-copy"><strong>Automatic refresh</strong><small>Refresh the ticket board every minute if a live connection drops.</small></span>
+              <input class="kds-switch" id="kds-auto-refresh" name="autoRefresh" type="checkbox" />
+            </label>
+            <label class="kds-setting-row" for="kds-compact-mode">
+              <span class="kds-setting-icon material-symbols-outlined" aria-hidden="true">view_compact</span>
+              <span class="kds-setting-copy"><strong>Compact tickets</strong><small>Show more orders at once on smaller kitchen displays.</small></span>
+              <input class="kds-switch" id="kds-compact-mode" name="compactMode" type="checkbox" />
+            </label>
+            <div class="kds-settings-actions">
+              <p id="kds-settings-feedback" role="status" aria-live="polite"></p>
+              <button class="kds-primary-button" type="submit">Save settings</button>
+              <button class="kds-secondary-button" type="button" id="kds-test-sound">
+                <span class="material-symbols-outlined" aria-hidden="true">volume_up</span> Test sound
+              </button>
+            </div>
+          </form>
+        </section>
+      </main>
+
+      <footer class="kds-statusbar" aria-label="Kitchen operations summary">
+        <div class="kds-online-status"><span class="kds-connection-dot" id="kds-footer-connection-dot"></span><strong id="kds-connection-label">Connecting</strong></div>
+        <div><span class="material-symbols-outlined" aria-hidden="true">receipt_long</span><span>Total orders today: <strong id="kds-orders-today">—</strong></span></div>
+        <div><span class="material-symbols-outlined" aria-hidden="true">timer</span><span>Avg prep time: <strong id="kds-average-prep">—</strong></span></div>
+        <div><span class="material-symbols-outlined" aria-hidden="true">star</span><span>On-time rate: <strong id="kds-service-rate">—</strong></span></div>
+      </footer>
     </div>
-    <div class="ls-footer-meta kds-footer-meta">
-      <span>© 2026 Foodizo &amp; Obunuzi</span>
-    </div>
-  </footer>
+  </div>
 
   <script src="/js/api.js"></script>
-  <script src="/js/kds.js?v=3"></script>
+  <script src="/js/kds.js?v=4"></script>
 </body>
 </html>
