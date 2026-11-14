@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
   <link rel="stylesheet" href="/css/theme_tokens.css" />
   <link rel="stylesheet" href="/css/live_surfaces.css?v=13" />
-  <link rel="stylesheet" href="/css/admin_console.css?v=12" />
+  <link rel="stylesheet" href="/css/admin_console.css?v=13" />
 </head>
 <body class="ls-body manager-dashboard" data-surface="admin" data-manager-view="dashboard">
   <a class="ls-skip" href="#main-content">Skip to main content</a>
@@ -168,8 +168,22 @@
           </div>
           <div class="manager-inventory-alerts" id="admin-dashboard-inventory"><span>Loading stock alerts…</span></div>
         </section>
+        <section class="manager-panel manager-attention-panel" id="admin-flags-section" data-manager-workspace="dashboard reports" aria-labelledby="manager-attention-title">
+          <div class="manager-panel-heading">
+            <h2 id="manager-attention-title"><span class="material-symbols-outlined" aria-hidden="true">notifications_active</span>Needs your attention</h2>
+            <button class="ls-btn ls-btn--ghost ls-btn--small manager-alert-clear-all" type="button" id="admin-clear-alerts" hidden>Clear</button>
+          </div>
+          <div class="admin-flags" id="admin-flags-list">
+            <div class="ls-loading">Loading flags…</div>
+          </div>
+        </section>
       </div>
       <div class="manager-stock-shortcuts" aria-label="Stock management shortcuts">
+        <a class="manager-stock-shortcut is-workspace" href="#manager-workspaces">
+          <span class="manager-stock-shortcut-icon"><span class="material-symbols-outlined" aria-hidden="true">dashboard_customize</span></span>
+          <span><strong>Manage restaurant</strong><small>Open staff, menu, finance, and operations</small></span>
+          <span class="material-symbols-outlined manager-stock-shortcut-arrow" aria-hidden="true">arrow_forward</span>
+        </a>
         <a class="manager-stock-shortcut" href="#manager-inventory">
           <span class="manager-stock-shortcut-icon"><span class="material-symbols-outlined" aria-hidden="true">inventory_2</span></span>
           <span><strong>View inventory</strong><small>Check stock levels and update counts</small></span>
@@ -184,13 +198,82 @@
       <div class="manager-updated" id="admin-updated">Waiting for dashboard data…</div>
     </section>
 
+    <section class="manager-workspace-hub" id="manager-workspaces" aria-labelledby="manager-workspaces-title">
+      <a class="manager-focused-back" href="#manager-overview">
+        <span class="material-symbols-outlined" aria-hidden="true">arrow_back</span>Dashboard
+      </a>
+      <div class="manager-workspace-hub-heading">
+        <span>MANAGER TOOLS</span>
+        <h1 id="manager-workspaces-title">Manage restaurant</h1>
+        <p>Choose a workspace for the task at hand. Your dashboard stays focused on today’s priorities.</p>
+      </div>
+      <div class="manager-workspace-grid">
+        <a class="manager-workspace-link" href="#admin-orders-section">
+          <span class="manager-workspace-icon is-blue"><span class="material-symbols-outlined" aria-hidden="true">receipt_long</span></span>
+          <span><strong>Orders</strong><small>Review recent restaurant orders</small></span>
+          <span class="material-symbols-outlined manager-workspace-arrow" aria-hidden="true">arrow_forward</span>
+        </a>
+        <a class="manager-workspace-link" href="#admin-floor-section">
+          <span class="manager-workspace-icon is-purple"><span class="material-symbols-outlined" aria-hidden="true">table_restaurant</span></span>
+          <span><strong>Floor &amp; tables</strong><small>Check current table status</small></span>
+          <span class="material-symbols-outlined manager-workspace-arrow" aria-hidden="true">arrow_forward</span>
+        </a>
+        <a class="manager-workspace-link" href="#manager-inventory">
+          <span class="manager-workspace-icon is-green"><span class="material-symbols-outlined" aria-hidden="true">inventory_2</span></span>
+          <span><strong>Inventory</strong><small>View stock and record counts</small></span>
+          <span class="material-symbols-outlined manager-workspace-arrow" aria-hidden="true">arrow_forward</span>
+        </a>
+        <a class="manager-workspace-link" href="#manager-procurement">
+          <span class="manager-workspace-icon is-amber"><span class="material-symbols-outlined" aria-hidden="true">local_shipping</span></span>
+          <span><strong>Order stock</strong><small>Create and follow supplier orders</small></span>
+          <span class="material-symbols-outlined manager-workspace-arrow" aria-hidden="true">arrow_forward</span>
+        </a>
+        <a class="manager-workspace-link" href="#admin-team-section">
+          <span class="manager-workspace-icon is-teal"><span class="material-symbols-outlined" aria-hidden="true">groups</span></span>
+          <span><strong>Staff</strong><small>Manage access and staff accounts</small></span>
+          <span class="material-symbols-outlined manager-workspace-arrow" aria-hidden="true">arrow_forward</span>
+        </a>
+        <a class="manager-workspace-link" href="#admin-menu-section">
+          <span class="manager-workspace-icon is-red"><span class="material-symbols-outlined" aria-hidden="true">restaurant_menu</span></span>
+          <span><strong>Menu</strong><small>Manage meals, prices, and photos</small></span>
+          <span class="material-symbols-outlined manager-workspace-arrow" aria-hidden="true">arrow_forward</span>
+        </a>
+        <a class="manager-workspace-link" href="#admin-cash-section">
+          <span class="manager-workspace-icon is-green"><span class="material-symbols-outlined" aria-hidden="true">payments</span></span>
+          <span><strong>Cash reconciliation</strong><small>Record and review drawer counts</small></span>
+          <span class="material-symbols-outlined manager-workspace-arrow" aria-hidden="true">arrow_forward</span>
+        </a>
+        <a class="manager-workspace-link" href="#admin-surplus-section">
+          <span class="manager-workspace-icon is-amber"><span class="material-symbols-outlined" aria-hidden="true">compost</span></span>
+          <span><strong>Surplus &amp; waste</strong><small>Log clearance, staff meals, and waste</small></span>
+          <span class="material-symbols-outlined manager-workspace-arrow" aria-hidden="true">arrow_forward</span>
+        </a>
+        <a class="manager-workspace-link" href="#admin-outlet-section">
+          <span class="manager-workspace-icon is-purple"><span class="material-symbols-outlined" aria-hidden="true">monitoring</span></span>
+          <span><strong>Reports &amp; alerts</strong><small>Review outlet performance and exceptions</small></span>
+          <span class="material-symbols-outlined manager-workspace-arrow" aria-hidden="true">arrow_forward</span>
+        </a>
+      </div>
+    </section>
+
+    <header class="manager-workspace-page-header" id="manager-workspace-page-header">
+      <a class="manager-focused-back" href="#manager-workspaces">
+        <span class="material-symbols-outlined" aria-hidden="true">arrow_back</span>All manager tools
+      </a>
+      <div>
+        <span class="manager-focused-eyebrow">MANAGER WORKSPACE</span>
+        <h1 id="manager-workspace-page-title">Workspace</h1>
+        <p id="manager-workspace-page-description"></p>
+      </div>
+    </header>
+
     <section class="manager-operations" aria-labelledby="manager-operations-title">
       <div class="manager-operations-heading">
         <div><span>MANAGER WORKSPACE</span><h2 id="manager-operations-title">Outlet performance &amp; operations</h2></div>
         <a href="#manager-inventory">Manage restaurant <span aria-hidden="true">→</span></a>
       </div>
-    <div class="admin-priority-grid" aria-label="Outlet summary and attention items">
-      <section class="ls-card" id="admin-outlet-section">
+    <div class="admin-priority-grid" data-manager-workspace="reports" aria-label="Outlet summary and attention items">
+      <section class="ls-card" id="admin-outlet-section" data-manager-workspace="reports">
         <div class="ls-card-head">
           <div>
             <div class="ls-card-title">Outlet performance</div>
@@ -202,33 +285,9 @@
         </div>
       </section>
 
-      <section class="ls-card" id="admin-flags-section">
-        <div class="ls-card-head">
-          <div>
-            <div class="ls-card-title">Needs your attention</div>
-            <div class="ls-card-sub">Open operational exceptions</div>
-          </div>
-          <button class="ls-btn ls-btn--ghost ls-btn--small" type="button" id="admin-clear-alerts" hidden>
-            Clear alerts
-          </button>
-        </div>
-        <div class="admin-flags" id="admin-flags-list">
-          <div class="ls-loading">Loading flags…</div>
-        </div>
-      </section>
     </div>
 
-    <section class="ls-card admin-inventory-card" id="admin-inventory-section" aria-labelledby="admin-inventory-title">
-      <div class="manager-focused-heading">
-        <a class="manager-focused-back" href="#manager-overview">
-          <span class="material-symbols-outlined" aria-hidden="true">arrow_back</span>Dashboard
-        </a>
-        <div>
-          <span class="manager-focused-eyebrow">STOCK MANAGEMENT</span>
-          <h1>Restaurant inventory</h1>
-          <p>Check what is on hand, review recent changes, or record a stock count.</p>
-        </div>
-      </div>
+    <section class="ls-card admin-inventory-card" id="admin-inventory-section" data-manager-workspace="inventory" aria-labelledby="admin-inventory-title">
       <div class="ls-card-head">
         <div>
           <div class="ls-card-title" id="admin-inventory-title">Current stock</div>
@@ -356,16 +415,10 @@
       </div>
     </section>
 
-    <section class="ls-card manager-procurement-card" id="admin-procurement-section" aria-labelledby="admin-procurement-title">
-      <div class="manager-focused-heading">
-        <a class="manager-focused-back" href="#manager-overview">
-          <span class="material-symbols-outlined" aria-hidden="true">arrow_back</span>Dashboard
-        </a>
-        <div>
-          <span class="manager-focused-eyebrow">STOCK MANAGEMENT</span>
-          <h1 id="admin-procurement-title">Order stock</h1>
-          <p>Build a supplier order for the selected restaurant outlet.</p>
-        </div>
+    <section class="ls-card manager-procurement-card" id="admin-procurement-section" data-manager-workspace="procurement" aria-labelledby="admin-procurement-title">
+      <div class="manager-section-heading">
+        <h2 id="admin-procurement-title">New supplier order</h2>
+        <p>Build an order for the selected restaurant outlet.</p>
       </div>
       <div class="manager-procurement-grid">
         <form class="admin-form" id="admin-supplier-order-form">
@@ -401,7 +454,7 @@
 
     <div class="admin-columns">
       <div class="admin-stack">
-        <section class="ls-card" id="admin-orders-section">
+        <section class="ls-card" id="admin-orders-section" data-manager-workspace="orders">
           <div class="ls-card-head">
             <div>
               <div class="ls-card-title">Recent orders</div>
@@ -430,7 +483,7 @@
           </div>
         </section>
 
-        <section class="ls-card" id="admin-floor-section">
+        <section class="ls-card" id="admin-floor-section" data-manager-workspace="floor">
           <div class="ls-card-head">
             <div>
               <div class="ls-card-title">Floor state</div>
@@ -442,7 +495,7 @@
           </div>
         </section>
 
-        <section class="ls-card" id="admin-team-section">
+        <section class="ls-card" id="admin-team-section" data-manager-workspace="staff">
           <div class="ls-card-head">
             <div>
               <div class="ls-card-title">Staff roster</div>
@@ -467,7 +520,7 @@
           </div>
         </section>
 
-        <section class="ls-card" aria-labelledby="admin-create-staff-title">
+        <section class="ls-card" id="admin-create-staff-section" data-manager-workspace="staff" aria-labelledby="admin-create-staff-title">
           <div class="ls-card-head">
             <div>
               <div class="ls-card-title" id="admin-create-staff-title">Create staff access</div>
@@ -514,7 +567,7 @@
           </form>
         </section>
 
-        <section class="ls-card">
+        <section class="ls-card" id="admin-surplus-log-section" data-manager-workspace="surplus">
           <div class="ls-card-head">
             <div>
               <div class="ls-card-title">Today's closing surplus</div>
@@ -528,7 +581,7 @@
       </div>
 
       <div class="admin-stack">
-        <section class="ls-card" id="admin-menu-section" aria-labelledby="admin-menu-title">
+        <section class="ls-card" id="admin-menu-section" data-manager-workspace="menu" aria-labelledby="admin-menu-title">
           <div class="ls-card-head">
             <div>
               <div class="ls-card-title" id="admin-menu-title">Menu &amp; prices</div>
@@ -581,7 +634,7 @@
           </div>
         </section>
 
-        <section class="ls-card" id="admin-cash-section">
+        <section class="ls-card" id="admin-cash-section" data-manager-workspace="finance">
           <div class="ls-card-head">
             <div>
               <div class="ls-card-title">Cash reconciliation</div>
@@ -612,7 +665,7 @@
           </form>
         </section>
 
-        <section class="ls-card" id="admin-surplus-section">
+        <section class="ls-card" id="admin-surplus-section" data-manager-workspace="surplus">
           <div class="ls-card-head">
             <div>
               <div class="ls-card-title">Log closing surplus</div>
@@ -655,7 +708,7 @@
           </form>
         </section>
 
-        <section class="ls-card" id="admin-digest-section">
+        <section class="ls-card" id="admin-digest-section" data-manager-workspace="reports">
           <div class="ls-card-head">
             <div>
               <div class="ls-card-title">Daily digest dispatch</div>
@@ -674,6 +727,6 @@
   </main>
 
   <script src="/js/api.js"></script>
-  <script src="/js/admin.js?v=10"></script>
+  <script src="/js/admin.js?v=11"></script>
 </body>
 </html>

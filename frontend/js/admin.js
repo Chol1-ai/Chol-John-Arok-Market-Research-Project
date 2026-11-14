@@ -27,6 +27,7 @@
     notification: document.getElementById('admin-notification'),
     notificationCount: document.getElementById('admin-notification-count'),
     clearAlerts: document.getElementById('admin-clear-alerts'),
+    flagsPanel: document.getElementById('admin-flags-section'),
     digestSub: document.getElementById('admin-digest-sub'),
     outlets: document.getElementById('admin-outlets'),
     ordersBody: document.getElementById('admin-orders-body'),
@@ -69,6 +70,8 @@
     stockActivitySummary: document.getElementById('admin-stock-activity-summary'),
     clearStockActivity: document.getElementById('admin-clear-stock-activity'),
     restoreStockActivity: document.getElementById('admin-restore-stock-activity'),
+    workspacePageTitle: document.getElementById('manager-workspace-page-title'),
+    workspacePageDescription: document.getElementById('manager-workspace-page-description'),
     stockForm: document.getElementById('admin-stock-form'),
     stockOutlet: document.getElementById('admin-stock-outlet'),
     stockItem: document.getElementById('admin-stock-item'),
@@ -109,19 +112,67 @@
 
   function renderManagerView() {
     const hash = window.location.hash;
-    const view = ['#manager-inventory', '#admin-inventory-section'].includes(hash)
-      ? 'inventory'
-      : ['#manager-procurement', '#admin-procurement-section'].includes(hash)
-        ? 'procurement'
-        : 'dashboard';
+    const hashViews = {
+      '#manager-overview': 'dashboard',
+      '#manager-workspaces': 'hub',
+      '#manager-inventory': 'inventory',
+      '#admin-inventory-section': 'inventory',
+      '#manager-procurement': 'procurement',
+      '#admin-procurement-section': 'procurement',
+      '#admin-orders-section': 'orders',
+      '#admin-floor-section': 'floor',
+      '#admin-team-section': 'staff',
+      '#admin-create-staff-section': 'staff',
+      '#admin-menu-section': 'menu',
+      '#admin-cash-section': 'finance',
+      '#admin-surplus-section': 'surplus',
+      '#admin-surplus-log-section': 'surplus',
+      '#admin-outlet-section': 'reports',
+      '#admin-flags-section': 'dashboard',
+      '#admin-digest-section': 'reports'
+    };
+    const view = hashViews[hash] || 'dashboard';
+    const pageCopy = {
+      orders: ['Recent orders', 'Review the latest orders across your selected restaurant scope.'],
+      floor: ['Floor & tables', 'Check current table occupancy and service status.'],
+      inventory: ['Restaurant inventory', 'View stock levels, recent changes, and count tools.'],
+      procurement: ['Order stock', 'Create supplier orders and follow deliveries.'],
+      staff: ['Staff management', 'Review the roster or create staff access.'],
+      menu: ['Menu management', 'Update meals, prices, availability, and photos.'],
+      finance: ['Cash reconciliation', 'Compare expected cash with the drawer count.'],
+      surplus: ['Surplus & waste', 'Record closing surplus, staff meals, and waste.'],
+      reports: ['Reports & alerts', 'Review outlet performance, exceptions, and daily reports.']
+    };
     document.body.dataset.managerView = view;
 
+    const copy = pageCopy[view];
+    els.workspacePageTitle.textContent = copy ? copy[0] : '';
+    els.workspacePageDescription.textContent = copy ? copy[1] : '';
+    document.querySelectorAll('[data-manager-workspace]').forEach((section) => {
+      section.hidden = !section.dataset.managerWorkspace.split(/\s+/).includes(view);
+    });
+
+    const activeHashes = {
+      dashboard: '#manager-overview',
+      orders: '#admin-orders-section',
+      floor: '#admin-floor-section',
+      inventory: '#manager-inventory',
+      procurement: '#manager-procurement',
+      staff: '#admin-team-section',
+      menu: '#admin-menu-section',
+      finance: '#admin-cash-section',
+      surplus: '#admin-surplus-section',
+      reports: '#admin-outlet-section'
+    };
+    const activeHash = activeHashes[view];
     document.querySelectorAll('.manager-nav a').forEach((link) => {
-      link.classList.toggle(
-        'is-active',
-        (view === 'dashboard' && link.hash === '#manager-overview') ||
-          (view === 'inventory' && link.hash === '#manager-inventory')
-      );
+      const active = Boolean(activeHash) && link.hash === activeHash;
+      link.classList.toggle('is-active', active);
+      if (active) {
+        link.setAttribute('aria-current', 'page');
+      } else {
+        link.removeAttribute('aria-current');
+      }
     });
 
     if (view !== 'dashboard') window.scrollTo(0, 0);
@@ -496,6 +547,7 @@
 
   function renderFlags() {
     const flags = STATE.overview.summary.flags || [];
+    els.flagsPanel.classList.toggle('is-empty', flags.length === 0);
     els.clearAlerts.hidden = flags.length === 0;
     els.notificationCount.textContent = flags.length > 99 ? '99+' : String(flags.length);
     els.notificationCount.hidden = flags.length === 0;

@@ -1296,7 +1296,7 @@ body[data-surface='admin'].manager-dashboard .ls-main {
 
 .manager-secondary-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.55fr) minmax(195px, 1fr) minmax(210px, 1fr);
+  grid-template-columns: minmax(0, 1.55fr) repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -1857,35 +1857,111 @@ body[data-surface='admin'].manager-dashboard .ls-main {
   }
 }
 
+body[data-manager-view='dashboard'] .manager-operations,
+body[data-manager-view='dashboard'] .manager-workspace-hub,
+body[data-manager-view='dashboard'] .manager-workspace-page-header,
 body[data-manager-view='dashboard'] #admin-inventory-section,
 body[data-manager-view='dashboard'] #admin-procurement-section {
-  display: none;
-}
-
-body[data-manager-view='inventory'] .manager-overview,
-body[data-manager-view='procurement'] .manager-overview {
-  display: none;
-}
-
-body[data-manager-view='inventory'] .manager-operations > :not(#admin-inventory-section),
-body[data-manager-view='procurement'] .manager-operations > :not(#admin-procurement-section) {
   display: none !important;
 }
 
-body[data-manager-view='inventory'] .manager-operations,
-body[data-manager-view='procurement'] .manager-operations {
-  gap: 0;
+body[data-manager-view='hub'] .manager-overview,
+body[data-manager-view='hub'] .manager-operations,
+body[data-manager-view='hub'] .manager-workspace-page-header {
+  display: none !important;
+}
+
+body[data-manager-view='hub'] .manager-workspace-hub {
+  display: grid;
+}
+
+body[data-manager-view]:not([data-manager-view='dashboard']):not([data-manager-view='hub']) .manager-overview,
+body[data-manager-view]:not([data-manager-view='dashboard']):not([data-manager-view='hub']) .manager-workspace-hub {
+  display: none !important;
+}
+
+body[data-manager-view]:not([data-manager-view='dashboard']):not([data-manager-view='hub']) .manager-workspace-page-header {
+  display: flex;
+}
+
+body[data-manager-view]:not([data-manager-view='dashboard']):not([data-manager-view='hub']) .manager-operations {
+  display: grid;
+  gap: 13px;
   margin-top: 0;
 }
 
-body[data-manager-view='inventory'] #admin-inventory-section,
-body[data-manager-view='procurement'] #admin-procurement-section {
+body[data-manager-view]:not([data-manager-view='dashboard']):not([data-manager-view='hub']) .manager-operations-heading {
+  display: none;
+}
+
+body[data-manager-view]:not([data-manager-view='dashboard']):not([data-manager-view='hub']) .admin-columns,
+body[data-manager-view]:not([data-manager-view='dashboard']):not([data-manager-view='hub']) .admin-stack {
+  display: contents;
+}
+
+body[data-manager-view='dashboard'] [data-manager-workspace],
+body[data-manager-view='hub'] [data-manager-workspace],
+[data-manager-workspace][hidden] {
+  display: none !important;
+}
+
+body[data-manager-view='dashboard'] #admin-flags-section:not([hidden]) {
   display: block;
+}
+
+body[data-manager-view='dashboard'] #admin-flags-section.is-empty:not([hidden]) {
+  display: none;
+}
+
+body[data-surface='admin'] .manager-attention-panel .admin-flags {
+  display: grid;
+  gap: 7px;
+  max-height: 186px;
+  padding: 0 12px 12px;
+  overflow: auto;
+}
+
+body[data-surface='admin'] .manager-attention-panel .admin-flag {
+  margin: 0;
+  padding: 8px 9px;
+  border: 1px solid #554321;
+  border-radius: 9px;
+  background: #292215;
+  color: #f0cf87;
+  font-size: 10px;
+}
+
+body[data-surface='admin'] .manager-attention-panel .admin-flag-dismiss {
+  border-color: #725b31;
+  background: #211b11;
+  color: #f0cf87;
+}
+
+body[data-surface='admin'] .manager-attention-panel .admin-flag-dismiss:hover:not(:disabled) {
+  border-color: #d3a84f;
+  color: #ffe2a1;
+}
+
+body[data-surface='admin'] .manager-attention-panel .ls-empty {
+  min-height: 0 !important;
+  padding: 12px 2px;
+  color: #91a0a5;
+  font-size: 10px;
+}
+
+.manager-alert-clear-all {
+  border-color: #344149;
+  background: #192328;
+  color: #d3dcdf;
+}
+
+.manager-alert-clear-all {
+  flex: 0 0 auto;
 }
 
 .manager-stock-shortcuts {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 11px;
   margin-top: 16px;
 }
@@ -1931,6 +2007,18 @@ body[data-manager-view='procurement'] #admin-procurement-section {
   color: #ffc46e;
 }
 
+.manager-stock-shortcut.is-workspace .manager-stock-shortcut-icon {
+  background: #1d2938;
+  color: #8cb8ff;
+}
+
+.manager-stock-shortcut:focus-visible,
+.manager-workspace-link:focus-visible,
+.manager-focused-back:focus-visible {
+  outline: 2px solid #55dfa0;
+  outline-offset: 3px;
+}
+
 .manager-stock-shortcut > span:nth-child(2) {
   display: grid;
   min-width: 0;
@@ -1954,14 +2042,6 @@ body[data-manager-view='procurement'] #admin-procurement-section {
   margin-left: auto;
   color: #78878d;
   font-size: 17px;
-}
-
-.manager-focused-heading {
-  display: flex;
-  flex-direction: column;
-  gap: 17px;
-  padding: 6px 22px 18px;
-  border-bottom: 1px solid #263137;
 }
 
 .manager-focused-back {
@@ -1990,18 +2070,132 @@ body[data-manager-view='procurement'] #admin-procurement-section {
   letter-spacing: 0.1em;
 }
 
-.manager-focused-heading h1 {
+.manager-workspace-page-header h1,
+.manager-workspace-hub-heading h1 {
   margin: 4px 0 0;
   color: #f0f3f4;
   font-size: 20px;
   font-weight: 800;
 }
 
-.manager-focused-heading p {
+.manager-workspace-page-header p,
+.manager-workspace-hub-heading p {
   margin: 5px 0 0;
   color: #94a0a5;
   font-size: 10px;
   line-height: 1.5;
+}
+
+.manager-workspace-page-header {
+  display: none;
+  flex-direction: column;
+  gap: 15px;
+  margin: 0 0 16px;
+  padding: 6px 2px 16px;
+  border-bottom: 1px solid #263137;
+}
+
+.manager-workspace-hub {
+  display: none;
+  gap: 17px;
+  margin-top: 6px;
+}
+
+.manager-workspace-hub-heading > span {
+  color: #45dc95;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.manager-workspace-hub-heading h1 {
+  font-size: 22px;
+}
+
+.manager-workspace-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 11px;
+}
+
+.manager-workspace-link {
+  display: flex;
+  min-width: 0;
+  min-height: 72px;
+  align-items: center;
+  gap: 11px;
+  padding: 12px;
+  border: 1px solid #29363b;
+  border-radius: 12px;
+  background: linear-gradient(110deg, #151d21, #11181b);
+  color: #e7edef;
+  text-decoration: none;
+  transition: border-color 150ms ease, transform 150ms ease, background 150ms ease;
+}
+
+.manager-workspace-link:hover {
+  transform: translateY(-1px);
+  border-color: #3b7055;
+  background: #17241f;
+}
+
+.manager-workspace-icon {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  place-items: center;
+  border-radius: 10px;
+  background: #192328;
+  color: #7caeff;
+}
+
+.manager-workspace-icon.is-blue { background: #172a3d; color: #7caeff; }
+.manager-workspace-icon.is-purple { background: #2a2039; color: #c29aff; }
+.manager-workspace-icon.is-green { background: #173327; color: #63e3a1; }
+.manager-workspace-icon.is-amber { background: #332918; color: #ffc46e; }
+.manager-workspace-icon.is-teal { background: #173432; color: #62d9ce; }
+.manager-workspace-icon.is-red { background: #382221; color: #ff9a8e; }
+
+.manager-workspace-link > span:nth-child(2) {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.manager-workspace-link strong {
+  color: #e9edef;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.manager-workspace-link small {
+  color: #8e9ba0;
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.manager-workspace-arrow {
+  flex: 0 0 auto;
+  margin-left: auto;
+  color: #78878d;
+  font-size: 17px;
+}
+
+.manager-section-heading {
+  padding: 18px 22px 0;
+}
+
+.manager-section-heading h2 {
+  color: #edf1f2;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.manager-section-heading p {
+  margin: 4px 0 0;
+  color: #94a0a5;
+  font-size: 10px;
 }
 
 .manager-procurement-card {
@@ -2036,12 +2230,16 @@ body[data-manager-view='procurement'] #admin-procurement-section {
     gap: 8px;
   }
 
-  .manager-focused-heading {
-    padding: 6px 13px 15px;
+  .manager-workspace-page-header h1 {
+    font-size: 18px;
   }
 
-  .manager-focused-heading h1 {
-    font-size: 18px;
+  .manager-workspace-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .manager-workspace-hub-heading h1 {
+    font-size: 20px;
   }
 
   .manager-procurement-grid {
