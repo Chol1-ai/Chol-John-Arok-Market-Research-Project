@@ -3,95 +3,191 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="icon" type="image/svg+xml" href="../images/foodizo-brand-mark.svg"/>
-  <title>Boda Dispatch Queue | Foodizo &amp; Obunuzi</title>
+  <title>Dispatch Dashboard | Foodizo &amp; Obunuzi</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
   <link rel="stylesheet" href="/css/theme_tokens.css" />
   <link rel="stylesheet" href="/css/live_surfaces.css?v=13" />
+  <link rel="stylesheet" href="/css/dispatch_dashboard.css?v=1" />
 </head>
-<body class="ls-body" data-surface="dispatch">
+<body class="ls-body dispatch-dashboard" data-surface="dispatch">
   <a class="ls-skip" href="#main-content">Skip to main content</a>
-  <header class="ls-topbar">
-    <a class="ls-brand" href="/dispatch" data-session-home aria-label="Go to my home surface">
-      <div class="ls-brand-mark">BD</div>
-      <div>
-        <div class="ls-brand-title">Boda Dispatch</div>
-        <div class="ls-brand-sub">Ready orders · rider handoff · review</div>
-      </div>
+  <aside class="dispatch-sidebar" aria-label="Dispatch navigation">
+    <a class="dispatch-brand" href="/dispatch" data-session-home aria-label="Dispatch dashboard home">
+      <img src="/images/foodizo-brand-mark.svg" alt="" />
+      <span><strong>FOODIZO</strong><small>Good Food. Great Mood.</small></span>
     </a>
-    <nav class="ls-topnav" aria-label="Staff surfaces">
-      <a href="/pos">Floor POS</a>
-      <a href="/kds">Kitchen</a>
-      <a href="/dispatch" aria-current="page">Dispatch</a>
-      <a href="/admin">Admin</a>
+    <div class="dispatch-profile">
+      <span class="dispatch-avatar" data-session-initials>--</span>
+      <span><strong data-session-name>Loading…</strong><small data-session-role>Dispatch Officer</small><em><i></i><span id="dispatch-sidebar-live">Connecting</span></em></span>
+    </div>
+    <nav class="dispatch-nav" aria-label="Dispatch workspace">
+      <a class="is-active" href="#dispatch-dashboard" aria-label="Dispatch dashboard"><span class="material-symbols-outlined" aria-hidden="true">moped</span><span>Dispatch Dashboard</span></a>
+      <a href="#dispatch-queue-panel" data-dispatch-nav="active" aria-label="Live orders"><span class="material-symbols-outlined" aria-hidden="true">receipt_long</span><span>Live Orders</span><b id="dispatch-nav-orders">0</b></a>
+      <a href="#dispatch-riders-panel" aria-label="Riders"><span class="material-symbols-outlined" aria-hidden="true">two_wheeler</span><span>Riders</span></a>
+      <a href="#dispatch-zones-panel" aria-label="Delivery zones"><span class="material-symbols-outlined" aria-hidden="true">map</span><span>Delivery Zones</span></a>
+      <a href="#dispatch-map-panel" aria-label="Map view"><span class="material-symbols-outlined" aria-hidden="true">location_on</span><span>Map View</span></a>
+      <button type="button" id="dispatch-export-nav" aria-label="Export dispatch snapshot"><span class="material-symbols-outlined" aria-hidden="true">summarize</span><span>Reports</span></button>
+      <a href="#dispatch-settings" aria-label="Dispatch settings"><span class="material-symbols-outlined" aria-hidden="true">settings</span><span>Settings</span></a>
+      <button class="dispatch-mobile-logout" type="button" data-action="logout" aria-label="Log out"><span class="material-symbols-outlined" aria-hidden="true">logout</span><span>Log out</span></button>
     </nav>
-    <div class="ls-session">
-      <div class="ls-session-copy">
-        <div class="ls-session-name" data-session-name>Loading…</div>
-      </div>
-      <div class="ls-avatar" data-session-initials>--</div>
-      <button class="ls-logout" type="button" data-action="logout">Log out</button>
+    <div class="dispatch-sidebar-promo">
+      <span class="material-symbols-outlined" aria-hidden="true">delivery_dining</span>
+      <strong>Every handoff,<br />right on track.</strong>
+      <small>Wandegeya · Kampala</small>
+    </div>
+    <button class="dispatch-logout" type="button" data-action="logout" aria-label="Log out">
+      <span class="material-symbols-outlined" aria-hidden="true">logout</span><span>Log out</span>
+    </button>
+  </aside>
+
+  <header class="dispatch-topbar">
+    <label class="dispatch-search">
+      <span class="material-symbols-outlined" aria-hidden="true">search</span>
+      <input id="dispatch-search" type="search" placeholder="Search orders, riders or customers…" aria-label="Search dispatch orders, riders or customers" />
+      <kbd>Ctrl K</kbd>
+    </label>
+    <div class="dispatch-topbar-actions">
+      <label class="ls-field dispatch-outlet-wrap" id="dispatch-outlet-wrap" hidden>
+        <span class="sr-only">Outlet</span>
+        <select class="ls-select" id="dispatch-outlet">
+          <option value="FOODIZO_HAM_TOWERS">Foodizo Restaurant</option>
+          <option value="OBUNUZI_YMCA">Obunuzi Restaurant</option>
+        </select>
+      </label>
+      <div class="dispatch-outlet-pill"><i></i><span data-session-outlet>Restaurant</span></div>
+      <button class="dispatch-notification-button" id="dispatch-notifications" type="button" aria-label="Show delivery reviews">
+        <span class="material-symbols-outlined" aria-hidden="true">notifications</span><span id="dispatch-notification-count" hidden></span>
+      </button>
+      <div class="dispatch-clock"><span class="material-symbols-outlined" aria-hidden="true">schedule</span><span id="dispatch-current-time">—</span></div>
+      <button class="dispatch-refresh" id="dispatch-refresh" type="button" aria-label="Refresh dispatch data" title="Refresh now">
+        <span class="material-symbols-outlined" aria-hidden="true">refresh</span>
+      </button>
+      <span class="dispatch-live" id="dispatch-live" data-state="connecting" aria-label="Connecting to live updates">
+        <i></i><span id="dispatch-live-text">Connecting…</span>
+      </span>
     </div>
   </header>
 
-  <main class="ls-main" id="main-content">
-    <div class="ls-page-head dispatch-page-head">
-      <div>
-        <h1 class="ls-title">Boda dispatch queue</h1>
-        <p class="ls-subtitle">Assign riders to ready deliveries and record each delivery outcome.</p>
-      </div>
-    </div>
-
-    <section class="admin-kpis" aria-label="Dispatch summary">
-      <div class="admin-kpi">
-        <div class="admin-kpi-label">Awaiting rider</div>
-        <div class="admin-kpi-value" id="dispatch-awaiting">—</div>
-        <div class="admin-kpi-note">READY delivery orders</div>
-      </div>
-      <div class="admin-kpi">
-        <div class="admin-kpi-label">On the way</div>
-        <div class="admin-kpi-value" id="dispatch-transit">—</div>
-        <div class="admin-kpi-note">Open rider handoffs</div>
-      </div>
-      <div class="admin-kpi">
-        <div class="admin-kpi-label">Needs review</div>
-        <div class="admin-kpi-value" id="dispatch-review-count">—</div>
-        <div class="admin-kpi-note">Failed or refused handoffs</div>
-      </div>
-      <div class="admin-kpi">
-        <div class="admin-kpi-label">Queue value</div>
-        <div class="admin-kpi-value" id="dispatch-value">—</div>
-        <div class="admin-kpi-note">Active delivery order totals</div>
-      </div>
+  <main class="dispatch-main" id="main-content">
+    <section class="dispatch-page-heading" id="dispatch-dashboard">
+      <div class="dispatch-heading-icon"><span class="material-symbols-outlined" aria-hidden="true">moped</span></div>
+      <div><h1>Delivery Dispatch</h1><p>Track ready orders, assign riders and record delivery outcomes.</p></div>
     </section>
 
-    <div class="dispatch-layout">
-      <section class="ls-card">
-        <div class="ls-card-head">
-          <div>
-            <div class="ls-card-title">Active dispatch queue</div>
-            <div class="ls-card-sub" id="dispatch-active-sub">Loading READY delivery orders…</div>
-          </div>
+    <section class="dispatch-kpis" aria-label="Live dispatch summary">
+      <article class="dispatch-kpi is-green">
+        <span class="dispatch-kpi-icon material-symbols-outlined" aria-hidden="true">inventory_2</span>
+        <div><small>Active Deliveries</small><strong id="dispatch-total">—</strong><span>Ready for rider handoff</span></div>
+      </article>
+      <article class="dispatch-kpi is-amber">
+        <span class="dispatch-kpi-icon material-symbols-outlined" aria-hidden="true">schedule</span>
+        <div><small>Pending Dispatch</small><strong id="dispatch-awaiting">—</strong><span>Awaiting a rider</span></div>
+      </article>
+      <article class="dispatch-kpi is-purple">
+        <span class="dispatch-kpi-icon material-symbols-outlined" aria-hidden="true">near_me</span>
+        <div><small>In Transit</small><strong id="dispatch-transit">—</strong><span>Open rider handoffs</span></div>
+      </article>
+      <article class="dispatch-kpi is-red">
+        <span class="dispatch-kpi-icon material-symbols-outlined" aria-hidden="true">report_problem</span>
+        <div><small>Needs Review</small><strong id="dispatch-review-count">—</strong><span>Failed or returned deliveries</span></div>
+      </article>
+    </section>
+
+    <div class="dispatch-primary-grid">
+      <section class="dispatch-panel dispatch-map-panel" id="dispatch-map-panel" aria-labelledby="dispatch-map-title">
+        <div class="dispatch-panel-heading">
+          <div><h2 id="dispatch-map-title"><i class="dispatch-heading-dot"></i>Delivery destinations</h2><p id="dispatch-map-summary">GPS points from active delivery orders</p></div>
+          <label class="dispatch-zone-filter"><span class="sr-only">Filter map and queue by zone</span><select id="dispatch-zone-filter"><option value="all">All zones</option></select></label>
         </div>
-        <div class="dispatch-queue" id="dispatch-active">
-          <div class="ls-loading">Loading active queue…</div>
+        <div class="dispatch-map-canvas" id="dispatch-map-canvas" aria-label="Schematic map of customer delivery destinations">
+          <div class="dispatch-map-grid" aria-hidden="true"></div>
+          <div class="dispatch-map-road dispatch-map-road-a" aria-hidden="true"></div>
+          <div class="dispatch-map-road dispatch-map-road-b" aria-hidden="true"></div>
+          <div class="dispatch-map-markers" id="dispatch-map-markers"></div>
+          <div class="dispatch-map-empty" id="dispatch-map-empty" hidden></div>
+          <span class="dispatch-map-caption">Customer GPS destinations · schematic view, not live rider tracking</span>
+        </div>
+        <div class="dispatch-map-legend">
+          <span><i class="is-order"></i>Delivery destination</span>
+          <span><i class="is-pending"></i>Awaiting rider</span>
+          <span><i class="is-transit"></i>Rider assigned</span>
+          <span class="dispatch-map-count" id="dispatch-map-count">0 destinations</span>
         </div>
       </section>
 
-      <section class="ls-card">
-        <div class="ls-card-head">
-          <div>
-            <div class="ls-card-title">Failed-delivery review</div>
-            <div class="ls-card-sub" id="dispatch-review-sub">Unreviewed handoff exceptions</div>
-          </div>
+      <section class="dispatch-panel dispatch-queue-panel" id="dispatch-queue-panel" aria-labelledby="dispatch-queue-title">
+        <div class="dispatch-panel-heading">
+          <div><h2 id="dispatch-queue-title"><i class="dispatch-heading-dot"></i>Live delivery queue</h2><p id="dispatch-active-sub">Loading delivery orders…</p></div>
+          <button class="dispatch-export-button" type="button" id="dispatch-export" title="Download a CSV snapshot of the current queue"><span class="material-symbols-outlined" aria-hidden="true">download</span><span>Export</span></button>
         </div>
-        <div class="dispatch-queue" id="dispatch-review">
+        <div class="dispatch-queue-tabs" role="tablist" aria-label="Delivery queue views">
+          <button class="is-active" type="button" id="dispatch-active-tab" role="tab" aria-selected="true" aria-controls="dispatch-active">Active <span id="dispatch-active-count">0</span></button>
+          <button type="button" id="dispatch-review-tab" role="tab" aria-selected="false" aria-controls="dispatch-review">Needs review <span id="dispatch-review-tab-count">0</span></button>
+        </div>
+        <p id="dispatch-review-sub" class="sr-only">Unreviewed delivery exceptions</p>
+        <div class="dispatch-queue" id="dispatch-active" role="tabpanel" aria-labelledby="dispatch-active-tab">
+          <div class="ls-loading">Loading active queue…</div>
+        </div>
+        <div class="dispatch-queue" id="dispatch-review" role="tabpanel" aria-labelledby="dispatch-review-tab" hidden>
           <div class="ls-loading">Loading review queue…</div>
         </div>
       </section>
     </div>
+
+    <div class="dispatch-secondary-grid">
+      <section class="dispatch-panel dispatch-riders-panel" id="dispatch-riders-panel" aria-labelledby="dispatch-riders-title">
+        <div class="dispatch-panel-heading">
+          <div><h2 id="dispatch-riders-title"><i class="dispatch-heading-dot"></i>Riders on delivery</h2><p id="dispatch-riders-sub">Current open rider handoffs</p></div>
+          <span class="dispatch-panel-action-label" id="dispatch-rider-count">0 active</span>
+        </div>
+        <div class="dispatch-rider-list" id="dispatch-riders"><div class="ls-loading">Loading assigned riders…</div></div>
+        <p class="dispatch-panel-footnote">Rider availability and GPS tracking are not collected by this system.</p>
+      </section>
+
+      <section class="dispatch-panel dispatch-snapshot-panel" id="dispatch-settings" aria-labelledby="dispatch-snapshot-title">
+        <div class="dispatch-panel-heading">
+          <div><h2 id="dispatch-snapshot-title"><i class="dispatch-heading-dot"></i>Queue snapshot</h2><p>Current operational totals · not daily delivery stats</p></div>
+          <span class="material-symbols-outlined dispatch-panel-title-icon" aria-hidden="true">analytics</span>
+        </div>
+        <div class="dispatch-snapshot-content">
+          <div class="dispatch-snapshot-value"><span>Active queue value</span><strong class="ls-money" id="dispatch-value">UGX —</strong></div>
+          <div class="dispatch-snapshot-metrics">
+            <div><strong id="dispatch-snapshot-gps">0</strong><span>GPS locations</span></div>
+            <div><strong id="dispatch-snapshot-oldest">—</strong><span>Oldest waiting</span></div>
+            <div><strong id="dispatch-snapshot-zones">0</strong><span>Active zones</span></div>
+          </div>
+          <div class="dispatch-settings-row">
+            <label for="dispatch-refresh-rate">Auto-refresh</label>
+            <select id="dispatch-refresh-rate" class="ls-select">
+              <option value="30">Every 30 seconds</option>
+              <option value="60" selected>Every minute</option>
+              <option value="120">Every 2 minutes</option>
+            </select>
+          </div>
+          <button class="dispatch-report-button" type="button" id="dispatch-export-report"><span class="material-symbols-outlined" aria-hidden="true">summarize</span>Export current dispatch snapshot</button>
+        </div>
+      </section>
+
+      <section class="dispatch-panel dispatch-activity-panel" aria-labelledby="dispatch-activity-title">
+        <div class="dispatch-panel-heading">
+          <div><h2 id="dispatch-activity-title"><i class="dispatch-heading-dot"></i>Dispatch pulse</h2><p>Latest state in the live queue</p></div>
+          <span class="dispatch-live-label"><i></i>Live</span>
+        </div>
+        <div class="dispatch-activity-list" id="dispatch-activity"><div class="ls-loading">Loading queue activity…</div></div>
+      </section>
+    </div>
+
+    <section class="dispatch-panel dispatch-zones-panel" id="dispatch-zones-panel" aria-labelledby="dispatch-zones-title">
+      <div class="dispatch-panel-heading">
+        <div><h2 id="dispatch-zones-title"><i class="dispatch-heading-dot"></i>Delivery zones</h2><p id="dispatch-zones-sub">Outlet service areas and delivery fees</p></div>
+        <span class="material-symbols-outlined dispatch-panel-title-icon" aria-hidden="true">map</span>
+      </div>
+      <div class="dispatch-zone-list" id="dispatch-zones"><div class="ls-loading">Loading delivery zones…</div></div>
+    </section>
+    <p class="dispatch-bottom-note"><span class="material-symbols-outlined" aria-hidden="true">verified</span><span>Handoffs are recorded to the order audit trail. Dashboard totals reflect the current queue only.</span><span id="dispatch-updated">Not refreshed yet</span></p>
   </main>
 
   <div class="ls-modal" id="dispatch-assign-modal" hidden>
@@ -160,46 +256,7 @@
     </div>
   </div>
 
-  <footer class="ls-footer" aria-label="Site footer">
-    <div class="ls-footer-inner">
-      <div class="ls-footer-brand">
-        <span class="ls-footer-mark" aria-hidden="true">BD</span>
-        <div>
-          <strong>Foodizo &amp; Obunuzi</strong>
-          <span>Wandegeya dining corridor · Kampala</span>
-        </div>
-      </div>
-      <nav class="ls-footer-nav" aria-label="Outlet locations">
-        <a href="https://www.google.com/maps/search/?api=1&amp;query=Ham+Towers+Wandegeya+Kampala" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
-          Foodizo · Ham Towers
-        </a>
-        <a href="https://www.google.com/maps/search/?api=1&amp;query=YMCA+Wandegeya+Kampala" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
-          Obunuzi · Opp. YMCA
-        </a>
-      </nav>
-      <div class="ls-footer-actions">
-        <button class="ls-footer-action" type="button" data-action="check-health" title="Check the live API health">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l2.4-6 4.2 12 2.1-6H21"/></svg>
-          <span data-health-label>API status</span>
-        </button>
-        <button class="ls-footer-action" type="button" data-action="scroll-top" title="Back to top">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
-          <span>Top</span>
-        </button>
-        <button class="ls-footer-action" type="button" data-action="logout" title="End this staff session">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>
-          <span>Log out</span>
-        </button>
-      </div>
-    </div>
-    <div class="ls-footer-meta dispatch-footer-meta">
-      <span>© 2026 Foodizo &amp; Obunuzi</span>
-    </div>
-  </footer>
-
   <script src="/js/api.js"></script>
-  <script src="/js/dispatch.js?v=5"></script>
+  <script src="/js/dispatch.js?v=6"></script>
 </body>
 </html>
