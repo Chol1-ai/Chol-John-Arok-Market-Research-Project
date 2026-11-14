@@ -13,7 +13,8 @@
     staffBusy: false,
     menuBusy: false,
     inventoryBusy: false,
-    inventory: null
+    inventory: null,
+    dismissedStockMovements: new Set()
   };
 
   const els = {
@@ -23,7 +24,6 @@
     refresh: document.getElementById('admin-refresh'),
     updated: document.getElementById('admin-updated'),
     live: document.getElementById('admin-live'),
-    liveText: document.getElementById('admin-live-text'),
     notification: document.getElementById('admin-notification'),
     notificationCount: document.getElementById('admin-notification-count'),
     clearAlerts: document.getElementById('admin-clear-alerts'),
@@ -66,6 +66,9 @@
     inventoryRefresh: document.getElementById('admin-inventory-refresh'),
     inventoryBody: document.getElementById('admin-inventory-body'),
     stockActivity: document.getElementById('admin-stock-activity'),
+    stockActivitySummary: document.getElementById('admin-stock-activity-summary'),
+    clearStockActivity: document.getElementById('admin-clear-stock-activity'),
+    restoreStockActivity: document.getElementById('admin-restore-stock-activity'),
     stockForm: document.getElementById('admin-stock-form'),
     stockOutlet: document.getElementById('admin-stock-outlet'),
     stockItem: document.getElementById('admin-stock-item'),
@@ -92,15 +95,36 @@
   };
 
   function setLiveState(state) {
-    if (!els.live || !els.liveText) return;
+    if (!els.live) return;
 
     const labels = {
-      connecting: 'Connecting…',
-      online: 'Live updates on',
-      offline: 'Reconnecting…'
+      connecting: 'Connecting to live updates',
+      online: 'Live updates connected',
+      offline: 'Reconnecting to live updates'
     };
     els.live.dataset.state = state;
-    els.liveText.textContent = labels[state] || state;
+    els.live.setAttribute('aria-label', labels[state] || state);
+    els.live.title = labels[state] || state;
+  }
+
+  function renderManagerView() {
+    const hash = window.location.hash;
+    const view = ['#manager-inventory', '#admin-inventory-section'].includes(hash)
+      ? 'inventory'
+      : ['#manager-procurement', '#admin-procurement-section'].includes(hash)
+        ? 'procurement'
+        : 'dashboard';
+    document.body.dataset.managerView = view;
+
+    document.querySelectorAll('.manager-nav a').forEach((link) => {
+      link.classList.toggle(
+        'is-active',
+        (view === 'dashboard' && link.hash === '#manager-overview') ||
+          (view === 'inventory' && link.hash === '#manager-inventory')
+      );
+    });
+
+    if (view !== 'dashboard') window.scrollTo(0, 0);
   }
 
   function outletLabel(outlet) {
@@ -266,6 +290,168 @@
     document.querySelectorAll('.manager-searchable').forEach((row) => {
       row.hidden = Boolean(query) && !row.textContent.toLocaleLowerCase().includes(query);
     });
+  }
+
+  function stockActivityStorageKey() {
+    const managerId = STATE.user?.id || STATE.user?.userId || STATE.user?.fullName || 'manager';
+    return `foodizo.manager.stock-activity.dismissed.${encodeURIComponent(managerId)}`;
+  }
+
+  function loadDismissedStockMovements() {
+    let raw;
+    try {
+      raw = window.localStorage.getItem(stockActivityStorageKey());
+    } catch (_error) {
+      F.toast('Saved activity preferences are unavailable in this browser.', 'error');
+      return;
+    }
+    if (!raw) return;
+
+    try {
+      const ids = JSON.parse(raw);
+      if (!Array.isArray(ids) || ids.some((id) => typeof id !== 'string')) {
+        throw new Error('Invalid activity preference data.');
+      }
+      STATE.dismissedStockMovements = new Set(ids);
+    } catch (_error) {
+      F.toast('Saved activity preferences could not be read; no records were hidden.', 'error');
+    }
+  }
+
+  function saveDismissedStockMovements() {
+    try {
+      window.localStorage.setItem(
+        stockActivityStorageKey(),
+        JSON.stringify([...STATE.dismissedStockMovements])
+      );
+      return true;
+    } catch (_error) {
+      F.toast('The activity view changed, but this browser could not save that preference.', 'error');
+      return false;
+    }
+  }
+
+  function renderStockActivity(movements) {
+    const recent = movements.slice(0, 15);
+    const visible = recent.filter(
+      (movement) => !STATE.dismissedStockMovements.has(movement.id)
+    );
+    const typeDetails = {
+      STOCK_COUNT: { label: 'Stock count', icon: 'inventory_2', tone: 'count' },
+      MANUAL_USAGE: { label: 'Kitchen use', icon: 'soup_kitchen', tone: 'usage' },
+      SALES_USAGE: { label: 'Sales usage', icon: 'receipt_long', tone: 'sales' },
+      SUPPLIER_RECEIPT: { label: 'Supplier receipt', icon: 'local_shipping', tone: 'receipt' }
+    };
+
+    els.stockActivitySummary.textContent = recent.length
+      ? `${visible.length} of ${recent.length} recent movements shown`
+      : 'No inventory changes recorded yet';
+    els.clearStockActivity.disabled = visible.length === 0;
+    els.restoreStockActivity.hidden = STATE.dismissedStockMovements.size === 0;
+
+    if (!recent.length) {
+      els.stockActivity.innerHTML = `
+        <div class="manager-stock-activity-empty">
+          <span class="material-symbols-outlined" aria-hidden="true">inventory_2</span>
+          <strong>No stock activity yet</strong>
+          <span>Counts, kitchen use, sales, and supplier receipts will appear here.</span>
+        </div>`;
+      return;
+    }
+
+    if (!visible.length) {
+      els.stockActivity.innerHTML = `
+        <div class="manager-stock-activity-empty">
+          <span class="material-symbols-outlined" aria-hidden="true">visibility_off</span>
+          <strong>Recent activity cleared from this view</strong>
+          <span>Your stock ledger and audit history are unchanged.</span>
+        </div>`;
+      return;
+    }
+
+    const groups = new Map();
+    visible.forEach((movement) => {
+      const date = String(movement.businessDate || '').slice(0, 10) || 'unknown';
+      if (!groups.has(date)) groups.set(date, []);
+      groups.get(date).push(movement);
+    });
+
+    els.stockActivity.innerHTML = [...groups.entries()].map(([date, group]) => `
+      <section class="manager-stock-day-group">
+        <div class="manager-stock-day-heading">
+          <strong>${date === 'unknown' ? 'Date unavailable' : F.escapeHtml(F.formatDate(`${date}T12:00:00Z`))}</strong>
+          <span>${group.length} ${group.length === 1 ? 'update' : 'updates'}</span>
+        </div>
+        <div class="manager-stock-day-items">
+          ${group.map((movement) => {
+            const details = typeDetails[movement.type] || {
+              label: String(movement.type || 'Stock update').replace(/_/g, ' '),
+              icon: 'history',
+              tone: 'count'
+            };
+            const amount = Number(movement.quantityChange);
+            const signedAmount = `${amount > 0 ? '+' : ''}${amount.toLocaleString('en-UG')}`;
+            const unit = inventoryUnitLabel(movement.unitOfMeasure);
+            const byline = [movement.recordedBy, movement.note].filter(Boolean).join(' · ');
+            return `
+              <article class="manager-activity-card manager-searchable">
+                <span class="manager-activity-icon is-${details.tone}">
+                  <span class="material-symbols-outlined" aria-hidden="true">${details.icon}</span>
+                </span>
+                <div class="manager-activity-copy">
+                  <div class="manager-activity-title">
+                    <strong>${F.escapeHtml(movement.itemName)}</strong>
+                    <span class="manager-activity-type is-${details.tone}">${F.escapeHtml(details.label)}</span>
+                  </div>
+                  <div class="manager-activity-meta">
+                    <span>${F.escapeHtml(outletLabel(movement.outlet))}</span>
+                    <span aria-hidden="true">·</span>
+                    <span>${F.escapeHtml(F.relativeTime(movement.createdAt))}</span>
+                    ${byline ? `<span class="manager-activity-byline">${F.escapeHtml(byline)}</span>` : ''}
+                  </div>
+                </div>
+                <div class="manager-activity-quantity ${amount < 0 ? 'is-negative' : 'is-positive'}">
+                  <strong>${F.escapeHtml(signedAmount)} ${F.escapeHtml(unit)}</strong>
+                  <small>On hand <b>${Number(movement.stockAfter).toLocaleString('en-UG')} ${F.escapeHtml(unit)}</b></small>
+                </div>
+                <button class="manager-activity-dismiss" type="button"
+                  data-dismiss-stock-movement="${F.escapeHtml(movement.id)}"
+                  aria-label="Hide ${F.escapeHtml(movement.itemName)} ${F.escapeHtml(details.label)} from this view"
+                  title="Hide from this view">
+                  <span class="material-symbols-outlined" aria-hidden="true">close</span>
+                </button>
+              </article>`;
+          }).join('')}
+        </div>
+      </section>`).join('');
+    applyDashboardSearch();
+  }
+
+  function clearRecentStockActivity() {
+    const recent = (STATE.inventory?.movements || []).slice(0, 15);
+    recent.forEach((movement) => STATE.dismissedStockMovements.add(movement.id));
+    const saved = saveDismissedStockMovements();
+    renderStockActivity(STATE.inventory?.movements || []);
+    if (saved) {
+      F.toast('Recent activity hidden from this dashboard. Audit records are preserved.', 'success');
+    }
+  }
+
+  function restoreStockActivity() {
+    STATE.dismissedStockMovements.clear();
+    const saved = saveDismissedStockMovements();
+    renderStockActivity(STATE.inventory?.movements || []);
+    if (saved) F.toast('Recent stock activity restored in this view.', 'success');
+  }
+
+  function dismissStockMovement(id) {
+    if (!id) return;
+    STATE.dismissedStockMovements.add(id);
+    const saved = saveDismissedStockMovements();
+    renderStockActivity(STATE.inventory?.movements || []);
+    if (saved) {
+      F.toast('Activity hidden from this dashboard. The audit record is preserved.', 'success');
+    }
   }
 
   function renderOutlets() {
@@ -910,25 +1096,7 @@
         }).join('')
       : '<tr><td colspan="5" class="ls-help">No raw ingredients yet. Add one below to start tracking stock.</td></tr>';
 
-    const movements = STATE.inventory?.movements || [];
-    els.stockActivity.innerHTML = movements.length
-      ? movements.slice(0, 15).map((movement) => {
-          const labels = {
-            STOCK_COUNT: 'Opening / stock count',
-            MANUAL_USAGE: 'Stock taken / used',
-            SALES_USAGE: 'Recipe usage from sales',
-            SUPPLIER_RECEIPT: 'Supplier delivery received'
-          };
-          const amount = Number(movement.quantityChange);
-          const signed = amount > 0 ? '+' : '';
-          const businessDate = String(movement.businessDate || '').slice(0, 10);
-          const details = [movement.recordedBy, movement.note].filter(Boolean).join(' · ');
-          return `<div class="admin-supplier-order-line">
-            <span><strong>${F.escapeHtml(movement.itemName)}</strong> · ${F.escapeHtml(labels[movement.type] || movement.type)} · ${F.escapeHtml(outletLabel(movement.outlet))}</span>
-            <span>${signed}${amount.toLocaleString()} ${F.escapeHtml(inventoryUnitLabel(movement.unitOfMeasure))} · on hand ${Number(movement.stockAfter).toLocaleString()} · business date ${F.escapeHtml(businessDate)} · ${F.escapeHtml(F.relativeTime(movement.createdAt))}${details ? `<br>${F.escapeHtml(details)}` : ''}</span>
-          </div>`;
-        }).join('')
-      : '<div class="ls-empty">No stock changes recorded yet.</div>';
+    renderStockActivity(STATE.inventory?.movements || []);
 
     renderSupplierOrders();
     updateInventorySelectors();
@@ -1398,6 +1566,7 @@
 
   function wireEvents() {
     els.search.addEventListener('input', applyDashboardSearch);
+    window.addEventListener('hashchange', renderManagerView);
     window.addEventListener('keydown', (event) => {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
         event.preventDefault();
@@ -1409,6 +1578,12 @@
       loadInventory().then(() => F.toast('Kitchen stock refreshed.', 'success')).catch((error) => {
         F.toast(error.message || 'Kitchen stock could not be refreshed.', 'error');
       });
+    });
+    els.clearStockActivity.addEventListener('click', clearRecentStockActivity);
+    els.restoreStockActivity.addEventListener('click', restoreStockActivity);
+    els.stockActivity.addEventListener('click', (event) => {
+      const dismissButton = event.target.closest('[data-dismiss-stock-movement]');
+      if (dismissButton) dismissStockMovement(dismissButton.dataset.dismissStockMovement);
     });
     els.stockForm.addEventListener('submit', submitStockUpdate);
     els.stockAction.addEventListener('change', () => {
@@ -1535,6 +1710,8 @@
     const user = await F.guard(['MANAGER_ADMIN']);
     if (!user) return;
     STATE.user = user;
+    loadDismissedStockMovements();
+    renderManagerView();
     F.fillSessionChrome(user);
     wireEvents();
 
