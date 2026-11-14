@@ -881,7 +881,7 @@
       position: relative;
       isolation: isolate;
       perspective: 900px;
-      height: clamp(250px, 28vw, 300px);
+      height: clamp(320px, 34vw, 390px);
       margin: 0;
       padding: 0;
       overflow: hidden;
@@ -898,77 +898,127 @@
       pointer-events: none;
     }
 
-    .customer-hero-falling-stage {
+    .customer-hero-man-scene {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+
+    .customer-hero-man-scene::before {
+      position: absolute;
+      bottom: -16%;
+      left: 44%;
+      width: min(48vw, 560px);
+      height: 118%;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at 50% 70%, rgba(219, 112, 48, .24), rgba(164, 83, 39, .1) 42%, transparent 72%);
+      content: "";
+      filter: blur(18px);
+      transform: translateX(-50%);
+    }
+
+    .customer-hero-man-art {
+      position: absolute;
+      bottom: 12px;
+      left: 39%;
+      display: block;
+      height: 82%;
+      width: auto;
+      max-width: min(44vw, 560px);
+      object-fit: contain;
+      object-position: center bottom;
+      transform: translateX(-50%);
+      filter: drop-shadow(0 10px 18px rgba(0, 0, 0, .24));
+    }
+
+    .customer-hero-burger-build {
       position: absolute;
       top: 0;
-      left: clamp(0px, 1vw, 18px);
-      display: grid;
-      width: clamp(240px, 54vw, 520px);
-      height: 100%;
-      place-items: center;
-      animation: hero-ingredients-fall 4.2s ease-in-out infinite;
-    }
-
-    .customer-hero-falling-art {
-      display: block;
-      width: clamp(220px, 38vw, 360px);
-      height: auto;
-      max-width: 100%;
-      border-radius: 14px;
-      object-fit: contain;
-      filter: drop-shadow(0 12px 18px rgba(0, 0, 0, .28));
-    }
-
-    .customer-hero-burger {
-      position: absolute;
-      top: 50%;
-      right: clamp(12px, 7vw, 90px);
+      left: clamp(76%, 80vw, 86%);
       z-index: 2;
-      display: block;
-      width: auto;
-      height: clamp(150px, 22vw, 230px);
-      max-width: min(230px, 42vw);
-      object-fit: contain;
-      mix-blend-mode: lighten;
-      filter: drop-shadow(0 14px 18px rgba(0, 0, 0, .34));
-      transform: translateY(-50%);
-      animation: hero-burger-turn 9s ease-in-out infinite;
+      width: clamp(210px, 27vw, 340px);
+      height: 100%;
+      transform: translateX(-50%) scale(.9);
+      transform-origin: bottom center;
+      pointer-events: none;
+      animation: hero-burger-float 5.4s ease-in-out infinite;
     }
 
-    .customer-hero-sauce-drip {
+    .customer-hero-burger-build::before {
       position: absolute;
-      top: 74%;
-      width: 8px;
-      height: 14px;
-      border-radius: 35% 35% 55% 55%;
-      background: linear-gradient(90deg, #d95d08, #ffae2c 48%, #e96d08);
-      box-shadow: 0 0 8px rgba(255, 142, 24, .42);
-      transform-origin: top center;
-      animation: hero-sauce-drip 2.8s ease-in infinite;
-    }
-
-    .customer-hero-sauce-drip::after {
-      position: absolute;
-      bottom: -3px;
+      top: 52%;
       left: 50%;
-      width: 8px;
-      height: 9px;
-      border-radius: 55% 45% 60% 40%;
-      background: inherit;
+      width: 100%;
+      height: 76%;
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(255, 171, 69, .2), rgba(255, 171, 69, .06) 42%, transparent 72%);
       content: "";
-      transform: translateX(-50%) rotate(45deg);
+      filter: blur(14px);
+      transform: translate(-50%, -50%);
     }
 
-    .customer-hero-sauce-drip--one {
-      right: calc(clamp(12px, 7vw, 90px) + clamp(86px, 13vw, 150px));
-      animation-delay: -.6s;
+    .customer-hero-burger-piece {
+      position: absolute;
+      bottom: var(--piece-bottom);
+      left: 50%;
+      z-index: var(--piece-layer);
+      display: block;
+      width: var(--piece-width);
+      height: auto;
+      opacity: 0;
+      transform: translateX(-50%);
+      filter: drop-shadow(0 7px 8px rgba(0, 0, 0, .2));
+      animation: hero-burger-piece-drop 4s cubic-bezier(.18, .72, .24, 1) 0s 1 both;
+      animation-delay: var(--piece-delay);
+      will-change: transform, opacity;
     }
 
-    .customer-hero-sauce-drip--two {
-      right: calc(clamp(12px, 7vw, 90px) + clamp(42px, 6vw, 80px));
-      width: 6px;
-      height: 11px;
-      animation-delay: -1.7s;
+    .customer-hero-burger-piece--base {
+      --piece-bottom: 12px;
+      --piece-width: clamp(132px, 15vw, 182px);
+      --piece-delay: 0s;
+      --piece-layer: 1;
+      --start-angle: 9deg;
+    }
+
+    .customer-hero-burger-piece--cheese {
+      --piece-bottom: 49px;
+      --piece-width: clamp(146px, 17.5vw, 198px);
+      --piece-delay: .2s;
+      --piece-layer: 2;
+      --start-angle: -12deg;
+    }
+
+    .customer-hero-burger-piece--onion {
+      --piece-bottom: 94px;
+      --piece-width: clamp(138px, 16vw, 188px);
+      --piece-delay: .4s;
+      --piece-layer: 3;
+      --start-angle: 10deg;
+    }
+
+    .customer-hero-burger-piece--tomato {
+      --piece-bottom: 102px;
+      --piece-width: clamp(120px, 14vw, 165px);
+      --piece-delay: .6s;
+      --piece-layer: 4;
+      --start-angle: -8deg;
+    }
+
+    .customer-hero-burger-piece--lettuce {
+      --piece-bottom: 125px;
+      --piece-width: clamp(154px, 19vw, 210px);
+      --piece-delay: .8s;
+      --piece-layer: 5;
+      --start-angle: 14deg;
+    }
+
+    .customer-hero-burger-piece--top-bun {
+      --piece-bottom: 142px;
+      --piece-width: clamp(132px, 15.5vw, 180px);
+      --piece-delay: 1s;
+      --piece-layer: 6;
+      --start-angle: -11deg;
     }
 
     @keyframes empty-hero-in {
@@ -983,61 +1033,42 @@
       }
     }
 
-    @keyframes hero-burger-turn {
-      from {
-        transform: translateY(-50%) rotateY(-7deg) rotateZ(-1deg) translateY(3px);
+    @keyframes hero-burger-piece-drop {
+      0%,
+      4% {
+        opacity: 0;
+        transform: translate3d(-50%, -190px, 0) rotate(var(--start-angle)) scale(.84);
+      }
+
+      14% {
+        opacity: 1;
+        transform: translate3d(-50%, -90px, 0) rotate(var(--start-angle)) scale(.95);
+      }
+
+      36% {
+        opacity: 1;
+        transform: translate3d(-50%, 2px, 0) rotate(0) scale(1.02);
+      }
+
+      43% {
+        transform: translate3d(-50%, -1px, 0) rotate(0) scale(.99);
+      }
+
+      48%,
+      100% {
+        opacity: 1;
+        transform: translate3d(-50%, 0, 0) rotate(0) scale(1);
+      }
+    }
+
+    @keyframes hero-burger-float {
+      0%,
+      100% {
+        transform: translate(-50%, 0) scale(.9);
       }
 
       50% {
-        transform: translateY(-50%) rotateY(7deg) rotateZ(1deg) translateY(-3px);
-      }
-
-      to {
-        transform: translateY(-50%) rotateY(-7deg) rotateZ(-1deg) translateY(3px);
-      }
-    }
-
-    @keyframes hero-ingredients-fall {
-      0% {
-        opacity: 0;
-        transform: translateY(-14px);
-      }
-
-      15% {
-        opacity: 1;
-      }
-
-      76% {
-        opacity: 1;
-        transform: translateY(12px);
-      }
-
-      92%,
-      100% {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-    }
-
-    @keyframes hero-sauce-drip {
-      0%,
-      12% {
-        height: 7px;
-        opacity: .3;
-        transform: scaleY(.7);
-      }
-
-      55% {
-        height: 25px;
-        opacity: .95;
-        transform: scaleY(1);
-      }
-
-      78%,
-      100% {
-        height: 8px;
-        opacity: 0;
-        transform: translateY(12px) scaleY(.7);
+        transform: translate(-50%, -5px) scale(.9);
       }
     }
 
@@ -1132,9 +1163,13 @@
         animation: none;
       }
 
-      .customer-hero-burger,
-      .customer-hero-falling-stage,
-      .customer-hero-sauce-drip {
+      .customer-hero-burger-piece {
+        opacity: 1;
+        animation: none;
+        transform: translateX(-50%);
+      }
+
+      .customer-hero-burger-build {
         animation: none;
       }
 
@@ -1147,27 +1182,54 @@
     }
 
     @media (max-width: 700px) {
-      .customer-hero-falling-stage {
-        left: -18px;
-        width: min(270px, 68vw);
+      .customer-hero-empty {
+        height: clamp(280px, 72vw, 320px);
       }
 
-      .customer-hero-falling-art {
-        width: min(310px, 58vw);
+      .customer-hero-man-art {
+        left: 18%;
+        height: 82%;
+        max-width: 80vw;
       }
 
-      .customer-hero-burger {
-        right: 6px;
-        height: clamp(145px, 40vw, 180px);
-        max-width: 44vw;
+      .customer-hero-man-scene::before {
+        left: 27%;
+        width: 76vw;
       }
 
-      .customer-hero-sauce-drip--one {
-        right: calc(6px + 90px);
+      .customer-hero-burger-build {
+        left: 82%;
+        width: 120px;
       }
 
-      .customer-hero-sauce-drip--two {
-        right: calc(6px + 48px);
+      .customer-hero-burger-piece--base {
+        --piece-bottom: 12px;
+        width: 108px;
+      }
+
+      .customer-hero-burger-piece--cheese {
+        --piece-bottom: 42px;
+        width: 118px;
+      }
+
+      .customer-hero-burger-piece--onion {
+        --piece-bottom: 77px;
+        width: 114px;
+      }
+
+      .customer-hero-burger-piece--tomato {
+        --piece-bottom: 87px;
+        width: 100px;
+      }
+
+      .customer-hero-burger-piece--lettuce {
+        --piece-bottom: 106px;
+        width: 128px;
+      }
+
+      .customer-hero-burger-piece--top-bun {
+        --piece-bottom: 136px;
+        width: 118px;
       }
 
       .home-category-grid {
@@ -1516,12 +1578,17 @@
 
   <section class="customer-hero customer-hero-empty" aria-hidden="true">
     <div class="customer-hero-food">
-      <div class="customer-hero-falling-stage">
-        <img class="customer-hero-falling-art" src="../images/hero-burger-explosion.png" alt="" />
+      <div class="customer-hero-man-scene">
+        <img class="customer-hero-man-art" src="../images/hero-man-cutout.png" alt="" />
       </div>
-      <img class="customer-hero-burger" src="../images/landing-burger-dripping.png" alt="" />
-      <span class="customer-hero-sauce-drip customer-hero-sauce-drip--one"></span>
-      <span class="customer-hero-sauce-drip customer-hero-sauce-drip--two"></span>
+      <div class="customer-hero-burger-build">
+        <img class="customer-hero-burger-piece customer-hero-burger-piece--base" src="../images/hero-pieces/burger-base.png" alt="" />
+        <img class="customer-hero-burger-piece customer-hero-burger-piece--cheese" src="../images/hero-pieces/burger-cheese.png" alt="" />
+        <img class="customer-hero-burger-piece customer-hero-burger-piece--onion" src="../images/hero-pieces/burger-onion.png" alt="" />
+        <img class="customer-hero-burger-piece customer-hero-burger-piece--tomato" src="../images/hero-pieces/burger-tomato.png" alt="" />
+        <img class="customer-hero-burger-piece customer-hero-burger-piece--lettuce" src="../images/hero-pieces/burger-lettuce.png" alt="" />
+        <img class="customer-hero-burger-piece customer-hero-burger-piece--top-bun" src="../images/hero-pieces/burger-top-bun.png" alt="" />
+      </div>
     </div>
   </section>
 
