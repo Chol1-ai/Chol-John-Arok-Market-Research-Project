@@ -559,28 +559,6 @@ input:focus-visible {
   stroke-width: 1.8;
 }
 
-.login-card-note {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.55rem;
-  margin-top: 1.1rem;
-  color: var(--login-muted);
-  font-size: 0.69rem;
-  line-height: 1.45;
-}
-
-.login-card-note svg {
-  width: 15px;
-  height: 15px;
-  flex: 0 0 auto;
-  margin-top: 1px;
-  fill: none;
-  stroke: #738178;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.8;
-}
-
 .login-footer {
   display: flex;
   min-height: 52px;
@@ -753,7 +731,7 @@ input:focus-visible {
   justify-content: flex-start;
   gap: 1.75rem;
   overflow: hidden;
-  padding: clamp(2rem, 5vw, 5rem);
+  padding: clamp(1.75rem, 4vw, 4rem);
   background-color: #211f1b;
   color: #fff;
   isolation: isolate;
@@ -773,19 +751,10 @@ input:focus-visible {
   max-width: 560px;
 }
 
-.login-visual-eyebrow {
-  margin: 0 0 1rem;
-  color: #ffb02e;
-  font-size: .72rem;
-  font-weight: 800;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-}
-
 .login-visual-copy h1 {
-  max-width: 540px;
+  max-width: 500px;
   margin: 0;
-  font-size: clamp(2.4rem, 4.7vw, 4.4rem);
+  font-size: clamp(2.1rem, 3.8vw, 3.7rem);
   font-weight: 760;
   letter-spacing: -.06em;
   line-height: .98;
@@ -793,10 +762,10 @@ input:focus-visible {
 }
 
 .login-visual-copy > p:last-child {
-  max-width: 420px;
-  margin: 1rem 0 0;
+  max-width: 390px;
+  margin: .8rem 0 0;
   color: rgba(255, 255, 255, .84);
-  font-size: 1rem;
+  font-size: .92rem;
   line-height: 1.65;
 }
 
@@ -805,12 +774,14 @@ input:focus-visible {
   min-width: 0;
   min-height: 100vh;
   flex-direction: column;
-  padding: clamp(2rem, 4.2vw, 4.25rem);
-  background: #f7f3ec;
+  padding: clamp(1.5rem, 3vw, 3rem);
+  background:
+    radial-gradient(ellipse at 82% 0%, rgba(255, 255, 255, .72), transparent 46%),
+    linear-gradient(145deg, #f8f4ec 0%, #eee6d9 100%);
 }
 
 .login-header {
-  width: min(100%, 460px);
+  width: min(100%, 420px);
   min-height: 0;
   justify-content: center;
   margin: 0 auto;
@@ -832,13 +803,13 @@ input:focus-visible {
 
 .login-main {
   display: grid;
-  width: min(100%, 460px);
+  width: min(100%, 420px);
   flex: 1;
   grid-template-columns: minmax(0, 1fr);
   align-items: center;
   justify-items: center;
   margin: 0 auto;
-  padding: 2rem 0;
+  padding: 1.5rem 0;
 }
 
 .login-auth {
@@ -856,7 +827,7 @@ input:focus-visible {
 
 .login-card-heading {
   display: block;
-  margin-bottom: 1.6rem;
+  margin-bottom: 1.25rem;
 }
 
 .login-card-heading .login-card-kicker {
@@ -869,7 +840,7 @@ input:focus-visible {
 }
 
 .login-card-heading h2 {
-  font-size: clamp(1.75rem, 3vw, 2.2rem);
+  font-size: clamp(1.6rem, 2.5vw, 2rem);
   letter-spacing: -.055em;
 }
 
@@ -885,7 +856,7 @@ input:focus-visible {
 }
 
 .login-phone-input {
-  min-height: 52px;
+  min-height: 48px;
   border-color: #ded7cd;
   border-radius: 12px;
   background: #fff;
@@ -897,7 +868,7 @@ input:focus-visible {
 }
 
 .login-pin-section {
-  margin-top: 1.05rem;
+  margin-top: .85rem;
 }
 
 .login-pin-heading {
@@ -905,8 +876,8 @@ input:focus-visible {
 }
 
 .login-pin-dots {
-  min-height: 42px;
-  gap: 1.15rem;
+  min-height: 38px;
+  gap: 1rem;
 }
 
 .pin-dot {
@@ -921,16 +892,16 @@ input:focus-visible {
 }
 
 .login-keypad {
-  gap: .5rem;
-  margin-top: .55rem;
-  padding: .65rem;
+  gap: .4rem;
+  margin-top: .45rem;
+  padding: .5rem;
   border-color: #ebe5dc;
   border-radius: 16px;
   background: #f0ece5;
 }
 
 .pin-btn {
-  min-height: 48px;
+  min-height: 44px;
   border-color: #e4ddd3;
   border-radius: 11px;
   color: #25382d;
@@ -946,27 +917,25 @@ input:focus-visible {
 }
 
 .login-submit {
-  min-height: 52px;
-  margin-top: .9rem;
+  min-height: 48px;
+  margin-top: .75rem;
   border-radius: 12px;
-  background: var(--login-forest);
-  box-shadow: 0 8px 18px rgba(36, 115, 79, .16);
+  background: linear-gradient(135deg, #2e8259, #24734f 62%, #1d6444);
+  box-shadow: 0 10px 22px rgba(36, 115, 79, .2);
 }
 
 .login-submit:hover {
   background: var(--login-forest-dark);
-  box-shadow: 0 10px 22px rgba(29, 95, 64, .2);
+  box-shadow: 0 12px 24px rgba(29, 95, 64, .24);
 }
 
-.login-card-note {
-  justify-content: center;
-  margin-top: 1rem;
-  color: var(--login-muted);
-  text-align: center;
+.login-submit:focus-visible {
+  outline: 3px solid rgba(36, 115, 79, .35);
+  outline-offset: 3px;
 }
 
 .login-footer {
-  width: min(100%, 460px);
+  width: min(100%, 420px);
   min-height: 0;
   margin: 0 auto;
   padding-top: 1.25rem;
@@ -980,18 +949,18 @@ input:focus-visible {
   }
 
   .login-visual {
-    min-height: 280px;
-    padding: 2rem clamp(1.25rem, 6vw, 3rem);
+    min-height: 250px;
+    padding: 1.75rem clamp(1.25rem, 5vw, 2.5rem);
   }
 
   .login-visual-copy h1 {
-    max-width: 520px;
-    font-size: clamp(2.1rem, 6vw, 3rem);
+    max-width: 480px;
+    font-size: clamp(2rem, 5.5vw, 2.7rem);
   }
 
   .login-content {
     min-height: auto;
-    padding: 2rem clamp(1.25rem, 6vw, 3rem) 1.25rem;
+    padding: 1.5rem clamp(1.25rem, 5vw, 2.5rem) 1rem;
   }
 
   .login-header {
@@ -1000,7 +969,7 @@ input:focus-visible {
 
   .login-main {
     flex: none;
-    padding: 1.25rem 0;
+    padding: .85rem 0;
   }
 
   .login-footer {
@@ -1010,12 +979,12 @@ input:focus-visible {
 
 @media (max-width: 420px) {
   .login-visual {
-    min-height: 230px;
-    padding: 1.5rem 1.1rem;
+    min-height: 210px;
+    padding: 1.25rem 1.1rem;
   }
 
   .login-visual-copy h1 {
-    font-size: 2rem;
+    font-size: 1.85rem;
   }
 
   .login-visual-copy > p:last-child {
@@ -1024,6 +993,6 @@ input:focus-visible {
   }
 
   .login-content {
-    padding: 1.5rem 1rem 1rem;
+    padding: 1.25rem 1rem .85rem;
   }
 }
