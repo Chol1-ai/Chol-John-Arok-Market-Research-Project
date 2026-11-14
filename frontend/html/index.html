@@ -5,7 +5,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="icon" type="image/svg+xml" href="../images/foodizo-brand-mark.svg" />
-  <meta name="theme-color" content="#22231f" />
+  <meta name="theme-color" content="#211F1B" />
   <title>Foodizo &amp; Obunuzi | Menu and Ordering</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -16,14 +16,15 @@
   <style>
     :root {
       color-scheme: dark;
-      --ink: #f3f1ea;
-      --muted: #b6b7ae;
-      --paper: #22231f;
-      --card: #2b2c27;
-      --line: #393a33;
-      --red: #c83d2d;
-      --green: #245c3e;
-      --amber: #a9680d;
+      --ink: #F7F3EC;
+      --muted: #C8BFB2;
+      --paper: #211F1B;
+      --card: #302C26;
+      --line: #494238;
+      --red: #FF705B;
+      --green: #24734F;
+      --amber: #FFB02E;
+      --surface-inset: #28241F;
       font-family: "Plus Jakarta Sans", system-ui, sans-serif;
       font-synthesis: none;
       text-rendering: optimizeLegibility;
@@ -49,7 +50,7 @@
     }
 
     a:focus-visible {
-      outline: 3px solid #e28a34;
+      outline: 3px solid var(--amber);
       outline-offset: 4px;
     }
 
@@ -63,7 +64,7 @@
       top: 0;
       z-index: 5;
       border-bottom: 1px solid rgba(255, 255, 255, .09);
-      background: rgba(34, 35, 31, .94);
+      background: rgba(33, 31, 27, .94);
       backdrop-filter: blur(14px);
     }
 
@@ -143,12 +144,12 @@
     }
 
     .nav a {
-      color: #e1e2d9;
+      color: var(--ink);
     }
 
     .nav a:hover {
-      background: #292b25;
-      color: #c3e3c9;
+      background: var(--surface-inset);
+      color: var(--ink);
     }
 
     .nav a.button-primary {
@@ -156,7 +157,7 @@
     }
 
     .nav a.button-primary:hover {
-      background: #194b30;
+      background: #1D5F40;
       color: white;
       box-shadow: 0 9px 22px rgba(25, 75, 48, .24);
     }
@@ -168,20 +169,20 @@
     }
 
     .button-primary:hover {
-      background: #194b30;
+      background: #1D5F40;
       box-shadow: 0 9px 22px rgba(25, 75, 48, .24);
     }
 
     .button-outline {
-      border: 1px solid #4a4b43;
+      border: 1px solid var(--line);
       background: rgba(255, 255, 255, .06);
       color: var(--ink);
     }
 
     .button-outline:hover {
-      background: #292b25;
-      border-color: #77937b;
-      color: #d3ead5;
+      background: var(--surface-inset);
+      border-color: var(--green);
+      color: var(--ink);
     }
 
     .material-symbols-outlined {
@@ -202,7 +203,7 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      color: var(--green);
+      color: var(--amber);
       font-size: 11px;
       font-weight: 800;
       letter-spacing: .12em;
@@ -223,7 +224,7 @@
     h1 {
       max-width: 610px;
       margin: 16px auto 14px;
-      color: var(--green);
+      color: var(--ink);
       font-size: clamp(36px, 5vw, 58px);
       line-height: 1.06;
       letter-spacing: -.055em;
@@ -253,8 +254,8 @@
       padding: 8px 11px;
       border: 1px solid var(--line);
       border-radius: 999px;
-      background: rgba(255, 255, 255, .06);
-      color: #d0d1c9;
+      background: rgba(255, 255, 255, .05);
+      color: var(--ink);
       font-size: 11px;
       font-weight: 600;
     }
@@ -709,7 +710,7 @@
       place-items: center;
       padding: 0 4px;
       border-radius: 999px;
-      background: #c83d2d;
+      background: var(--red);
       color: #fff;
       font-size: 9px;
       font-weight: 800;
@@ -859,7 +860,7 @@
     }
 
     .customer-topline {
-      color: #b6b7ae;
+      color: var(--muted);
       font-size: 11px;
       font-weight: 700;
     }
@@ -878,23 +879,105 @@
     }
 
     .customer-hero-empty {
+      display: flex;
+      align-items: center;
       position: relative;
       isolation: isolate;
       perspective: 900px;
-      height: clamp(320px, 34vw, 390px);
+      height: clamp(390px, 42vw, 490px);
       margin: 0;
       padding: 0;
       overflow: hidden;
       border-bottom: 0;
       background:
-        radial-gradient(ellipse at 50% 30%, rgba(190, 190, 183, .12), transparent 62%),
-        linear-gradient(180deg, #343530 0%, #41423d 34%, #484943 65%, #343530 88%, #22231f 100%);
+        radial-gradient(ellipse at 72% 42%, rgba(255, 176, 46, .14), transparent 48%),
+        linear-gradient(180deg, #302C26 0%, #39332B 42%, #302C26 84%, #211F1B 100%);
       animation: empty-hero-in 760ms ease-out both;
+    }
+
+    .customer-hero-copy {
+      position: relative;
+      z-index: 3;
+      width: min(560px, 35vw);
+      margin-left: max(20px, calc((100% - 1160px) / 2));
+      margin-right: auto;
+      text-align: left;
+    }
+
+    .customer-hero-copy .customer-topline {
+      color: var(--amber);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .customer-hero h1 {
+      max-width: 560px;
+      margin: 14px 0 12px;
+      color: var(--ink);
+      font-size: clamp(40px, 5vw, 66px);
+      line-height: 1.02;
+      text-align: left;
+      text-shadow: 0 8px 26px rgba(0, 0, 0, .28);
+    }
+
+    .customer-hero h1 span {
+      color: var(--amber);
+    }
+
+    .customer-hero-copy > p {
+      max-width: 470px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .customer-hero-search {
+      display: flex;
+      width: min(100%, 500px);
+      gap: 8px;
+      margin-top: 21px;
+    }
+
+    .customer-hero-search input {
+      width: 100%;
+      min-width: 0;
+      min-height: 48px;
+      padding: 0 15px;
+      border: 1px solid rgba(247, 243, 236, .22);
+      border-radius: 999px;
+      background: rgba(33, 31, 27, .88);
+      color: var(--ink);
+      font: inherit;
+      font-size: 13px;
+    }
+
+    .customer-hero-search input::placeholder {
+      color: #B7AA98;
+    }
+
+    .customer-hero-search input:focus-visible,
+    .customer-hero-search button:focus-visible {
+      outline: 3px solid var(--amber);
+      outline-offset: 3px;
+    }
+
+    .customer-hero-search button {
+      min-width: 112px;
+      border: 0;
+      cursor: pointer;
+    }
+
+    .customer-hero-copy .hero-actions {
+      justify-content: flex-start;
+      margin-top: 13px;
     }
 
     .customer-hero-food {
       position: absolute;
-      inset: 0;
+      inset: 0 0 0 42%;
       pointer-events: none;
     }
 
@@ -920,7 +1003,7 @@
     .customer-hero-man-art {
       position: absolute;
       bottom: 12px;
-      left: 39%;
+      left: 40%;
       display: block;
       height: 82%;
       width: auto;
@@ -934,7 +1017,7 @@
     .customer-hero-burger-build {
       position: absolute;
       top: 0;
-      left: clamp(76%, 80vw, 86%);
+      left: clamp(76%, 78vw, 83%);
       z-index: 2;
       width: clamp(210px, 27vw, 340px);
       height: 100%;
@@ -1128,6 +1211,27 @@
 
     .home-category-card .card-media img {
       object-position: center;
+      transition: transform .45s cubic-bezier(.2, .7, .2, 1);
+    }
+
+    .home-category-card .card-media::after {
+      position: absolute;
+      inset: 35% 0 0;
+      background: linear-gradient(180deg, transparent, rgba(20, 16, 12, .28));
+      content: "";
+      opacity: .55;
+      transition: opacity .3s ease;
+      pointer-events: none;
+    }
+
+    .home-category-card:hover .card-media img,
+    .home-category-card:focus-visible .card-media img {
+      transform: scale(1.07);
+    }
+
+    .home-category-card:hover .card-media::after,
+    .home-category-card:focus-visible .card-media::after {
+      opacity: 1;
     }
 
     .home-category-card .card-content {
@@ -1183,17 +1287,48 @@
 
     @media (max-width: 700px) {
       .customer-hero-empty {
-        height: clamp(280px, 72vw, 320px);
+        height: clamp(530px, 112vw, 610px);
+        align-items: flex-start;
+      }
+
+      .customer-hero-copy {
+        width: min(100% - 30px, 560px);
+        margin-top: 27px;
+        text-align: center;
+      }
+
+      .customer-hero h1 {
+        max-width: 540px;
+        margin: 12px auto;
+        font-size: clamp(38px, 8vw, 48px);
+        text-align: center;
+      }
+
+      .customer-hero-copy > p {
+        margin-inline: auto;
+        font-size: 13px;
+      }
+
+      .customer-hero-search {
+        margin: 17px auto 0;
+      }
+
+      .customer-hero-copy .hero-actions {
+        justify-content: center;
+      }
+
+      .customer-hero-food {
+        inset: 320px 0 0;
       }
 
       .customer-hero-man-art {
-        left: 18%;
+        left: 30%;
         height: 82%;
         max-width: 80vw;
       }
 
       .customer-hero-man-scene::before {
-        left: 27%;
+        left: 34%;
         width: 76vw;
       }
 
@@ -1247,6 +1382,34 @@
     }
 
     @media (max-width: 430px) {
+      .customer-hero-empty {
+        height: 540px;
+      }
+
+      .customer-hero-copy {
+        margin-top: 22px;
+      }
+
+      .customer-hero-search {
+        gap: 6px;
+      }
+
+      .customer-hero-search input {
+        min-height: 44px;
+        padding-inline: 12px;
+        font-size: 12px;
+      }
+
+      .customer-hero-search button {
+        min-width: 94px;
+        padding-inline: 11px;
+        font-size: 11px;
+      }
+
+      .customer-hero-food {
+        inset-block-start: 330px;
+      }
+
       .home-category-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
@@ -1576,7 +1739,23 @@
     </div>
   </header>
 
-  <section class="customer-hero customer-hero-empty" aria-hidden="true">
+  <section class="customer-hero customer-hero-empty" aria-labelledby="home-hero-title">
+    <div class="customer-hero-copy">
+      <div class="customer-topline">Foodizo &amp; Obunuzi · Wandegeya</div>
+      <h1 id="home-hero-title">Good food, <span>your way.</span></h1>
+      <p>Find something you love, then order pickup or delivery from either restaurant.</p>
+      <form class="customer-hero-search" action="/order" method="get" role="search" aria-label="Search meals">
+        <label class="visually-hidden" for="home-meal-search">Search meals by name or ingredient</label>
+        <input id="home-meal-search" name="q" type="search" placeholder="Search meals or ingredients" />
+        <button class="button button-primary" type="submit">
+          Search <span class="material-symbols-outlined" aria-hidden="true">search</span>
+        </button>
+      </form>
+      <div class="hero-actions">
+        <a class="button button-outline" href="#menu">Explore categories <span class="material-symbols-outlined"
+            aria-hidden="true">arrow_downward</span></a>
+      </div>
+    </div>
     <div class="customer-hero-food">
       <div class="customer-hero-man-scene">
         <img class="customer-hero-man-art" src="../images/hero-man-cutout.png" alt="" />
