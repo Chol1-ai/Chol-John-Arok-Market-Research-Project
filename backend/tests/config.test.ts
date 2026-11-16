@@ -71,4 +71,20 @@ describe('production configuration', () => {
       })
     ).toThrow(/CORS_ORIGIN.*DIGEST_APP_URL/);
   });
+
+  it('keeps Buddy AI optional and reads its settings only when provided', () => {
+    expect(loadConfig(productionEnvironment)).toMatchObject({
+      OPENAI_API_KEY: '',
+      OPENAI_MODEL: ''
+    });
+
+    expect(loadConfig({
+      ...productionEnvironment,
+      OPENAI_API_KEY: 'test-key',
+      OPENAI_MODEL: 'test-model'
+    })).toMatchObject({
+      OPENAI_API_KEY: 'test-key',
+      OPENAI_MODEL: 'test-model'
+    });
+  });
 });

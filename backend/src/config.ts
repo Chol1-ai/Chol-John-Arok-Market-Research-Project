@@ -49,7 +49,11 @@ const envSchema = z.object({
   DIGEST_EMAIL_ENABLED: z
     .enum(['true', 'false', '1', '0'])
     .default('false')
-    .transform((value) => value === 'true' || value === '1')
+    .transform((value) => value === 'true' || value === '1'),
+
+  // Optional: Buddy keeps menu and delivery questions available without AI.
+  OPENAI_API_KEY: z.string().trim().default(''),
+  OPENAI_MODEL: z.string().trim().max(100).default('')
 });
 
 export function loadConfig(environment: NodeJS.ProcessEnv = process.env) {

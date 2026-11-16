@@ -1795,6 +1795,7 @@
     }
   </style>
   <link rel="stylesheet" href="/css/brand_theme.css?v=3" />
+  <link rel="stylesheet" href="/css/foodizo-buddy.css?v=1" />
 </head>
 
 <body id="top">
@@ -2039,15 +2040,65 @@
         <h3>Ready notifications</h3>
         <p>Ready notifications are optional. If enabled, your browser will ask for permission to show a notification
           when your order is ready. You can turn notifications off in your browser or device settings.</p>
+        <h3>Foodizo Buddy</h3>
+        <p>When AI answers are enabled, your question, up to four recent questions, selected outlet, and public menu
+          and delivery information may be processed by our AI provider to prepare a response. Buddy does not access or
+          change your cart or orders. Please do not include personal, phone, payment, or order details in your messages.</p>
         <p>For questions about information connected with an order, contact the restaurant you selected.</p>
       </div>
     </div>
   </dialog>
+  <div class="foodizo-buddy" id="foodizo-buddy">
+    <button class="foodizo-buddy-toggle" type="button" data-buddy-toggle aria-expanded="false"
+      aria-controls="foodizo-buddy-panel">
+      <span class="material-symbols-outlined" aria-hidden="true">smart_toy</span>
+      <span>Ask Foodizo Buddy</span>
+    </button>
+    <section class="foodizo-buddy-panel" id="foodizo-buddy-panel" data-buddy-panel
+      aria-labelledby="foodizo-buddy-title" hidden>
+      <header class="foodizo-buddy-header">
+        <div class="foodizo-buddy-heading">
+          <span class="foodizo-buddy-heading-icon material-symbols-outlined" aria-hidden="true">smart_toy</span>
+          <div>
+            <h2 id="foodizo-buddy-title">Foodizo Buddy</h2>
+            <p>Menu and delivery help</p>
+          </div>
+        </div>
+        <button class="foodizo-buddy-close" type="button" data-buddy-close aria-label="Close Foodizo Buddy">
+          <span class="material-symbols-outlined" aria-hidden="true">close</span>
+        </button>
+      </header>
+      <div class="foodizo-buddy-messages" data-buddy-messages role="log" aria-live="polite"
+        aria-relevant="additions">
+        <div class="foodizo-buddy-message" data-role="buddy">
+          <strong>Foodizo Buddy</strong>
+          <p>Hi! I can help you find available meals, compare prices, and check delivery fees.</p>
+        </div>
+      </div>
+      <div class="foodizo-buddy-prompts" data-buddy-prompts aria-label="Suggested questions">
+        <button type="button" data-buddy-prompt="What are the cheapest meals?">Cheapest meals</button>
+        <button type="button" data-buddy-prompt="What can I eat for UGX 10,000?">Under UGX 10,000</button>
+        <button type="button" data-buddy-prompt="What are the delivery fees?">Delivery fees</button>
+      </div>
+      <form class="foodizo-buddy-form" data-buddy-form aria-label="Ask Foodizo Buddy">
+        <label class="visually-hidden" for="foodizo-buddy-input">Your question</label>
+        <input id="foodizo-buddy-input" data-buddy-input name="message" maxlength="500" autocomplete="off"
+          placeholder="Ask about meals or delivery…" required />
+        <button type="submit" data-buddy-submit aria-label="Send question">
+          <span class="material-symbols-outlined" aria-hidden="true">send</span>
+        </button>
+      </form>
+      <p class="foodizo-buddy-disclosure">AI-enabled answers may send recent questions to an external provider. Don't
+        share personal, payment, or order details. Buddy cannot place orders.</p>
+      <p class="visually-hidden" data-buddy-status role="status" aria-live="polite"></p>
+    </section>
+  </div>
   <script src="/js/customer-menu-categories.js?v=3"></script>
   <script src="/js/customer-home.js?v=20261116"></script>
   <script src="/js/customer-cart-navigation.js?v=1" defer></script>
   <script src="/js/customer-notifications.js?v=1" defer></script>
   <script src="/js/customer-navigation.js" defer></script>
+  <script src="/js/foodizo-buddy.js?v=1" defer></script>
 </body>
 
 </html>

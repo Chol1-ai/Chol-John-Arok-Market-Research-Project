@@ -1,0 +1,258 @@
+.foodizo-buddy {
+  position: fixed;
+  right: clamp(14px, 2.5vw, 28px);
+  bottom: 20px;
+  z-index: 1200;
+  color: var(--brand-text);
+  font-family: inherit;
+}
+
+.foodizo-buddy-toggle {
+  display: inline-flex;
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 0 18px;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 999px;
+  background: var(--brand-green);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .28);
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.foodizo-buddy-toggle:hover {
+  background: #1d5f40;
+}
+
+.foodizo-buddy-toggle:focus-visible,
+.foodizo-buddy-close:focus-visible,
+.foodizo-buddy-prompts button:focus-visible,
+.foodizo-buddy-form button:focus-visible,
+.foodizo-buddy-form input:focus-visible {
+  outline: 3px solid var(--brand-amber);
+  outline-offset: 3px;
+}
+
+.foodizo-buddy-toggle .material-symbols-outlined {
+  font-size: 21px;
+}
+
+.foodizo-buddy-panel {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 12px);
+  display: flex;
+  width: min(390px, calc(100vw - 32px));
+  max-height: min(620px, calc(100vh - 112px));
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--brand-line);
+  border-radius: 20px;
+  background: var(--brand-panel);
+  box-shadow: 0 22px 65px rgba(0, 0, 0, .42);
+}
+
+.foodizo-buddy-panel[hidden] {
+  display: none;
+}
+
+.foodizo-buddy-header {
+  display: flex;
+  min-height: 66px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--brand-line);
+  background: var(--brand-panel-raised);
+}
+
+.foodizo-buddy-heading {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 11px;
+}
+
+.foodizo-buddy-heading-icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--brand-green);
+  color: #fff;
+}
+
+.foodizo-buddy-heading h2 {
+  margin: 0;
+  color: var(--brand-text);
+  font-size: 15px;
+  font-weight: 850;
+}
+
+.foodizo-buddy-heading p {
+  margin: 3px 0 0;
+  color: var(--brand-muted);
+  font-size: 12px;
+}
+
+.foodizo-buddy-close {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid var(--brand-line);
+  border-radius: 50%;
+  background: var(--brand-inset);
+  color: var(--brand-text);
+  cursor: pointer;
+}
+
+.foodizo-buddy-messages {
+  display: flex;
+  min-height: 150px;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  padding: 16px;
+  overscroll-behavior: contain;
+}
+
+.foodizo-buddy-message {
+  max-width: 92%;
+  align-self: flex-start;
+  padding: 10px 12px;
+  border: 1px solid var(--brand-line);
+  border-radius: 14px 14px 14px 4px;
+  background: var(--brand-inset);
+  color: var(--brand-text);
+}
+
+.foodizo-buddy-message[data-role="user"] {
+  align-self: flex-end;
+  border-color: #35654b;
+  border-radius: 14px 14px 4px 14px;
+  background: #234634;
+}
+
+.foodizo-buddy-message strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--brand-amber);
+  font-size: 11px;
+}
+
+.foodizo-buddy-message[data-role="user"] strong {
+  color: #d7ecdc;
+}
+
+.foodizo-buddy-message p {
+  margin: 0;
+  color: inherit;
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.foodizo-buddy-prompts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding: 0 14px 12px;
+}
+
+.foodizo-buddy-prompts button {
+  min-height: 32px;
+  padding: 6px 10px;
+  border: 1px solid var(--brand-line);
+  border-radius: 999px;
+  background: var(--brand-panel-raised);
+  color: var(--brand-text);
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.foodizo-buddy-prompts button:hover {
+  border-color: var(--brand-green);
+}
+
+.foodizo-buddy-form {
+  display: flex;
+  gap: 8px;
+  padding: 12px 14px;
+  border-top: 1px solid var(--brand-line);
+}
+
+.foodizo-buddy-form input {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 13px;
+  border: 1px solid var(--brand-line);
+  border-radius: 999px;
+  background: var(--brand-inset);
+  color: var(--brand-text);
+  font: inherit;
+  font-size: 13px;
+}
+
+.foodizo-buddy-form input::placeholder {
+  color: var(--brand-muted);
+}
+
+.foodizo-buddy-form button {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: var(--brand-green);
+  color: #fff;
+  cursor: pointer;
+}
+
+.foodizo-buddy-form button:disabled,
+.foodizo-buddy-form input:disabled,
+.foodizo-buddy-prompts button:disabled {
+  cursor: wait;
+  opacity: .6;
+}
+
+.foodizo-buddy-disclosure {
+  margin: 0;
+  padding: 0 15px 13px;
+  color: var(--brand-muted);
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+@media (max-width: 600px) {
+  .foodizo-buddy {
+    right: 12px;
+    bottom: 12px;
+  }
+
+  .foodizo-buddy-panel {
+    width: min(390px, calc(100vw - 24px));
+    max-height: min(600px, calc(100dvh - 92px));
+  }
+
+  .foodizo-buddy-toggle {
+    min-height: 48px;
+    padding-inline: 15px;
+  }
+}
