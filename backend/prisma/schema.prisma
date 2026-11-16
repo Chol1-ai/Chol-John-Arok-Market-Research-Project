@@ -95,6 +95,13 @@ enum handoff_outcome {
   RETURNED
 }
 
+enum delivery_tracking_status {
+  INVITED
+  SHARING
+  PAUSED
+  STOPPED
+}
+
 enum digest_status {
   GENERATED
   PARTIAL
@@ -243,19 +250,19 @@ model restaurant_tables {
 // ============================================================
 
 model menu_items {
-  id            String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  outlet        outlet_location
-  name          String          @db.VarChar(100)
-  category      String          @db.VarChar(40)
-  description   String?         @db.VarChar(280)
-  price_ugx     Decimal         @db.Decimal(10, 2)
-  station       station_type
-  image_url     String?         @db.VarChar(500)
-  image_hidden  Boolean         @default(false)
-  is_active     Boolean         @default(true)
-  is_86         Boolean         @default(false)
-  created_at    DateTime        @default(now()) @db.Timestamptz(6)
-  updated_at    DateTime        @default(now()) @updatedAt @db.Timestamptz(6)
+  id           String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  outlet       outlet_location
+  name         String          @db.VarChar(100)
+  category     String          @db.VarChar(40)
+  description  String?         @db.VarChar(280)
+  price_ugx    Decimal         @db.Decimal(10, 2)
+  station      station_type
+  image_url    String?         @db.VarChar(500)
+  image_hidden Boolean         @default(false)
+  is_active    Boolean         @default(true)
+  is_86        Boolean         @default(false)
+  created_at   DateTime        @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime        @default(now()) @updatedAt @db.Timestamptz(6)
 
   order_items  order_items[]
   recipe_boms  recipe_bom[]
@@ -271,32 +278,32 @@ model menu_items {
 // ============================================================
 
 model orders {
-  id                       String           @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id                       String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   outlet                   outlet_location
-  digital_token            String           @db.VarChar(20)
-  public_ref               String           @unique @db.VarChar(32)
-  business_date            DateTime         @db.Date
+  digital_token            String          @db.VarChar(20)
+  public_ref               String          @unique @db.VarChar(32)
+  business_date            DateTime        @db.Date
   channel                  channel_type
-  status                   order_status     @default(AWAITING_PAYMENT)
-  table_id                 String?          @db.Uuid
-  created_by               String?          @db.Uuid
-  customer_name            String?          @db.VarChar(80)
-  customer_phone           String?          @db.VarChar(20)
-  delivery_zone_id         String?          @db.Uuid
-  delivery_note            String?          @db.VarChar(160)
-  delivery_lat             Decimal?         @db.Decimal(9, 6)
-  delivery_lng             Decimal?         @db.Decimal(9, 6)
-  delivery_accuracy_m      Decimal?         @db.Decimal(6, 1)
-  delivery_pin_captured_at DateTime?        @db.Timestamptz(6)
-  subtotal_ugx             Decimal          @db.Decimal(10, 2)
-  delivery_fee_ugx         Decimal          @default(0.00) @db.Decimal(10, 2)
-  total_amount_ugx         Decimal          @db.Decimal(10, 2)
-  estimated_prep_minutes   Int?             @default(10)
-  created_at               DateTime         @default(now()) @db.Timestamptz(6)
-  ready_at                 DateTime?        @db.Timestamptz(6)
-  completed_at             DateTime?        @db.Timestamptz(6)
-  cancelled_at             DateTime?        @db.Timestamptz(6)
-  cancelled_by             String?          @db.Uuid
+  status                   order_status    @default(AWAITING_PAYMENT)
+  table_id                 String?         @db.Uuid
+  created_by               String?         @db.Uuid
+  customer_name            String?         @db.VarChar(80)
+  customer_phone           String?         @db.VarChar(20)
+  delivery_zone_id         String?         @db.Uuid
+  delivery_note            String?         @db.VarChar(160)
+  delivery_lat             Decimal?        @db.Decimal(9, 6)
+  delivery_lng             Decimal?        @db.Decimal(9, 6)
+  delivery_accuracy_m      Decimal?        @db.Decimal(6, 1)
+  delivery_pin_captured_at DateTime?       @db.Timestamptz(6)
+  subtotal_ugx             Decimal         @db.Decimal(10, 2)
+  delivery_fee_ugx         Decimal         @default(0.00) @db.Decimal(10, 2)
+  total_amount_ugx         Decimal         @db.Decimal(10, 2)
+  estimated_prep_minutes   Int?            @default(10)
+  created_at               DateTime        @default(now()) @db.Timestamptz(6)
+  ready_at                 DateTime?       @db.Timestamptz(6)
+  completed_at             DateTime?       @db.Timestamptz(6)
+  cancelled_at             DateTime?       @db.Timestamptz(6)
+  cancelled_by             String?         @db.Uuid
   cancellation_reason      String?
 
   table         restaurant_tables? @relation(fields: [table_id], references: [id])
@@ -304,10 +311,11 @@ model orders {
   canceller     users?             @relation("orders_cancelled_by", fields: [cancelled_by], references: [id], onDelete: SetNull)
   delivery_zone delivery_zones?    @relation(fields: [delivery_zone_id], references: [id], onDelete: Restrict)
 
-  order_items order_items[]
-  handoffs    delivery_handoffs[]
-  payments    payments[]
-  stock_movements stock_movements[]
+  order_items               order_items[]
+  handoffs                  delivery_handoffs[]
+  delivery_tracking_session delivery_tracking_sessions?
+  payments                  payments[]
+  stock_movements           stock_movements[]
 
   @@unique([outlet, business_date, digital_token], name: "orders_token_unique_per_day")
   @@index([delivery_zone_id], name: "idx_orders_delivery_zone")
@@ -354,8 +362,8 @@ model raw_inventory {
   is_high_turnover Boolean         @default(false)
   updated_at       DateTime?       @default(now()) @updatedAt @db.Timestamptz(6)
 
-  recipe_boms        recipe_bom[]
-  stock_movements    stock_movements[]
+  recipe_boms          recipe_bom[]
+  stock_movements      stock_movements[]
   supplier_order_items supplier_order_items[]
 
   @@unique([outlet, item_name], name: "raw_inventory_outlet_name_unique")
@@ -363,55 +371,55 @@ model raw_inventory {
 }
 
 model stock_movements {
-  id                    String               @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  outlet                outlet_location
-  inventory_id          String               @db.Uuid
-  recorded_by           String?              @db.Uuid
-  movement_type         stock_movement_type
-  quantity_change       Decimal              @db.Decimal(10, 2)
-  stock_after           Decimal              @db.Decimal(10, 2)
-  business_date         DateTime             @db.Date
-  note                  String?              @db.VarChar(250)
-  order_id              String?              @db.Uuid
-  supplier_order_id     String?              @db.Uuid
-  created_at            DateTime             @default(now()) @db.Timestamptz(6)
+  id                String              @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  outlet            outlet_location
+  inventory_id      String              @db.Uuid
+  recorded_by       String?             @db.Uuid
+  movement_type     stock_movement_type
+  quantity_change   Decimal             @db.Decimal(10, 2)
+  stock_after       Decimal             @db.Decimal(10, 2)
+  business_date     DateTime            @db.Date
+  note              String?             @db.VarChar(250)
+  order_id          String?             @db.Uuid
+  supplier_order_id String?             @db.Uuid
+  created_at        DateTime            @default(now()) @db.Timestamptz(6)
 
-  inventory      raw_inventory  @relation(fields: [inventory_id], references: [id], onDelete: Restrict)
-  user           users?         @relation(fields: [recorded_by], references: [id], onDelete: SetNull)
-  order          orders?        @relation(fields: [order_id], references: [id], onDelete: SetNull)
+  inventory      raw_inventory    @relation(fields: [inventory_id], references: [id], onDelete: Restrict)
+  user           users?           @relation(fields: [recorded_by], references: [id], onDelete: SetNull)
+  order          orders?          @relation(fields: [order_id], references: [id], onDelete: SetNull)
   supplier_order supplier_orders? @relation(fields: [supplier_order_id], references: [id], onDelete: SetNull)
 
+  @@unique([order_id, inventory_id], name: "stock_movement_order_inventory_unique")
   @@index([outlet, created_at(sort: Desc)], name: "idx_stock_movements_outlet_created")
   @@index([inventory_id, created_at(sort: Desc)], name: "idx_stock_movements_inventory_created")
-  @@unique([order_id, inventory_id], name: "stock_movement_order_inventory_unique")
   @@map("stock_movements")
 }
 
 model supplier_orders {
-  id            String                 @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id            String                @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   outlet        outlet_location
-  supplier_name String                 @db.VarChar(100)
-  status        supplier_order_status  @default(ORDERED)
-  notes         String?                @db.VarChar(250)
-  created_by    String?                @db.Uuid
-  created_at    DateTime               @default(now()) @db.Timestamptz(6)
-  received_at   DateTime?              @db.Timestamptz(6)
+  supplier_name String                @db.VarChar(100)
+  status        supplier_order_status @default(ORDERED)
+  notes         String?               @db.VarChar(250)
+  created_by    String?               @db.Uuid
+  created_at    DateTime              @default(now()) @db.Timestamptz(6)
+  received_at   DateTime?             @db.Timestamptz(6)
 
-  creator       users?                 @relation(fields: [created_by], references: [id], onDelete: SetNull)
-  items         supplier_order_items[]
-  movements     stock_movements[]
+  creator   users?                 @relation(fields: [created_by], references: [id], onDelete: SetNull)
+  items     supplier_order_items[]
+  movements stock_movements[]
 
   @@index([outlet, status, created_at(sort: Desc)], name: "idx_supplier_orders_outlet_status")
   @@map("supplier_orders")
 }
 
 model supplier_order_items {
-  id                String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  supplier_order_id String          @db.Uuid
-  inventory_id      String          @db.Uuid
-  quantity_ordered  Decimal         @db.Decimal(10, 2)
-  quantity_received Decimal         @default(0.00) @db.Decimal(10, 2)
-  unit_cost_ugx     Decimal?        @db.Decimal(10, 2)
+  id                String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  supplier_order_id String   @db.Uuid
+  inventory_id      String   @db.Uuid
+  quantity_ordered  Decimal  @db.Decimal(10, 2)
+  quantity_received Decimal  @default(0.00) @db.Decimal(10, 2)
+  unit_cost_ugx     Decimal? @db.Decimal(10, 2)
 
   supplier_order supplier_orders @relation(fields: [supplier_order_id], references: [id], onDelete: Cascade)
   inventory      raw_inventory   @relation(fields: [inventory_id], references: [id], onDelete: Restrict)
@@ -479,12 +487,41 @@ model delivery_handoffs {
   reviewed                   Boolean         @default(false)
   notes                      String?
 
-  order      orders @relation(fields: [order_id], references: [id], onDelete: Cascade)
-  dispatcher users? @relation(fields: [dispatched_by], references: [id], onDelete: SetNull)
+  order            orders                      @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  dispatcher       users?                      @relation(fields: [dispatched_by], references: [id], onDelete: SetNull)
+  tracking_session delivery_tracking_sessions?
 
   @@index([order_id], name: "idx_delivery_handoffs_order")
   @@index([outcome, dispatched_at], name: "idx_delivery_handoffs_outcome")
   @@map("delivery_handoffs")
+}
+
+model delivery_tracking_sessions {
+  id                        String                   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  order_id                  String                   @unique @db.Uuid
+  handoff_id                String?                  @unique @db.Uuid
+  customer_token_hash       String                   @unique @db.Char(64)
+  rider_token_hash          String?                  @unique @db.Char(64)
+  customer_token_expires_at DateTime                 @db.Timestamptz(6)
+  rider_token_expires_at    DateTime?                @db.Timestamptz(6)
+  status                    delivery_tracking_status @default(INVITED)
+  latitude                  Decimal?                 @db.Decimal(9, 6)
+  longitude                 Decimal?                 @db.Decimal(9, 6)
+  accuracy_m                Decimal?                 @db.Decimal(7, 1)
+  speed_mps                 Decimal?                 @db.Decimal(7, 2)
+  heading_degrees           Decimal?                 @db.Decimal(6, 2)
+  location_updated_at       DateTime?                @db.Timestamptz(6)
+  started_at                DateTime?                @db.Timestamptz(6)
+  paused_at                 DateTime?                @db.Timestamptz(6)
+  stopped_at                DateTime?                @db.Timestamptz(6)
+  created_at                DateTime                 @default(now()) @db.Timestamptz(6)
+  updated_at                DateTime                 @updatedAt @db.Timestamptz(6)
+
+  order   orders             @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  handoff delivery_handoffs? @relation(fields: [handoff_id], references: [id], onDelete: SetNull)
+
+  @@index([status, location_updated_at], name: "idx_delivery_tracking_status_updated")
+  @@map("delivery_tracking_sessions")
 }
 
 // ============================================================

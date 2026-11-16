@@ -8,6 +8,7 @@
   const ACTIVE_ORDER_KEY = 'foodizo-ready-active-order-v1';
   const OPT_IN_KEY = 'foodizo-ready-notifications-enabled-v1';
   const READY_NOTIFICATION_PREFIX = 'foodizo-ready-notified-v1:';
+  const DELIVERY_TRACKING_URL_PATTERN = /^\/tracker#delivery=[A-Za-z0-9_-]{43}$/;
   const toggle = document.getElementById('ready-notification-toggle');
   const status = document.getElementById('ready-notification-status');
   const isLandingPage = location.pathname === '/' || location.pathname === '/index.html';
@@ -59,7 +60,14 @@
         !Object.prototype.hasOwnProperty.call(OUTLET_LABELS, order.outlet)) {
       throw new Error('Saved order notification data is invalid.');
     }
-    return { token: order.token, outlet: order.outlet, channel: order.channel };
+    const active = { token: order.token, outlet: order.outlet, channel: order.channel };
+    if (
+      typeof order.deliveryTrackingUrl === 'string' &&
+      DELIVERY_TRACKING_URL_PATTERN.test(order.deliveryTrackingUrl)
+    ) {
+      active.deliveryTrackingUrl = order.deliveryTrackingUrl;
+    }
+    return active;
   }
 
   function loadActiveOrder() {
@@ -78,7 +86,29 @@
         !Object.prototype.hasOwnProperty.call(OUTLET_LABELS, order.outlet)) {
       throw new Error('Cannot save an invalid order for notifications.');
     }
+    const sameOrder =
+      activeOrder &&
+      activeOrder.token === order.token &&
+      activeOrder.outlet === order.outlet;
+    const previousTrackingUrl = sameOrder ? activeOrder.deliveryTrackingUrl : null;
     activeOrder = { token: order.token, outlet: order.outlet, channel: order.channel };
+    if (
+      typeof order.deliveryTrackingUrl === 'string' &&
+      DELIVERY_TRACKING_URL_PATTERN.test(order.deliveryTrackingUrl)
+    ) {
+      activeOrder.deliveryTrackingUrl = order.deliveryTrackingUrl;
+    } else if (sameOrder && previousTrackingUrl) {
+      activeOrder.deliveryTrackingUrl = previousTrackingUrl;
+    } else if (sameOrder) {
+      try {
+        const saved = parseActiveOrder(localStorage.getItem(ACTIVE_ORDER_KEY));
+        if (saved && saved.deliveryTrackingUrl) {
+          activeOrder.deliveryTrackingUrl = saved.deliveryTrackingUrl;
+        }
+      } catch (error) {
+        console.error('Could not restore the private delivery tracking link.', error);
+      }
+    }
     try {
       localStorage.setItem(ACTIVE_ORDER_KEY, JSON.stringify(activeOrder));
     } catch (error) {
@@ -86,6 +116,10 @@
       showStatus('Could not save this order for ready notifications.');
     }
     startPolling();
+  }
+
+  function getActiveOrder() {
+    return activeOrder ? { ...activeOrder } : null;
   }
 
   function clearActiveOrder(token, outlet) {
@@ -130,7 +164,8 @@
     notification.addEventListener('click', () => {
       window.focus();
       window.location.assign(
-        `/tracker?token=${encodeURIComponent(order.token)}&outlet=${encodeURIComponent(order.outlet)}`
+        order.deliveryTrackingUrl ||
+          `/tracker?token=${encodeURIComponent(order.token)}&outlet=${encodeURIComponent(order.outlet)}`
       );
     });
     try {
@@ -160,7 +195,8 @@
         token: data.token || polledOrder.token,
         outlet: data.outlet || polledOrder.outlet,
         channel: data.channel || polledOrder.channel,
-        createdAt: data.createdAt
+        createdAt: data.createdAt,
+        deliveryTrackingUrl: polledOrder.deliveryTrackingUrl
       };
       const currentStatus = data.channel === 'PHONE_DELIVERY'
         ? (data.deliveryStatus || data.status)
@@ -234,6 +270,7 @@
 
   window.FoodizoReadyNotifications = {
     setActiveOrder,
+    getActiveOrder,
     notifyReady,
     clearActiveOrder
   };

@@ -1,6 +1,12 @@
 import { randomUUID } from 'crypto';
 import { PrismaClient } from '@prisma/client';
 import { AssignRiderInput, AuthUserPayload } from '../types/index.js';
+import {
+  createTrackingToken,
+  CUSTOMER_TRACKING_TTL_MS,
+  hashTrackingToken,
+  RIDER_TRACKING_TTL_MS
+} from './deliveryTrackingService.js';
 
 export class HandoffError extends Error {
   constructor(
@@ -34,7 +40,8 @@ export async function assignRiderToOrder(
     include: {
       handoffs: {
         orderBy: { dispatched_at: 'desc' }
-      }
+      },
+      delivery_tracking_session: true
     }
   });
 
@@ -78,6 +85,18 @@ export async function assignRiderToOrder(
       ['FAILED_UNREACHABLE', 'REFUSED', 'RETURNED'].includes(handoff.outcome) &&
       !handoff.reviewed
   );
+  const riderTrackingToken = createTrackingToken();
+  const customerTrackingToken =
+    !order.delivery_tracking_session ||
+    order.delivery_tracking_session.customer_token_expires_at.getTime() <= Date.now()
+      ? createTrackingToken()
+      : null;
+  const customerTrackingTokenHash = customerTrackingToken
+    ? hashTrackingToken(customerTrackingToken)
+    : order.delivery_tracking_session?.customer_token_hash;
+  if (!customerTrackingTokenHash) {
+    throw new Error('Delivery tracking access could not be prepared for this handoff.');
+  }
 
   return prisma.$transaction(async (tx) => {
     const newHandoff = await tx.delivery_handoffs.create({
@@ -131,7 +150,43 @@ export async function assignRiderToOrder(
       }
     }
 
-    return newHandoff;
+    await tx.delivery_tracking_sessions.upsert({
+      where: { order_id: order.id },
+      create: {
+        order_id: order.id,
+        handoff_id: newHandoff.id,
+        customer_token_hash: customerTrackingTokenHash,
+        rider_token_hash: hashTrackingToken(riderTrackingToken),
+        customer_token_expires_at: new Date(Date.now() + CUSTOMER_TRACKING_TTL_MS),
+        rider_token_expires_at: new Date(Date.now() + RIDER_TRACKING_TTL_MS),
+        status: 'INVITED'
+      },
+      update: {
+        handoff_id: newHandoff.id,
+        rider_token_hash: hashTrackingToken(riderTrackingToken),
+        rider_token_expires_at: new Date(Date.now() + RIDER_TRACKING_TTL_MS),
+        status: 'INVITED',
+        latitude: null,
+        longitude: null,
+        accuracy_m: null,
+        speed_mps: null,
+        heading_degrees: null,
+        location_updated_at: null,
+        started_at: null,
+        paused_at: null,
+        stopped_at: null,
+        ...(customerTrackingToken && {
+          customer_token_hash: hashTrackingToken(customerTrackingToken),
+          customer_token_expires_at: new Date(Date.now() + CUSTOMER_TRACKING_TTL_MS)
+        })
+      }
+    });
+
+    return {
+      handoff: newHandoff,
+      riderTrackingToken,
+      customerTrackingToken
+    };
   });
 }
 
@@ -230,6 +285,22 @@ export async function completeOrderDelivery(
     if (closedHandoff.count !== 1) {
       throw new HandoffError(409, 'HANDOFF_ALREADY_CLOSED', 'This rider handoff has already been completed.');
     }
+
+    await tx.delivery_tracking_sessions.updateMany({
+      where: { handoff_id: openHandoff.id },
+      data: {
+        status: 'STOPPED',
+        rider_token_hash: null,
+        rider_token_expires_at: null,
+        latitude: null,
+        longitude: null,
+        accuracy_m: null,
+        speed_mps: null,
+        heading_degrees: null,
+        location_updated_at: null,
+        stopped_at: new Date()
+      }
+    });
 
     if (outcome !== 'DELIVERED') {
       // Leave the READY order in place for manager review/retry. The failed

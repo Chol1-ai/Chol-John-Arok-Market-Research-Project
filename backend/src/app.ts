@@ -17,6 +17,7 @@ import { orderRoutes } from './routes/orders.js';
 import { kdsRoutes } from './routes/kds.js';
 import { paymentRoutes } from './routes/payments.js';
 import { dispatchRoutes } from './routes/dispatch.js';
+import { deliveryTrackingRoutes } from './routes/deliveryTracking.js';
 import { surplusRoutes } from './routes/surplus.js';
 import { digestRoutes } from './routes/digest.js';
 import { inventoryRoutes } from './routes/inventory.js';
@@ -79,6 +80,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   await app.register(kdsRoutes, { prefix: '/api/v1/kds' });
   await app.register(paymentRoutes, { prefix: '/api/v1/payments' });
   await app.register(dispatchRoutes, { prefix: '/api/v1/dispatch' });
+  await app.register(deliveryTrackingRoutes, { prefix: '/api/v1/delivery-tracking' });
   await app.register(surplusRoutes, { prefix: '/api/v1/surplus' });
   await app.register(digestRoutes, { prefix: '/api/v1/digest' });
   await app.register(inventoryRoutes, { prefix: '/api/v1/inventory' });

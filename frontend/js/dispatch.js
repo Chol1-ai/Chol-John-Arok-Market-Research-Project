@@ -11,6 +11,12 @@
     events: null,
     refreshTimer: null,
     pollTimer: null,
+    map: null,
+    mapLayer: null,
+    mapViewKey: null,
+    mapUnavailableNotified: false,
+    mapTileLoaded: false,
+    mapTileErrorTimer: null,
     search: '',
     selectedZone: 'all',
     queueView: 'active',
@@ -35,7 +41,7 @@
     reviewTabCount: document.getElementById('dispatch-review-tab-count'),
     search: document.getElementById('dispatch-search'),
     zoneFilter: document.getElementById('dispatch-zone-filter'),
-    mapMarkers: document.getElementById('dispatch-map-markers'),
+    mapCanvas: document.getElementById('dispatch-map-canvas'),
     mapEmpty: document.getElementById('dispatch-map-empty'),
     mapSummary: document.getElementById('dispatch-map-summary'),
     mapCount: document.getElementById('dispatch-map-count'),
@@ -80,6 +86,16 @@
     completeOrderId: document.getElementById('dispatch-complete-order-id'),
     outcome: document.getElementById('dispatch-outcome'),
     advanceReturned: document.getElementById('dispatch-advance-returned'),
+    trackingInviteModal: document.getElementById('dispatch-tracking-invite-modal'),
+    trackingInviteSub: document.getElementById('dispatch-tracking-invite-sub'),
+    riderTrackingLink: document.getElementById('dispatch-rider-tracking-link'),
+    shareRiderLink: document.getElementById('dispatch-share-rider-link'),
+    copyRiderLink: document.getElementById('dispatch-copy-rider-link'),
+    customerTrackingInvite: document.getElementById('dispatch-customer-tracking-invite'),
+    customerTrackingLink: document.getElementById('dispatch-customer-tracking-link'),
+    copyCustomerLink: document.getElementById('dispatch-copy-customer-link'),
+    trackingInviteClose: document.getElementById('dispatch-tracking-invite-close'),
+    trackingInviteDone: document.getElementById('dispatch-tracking-invite-done'),
     cashTenderedWrap: document.getElementById('dispatch-cash-tendered-wrap'),
     cashTendered: document.getElementById('dispatch-cash-tendered'),
     completeNote: document.getElementById('dispatch-complete-note'),
@@ -102,8 +118,12 @@
         row.customerName,
         row.customerPhone,
         row.destinationZone,
+        row.landmarkHint,
+        row.roomNote,
         row.riderName,
         row.handoff && row.handoff.riderName,
+        row.handoff && row.handoff.riderPhone,
+        row.notes,
         ...(row.items || []).map((item) => item.name)
       ].join(' ').toLocaleLowerCase();
       return searchable.includes(term);
@@ -111,12 +131,45 @@
   }
 
   function hasGps(row) {
-    return row.gpsLatitude !== null &&
-      row.gpsLatitude !== undefined &&
-      row.gpsLongitude !== null &&
-      row.gpsLongitude !== undefined &&
-      Number.isFinite(Number(row.gpsLatitude)) &&
-      Number.isFinite(Number(row.gpsLongitude));
+    if (
+      row.gpsLatitude === null ||
+      row.gpsLatitude === undefined ||
+      String(row.gpsLatitude).trim() === '' ||
+      row.gpsLongitude === null ||
+      row.gpsLongitude === undefined ||
+      String(row.gpsLongitude).trim() === ''
+    ) return false;
+    const latitude = Number(row.gpsLatitude);
+    const longitude = Number(row.gpsLongitude);
+    return Number.isFinite(latitude) &&
+      Number.isFinite(longitude) &&
+      latitude >= -90 &&
+      latitude <= 90 &&
+      longitude >= -180 &&
+      longitude <= 180;
+  }
+
+  function hasRiderGps(row) {
+    const tracking = row.handoff && row.handoff.tracking;
+    if (!tracking || !['SHARING', 'PAUSED'].includes(tracking.status)) return false;
+    const latitude = Number(tracking.latitude);
+    const longitude = Number(tracking.longitude);
+    return Number.isFinite(latitude) &&
+      Number.isFinite(longitude) &&
+      latitude >= -90 &&
+      latitude <= 90 &&
+      longitude >= -180 &&
+      longitude <= 180;
+  }
+
+  function trackingStatusLabel(tracking) {
+    if (!tracking) return 'GPS not started';
+    return {
+      INVITED: 'GPS invite sent',
+      SHARING: 'GPS sharing',
+      PAUSED: 'GPS paused',
+      STOPPED: 'GPS stopped'
+    }[tracking.status] || 'GPS unavailable';
   }
 
   function renderSummary() {
@@ -204,7 +257,7 @@
               <span><i class="material-symbols-outlined" aria-hidden="true">location_on</i>${F.escapeHtml(order.destinationZone || 'Zone not set')}${order.landmarkHint ? ` · ${F.escapeHtml(order.landmarkHint)}` : ''}</span>
               <strong>${F.formatUGX(order.totalUgx)}</strong>
             </div>
-            ${onTheWay ? `<div class="dispatch-rider-assignment"><span class="material-symbols-outlined" aria-hidden="true">two_wheeler</span><span><strong>${F.escapeHtml(handoff.riderName || 'Rider')}</strong><small>${F.escapeHtml(handoff.riderPhone || 'Contact unavailable')}</small></span><span class="dispatch-rider-assignment-time">${F.relativeTime(handoff.dispatchedAt)}</span></div>` : ''}
+            ${onTheWay ? `<div class="dispatch-rider-assignment"><span class="material-symbols-outlined" aria-hidden="true">two_wheeler</span><span><strong>${F.escapeHtml(handoff.riderName || 'Rider')}</strong><small>${F.escapeHtml(handoff.riderPhone || 'Contact unavailable')} · ${F.escapeHtml(trackingStatusLabel(handoff.tracking))}${handoff.tracking && handoff.tracking.updatedAt ? ` · ${F.relativeTime(handoff.tracking.updatedAt)}` : ''}</small></span><span class="dispatch-rider-assignment-time">${F.relativeTime(handoff.dispatchedAt)}</span></div>` : ''}
             ${order.roomNote ? `<p class="dispatch-order-note">${F.escapeHtml(order.roomNote)}</p>` : ''}
             <div class="dispatch-order-items">${items || 'No line items returned.'}</div>
             <div class="dispatch-order-actions">
@@ -270,37 +323,138 @@
       .join('');
   }
 
+  function initializeMap() {
+    if (STATE.map) return STATE.map;
+    if (!window.L) return null;
+
+    const home = [0.3335, 32.5686];
+    STATE.map = window.L.map(els.mapCanvas, {
+      scrollWheelZoom: false,
+      zoomControl: true
+    }).setView(home, 14);
+    STATE.mapLayer = window.L.layerGroup().addTo(STATE.map);
+    const tiles = window.L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    });
+    tiles.on('tileload', () => {
+      STATE.mapTileLoaded = true;
+      if (STATE.mapTileErrorTimer) {
+        window.clearTimeout(STATE.mapTileErrorTimer);
+        STATE.mapTileErrorTimer = null;
+      }
+    });
+    tiles.on('tileerror', () => {
+      if (STATE.mapTileLoaded || STATE.mapTileErrorTimer) return;
+      STATE.mapTileErrorTimer = window.setTimeout(() => {
+        STATE.mapTileErrorTimer = null;
+        if (!STATE.mapTileLoaded) {
+          F.toast('Map tiles could not be loaded. Check your internet connection.', 'error');
+        }
+      }, 3000);
+    });
+    tiles.addTo(STATE.map);
+    window.requestAnimationFrame(() => STATE.map.invalidateSize());
+    return STATE.map;
+  }
+
+  function focusOrderOnQueue(orderId) {
+    setQueueView('active');
+    const card = Array.from(els.active.querySelectorAll('[data-order-card-id]'))
+      .find((item) => item.dataset.orderCardId === orderId);
+    if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
   function renderMap() {
     const rows = filteredRows(STATE.active);
     const points = rows.filter(hasGps);
-    els.mapCount.textContent = `${points.length} GPS destination${points.length === 1 ? '' : 's'}`;
-    if (!points.length) {
-      els.mapMarkers.innerHTML = '';
+    const riderPoints = rows.filter(hasRiderGps);
+    els.mapCount.textContent =
+      `${points.length} destination${points.length === 1 ? '' : 's'} · ${riderPoints.length} rider${riderPoints.length === 1 ? '' : 's'}`;
+    const map = initializeMap();
+    if (!map) {
       els.mapEmpty.hidden = false;
-      els.mapEmpty.innerHTML = `<span class="material-symbols-outlined" aria-hidden="true">location_off</span><strong>No GPS destinations in this view</strong><span>${
-        rows.length ? `${rows.length} active delivery order(s) have no saved coordinates.` : 'Active delivery GPS points appear here when available.'
-      }</span>`;
-    } else {
+      els.mapEmpty.innerHTML = '<strong>Street map unavailable</strong><span>Check your internet connection and reload the dashboard.</span>';
+      if (!STATE.mapUnavailableNotified) {
+        STATE.mapUnavailableNotified = true;
+        F.toast('The street map library could not be loaded.', 'error');
+      }
+      els.mapSummary.textContent = 'Map centered on Makerere, Kampala';
+      return;
+    }
+
+    STATE.mapLayer.clearLayers();
+    points.forEach((order) => {
+      const inTransit = order.handoffState === 'ON_THE_WAY';
+      const token = F.escapeHtml(order.tokenNumber || order.orderNumber || 'Delivery');
+      const zone = F.escapeHtml(order.destinationZone || 'Destination not set');
+      const riderState = inTransit ? 'Rider assigned' : 'Awaiting rider';
+      const popup = `<div class="dispatch-map-popup"><strong>${token}</strong><span>${F.escapeHtml(order.customerName || 'Customer')} · ${zone}</span><span>${riderState}</span><button type="button" data-map-order-id="${F.escapeHtml(order.id)}">View in queue</button></div>`;
+      window.L.circleMarker([Number(order.gpsLatitude), Number(order.gpsLongitude)], {
+        radius: 9,
+        color: '#ffffff',
+        weight: 2,
+        fillColor: inTransit ? '#3989ee' : '#dc8c26',
+        fillOpacity: 1,
+        bubblingMouseEvents: false
+      })
+        .bindPopup(popup, { maxWidth: 240 })
+        .addTo(STATE.mapLayer);
+    });
+
+    riderPoints.forEach((order) => {
+      const tracking = order.handoff.tracking;
+      const token = F.escapeHtml(order.tokenNumber || order.orderNumber || 'Delivery');
+      const riderName = F.escapeHtml(order.handoff.riderName || 'Rider');
+      const trackingState = tracking.status === 'SHARING' ? 'Sharing live' : 'Sharing paused';
+      const updatedAt = tracking.updatedAt ? F.relativeTime(tracking.updatedAt) : 'Time unavailable';
+      const popup = `<div class="dispatch-map-popup"><strong>${riderName} · Rider</strong><span>${token} · ${F.escapeHtml(order.destinationZone || 'Delivery')}</span><span>${trackingState} · last update ${F.escapeHtml(updatedAt)}</span><button type="button" data-map-order-id="${F.escapeHtml(order.id)}">View in queue</button></div>`;
+      const icon = window.L.divIcon({
+        className: '',
+        html: '<span class="dispatch-live-rider-marker" aria-hidden="true">R</span>',
+        iconSize: [34, 34],
+        iconAnchor: [17, 17]
+      });
+      window.L.marker([Number(tracking.latitude), Number(tracking.longitude)], { icon })
+        .bindPopup(popup, { maxWidth: 250 })
+        .addTo(STATE.mapLayer);
+    });
+
+    const viewKey = JSON.stringify({
+      destinations: points.map((order) => `${order.id}:${order.gpsLatitude}:${order.gpsLongitude}`).sort(),
+      riders: riderPoints.map((order) => order.id).sort()
+    });
+    if (viewKey !== STATE.mapViewKey) {
+      const allPoints = [
+        ...points.map((order) => [Number(order.gpsLatitude), Number(order.gpsLongitude)]),
+        ...riderPoints.map((order) => [
+          Number(order.handoff.tracking.latitude),
+          Number(order.handoff.tracking.longitude)
+        ])
+      ];
+      if (allPoints.length === 0) {
+        map.setView([0.3335, 32.5686], 14);
+      } else if (allPoints.length === 1) {
+        map.setView(allPoints[0], 15);
+      } else {
+        map.fitBounds(window.L.latLngBounds(allPoints), { padding: [36, 36], maxZoom: 15 });
+      }
+      STATE.mapViewKey = viewKey;
+    }
+
+    if (points.length || riderPoints.length) {
       els.mapEmpty.hidden = true;
-      const latitudes = points.map((row) => Number(row.gpsLatitude));
-      const longitudes = points.map((row) => Number(row.gpsLongitude));
-      const minLat = Math.min(...latitudes);
-      const maxLat = Math.max(...latitudes);
-      const minLng = Math.min(...longitudes);
-      const maxLng = Math.max(...longitudes);
-      els.mapMarkers.innerHTML = points.map((order) => {
-        const lat = Number(order.gpsLatitude);
-        const lng = Number(order.gpsLongitude);
-        const left = maxLng === minLng ? 50 : 10 + ((lng - minLng) / (maxLng - minLng)) * 80;
-        const top = maxLat === minLat ? 50 : 88 - ((lat - minLat) / (maxLat - minLat)) * 76;
-        const transit = order.handoffState === 'ON_THE_WAY';
-        return `<button class="dispatch-map-marker${transit ? ' is-transit' : ''}" type="button" data-map-order-id="${F.escapeHtml(order.id)}" style="left:${left}%;top:${top}%" title="${F.escapeHtml(order.tokenNumber || order.orderNumber)} · ${F.escapeHtml(order.destinationZone || 'Destination')}" aria-label="Show order ${F.escapeHtml(order.tokenNumber || '')} in the queue">
-          <span class="material-symbols-outlined" aria-hidden="true">${transit ? 'two_wheeler' : 'location_on'}</span><b>${F.escapeHtml(order.tokenNumber || 'Order')}</b>
-        </button>`;
-      }).join('');
+    } else {
+      els.mapEmpty.hidden = false;
+      els.mapEmpty.innerHTML = `<strong>No GPS destinations in this view</strong><span>${
+        rows.length
+          ? `${rows.length} active delivery order(s) have no saved coordinates. The street map remains centered on Makerere.`
+          : 'The street map is centered on Makerere, Kampala. Delivery pins appear when an order has saved GPS coordinates.'
+      }</span>`;
     }
     const missingGps = rows.length - points.length;
-    els.mapSummary.textContent = `${points.length} GPS location${points.length === 1 ? '' : 's'} from active orders${missingGps ? ` · ${missingGps} without coordinates` : ''}`;
+    els.mapSummary.textContent =
+      `${points.length} customer GPS pin${points.length === 1 ? '' : 's'} · ${riderPoints.length} rider location${riderPoints.length === 1 ? '' : 's'}${missingGps ? ` · ${missingGps} order(s) without destination GPS` : ''}`;
   }
 
   function renderRiders() {
@@ -324,12 +478,30 @@
       els.riders.innerHTML = '<div class="dispatch-empty-inline">No riders currently have an open delivery handoff.</div>';
       return;
     }
-    els.riders.innerHTML = riders.map((rider) => `
-      <article class="dispatch-rider-card">
-        <span class="dispatch-rider-avatar">${F.escapeHtml(F.initials(rider.name))}</span>
-        <div class="dispatch-rider-copy"><strong>${F.escapeHtml(rider.name)}</strong><small>${rider.phone ? `<a href="tel:+${F.escapeHtml(rider.phone)}">${F.escapeHtml(rider.phone)}</a>` : 'Phone unavailable'}</small><span>${rider.orders.map((row) => F.escapeHtml(row.tokenNumber || row.orderNumber)).join(' · ')}</span></div>
-        <span class="dispatch-rider-status"><i></i>On delivery</span>
-      </article>`).join('');
+    els.riders.innerHTML = riders.map((rider) => {
+      const statuses = rider.orders.map((row) =>
+        row.handoff.tracking && row.handoff.tracking.status
+      );
+      const trackingLabel = statuses.includes('SHARING')
+        ? 'GPS sharing'
+        : statuses.includes('PAUSED')
+          ? 'GPS paused'
+          : statuses.includes('INVITED')
+            ? 'GPS invite sent'
+            : statuses.includes('STOPPED')
+              ? 'GPS stopped'
+              : 'GPS not started';
+      const latestUpdate = rider.orders
+        .map((row) => row.handoff.tracking && row.handoff.tracking.updatedAt)
+        .filter(Boolean)
+        .sort((left, right) => new Date(right).getTime() - new Date(left).getTime())[0];
+      return `
+        <article class="dispatch-rider-card">
+          <span class="dispatch-rider-avatar">${F.escapeHtml(F.initials(rider.name))}</span>
+          <div class="dispatch-rider-copy"><strong>${F.escapeHtml(rider.name)}</strong><small>${rider.phone ? `<a href="tel:+${F.escapeHtml(rider.phone)}">${F.escapeHtml(rider.phone)}</a>` : 'Phone unavailable'}</small><span>${rider.orders.map((row) => F.escapeHtml(row.tokenNumber || row.orderNumber)).join(' · ')}</span></div>
+          <span class="dispatch-rider-status"><i></i>${F.escapeHtml(trackingLabel)}${latestUpdate ? ` · ${F.relativeTime(latestUpdate)}` : ''}</span>
+        </article>`;
+    }).join('');
   }
 
   function renderZones() {
@@ -471,8 +643,73 @@
     els.assignModal.hidden = true;
   }
 
+  function closeTrackingInvite() {
+    els.trackingInviteModal.hidden = true;
+  }
+
+  function validTrackingInvite(path, type) {
+    const pattern = type === 'rider'
+      ? /^\/rider\/track#token=[A-Za-z0-9_-]{43}$/
+      : /^\/tracker#delivery=[A-Za-z0-9_-]{43}$/;
+    if (typeof path !== 'string' || !pattern.test(path)) return null;
+    const url = new URL(path, location.origin);
+    return url.origin === location.origin ? url.href : null;
+  }
+
+  function showTrackingInvite(invitation, riderName) {
+    const riderUrl = validTrackingInvite(invitation && invitation.riderUrl, 'rider');
+    if (!riderUrl) {
+      F.toast('Rider assigned, but a tracking invite was not returned. Refresh the dispatch queue and contact support if it persists.', 'error');
+      return;
+    }
+
+    els.riderTrackingLink.value = riderUrl;
+    els.trackingInviteSub.textContent =
+      `Send this private link to ${riderName || 'the rider'}. GPS starts only after they allow location and tap Start.`;
+    const customerUrl = validTrackingInvite(invitation && invitation.customerUrl, 'customer');
+    els.customerTrackingInvite.hidden = !customerUrl;
+    els.customerTrackingLink.value = customerUrl || '';
+    els.trackingInviteModal.hidden = false;
+    els.shareRiderLink.focus();
+  }
+
+  async function copyTrackingLink(input) {
+    const text = input.value;
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+        F.toast('Tracking link copied.', 'success');
+        return;
+      }
+      window.prompt('Copy this private tracking link:', text);
+    } catch (error) {
+      F.toast(`Could not copy the tracking link: ${error.message}`, 'error');
+    }
+  }
+
+  async function shareRiderTrackingLink() {
+    const url = els.riderTrackingLink.value;
+    if (!url) return;
+    if (!navigator.share) {
+      await copyTrackingLink(els.riderTrackingLink);
+      return;
+    }
+    try {
+      await navigator.share({
+        title: 'Foodizo delivery GPS invite',
+        text: 'Open this private link on your Android phone to share your location for the active delivery.',
+        url
+      });
+    } catch (error) {
+      if (error.name !== 'AbortError') {
+        F.toast(`Could not open the share sheet: ${error.message}`, 'error');
+      }
+    }
+  }
+
   async function submitAssign() {
     if (STATE.busy) return;
+    if (!els.assignForm.reportValidity()) return;
     const orderId = els.orderId.value;
     const payload = {
       riderName: els.riderName.value.trim(),
@@ -503,6 +740,7 @@
       F.toast(data.message || 'Rider assigned.', 'success');
       closeAssign();
       await loadQueues();
+      showTrackingInvite(data.trackingInvitation, payload.riderName);
     } catch (error) {
       F.toast(error.message || 'Rider assignment failed.', 'error');
     } finally {
@@ -540,6 +778,7 @@
 
   async function submitComplete() {
     if (STATE.busy) return;
+    if (!els.completeForm.reportValidity()) return;
     const orderId = els.completeOrderId.value;
     const returnedRaw = els.advanceReturned.value.trim();
     const payload = { outcome: els.outcome.value };
@@ -584,7 +823,7 @@
       onStatus: setLiveState,
       onEvent(message) {
         if (
-          ['DELIVERY_UPDATED', 'ORDER_SETTLED', 'TOKEN_READY', 'TICKET_UPDATED', 'ORDER_CANCELLED'].includes(
+          ['DELIVERY_UPDATED', 'DELIVERY_LOCATION_UPDATED', 'ORDER_SETTLED', 'TOKEN_READY', 'TICKET_UPDATED', 'ORDER_CANCELLED'].includes(
             message.event
           )
         ) {
@@ -734,6 +973,14 @@
     els.assignModal.addEventListener('click', (event) => {
       if (event.target === els.assignModal) closeAssign();
     });
+    els.shareRiderLink.addEventListener('click', shareRiderTrackingLink);
+    els.copyRiderLink.addEventListener('click', () => copyTrackingLink(els.riderTrackingLink));
+    els.copyCustomerLink.addEventListener('click', () => copyTrackingLink(els.customerTrackingLink));
+    els.trackingInviteClose.addEventListener('click', closeTrackingInvite);
+    els.trackingInviteDone.addEventListener('click', closeTrackingInvite);
+    els.trackingInviteModal.addEventListener('click', (event) => {
+      if (event.target === els.trackingInviteModal) closeTrackingInvite();
+    });
 
     els.completeSubmit.addEventListener('click', submitComplete);
     els.completeForm.addEventListener('submit', (event) => {
@@ -772,13 +1019,10 @@
       setQueueView(STATE.review.length ? 'review' : 'active');
       document.getElementById('dispatch-queue-panel').scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
-    els.mapMarkers.addEventListener('click', (event) => {
+    els.mapCanvas.addEventListener('click', (event) => {
       const marker = event.target.closest('[data-map-order-id]');
       if (!marker) return;
-      setQueueView('active');
-      const card = Array.from(els.active.querySelectorAll('[data-order-card-id]'))
-        .find((item) => item.dataset.orderCardId === marker.dataset.mapOrderId);
-      if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      focusOrderOnQueue(marker.dataset.mapOrderId);
     });
     els.exportButtons.forEach((button) => button.addEventListener('click', exportQueueSnapshot));
     els.refreshRate.addEventListener('change', () => {
@@ -814,6 +1058,7 @@
       if (event.key === 'Escape') {
         closeAssign();
         closeComplete();
+        closeTrackingInvite();
       }
     });
   }

@@ -33,11 +33,11 @@
    (tested on 17)   Africa's Talking    cash-drawer kick
 ```
 
-Real-time KDS updates use an in-process WebSocket bus at `/ws/events` (`fastify.broadcastWs`); Phase 1 does not run Redis. The customer screens under `/prototype/*` are static design previews and do not call this API.
+Real-time KDS and dispatch location updates use an in-process WebSocket bus at `/ws/events` (`fastify.broadcastWs`); Phase 1 does not run Redis. Customer ordering and tracking pages are served as static HTML/JavaScript backed by the API. Customer tracking polls every 10 seconds rather than opening a customer WebSocket.
 
 The audit digest is scheduled inside the API process at **21:30 EAT** by default (`DIGEST_CRON_SCHEDULE`, `Africa/Kampala`) and can also be dispatched on demand with `POST /api/v1/digest/dispatch-now`. SMS is mocked outside production unless Africa's Talking credentials are configured; email reports `NOT_CONFIGURED` because no SMTP transport is implemented. A digest is persisted once per business date with a 72-hour read-only link at `/d/:token`. See `Daily_Audit_Digest.md`.
 
-> **Delivery location note:** The only location service in Phase 1 is the browser's one-shot `navigator.geolocation.getCurrentPosition`, called after an explicit customer tap. There is **no map tile provider, no Google Maps SDK, and no map API key**. FOH dispatch uses a static Google Maps link (`https://www.google.com/maps/search/?api=1&query=lat,lng`), `tel:` links, and `wa.me` links. See `Delivery_Zones_and_Dispatch.md`.
+> **Delivery location note:** Customer drop-off GPS uses one-shot `getCurrentPosition` only after a customer tap. Riders may explicitly start foreground `watchPosition` from a private, time-limited invite for an active handoff. The rider must keep the page open; Android may suspend updates when backgrounded or locked. Dispatch uses the authenticated WebSocket bus for active rider locations, and the private customer map polls every 10 seconds. Leaflet 1.9.4 with OpenStreetMap tiles shows Makerere/Kampala destinations and latest rider locations; it does not geocode, draw routes, or calculate ETAs. Tile requests reveal the approximate visible map area to the tile provider. Public OSM tiles have no production SLA. No Google Maps SDK or map API key is used. See `Delivery_Zones_and_Dispatch.md`.
 
 ---
 
@@ -49,14 +49,14 @@ The audit digest is scheduled inside the API process at **21:30 EAT** by default
 | **Language** | TypeScript | v5.x | Type-safe server and shared contract types |
 | **ORM** | Prisma | v5.x | PostgreSQL schema management and query builder |
 | **Primary Database** | PostgreSQL | 16+ (tested 17) | Orders, inventory, tokens, payments, surplus logs |
-| **Real-Time Bus** | In-process WebSocket (`/ws/events`) | Fastify plugin | KDS ticket creation, bumps, and table status events; no Redis in Phase 1 |
+| **Real-Time Bus** | In-process WebSocket (`/ws/events`) | Fastify plugin | KDS events and authenticated dispatch rider-location updates; customer tracking uses 10-second polling; no Redis in Phase 1 |
 | **Frontend Server** | Native Node.js HTTP server (`server.js`) | Node 18+ | Serves live HTML/CSS/JS, the launch hub, and `/prototype/*`; proxies `/api/v1/*` and `/ws/events` |
 | **Staff UI** | Static HTML + vanilla ES modules | — | Live login, POS, KDS, dispatch, and manager screens |
-| **Customer UI** | Static HTML prototypes | — | Layout review only; no live ordering, payment, or tracking |
-| **Delivery Location** | HTML5 Geolocation API | Browser-native | Optional one-shot drop-off pin; no `watchPosition`, no background tracking |
-| **Maps** | Static Google Maps universal link | — | Opens only on tap; no JS SDK, Places, Directions, Geocoding, or API key |
+| **Customer UI** | Static HTML + vanilla JavaScript | — | Live menu, ordering, status, and private delivery-tracking pages |
+| **Delivery Location** | HTML5 Geolocation API | Browser-native | Optional one-shot customer pin plus consent-based foreground rider `watchPosition`; no background GPS |
+| **Maps** | Leaflet 1.9.4 + OpenStreetMap tiles; Google Maps universal link | — | Kampala/Makerere customer and dispatch maps; static link opens on tap; no paid Maps SDK, Places, Directions, or Geocoding |
 | **Dispatch Contact** | `tel:` + `wa.me` links | — | FOH/rider calls or WhatsApps the customer from the dispatch queue or printed chit |
-| **Customer Alerts** | Africa's Talking SMS API | v1 | Pickup and dispatch SMS; development mode returns `MOCK` and sends nothing |
+| **Customer Alerts** | Africa's Talking SMS API + private status polling | v1 | SMS when configured; customer delivery location/status polls every 10 seconds |
 | **Payment — MTN** | MTN MoMo API (go-live reference) | Collections v1.0 | `MomoService.requestToPay()` is a stub: it returns `PENDING_CUSTOMER_PIN` without calling the telco. Signed webhook settlement is implemented (see `Payment_Integration.md §5.1`) |
 | **Payment — Airtel** | Airtel Money OpenAPI (go-live reference) | Merchant Pay v2.0 | Same stub as MTN; the Airtel client is not implemented. Signed webhook settlement is implemented (see `Payment_Integration.md §5.2`) |
 | **MSISDN Utils** | `backend/src/utils/phone.ts` | — | E.164-style Ugandan MSISDN normalization for `2567XXXXXXXX` |
@@ -64,6 +64,8 @@ The audit digest is scheduled inside the API process at **21:30 EAT** by default
 ---
 
 ## 3. PostgreSQL DDL Schema
+
+The Prisma source of truth also includes `delivery_tracking_sessions` and the `delivery_tracking_status` enum. Migration `20261116150000_delivery_phone_tracking` stores only SHA-256 token hashes and the latest rider location; it does not persist route history. See the migration and schema for the exact columns and constraints.
 
 ```sql
 -- ============================================================
@@ -973,7 +975,11 @@ Phase 1 uses **staff login only**. Customers browse and order without an account
 | Surface / Endpoint | Allowed roles / access |
 | :--- | :--- |
 | `/login`, `/` | Public; `/login` accepts a registered staff phone number and PIN |
-| `/prototype/*` | Public static design previews; no live API behaviour |
+| `/prototype/*` | Legacy URLs redirect to live customer or role-protected staff workflows |
+| `/order`, `/customer` | Public live customer ordering and status |
+| `/tracker` | Public page; delivery details require a private customer bearer link |
+| `/rider/dashboard` | Public page; delivery details and rider actions require a private, expiring rider bearer link |
+| `/rider/track` | Compatibility route to `/rider/dashboard` |
 | `/pos` | `WAITER_FOH`, `MANAGER_ADMIN` |
 | `/kds` | `KITCHEN_STAFF`, `MANAGER_ADMIN` |
 | `/dispatch` | `WAITER_FOH`, `MANAGER_ADMIN` |
@@ -985,6 +991,8 @@ Phase 1 uses **staff login only**. Customers browse and order without an account
 | `GET /api/v1/tables`, `PATCH /api/v1/tables/:id/status` | `WAITER_FOH`, `MANAGER_ADMIN` |
 | `POST /api/v1/orders` | Public for prepaid takeaway/delivery; `WAITER_FOH` or `MANAGER_ADMIN` for `DINE_IN` POSTPAY tabs |
 | `GET /api/v1/orders/token/:token` | Public, sanitized token status |
+| `GET /api/v1/delivery-tracking/customer` | Private per-order bearer token; sanitized status and latest assigned rider location |
+| `GET`, `PATCH /api/v1/delivery-tracking/rider/session`, `POST /api/v1/delivery-tracking/rider/location` | Private expiring rider bearer token; active handoff only |
 | `GET /api/v1/orders/:id`, `POST /api/v1/orders/:id/items` | `WAITER_FOH`, `MANAGER_ADMIN`; outlet-scoped |
 | `POST /api/v1/orders/:id/settle` | `WAITER_FOH`, `MANAGER_ADMIN`; full bill, cash/manual MoMo/telco push |
 | `POST /api/v1/orders/:id/cancel` | `MANAGER_ADMIN` only |

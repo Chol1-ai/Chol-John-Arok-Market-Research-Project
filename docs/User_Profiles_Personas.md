@@ -3,7 +3,7 @@
 **Reference:** PRD Section 2 (User Roles & Permissions Matrix)<br>
 **Related Files:** `Foundational_Concept.md` (roles matrix) · `Design_System.md` (role styling) · `User_Flow.md` (lifecycle state machine) · `Delivery_Zones_and_Dispatch.md` (zone, pin & dispatch model) · `Tech_Stack.md` (DDL & RBAC) · `Payment_Integration.md` (MoMo payment flows by persona) · `Hardware_and_Peripherals.md` (printers & SMS) · `Seed_Data_and_Testing.md` (fixtures & test checklist) · `Repo_Scaffold_and_Config.md` (scaffold & env) · `Demo_Script_and_Closing_Strategy.md` (live demo) · `Daily_Audit_Digest.md` (owner reporting) · `Deployment_Runbook.md` (edge/offline operation) · `Service_Contract_and_Invoice_Template.md` (commercials) · `build_strategy/Build_Strategy_and_Phases.md` (delivery gates)
 
-> **Implementation status:** The live, API-backed surfaces are `/login`, `/pos`, `/kds`, `/dispatch`, and `/admin`. Customer pages under `/prototype/*` (landing, menu, checkout, token, tracker) are static design prototypes and do not call the live API. The customer persona below describes the intended product flow; today the customer order is keyed by staff on the POS, and staff confirm its status. SMS is `MOCK` outside production unless Africa's Talking credentials are configured, and there is no email transport.
+> **Implementation status:** Live surfaces include `/login`, `/pos`, `/kds`, `/dispatch`, `/admin`, `/order`, `/customer`, `/tracker`, and the invite-only `/rider/dashboard`. Online customers can order and use a private delivery tracking link; riders can view their assigned delivery details and opt in to foreground GPS for one active handoff. Native background tracking is not implemented. MTN/Airtel STK initiation remains a stub, SMS is `MOCK` outside production unless Africa's Talking credentials are configured, and there is no email transport.
 
 ---
 
@@ -25,8 +25,8 @@
 | Optional GPS Pin | Tap once to attach a one-shot location pin; decline without losing the order |
 | MoMo Checkout | Approve USSD STK push on handset within the 45-second countdown window |
 | USSD Fallback | Use merchant dial codes (`*165*3*242424#` / `*185*9*121212#`) if the STK push fails |
-| Token Access | Receive the digital token on the printed chit and in the pickup SMS; **Phase 1 has no live customer status page** — `/prototype/token` is a static design prototype, and staff confirm readiness at the counter |
-| Notification Opt-In | Receive an SMS pickup alert when Africa's Talking is configured in production; development runs report `MOCK`. No browser push and no live in-page status feed in Phase 1 |
+| Token Access | Receive the digital token after ordering and follow order status at `/tracker`; delivery customers also receive a private link to their assigned rider's latest location |
+| Notification Opt-In | Receive an SMS pickup alert when Africa's Talking is configured in production; development runs report `MOCK`. No browser push; customer pages poll status, and delivery tracking polls location every 10 seconds |
 
 ### Pain Points
 
@@ -172,24 +172,28 @@ Receives a low-oil operational alert (manual observation in Phase 1)
 | Printed Chit | Receives token, destination zone, room/office note, customer phone, and gate instructions |
 | Phone Call | Dials the customer directly from the chit or the FOH dispatch screen |
 | WhatsApp | Optional; FOH can open a `wa.me` chat with the customer |
-| Handoff Log | FOH records the rider’s name and phone; the rider does not log in |
-| No Live Tracking | No rider app, no background location, no map marker in Phase 1 |
+| Handoff Log | FOH records the rider’s name and phone; the rider does not create an account |
+| Private Tracking Invite | Opens a handoff-specific link on the rider’s own phone; expires after 24 hours |
+| GPS Sharing | Rider explicitly starts, pauses, or stops foreground GPS; the page must remain open |
+| Location Privacy | Dispatch sees the latest active rider point; the customer sees only their assigned rider through a private link |
 
 ### Pain Points
 
 - Being sent to “Makerere” or “YMCA” with no block, room, or gate instruction.
 - Calling a customer who does not answer while the food cools.
 - Being blamed for a late delivery when the kitchen only released the bag after the rider arrived.
+- Keeping the screen open and the phone charged during GPS sharing; browser backgrounding can suspend updates.
 
 ### Success Scenario
 
 ```
 Rider receives bag + chit  →  reads YMCA MAIN CAMPUS, BLOCK C, ROOM 204
+→  opens the private invite and taps Start GPS sharing
 →  calls the customer from the chit  →  delivers to the security gate
 →  FOH marks COMPLETED and records the handoff.
 ```
 
-> **Phase 2 trigger:** A dedicated rider app and live location sharing are considered only when the operation has 5+ full-time contracted riders and >100 deliveries/day outside the immediate campus radius. See `Delivery_Zones_and_Dispatch.md §11`.
+> **Phase 2 trigger:** A native rider app for reliable background location, route lines, or ETAs are considered only when the operation has 5+ full-time contracted riders and >100 deliveries/day outside the immediate campus radius. Foreground opt-in tracking is already available; see `Delivery_Zones_and_Dispatch.md §11`.
 
 ---
 
@@ -198,7 +202,7 @@ Rider receives bag + chit  →  reads YMCA MAIN CAMPUS, BLOCK C, ROOM 204
 
 | Persona | Role Enum | Primary Device | Peak Usage Window | Session / Auth Timeout |
 | :--- | :--- | :--- | :--- | :--- |
-| Brian K. | `CUSTOMER` | Android Mobile (PWA prototype) | 12:30 PM - 2:30 PM | No customer login in Phase 1; `/prototype/*` screens are static |
+| Brian K. | `CUSTOMER` | Android mobile browser | 12:30 PM - 2:30 PM | No customer login; private per-order tracking link |
 | Prossy N. | `WAITER_FOH` | 6.5in Android Handheld | 12:00 PM - 9:30 PM | JWT session expires after 12 hours; logout revokes the row in `user_sessions`; no idle auto-logout |
 | Chef Juma | `KITCHEN_STAFF` | 15in Wall-Mount Touchscreen | 11:30 AM - 9:00 PM | JWT session expires after 12 hours; logout revokes the row in `user_sessions`; no idle auto-logout |
 | Zito Mbowe | `MANAGER_ADMIN` | Laptop + Smartphone | 8:00 AM - 10:00 PM | JWT session expires after 12 hours; cancellation needs only the manager session plus a reason |

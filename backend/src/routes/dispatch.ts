@@ -128,7 +128,10 @@ export const dispatchRoutes: FastifyPluginAsync = async (fastify) => {
           delivery_zone: true,
           order_items: true,
           payments: { where: { status: 'SUCCESSFUL' } },
-          handoffs: { orderBy: { dispatched_at: 'desc' } }
+          handoffs: {
+            orderBy: { dispatched_at: 'desc' },
+            include: { tracking_session: true }
+          }
         },
         orderBy: { created_at: 'asc' }
       });
@@ -176,7 +179,22 @@ export const dispatchRoutes: FastifyPluginAsync = async (fastify) => {
                   riderPhone: openHandoff.rider_phone,
                   riderAdvanceUgx: Number(openHandoff.rider_advance_ugx),
                   dispatchedAt: openHandoff.dispatched_at,
-                  outcome: openHandoff.outcome
+                  outcome: openHandoff.outcome,
+                  tracking: openHandoff.tracking_session
+                    ? {
+                        status: openHandoff.tracking_session.status,
+                        latitude: openHandoff.tracking_session.latitude === null
+                          ? null
+                          : Number(openHandoff.tracking_session.latitude),
+                        longitude: openHandoff.tracking_session.longitude === null
+                          ? null
+                          : Number(openHandoff.tracking_session.longitude),
+                        accuracyM: openHandoff.tracking_session.accuracy_m === null
+                          ? null
+                          : Number(openHandoff.tracking_session.accuracy_m),
+                        updatedAt: openHandoff.tracking_session.location_updated_at
+                      }
+                    : null
                 }
               : null
           };
@@ -194,9 +212,19 @@ export const dispatchRoutes: FastifyPluginAsync = async (fastify) => {
       const data = assignRiderSchema.parse(request.body);
 
       try {
-        const handoff = await assignRiderToOrder(fastify.prisma, request.params.id, data, request.user!);
+        const assignment = await assignRiderToOrder(
+          fastify.prisma,
+          request.params.id,
+          data,
+          request.user!
+        );
         const order = await fastify.prisma.orders.findUniqueOrThrow({
           where: { id: request.params.id }
+        });
+        fastify.broadcastWs({
+          event: 'DELIVERY_UPDATED',
+          outlet: order.outlet,
+          data: { orderId: order.id, orderNumber: order.public_ref, status: 'READY' }
         });
 
         let smsResult = null;
@@ -212,7 +240,13 @@ export const dispatchRoutes: FastifyPluginAsync = async (fastify) => {
         return reply.send({
           success: true,
           message: `Boda rider ${data.riderName} assigned to order ${order.public_ref}.`,
-          handoff,
+          handoff: assignment.handoff,
+          trackingInvitation: {
+            riderUrl: `/rider/dashboard#token=${assignment.riderTrackingToken}`,
+            ...(assignment.customerTrackingToken && {
+              customerUrl: `/tracker#delivery=${assignment.customerTrackingToken}`
+            })
+          },
           smsSent: smsResult?.success ?? false,
           smsMode: smsResult?.mode ?? null,
           smsDetail: smsResult?.detail ?? null

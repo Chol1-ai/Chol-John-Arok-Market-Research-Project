@@ -65,6 +65,8 @@ const ROUTE_MAP = {
   '/order': 'live/customer-order.html',
   '/customer': 'live/customer-order.html',
   '/tracker': 'html/boda_landmark_delivery_tracker.html',
+  '/rider/dashboard': 'html/rider_tracking.html',
+  '/rider/track': 'html/rider_tracking.html',
 
 };
 
@@ -325,6 +327,7 @@ function renderNotFound(res, pathname) {
             • <a href="/">Customer home</a><br>
             • <a href="/order">Menu, ordering &amp; checkout</a><br>
             • <a href="/tracker">Order token &amp; tracking</a><br>
+            • <a href="/rider/dashboard">Rider dashboard (private invite required)</a><br>
             • <a href="/customer">Customer ordering</a>
           </div>
           <div><strong>Staff?</strong><br>
@@ -439,7 +442,13 @@ const server = http.createServer(async (req, res) => {
   );
   if (await enforceStaffSurface(req, res, pathname, urlObj.search)) return;
 
-  serveStatic(pathname, res, isStaffSurface ? { noStore: true } : undefined);
+  const isTrackingSurface =
+    pathname === '/rider/dashboard' || pathname === '/rider/track';
+  serveStatic(
+    pathname,
+    res,
+    isStaffSurface || isTrackingSurface ? { noStore: true } : undefined
+  );
 });
 
 server.on('upgrade', (req, socket, head) => {
@@ -463,6 +472,7 @@ server.listen(PORT, '0.0.0.0', () => {
   console.log(`   Read-only Digest link:  http://localhost:${PORT}/d/<token>`);
   console.log(`   Customer Orders:        http://localhost:${PORT}/order`);
   console.log(`   Live customer tracker:  http://localhost:${PORT}/tracker`);
+  console.log(`   Rider dashboard:        http://localhost:${PORT}/rider/dashboard (private invite required)`);
   console.log('LIVE CUSTOMER FLOWS:');
   console.log(`   Customer ordering:     http://localhost:${PORT}/order`);
   console.log(`   Order tracker:         http://localhost:${PORT}/tracker`);

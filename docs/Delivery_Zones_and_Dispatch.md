@@ -1,6 +1,6 @@
 ﻿# Delivery Zones, Landmark Checkout & Rider Dispatch
 
-**Status:** Phase 1 canonical specification — supersedes any assumption that checkout requires a live map.<br>
+**Status:** Phase 1 canonical specification — landmark checkout with optional foreground rider GPS sharing.<br>
 **Target Outlets:** Foodizo (Ham Towers) & Obunuzi Restaurant & Cafe (Opposite YMCA)<br>
 **Location:** Wandegeya, Kampala, Uganda<br>
 **Related Specifications:** `Foundational_Concept.md` · `Design_System.md` · `User_Flow.md` · `User_Profiles_Personas.md` · `Tech_Stack.md` · `Payment_Integration.md` · `Hardware_and_Peripherals.md` · `Seed_Data_and_Testing.md` · `Repo_Scaffold_and_Config.md` · `Demo_Script_and_Closing_Strategy.md` · `Daily_Audit_Digest.md` · `Deployment_Runbook.md` · `Service_Contract_and_Invoice_Template.md` · `build_strategy/Build_Strategy_and_Phases.md`
@@ -9,7 +9,7 @@
 
 ## 1. Decision & Verdict
 
-Adopt the **Zone & Landmark Dropdown + Direct Phone/WhatsApp Dispatch** model for Phase 1. Do **not** build a live Google Maps checkout or live rider tracking for the initial deployment.
+Adopt the **Zone & Landmark Dropdown + Direct Phone/WhatsApp Dispatch** model for checkout. A separate, optional foreground GPS link supports an active delivery; it does not replace the landmark note or require a Google Maps checkout.
 
 The AI Studio recommendation is directionally correct — location matters — but a live Google Maps checkout is the wrong implementation for two Wandegeya restaurants serving Makerere halls, YMCA, Ham Towers, and the surrounding market corridor. The local-first model matches how freelance boda riders actually operate: they know landmarks, call the customer, and navigate from a room/office note — not from a pin dropped on a rooftop.
 
@@ -24,8 +24,9 @@ The AI Studio recommendation is directionally correct — location matters — b
 | Google Maps universal link (`https://www.google.com/maps/search/?api=1&query=...`) | **Adopt** — free link, no API key, no map SDK |
 | Thermal packaging chit with destination + room/note + phone | **Adopt** — printed at `READY` for takeaway and delivery only; dine-in does not print |
 | Call / WhatsApp dispatch from FOH | **Adopt** — native `tel:` and `wa.me` links |
-| Live rider tracking | **Defer to Phase 2** — see §11 |
-| Dedicated rider login/app | **Defer to Phase 2** — riders are non-system actors in Phase 1 |
+| Foreground rider GPS for an active delivery | **Adopt** — one handoff-scoped, time-limited invite; the rider explicitly starts sharing |
+| Customer live location view | **Adopt** — private link created with the online delivery order |
+| Dedicated rider login/native app/background GPS | **Defer to Phase 2** — see §11 |
 
 ### 1.2 Corrections to the original suggestion
 
@@ -33,9 +34,9 @@ The AI Studio recommendation is directionally correct — location matters — b
    - **“Use my current GPS pin (optional)”** — captures coordinates with `navigator.geolocation`.
    - **“Share map link on WhatsApp (optional)”** — opens the outlet’s WhatsApp chat with a prefilled Google Maps link. The customer still taps **Send** inside WhatsApp.
 2. **A Google Maps *link* is free; the Google Maps *Platform* is not.** Embedding a map, geocoding, directions, or place search uses billable APIs, requires a key, and introduces quota/failure modes. A universal map link does not. Even if a monthly free credit covers the pilot volume, enabling billing and an API key creates an account, quota, and key-rotation burden that a two-outlet MVP does not need; Google can change pricing and terms.
-3. **Riders should not become a fifth system role in Phase 1.** The existing four-role model stays intact. FOH/cashier dispatches from a dedicated queue, and the rider receives a printed chit. A rider app is a Phase 2 decision.
+3. **Riders do not become a fifth system role.** The existing four-role model stays intact. FOH dispatches from the queue and shares a private, handoff-scoped link; a native app and background tracking remain Phase 2 decisions.
 4. **“UGX 0” is accurate only for map API fees.** SMS, thermal paper, rider airtime/data, rider transport advances (the typical stage-boda payment is UGX 1,500–3,000), and staff time still cost money. The claim should be “UGX 0 in map API fees,” not “zero operating cost.”
-5. **Leaflet + OpenStreetMap is free and open-source, but public OSM tile servers are not an unconditional production CDN.** Phase 2 must use a tile provider with a real usage policy or self-host tiles.
+5. **Leaflet + OpenStreetMap is free and open-source, but public OSM tile servers are not an unconditional production CDN.** Phase 1 uses public OSM tiles in the staff and private customer maps; tile requests can reveal the approximate map area, including a rider's current area. Choose a hosted provider with an appropriate usage policy or self-host tiles as traffic and privacy requirements grow.
 
 ### 1.3 What this document fixes
 
@@ -53,17 +54,17 @@ Before this specification, the documentation defined `PHONE_DELIVERY` as a chann
 - Riders are often freelance boda riders picked from the stage. They do not install a fleet app for a single lunch delivery; they answer a phone call and follow a landmark.
 - A delivery that fails because the rider cannot find a room costs more than the map API fee ever would: the food cools, the customer calls the cashier, and the kitchen loses a ticket.
 
-### 2.2 Why a live map is the wrong Phase 1 investment
+### 2.2 Why a live checkout map and route engine are not Phase 1 investments
 
-| Concern | Live map / live tracking | Zone + landmark dropdown |
+| Concern | Full route/map experience | Zone + landmark dropdown |
 | :--- | :--- | :--- |
-| **Map API cost** | Billable Maps JavaScript/Geocoding/Directions usage, API key, billing account | UGX 0 in map API fees |
-| **Reliability** | Map tiles and SDK must load; quota errors, expired keys, and weak data connections break checkout | Native `<select>` and text fields render on the weakest connection |
+| **Map API cost** | Google Maps SDK/geocoding/routing are billable; Leaflet/OSM software is free, but tile-service terms and capacity still matter | UGX 0 in map API fees |
+| **Reliability** | A live map depends on tiles and network; routing/SDKs add quotas and provider dependencies | Native `<select>` and text fields render on the weakest connection |
 | **Indoor accuracy** | GPS drifts in high-rise blocks, basements, and campus courtyards; pins land on roofs or wrong gates | Room/office note and reception landmark are authoritative |
 | **Customer effort** | Permission prompt, map panning, pin placement, accidental drag | One dropdown, one note, one phone number |
-| **Rider reality** | Requires rider app, background location, battery, data, training | Printed chit + phone call + WhatsApp link |
-| **Privacy exposure** | Continuous location is sensitive personal data | One-shot optional pin, explicit consent |
-| **Build/maintenance** | Weeks of map work, key rotation, quota monitoring, vendor changes | Days of CRUD, validation, and print layout |
+| **Rider reality** | Reliable background location and routing require a native app, battery, data, and support | Foreground web sharing is optional; the rider must keep the invite page open |
+| **Privacy exposure** | Unbounded location history is sensitive personal data | Explicit active-handoff opt-in; only the latest point is retained and cleared when tracking ends |
+| **Build/maintenance** | Route engines, background reliability, and hosted map operations add cost and support | Zone CRUD, validation, print layout, and a lightweight active-handoff map |
 | **Failure mode** | Blank map at checkout when the API is unavailable | Checkout still completes with zone + note |
 
 > **Rule:** The landmark note is the source of truth. A GPS pin is a hint, never a requirement.
@@ -81,12 +82,13 @@ The existing `channel_type` enum keeps `PHONE_DELIVERY` for backward compatibili
 | Outlet-scoped zone dropdown with fee/ETA | Live map embedded at checkout |
 | Required room/office/landmark note | Route optimisation |
 | Required recipient name and rider-callable phone | Automatic rider assignment |
-| Optional one-shot HTML5 GPS pin | Continuous rider tracking |
+| Optional one-shot customer drop-off GPS pin | Background GPS or tracking after the active handoff |
 | Static Google Maps link on the FOH dispatch screen | Google Maps JavaScript SDK / Places / Directions / Geocoding |
 | Thermal delivery chit | Rider mobile app or rider login |
 | FOH call / WhatsApp links | Customer-facing WhatsApp Business API / automated customer messages (the owner-only 21:30 digest is separate; see `Daily_Audit_Digest.md`) |
-| Rider handoff audit | Customer-facing live “rider is 3 minutes away” view |
+| Rider handoff audit | Route line or reliable ETA |
 | Zone and fee maintenance in the admin portal | Distance-based dynamic pricing |
+| Opt-in foreground rider GPS and a private customer map link | — |
 
 ---
 
@@ -263,7 +265,7 @@ The live `/dispatch` card renders the order total for cash collection, but no BO
 | :--- | :--- |
 | **ASSIGN BODA RIDER** | Opens the handoff modal: rider name (required), rider phone (required), boda plate and stage (optional), dispatch method (`CALL` / `WHATSAPP` / `COUNTER_HANDOFF`), and advance cash in UGX (optional, default `0`). |
 | **CALL CUSTOMER** | Opens the `tel:` link returned by the API. The FOH phone or a rider’s phone dials the customer. |
-| **OPEN MAP** | Opens the static Google Maps link returned by the API when a zone or GPS hint exists. It never embeds a map, rider marker, or route line. |
+| **OPEN MAP** | Opens the static Google Maps link returned by the API when a zone or customer GPS hint exists. The dispatch dashboard also plots saved customer pins and opted-in active rider locations on its Kampala/Makerere Leaflet map; it does not draw routes or calculate ETAs. |
 | **COMPLETE DELIVERY** | Appears on an **ON THE WAY** card. For COD, requires cash tendered at least equal to the order total; records the cash payment, any change, handoff outcome, and order completion atomically. Failed outcomes (`FAILED_UNREACHABLE`, `REFUSED`, or `RETURNED`) remain open for review and do not request customer cash. |
 
 There is no print-chit button on the dispatch card. Printing happens internally when the KDS bumps the order to `READY`; a failed print is retried from the POS with `POST /api/v1/orders/:id/reprint-chit`.
@@ -271,6 +273,8 @@ There is no print-chit button on the dispatch card. Printing happens internally 
 ### 5.3 Handoff rules
 
 - The rider does **not** log in. FOH records the rider’s name and phone number for accountability.
+- On assignment, FOH can share a private rider dashboard link. It expires after 24 hours and grants access only to that delivery. The dashboard shows the destination, exact drop-off note, customer name and callable phone, and an optional customer GPS pin; it also provides refresh, call, and map actions. The rider must explicitly start GPS sharing and keep the page open; pause and stop controls are available on the rider’s phone.
+- Online `PHONE_DELIVERY` orders receive a separate private customer tracking link. Customers see the assigned rider’s latest location only while it is available; the customer link does not expose customer contact details or provide access to another order.
 - If the outlet pays the rider’s transport (the normal Wandegeya stage-boda arrangement), record the cash advance in `rider_advance_ugx`. Record any change or unused advance returned by the rider in `rider_advance_returned_ugx`. An unrecorded UGX 2,000 handoff will show up as a cash-drawer variance at shift close.
 - Do not confuse the rider advance with the delivery fee. The customer pays the delivery fee; the outlet pays the rider. The difference is the delivery contribution, which can be positive or negative.
 - On handoff, write a `delivery_handoffs` row with `dispatched_at`, the FOH user, the dispatch method, and the rider advance fields.
@@ -289,7 +293,8 @@ There is no print-chit button on the dispatch card. Printing happens internally 
 | Room/office note | **No** | Yes | Yes |
 | Customer name | **No** | Yes | Yes |
 | Customer phone | **No** | Yes | Yes |
-| GPS coordinates / map link | **No** | Link only | **No** |
+| Customer drop-off GPS / map link | **No** | Map pin/link | **No** |
+| Rider GPS | **No** | Latest position and sharing state on dispatch map | **No** |
 | Prices / totals | **No** | Yes | **No** |
 
 The KDS must remain free of customer names, phone numbers, and personal delivery notes, consistent with `Design_System.md §4.3`. The KDS may show the destination zone so the expo station can label the bag correctly.
@@ -348,7 +353,21 @@ Unique constraint: `(outlet, zone_code)`.
 | `outcome` | `handoff_outcome` enum | `PENDING`, `DELIVERED`, `FAILED_UNREACHABLE`, `REFUSED`, `RETURNED` |
 | `notes` | `TEXT` | Optional dispatch note |
 
-### 6.4 Validation rules
+### 6.4 `delivery_tracking_sessions`
+
+One row per delivery order, linked to the active handoff. Prisma is canonical for the exact SQL types and constraints.
+
+| Data | Purpose |
+| :--- | :--- |
+| `customer_token_hash`, `customer_token_expires_at` | Private customer access; raw token is returned to the online order placer or authorized dispatch when created |
+| `rider_token_hash`, `rider_token_expires_at` | Per-handoff rider invite; raw token is returned only to authorized dispatch |
+| `status` | `INVITED`, `SHARING`, `PAUSED`, or `STOPPED` |
+| `latitude`, `longitude`, `accuracy_m`, `speed_mps`, `heading_degrees`, `location_updated_at` | Latest validated rider fix only; no route history |
+| `started_at`, `paused_at`, `stopped_at` | Rider-sharing lifecycle timestamps |
+
+Customer tokens expire after 7 days; rider invites expire after 24 hours. Store SHA-256 token hashes, never raw bearer tokens. A retry assignment rotates the rider invite and clears the previous handoff’s location.
+
+### 6.5 Validation rules
 
 1. A delivery order must reference an **active** zone owned by the same outlet.
 2. The server recomputes `delivery_fee_ugx` from the zone; it never trusts the client.
@@ -359,6 +378,8 @@ Unique constraint: `(outlet, zone_code)`.
 7. Notes printed to ESC/POS must be stripped of control characters (see `Hardware_and_Peripherals.md §1.3`).
 8. `rider_advance_returned_ugx` must be `>= 0` and must not exceed `rider_advance_ugx`; a negative net advance is invalid.
 9. Rider advance fields are FOH/manager-only and must never appear on the KDS or the customer-facing order view.
+10. Rider and customer tracking secrets are high-entropy bearer tokens; store only their SHA-256 hashes. Do not put them in query strings or application logs.
+11. Keep only the latest rider location, not a route history. Clear it and revoke rider access at stop, handoff completion, cancellation, or delivery failure.
 
 ---
 
@@ -440,8 +461,13 @@ The existing Expo ESC/POS printer fires the packaging chit when the kitchen bump
 | `/api/v1/orders/:id/delivery-complete` | `POST` | Record `DELIVERED`, `FAILED_UNREACHABLE`, `REFUSED`, or `RETURNED`; successful COD delivery requires `cashTenderedUgx`, then records cash payment, audit, and completion atomically |
 | `/api/v1/orders/:id/reprint-chit` | `POST` | Re-fire the delivery chit; audit-logged |
 | `/api/v1/dispatch/:id/assign-rider`, `/api/v1/dispatch/:id/complete` | `POST` | Compatibility aliases for the order-level handoff and completion routes |
+| `/api/v1/delivery-tracking/customer` | `GET` | Private customer bearer link; returns sanitized order state and the latest rider location when available |
+| `/api/v1/delivery-tracking/rider/session` | `GET`, `PATCH` | Rider bearer link; read only the assigned delivery details or set sharing to `SHARING`, `PAUSED`, or `STOPPED` |
+| `/api/v1/delivery-tracking/rider/location` | `POST` | Rider bearer link; validate and save the latest GPS fix for the active handoff |
 
-There is a public read-only delivery-zone catalogue endpoint, but **no zone-maintenance admin API** in Phase 1. Zones are seeded into `delivery_zones`; changing a fee, ETA, or active flag is seed/database maintenance. Live customer pickup and delivery ordering is available at `/order`.
+The dispatch dashboard shows an interactive Leaflet street map using OpenStreetMap tiles, initially centered on Makerere, Kampala. It plots saved customer GPS pins and the latest rider locations for active handoffs; staff updates arrive over the existing authenticated WebSocket bus. Search and zone filters also filter the map pins, and selecting a pin opens its order in the queue. The private customer map polls every 10 seconds. Neither map geocodes addresses, draws routes, nor calculates an ETA. OpenStreetMap tile requests reveal the approximate visible map area to the tile provider.
+
+The public delivery-zone catalogue is read-only; **there is no zone-maintenance admin API**. Zones are seeded into `delivery_zones`; changing a fee, ETA, or active flag is seed/database maintenance. Live customer pickup and delivery ordering is available at `/order`. A public online delivery order receives a private customer tracking URL. Rider invites are issued when FOH assigns a rider and can be copied or shared from the dispatch dashboard.
 
 **Validation and order-creation errors**
 
@@ -472,11 +498,17 @@ A delivery order can be composed from a zone that becomes inactive before `POST 
 
 ## 10. Privacy, Security & Operational Safety
 
-- **Consent:** GPS is captured only after an explicit tap. The button copy explains that the pin will be shared with the rider. Declining has no penalty.
-- **Data minimisation:** Store zone, note, name, phone, and optional pin. Do not collect continuous location, background location, or contacts.
-- **Access control:** Customer name, phone, room note, and GPS link are visible to `WAITER_FOH` and `MANAGER_ADMIN`. `KITCHEN_STAFF` sees only the destination zone. Riders receive the printed chit, not a system login.
-- **Logging:** Mask phone numbers in application logs (`0701***567`). Do not log GPS coordinates at `info` level.
-- **Retention:** Keep precise coordinates only as long as needed for delivery disputes; a default proposal is 90 days, then null the lat/lng/accuracy fields while retaining the zone and note for order history. Confirm the final retention period with Zito Mbowe and the business’s data-protection policy.
+- **Rider consent:** GPS sharing starts only after the rider opens the private invite, taps **Start GPS sharing**, and grants browser permission. Riders can pause or stop. Use HTTPS in production; browser geolocation may be unavailable on insecure LAN pages.
+- **Customer access:** A separate random 256-bit bearer link grants access to one delivery. It is returned only to the online customer who placed the order, stored in the URL fragment (not a query string), held in session storage while tracking, and never written in application logs. Customer responses omit customer contact details.
+- **Rider access:** A random 256-bit, handoff-scoped bearer link expires after 24 hours. Only its SHA-256 hash is stored. It is revoked when stopped, completed, cancelled, or otherwise no longer active; it does not grant staff access or another order’s location.
+- **Rider dashboard scope:** The invite exposes only the assigned order's destination instructions, customer contact, and optional drop-off pin so the rider can complete that delivery. It is not a rider account, multi-order queue, or permission to change payment or completion records.
+- **External map link:** The rider dashboard offers Google Maps only when the customer supplied a GPS pin; opening it sends that pin to Google Maps.
+- **Data minimisation:** Store only the latest rider fix; do not retain a route history, background location, or contacts. Pause preserves the last fix with its timestamp; the private customer map may show that point with a paused status, but receives no newer location until sharing resumes. Stop and handoff termination clear it.
+- **Operational limits:** Browser tracking uses foreground `watchPosition`. Android may suspend GPS updates when the page is backgrounded or the phone locks. The rider must keep the page open and connected; this is not reliable background tracking and no ETA is provided.
+- **Map-provider privacy:** Customer and dispatch maps load OpenStreetMap tiles. The tile provider sees requests for the visible map area, which can reveal an approximate rider location. Public OSM tiles have usage policies and no production SLA; use an appropriately contracted provider or self-host tiles if required.
+- **Access control:** Customer name, phone, room note, and customer drop-off GPS link are visible to `WAITER_FOH` and `MANAGER_ADMIN`. `KITCHEN_STAFF` sees only the destination zone. Riders receive their assigned delivery context, not a system login.
+- **Logging:** Mask phone numbers in application logs (`0701***567`). Do not log bearer tokens or GPS coordinates.
+- **Retention:** The tracking session keeps only the latest fix during the active handoff. The customer’s optional destination pin is separate order data; retain or remove it according to the business’s approved order-data retention policy.
 - **Uganda Data Protection and Privacy Act, 2019:** Treat phone numbers and precise location as personal data. Collect for a stated purpose, protect it, and do not repurpose it for marketing without consent. This is an engineering note, not legal advice.
 - **ESC/POS injection:** Customer notes are printed to a raw printer. Strip `ESC`, `GS`, and control bytes before printing; cap the note length. A malicious note must not be able to issue printer commands.
 - **Client trust:** The client may send coordinates, but the server must validate ranges. The client must never send a trusted fee. The server recomputes the zone fee and total.
@@ -484,25 +516,25 @@ A delivery order can be composed from a zone that becomes inactive before `POST 
 
 ---
 
-## 11. Phase 2 Trigger: When Live Tracking Becomes Worth It
+## 11. Phase 2 Trigger: When Background Tracking or Routing Becomes Worth It
 
-Do not add live GPS tracking because a competitor has a map. Add it when the operation has the fleet discipline to use it.
+Foreground, opt-in tracking is implemented for active handoffs. A native rider app, reliable background location, route line, and ETA are still deferred until the operation can support them.
 
 | Trigger | Threshold | Why it changes the decision |
 | :--- | :--- | :--- |
 | Dedicated fleet | 5+ full-time contracted riders (not freelance stage bodas) | A rider app can be mandated and supported |
 | Delivery volume | >100 deliveries/day outside the immediate 1 km campus radius | Dispatch by phone stops scaling |
-| Delivery failures | >5% of deliveries fail or are late because of address ambiguity for two consecutive weeks | The zone model needs a live assist |
+| Delivery failures | >5% of deliveries fail or are late because of address ambiguity for two consecutive weeks | Consider route/ETA support and review location reliability |
 | Geographic spread | Regular deliveries to Kololo, Nakasero, Mulago, or Kamwokya | Landmark familiarity drops |
 | Customer expectation | Corporate/office clients require live ETA | A tracking link becomes commercially necessary |
 
 ### 11.1 Phase 2 architecture (if triggered)
 
 - **Map:** Leaflet + OpenStreetMap, not Google Maps JavaScript SDK. Budget for a tile provider or self-host tiles; public OSM tile servers have usage policies and no SLA.
-- **Rider PWA:** a lightweight rider view with `navigator.geolocation.watchPosition`, a 15–30 second heartbeat, and a visible “sharing location” indicator.
-- **Transport:** WebSocket (`@fastify/websocket`) to the FOH dispatch screen. Phase 1 uses the in-process `fastify.broadcastWs` bus; a multi-instance Phase 2 deployment would need a shared broker, which is not implemented.
-- **Storage:** `rider_locations` table (optionally PostGIS) with rider ID, order ID, lat/lng, accuracy, and timestamp. Retain only the latest point plus a short trail.
-- **Consent and battery:** explicit rider opt-in, foreground-only sharing by default, pause when the app is backgrounded, and a clear battery impact warning.
+- **Native rider app/background GPS:** only if foreground browser sharing proves insufficient; retain explicit consent and active-handoff scope.
+- **Transport:** A multi-instance deployment would need a shared broker; Phase 1 uses the in-process authenticated WebSocket bus for dispatch and customer polling every 10 seconds.
+- **Storage:** Continue storing only the latest point unless a documented operational need and retention policy justify route history.
+- **Routing:** Add a licensed routing/ETA provider only with a reliability target and tile/location privacy review.
 - **Fallback:** the zone + landmark + phone workflow remains available if the map, GPS, or network fails.
 
 ### 11.2 Migration path
@@ -510,8 +542,8 @@ Do not add live GPS tracking because a competitor has a map. Add it when the ope
 Phase 2 is additive:
 
 1. Keep `delivery_zones`, `delivery_zone_id`, and the printed chit.
-2. Add rider and location tables; do not rewrite the order state machine.
-3. Add a `tracking_url` to the customer notification only when a rider is actually sharing.
+2. Reuse `delivery_tracking_sessions`; introduce native device credentials only if background GPS is required.
+3. Keep the existing private per-order customer and rider links; change token access only with a migration plan.
 4. Keep the call/WhatsApp path forever as the fallback.
 
 ---
@@ -526,7 +558,7 @@ Before the delivery feature is demoed to Zito Mbowe, verify:
 - [ ] The server ignores a client-supplied delivery fee and writes only the zone-derived fee.
 - [ ] The customer can complete checkout with GPS denied or unavailable.
 - [ ] The GPS button never prompts on page load and never blocks payment.
-- [ ] The map link opens a static Google Maps pin; no map SDK, API key, or embedded tiles load.
+- [ ] The checkout map link opens a static Google Maps pin; checkout loads no map SDK, API key, or tiles. The separate customer tracker map uses Leaflet/OpenStreetMap.
 - [ ] The KDS shows the destination zone but not the customer name, phone number, room note, or GPS coordinates.
 - [ ] The FOH dispatch queue shows zone, room note, phone, **ASSIGN BODA RIDER**, **CALL CUSTOMER**, and **OPEN MAP**; a failed print is retried from the POS.
 - [ ] The thermal chit prints destination, room/note, and phone for delivery orders.
@@ -534,6 +566,13 @@ Before the delivery feature is demoed to Zito Mbowe, verify:
 - [ ] A rider handoff records rider name, dispatcher, method, timestamp, and any transport advance.
 - [ ] Rider advances and returned change reconcile to the cash drawer at shift close.
 - [ ] A delivery can be completed and reconciled without a live map.
+- [ ] An online delivery receives a private customer tracking link; other orders and customer contact details are not exposed through it.
+- [ ] Rider GPS starts only after explicit consent, works only for the active assigned handoff, and can be paused or stopped from the rider phone.
+- [ ] The rider dashboard displays only the invite’s assigned delivery, customer call action, and a map action only when a customer pin exists.
+- [ ] Dispatch receives active rider location updates; the customer view refreshes at 10-second intervals and clearly distinguishes no fix, stale, paused, and stopped states.
+- [ ] Rider/customer bearer tokens are not stored in plaintext; stopping, completion, cancellation, and failure revoke rider access and clear the latest coordinate.
+- [ ] Tracking pages require HTTPS for phone geolocation and clearly warn that browser backgrounding or screen lock can suspend updates.
+- [ ] Customer and dispatch map tiles are identified as an external location disclosure; no rider route history is retained or precise ETA claimed.
 - [ ] Inactive Phase 2 zones do not appear in the checkout dropdown.
 - [ ] The flow works on a 3G connection with map services blocked.
 - [ ] All controls meet the 48px touch-target minimum; the zone select has a visible label and accessible error text.

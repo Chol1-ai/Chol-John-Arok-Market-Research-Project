@@ -41,7 +41,7 @@ A student on a 20-minute lecture break, a waiter carrying eight table tabs, a co
 
 | Dimension | 1. Customer PWA | 2. Waiter / FOH | 3. Kitchen / KDS | 4. Manager / Admin |
 | :--- | :--- | :--- | :--- | :--- |
-| **Route scope** | `/prototype/*` (static design screens) | `/pos`, `/dispatch` | `/kds` | `/admin` |
+| **Route scope** | `/`, `/order`, `/customer`, `/tracker` | `/pos`, `/dispatch` | `/kds` | `/admin` |
 | **Design mood** | Warm street craft | Tactical service terminal | Industrial machinery HUD | Executive ledger |
 | **Surface** | Warm cream `#FAF8F5` | Utilitarian slate `#F1F5F9` | Carbon matte `#050811` | Obsidian `#0B0F17` |
 | **Primary accent** | Chili `#C2410C` | Cobalt `#1E3A8A` | Phosphor `#059669` | Brass `#C8A96A` |
@@ -377,7 +377,14 @@ The panel is a short form, not a map. It appears between the cart review and the
 - **No “Other / type your own” zone option.** If the customer’s location is not listed, show the outlet phone number and “Call us to confirm delivery.” This prevents untracked addresses and surprise fees.
 - **Fee display:** always show the server-computed delivery fee and the resulting total before the pay button. Do not let the client edit the fee.
 - **Error state:** 2px `#DC2626` border, icon + text, error summary above the pay button, and focus moved to the first invalid field. The pay button stays disabled until the required fields pass.
-- **No live map:** do not add a map preview, route line, rider marker, or “nearby restaurants” map. The zone and note are the delivery UX.
+- **Checkout boundary:** do not add a map preview, route line, rider marker, or “nearby restaurants” map to checkout. The zone and note remain the delivery UX; live tracking is a separate page.
+
+**Private delivery tracking (`/tracker` and `/rider/dashboard`)**
+
+- The customer map opens only from the private tracking link after the order is placed. Show delivery status, rider identity when assigned, last-update time, and an honest no-fix, stale, paused, or stopped state. Do not show a route line, speed estimate, or ETA.
+- The rider dashboard shows only the delivery assigned to its private invite: destination area, drop-off instructions, customer name and callable phone, and a customer GPS pin when one exists. Provide refresh and phone/map quick actions plus explicit **Start GPS sharing**, **Pause sharing**, and **Stop sharing** controls. Never request location on page load.
+- These are phone-first surfaces with large touch controls and readable status; warn that the page must remain open and Android may suspend updates in the background or when locked.
+- The customer map uses Leaflet/OpenStreetMap. Tile-provider requests can reveal the approximate rider area; do not imply the map is a private/offline tile service.
 
 ### 4.2 Waiter / FOH — Tactical Table Grid
 
@@ -427,12 +434,13 @@ The dispatch queue is a FOH surface, not a fifth role. The active queue lists on
 ```
 
 - Card uses the FOH white card, 2px ink border, `3px 3px 0 #0F172A` shadow, and a purple `PHONE_DELIVERY` channel strip.
-- **CALL CUSTOMER** is a `tel:` link. **OPEN MAP** opens the static maps link returned by the API when a zone or GPS hint exists; there is no embedded map, live rider marker, or route line.
+- **CALL CUSTOMER** is a `tel:` link. **OPEN MAP** opens the static maps link returned by the API when a zone or customer GPS hint exists. The dashboard map also shows saved customer pins and latest rider GPS for active handoffs.
 - **ASSIGN BODA RIDER** opens the handoff modal: rider name (required), rider phone (required), boda plate and stage (optional), dispatch method (`CALL` / `WHATSAPP` / `COUNTER_HANDOFF`), and advance cash in UGX (optional, default `0`).
+- After assignment, offer copy/share for the private rider invite. Dispatch location updates use the existing authenticated WebSocket connection; show live, stale, paused, or stopped status without drawing a route or inventing an ETA.
 - **COMPLETE DELIVERY** records the real outcome: `DELIVERED` completes the order; `FAILED_UNREACHABLE`, `REFUSED`, or `RETURNED` leaves it `READY` and sends it to the review lane. The UI does not offer a print-chit button on the dispatch card; reprinting is a POS action (`POST /api/v1/orders/:id/reprint-chit`).
 - The queue must show the room/office note and phone because the rider needs them. It shows the order total so FOH can collect cash on delivery, but it must **not** show BOM data or kitchen preparation details.
 - The queue refreshes over the existing WebSocket connection. If the socket drops, show a visible “Reconnecting — use CALL from the last known card” banner; do not silently stale the list.
-- No live rider marker, route line, or map panel in Phase 1.
+- Keep the Kampala/Makerere Leaflet map with destination and active rider markers; never draw a route line or imply reliable arrival timing.
 
 ### 4.3 Kitchen KDS — Heavy-Duty Station Ticket
 
@@ -935,8 +943,8 @@ export default config;
 | Give the waiter a table grid with explicit status labels and one-tap claim. | Make the waiter drill through a generic list view to find a table. |
 | Capture delivery as zone + exact room/office/gate note + callable phone. | Use a free-text “address” box or a “near campus” note. |
 | Make the GPS pin optional, user-initiated, and one-shot. | Auto-request location on page load or block payment when permission is denied. |
-| Give FOH large CALL CUSTOMER and OPEN MAP links plus a POS reprint action for the chit. | Embed a live map, rider marker, or route line in the Phase 1 dispatch screen. |
-| Keep room notes, phone numbers, and GPS coordinates on the FOH/chit only. | Print customer personal data on the KDS. |
+| Give FOH large CALL CUSTOMER and OPEN MAP links, rider-invite sharing, and a POS reprint action for the chit. Show the Leaflet/OpenStreetMap dispatch map with saved customer pins and active rider GPS. | Draw route lines, claim a reliable ETA, or collect background GPS. |
+| Keep room notes and customer phone numbers on FOH/chit only; show only the assigned rider's latest point to the private customer tracker. | Print customer personal data or rider coordinates on the KDS. |
 
 ### 8.4 Data, Currency & Localisation
 
@@ -1005,14 +1013,14 @@ Run this checklist before any UI review or demo:
 - [ ] Fonts and icons load from the local bundle with the network offline.
 - [ ] Admin actions write an audit entry and expose actor, timestamp, before/after, and reason.
 - [ ] Cash reconciliation blocks the variance record until the physical cash count is entered.
-- [ ] Keyboard focus is visible on KDS, FOH, and Admin; prototype token status uses an accessible live region.
+- [ ] Keyboard focus is visible on customer, rider tracking, FOH, KDS, and Admin; customer order status uses an accessible live region.
 - [ ] A delivery order can be completed with the GPS pin denied or unavailable.
 - [ ] The zone select is a labelled 56px control, scoped to the selected outlet, with fee and ETA visible.
 - [ ] The delivery fee shown at checkout matches the server-computed zone fee and is included in the payment total.
 - [ ] No Google Maps SDK, embedded tiles, Places, Directions, or Geocoding request loads at checkout.
 - [ ] The FOH dispatch queue exposes 56px CALL CUSTOMER, OPEN MAP, ASSIGN BODA RIDER, and COMPLETE DELIVERY actions.
 - [ ] The KDS shows the delivery destination zone but no phone number, room note, or GPS coordinates.
-- [ ] Manual visual review covers Customer prototypes, FOH, KDS, and Admin at 360px, 768px, 1280px, and 1920px; Playwright snapshots are a Phase 2 target, not a shipped check.
+- [ ] Manual visual review covers live Customer pages and rider tracking, FOH, KDS, and Admin at 360px, 768px, 1280px, and 1920px; Playwright snapshots are a Phase 2 target, not a shipped check.
 
 ---
 
@@ -1040,7 +1048,7 @@ Run this checklist before any UI review or demo:
 
 | Surface | Target Devices | Primary Resolution | Layout Structure | Responsive Breakpoint Policy |
 | :--- | :--- | :--- | :--- | :--- |
-| **Customer PWA** (`/prototype/*` static design screens) | Tecno Camon, Infinix, Samsung A-series, iPhones | 375px – 430px width (portrait) | Single-column fluid stack; sticky bottom checkout drawer (`z-50`); max container width `480px` centered on wider screens | Mobile-only lock; if opened on desktop, constrain to 480px centered card with neutral background |
+| **Customer PWA** (`/`, `/order`, `/customer`, `/tracker`) | Tecno Camon, Infinix, Samsung A-series, iPhones | 375px – 430px width (portrait) | Single-column fluid stack; sticky bottom checkout drawer (`z-50`); max container width `480px` centered on wider screens | Mobile-first; if opened on desktop, constrain to 480px centered card with neutral background |
 | **Waiter / FOH POS** (`/pos`, `/dispatch`) | 6.5" Android handheld terminals, 8" counter tablets | 360px – 412px (handheld) / 800px (tablet) | 2-column table grid; 3-column menu tile grid; persistent bottom status strip; touch target floor `56px` | Adaptive 2-col handheld to 4-col tablet; zero horizontal scrolling |
 | **Kitchen KDS HUD** (`/kds`) | 10"–15" wall-mounted touchscreen monitors | 1280×800 (16:10) / 1920×1080 (16:9) | 4-column horizontal ticket feed (1280px) or 5-column (1920px); top channel summary bar; bottom 68px bump button | Fixed landscape layout; auto-scales ticket column width (`minmax(280px, 320px)`); zero modal overlays |
 | **Manager Admin Portal** (`/admin`) | 13"–16" Laptops, Desktop Monitors | 1280px – 2560px width | Collapsible 240px sidebar; dense metric stat cards; hairline ledger tables; dual-pane detail inspection drawer | Desktop-first; collapses sidebar to icon strip at `<1024px`; tables support horizontal scroll on narrow viewports |

@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="referrer" content="no-referrer" />
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <meta name="theme-color" content="#17211c" />
+  <title>Rider dashboard | Foodizo</title>
+  <link rel="stylesheet" href="/css/delivery_tracking.css?v=2" />
+</head>
+<body class="delivery-tracking-page rider-tracking-page">
+  <main class="delivery-tracking-shell">
+    <header class="delivery-tracking-brand">
+      <img src="/images/foodizo-brand-mark.svg" alt="" />
+      <span><strong>FOODIZO</strong><small>Rider dashboard · Kampala</small></span>
+    </header>
+
+    <section class="delivery-tracking-card" aria-labelledby="rider-title">
+      <div class="delivery-tracking-eyebrow"><span aria-hidden="true">●</span> Private · assigned delivery</div>
+      <h1 id="rider-title">Rider dashboard</h1>
+      <p class="delivery-tracking-intro">
+        Review your delivery details and contact the customer. GPS is off until you choose to start sharing.
+      </p>
+      <div id="rider-notice" class="delivery-tracking-notice" role="status" hidden></div>
+
+      <section id="rider-session" class="rider-session" hidden aria-live="polite">
+        <div class="rider-dashboard-heading">
+          <div>
+            <span class="rider-section-label">Active delivery</span>
+            <strong id="rider-order-number" class="rider-order-number">—</strong>
+          </div>
+          <button id="rider-refresh" class="rider-refresh" type="button" aria-label="Refresh delivery details">
+            Refresh
+          </button>
+        </div>
+
+        <section class="rider-dashboard-panel" aria-labelledby="rider-delivery-title">
+          <h2 id="rider-delivery-title">Delivery details</h2>
+          <dl class="rider-delivery-details">
+            <div>
+              <dt>Delivery area</dt>
+              <dd id="rider-destination">—</dd>
+            </div>
+            <div>
+              <dt>Drop-off instructions</dt>
+              <dd id="rider-delivery-note">—</dd>
+            </div>
+            <div>
+              <dt>Customer</dt>
+              <dd id="rider-customer-name">—</dd>
+            </div>
+            <div>
+              <dt>Customer phone</dt>
+              <dd>
+                <a id="rider-customer-phone" class="rider-phone-number" hidden></a>
+                <span id="rider-phone-unavailable">Not provided</span>
+              </dd>
+            </div>
+          </dl>
+          <div class="rider-quick-actions">
+            <a id="rider-call-customer" class="delivery-tracking-secondary rider-quick-action" hidden>Call customer</a>
+            <a id="rider-open-map" class="delivery-tracking-secondary rider-quick-action" target="_blank" rel="noopener noreferrer" hidden>Open shared pin in Google Maps</a>
+          </div>
+          <p id="rider-map-unavailable" class="rider-detail-hint">No customer GPS pin was shared. Use the landmark instructions above.</p>
+        </section>
+
+        <section class="rider-dashboard-panel rider-location-panel" aria-labelledby="rider-location-title">
+          <div class="rider-location-heading">
+            <div>
+              <span class="rider-section-label">Delivery status</span>
+              <h2 id="rider-location-title">Location sharing</h2>
+            </div>
+            <p id="rider-sharing-status" class="rider-sharing-status" data-status="INVITED">GPS is off</p>
+          </div>
+          <p id="rider-last-update" class="delivery-tracking-help">No location has been shared yet.</p>
+          <div class="rider-tracking-actions">
+            <button id="rider-start" class="delivery-tracking-primary" type="button">Start GPS sharing</button>
+            <button id="rider-pause" class="delivery-tracking-secondary" type="button" hidden>Pause sharing</button>
+            <button id="rider-stop" class="delivery-tracking-danger" type="button">Stop sharing</button>
+          </div>
+          <p class="rider-detail-hint">Pause if you need to stop briefly. Stop sharing ends this invite and cannot be undone.</p>
+        </section>
+
+        <div class="rider-dashboard-tip">
+          <strong>Before you leave</strong>
+          <span>Confirm the landmark with the customer. Keep this page open and your phone connected while sharing; Android may pause GPS when the screen locks.</span>
+        </div>
+      </section>
+
+      <div class="delivery-tracking-privacy">
+        <strong>Private by design</strong>
+        <ul>
+          <li>Location permission is requested only when you tap Start GPS sharing.</li>
+          <li>Only this delivery’s customer and authorized dispatch staff can see your latest location.</li>
+          <li>Only the latest position is retained; stopping sharing clears it and revokes this invite.</li>
+        </ul>
+      </div>
+    </section>
+    <p class="delivery-tracking-footer">Foodizo · Kampala</p>
+  </main>
+  <script src="/js/rider-tracking.js?v=2" defer></script>
+</body>
+</html>

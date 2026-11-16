@@ -156,7 +156,7 @@ export function generateExpoBagLabel(order: {
 
 ## 2. Notification Delivery: Africa's Talking SMS Gateway
 
-Budget Android phones (Infinix, Tecno) aggressively suspend background browser tabs, so an in-page alert is not reliable once the customer has walked away from the screen. SMS does not depend on the browser staying open. We integrate Africa's Talking SMS API to dispatch an automated SMS when a takeaway order reaches `READY`. In Phase 1 the live status source is the staff POS/KDS; `/prototype/token` is a static design prototype, not a live customer status page.
+Budget Android phones (Infinix, Tecno) aggressively suspend background browser tabs, so an in-page alert is not reliable once the customer has walked away from the screen. SMS does not depend on the browser staying open. We integrate Africa's Talking SMS API to dispatch an automated SMS when a takeaway order reaches `READY`. Customers can also check order status at `/tracker`; delivery tracking uses a separate private link and may pause when the rider's browser is backgrounded.
 
 ### 2.1 SMS Notification Contract
 
@@ -278,9 +278,9 @@ PrinterService.printChit(chit).catch((err) =>
 | Africa's Talking returns 5xx or times out | `dispatchSms` returns `FAILED` with the provider detail; there is **no automatic retry** in Phase 1 |
 | Pickup or dispatch SMS fails | The caller logs a warning; the order and KDS flow proceed normally |
 | Digest SMS fails | `daily_digests.sms_status = FAILED` and the digest status is `FAILED`; the manager can retry with `POST /api/v1/digest/dispatch-now` from `/admin` |
-| Internet is completely down (LAN-only mode) | SMS is impossible; staff see order state on the POS/KDS. There is no live customer status page in Phase 1 — `/prototype/token` is a static design prototype and does not call the API |
+| Internet is completely down (LAN-only mode) | SMS and remote customer/rider tracking are unavailable; staff continue to see order state on the POS/KDS. The customer tracking page can show only data it has already loaded |
 
-> **Rule:** SMS failure must never block an order from advancing to `COMPLETED`. SMS is a convenience notification only. Do not describe a `MOCK` result as a delivered message, and do not claim a live customer tracking page that does not exist.
+> **Rule:** SMS failure must never block an order from advancing to `COMPLETED`. SMS is a convenience notification only. Do not describe a `MOCK` result as a delivered message or imply that live tracking works without an internet connection.
 
 
 ---

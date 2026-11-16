@@ -17,6 +17,7 @@
     cart: new Map(),
     itemNotes: new Map(),
     token: null,
+    deliveryTrackingUrl: null,
     pollTimer: null
   };
   const elements = {
@@ -50,7 +51,8 @@
     submitOrder: document.getElementById('submit-order'),
     trackingTitle: document.getElementById('tracking-title'),
     trackingToken: document.getElementById('tracking-token'),
-    trackingTokenLabel: document.getElementById('tracking-token-label')
+    trackingTokenLabel: document.getElementById('tracking-token-label'),
+    trackingLiveLink: document.getElementById('tracking-live-link')
   };
 
   function escapeHtml(value) {
@@ -125,7 +127,10 @@
       window.FoodizoReadyNotifications.setActiveOrder({
         token: state.token,
         outlet: state.outlet,
-        channel: state.channel
+        channel: state.channel,
+        ...(state.deliveryTrackingUrl && {
+          deliveryTrackingUrl: state.deliveryTrackingUrl
+        })
       });
     }
   }
@@ -403,6 +408,11 @@
         throw new Error('The order was accepted but no pickup token was returned. Please ask staff for help.');
       }
       state.token = data.order.tokenNumber;
+      state.deliveryTrackingUrl =
+        typeof data.customerTrackingUrl === 'string' &&
+        /^\/tracker#delivery=[A-Za-z0-9_-]{43}$/.test(data.customerTrackingUrl)
+          ? data.customerTrackingUrl
+          : null;
       saveActiveOrder();
       state.cart.clear();
       state.itemNotes.clear();
@@ -439,6 +449,10 @@
     elements.orderScreen.hidden = true;
     elements.trackingScreen.hidden = false;
     elements.trackingToken.textContent = state.token || '—';
+    elements.trackingLiveLink.hidden = !state.deliveryTrackingUrl;
+    if (state.deliveryTrackingUrl) {
+      elements.trackingLiveLink.href = state.deliveryTrackingUrl;
+    }
     if (state.pollTimer) clearInterval(state.pollTimer);
     state.pollTimer = setInterval(() => refreshTracking().catch((error) => showNotice(error.message)), 10000);
   }
@@ -497,6 +511,8 @@
   function startNewOrder() {
     if (state.pollTimer) clearInterval(state.pollTimer);
     state.token = null;
+    state.deliveryTrackingUrl = null;
+    elements.trackingLiveLink.hidden = true;
     history.replaceState(null, '', '/order');
     elements.trackingScreen.hidden = true;
     elements.orderScreen.hidden = false;
@@ -611,6 +627,16 @@
       const token = params.get('token');
       if (token) {
         state.token = token;
+        const activeOrder = window.FoodizoReadyNotifications &&
+          window.FoodizoReadyNotifications.getActiveOrder();
+        if (
+          activeOrder &&
+          activeOrder.token === token &&
+          activeOrder.outlet === state.outlet
+        ) {
+          state.channel = activeOrder.channel || state.channel;
+          state.deliveryTrackingUrl = activeOrder.deliveryTrackingUrl || null;
+        }
         saveActiveOrder();
         showTrackingScreen();
         await refreshTracking();

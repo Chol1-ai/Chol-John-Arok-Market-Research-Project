@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { describe, expect, it, vi } from 'vitest';
 import { assignRiderToOrder } from '../src/services/handoffService.js';
+import { hashTrackingToken } from '../src/services/deliveryTrackingService.js';
 import { AuthUserPayload } from '../src/types/index.js';
 
 const actor: AuthUserPayload = {
@@ -11,7 +12,16 @@ const actor: AuthUserPayload = {
   outlet: 'FOODIZO_HAM_TOWERS'
 };
 
-function makePrisma(priorHandoffs: Array<{ id: string; outcome: string; reviewed: boolean }>) {
+function makePrisma(
+  priorHandoffs: Array<{ id: string; outcome: string; reviewed: boolean }>,
+  trackingSession: {
+    customer_token_hash: string;
+    customer_token_expires_at: Date;
+  } | null = {
+    customer_token_hash: 'a'.repeat(64),
+    customer_token_expires_at: new Date(Date.now() + 60_000)
+  }
+) {
   const tx = {
     delivery_handoffs: {
       create: vi.fn().mockResolvedValue({
@@ -19,6 +29,9 @@ function makePrisma(priorHandoffs: Array<{ id: string; outcome: string; reviewed
         outcome: 'PENDING'
       }),
       updateMany: vi.fn().mockResolvedValue({ count: priorHandoffs.length })
+    },
+    delivery_tracking_sessions: {
+      upsert: vi.fn().mockResolvedValue({})
     },
     audit_log: {
       create: vi.fn().mockResolvedValue({})
@@ -32,7 +45,8 @@ function makePrisma(priorHandoffs: Array<{ id: string; outcome: string; reviewed
         channel: 'PHONE_DELIVERY',
         status: 'READY',
         public_ref: 'ORD-RETRY',
-        handoffs: priorHandoffs
+        handoffs: priorHandoffs,
+        delivery_tracking_session: trackingSession
       })
     },
     $transaction: vi.fn(
@@ -85,5 +99,30 @@ describe('assignRiderToOrder', () => {
 
     expect(tx.delivery_handoffs.updateMany).not.toHaveBeenCalled();
     expect(tx.audit_log.create).not.toHaveBeenCalled();
+  });
+
+  it('creates private rider and customer links while persisting only token hashes', async () => {
+    const { prisma, tx } = makePrisma([], null);
+
+    const result = await assignRiderToOrder(
+      prisma,
+      '00000000-0000-4000-8000-000000000002',
+      { riderName: 'Kato Emmanuel', riderPhone: '256701112233' },
+      actor
+    );
+
+    expect(result.riderTrackingToken).toMatch(/^[A-Za-z0-9_-]{43}$/);
+    expect(result.customerTrackingToken).toMatch(/^[A-Za-z0-9_-]{43}$/);
+    expect(tx.delivery_tracking_sessions.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        create: expect.objectContaining({
+          rider_token_hash: hashTrackingToken(result.riderTrackingToken),
+          customer_token_hash: hashTrackingToken(result.customerTrackingToken)
+        })
+      })
+    );
+    const persistedSession = tx.delivery_tracking_sessions.upsert.mock.calls[0][0];
+    expect(JSON.stringify(persistedSession)).not.toContain(result.riderTrackingToken);
+    expect(JSON.stringify(persistedSession)).not.toContain(result.customerTrackingToken);
   });
 });

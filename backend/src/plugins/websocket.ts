@@ -14,7 +14,8 @@ export interface WsEventMessage {
     | 'ORDER_SETTLED'
     | 'ORDER_CANCELLED'
     | 'TABLE_STATUS_CHANGED'
-    | 'DELIVERY_UPDATED';
+    | 'DELIVERY_UPDATED'
+    | 'DELIVERY_LOCATION_UPDATED';
   outlet?: OutletLocation;
   station?: string;
   data: unknown;

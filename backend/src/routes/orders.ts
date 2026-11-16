@@ -6,6 +6,11 @@ import { PrinterService } from '../services/printerService.js';
 import { MomoService } from '../services/momoService.js';
 import { assignRiderToOrder, completeOrderDelivery, HandoffError } from '../services/handoffService.js';
 import {
+  createTrackingToken,
+  CUSTOMER_TRACKING_TTL_MS,
+  hashTrackingToken
+} from '../services/deliveryTrackingService.js';
+import {
   findInventoryShortages,
   inventoryAvailabilityReason
 } from '../services/inventoryAvailability.js';
@@ -372,6 +377,8 @@ export const orderRoutes: FastifyPluginAsync = async (fastify) => {
       data.channel === 'DINE_IN' || customerCashOnDelivery ? 'PENDING' : 'AWAITING_PAYMENT';
     const businessDate = getKampalaBusinessDate();
     const token = await TokenService.getNextToken(fastify.prisma, data.outlet, businessDate);
+    const customerTrackingToken =
+      !actor && data.channel === 'PHONE_DELIVERY' ? createTrackingToken() : null;
 
     const order = await fastify.prisma.$transaction(async (tx) => {
       const created = await tx.orders.create({
@@ -401,6 +408,16 @@ export const orderRoutes: FastifyPluginAsync = async (fastify) => {
           delivery_zone: true
         }
       });
+
+      if (customerTrackingToken) {
+        await tx.delivery_tracking_sessions.create({
+          data: {
+            order_id: created.id,
+            customer_token_hash: hashTrackingToken(customerTrackingToken),
+            customer_token_expires_at: new Date(Date.now() + CUSTOMER_TRACKING_TTL_MS)
+          }
+        });
+      }
 
       if (data.channel === 'DINE_IN' && data.tableId) {
         await tx.restaurant_tables.update({
@@ -437,7 +454,10 @@ export const orderRoutes: FastifyPluginAsync = async (fastify) => {
 
     return reply.status(201).send({
       success: true,
-      order: orderResponse(order)
+      order: orderResponse(order),
+      ...(customerTrackingToken && {
+        customerTrackingUrl: `/tracker#delivery=${customerTrackingToken}`
+      })
     });
   });
 
@@ -1111,6 +1131,22 @@ export const orderRoutes: FastifyPluginAsync = async (fastify) => {
           }
         });
 
+        await tx.delivery_tracking_sessions.updateMany({
+          where: { order_id: order.id },
+          data: {
+            status: 'STOPPED',
+            rider_token_hash: null,
+            rider_token_expires_at: null,
+            latitude: null,
+            longitude: null,
+            accuracy_m: null,
+            speed_mps: null,
+            heading_degrees: null,
+            location_updated_at: null,
+            stopped_at: new Date()
+          }
+        });
+
         const clearedFailedHandoffs = await tx.delivery_handoffs.updateMany({
           where: {
             order_id: order.id,
@@ -1246,6 +1282,24 @@ export const orderRoutes: FastifyPluginAsync = async (fastify) => {
           include: { order_items: true }
         });
 
+        if (status === 'COMPLETED' && order.channel === 'PHONE_DELIVERY') {
+          await tx.delivery_tracking_sessions.updateMany({
+            where: { order_id: order.id },
+            data: {
+              status: 'STOPPED',
+              rider_token_hash: null,
+              rider_token_expires_at: null,
+              latitude: null,
+              longitude: null,
+              accuracy_m: null,
+              speed_mps: null,
+              heading_degrees: null,
+              location_updated_at: null,
+              stopped_at: new Date()
+            }
+          });
+        }
+
         if (status === 'COMPLETED' && order.table_id) {
           await tx.restaurant_tables.update({
             where: { id: order.table_id },
@@ -1354,11 +1408,31 @@ export const orderRoutes: FastifyPluginAsync = async (fastify) => {
     async (request, reply) => {
       const data = assignRiderSchema.parse(request.body);
       try {
-        const handoff = await assignRiderToOrder(fastify.prisma, request.params.id, data, request.user!);
+        const assignment = await assignRiderToOrder(
+          fastify.prisma,
+          request.params.id,
+          data,
+          request.user!
+        );
+        const order = await fastify.prisma.orders.findUniqueOrThrow({
+          where: { id: request.params.id },
+          select: { id: true, outlet: true, public_ref: true }
+        });
+        fastify.broadcastWs({
+          event: 'DELIVERY_UPDATED',
+          outlet: order.outlet,
+          data: { orderId: order.id, orderNumber: order.public_ref, status: 'READY' }
+        });
         return reply.send({
           success: true,
           message: `Boda rider ${data.riderName} assigned.`,
-          handoff
+          handoff: assignment.handoff,
+          trackingInvitation: {
+            riderUrl: `/rider/dashboard#token=${assignment.riderTrackingToken}`,
+            ...(assignment.customerTrackingToken && {
+              customerUrl: `/tracker#delivery=${assignment.customerTrackingToken}`
+            })
+          }
         });
       } catch (error) {
         if (error instanceof HandoffError) {

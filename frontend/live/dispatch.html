@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="icon" type="image/svg+xml" href="../images/foodizo-brand-mark.svg"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#211f1b" />
+  <link rel="icon" type="image/svg+xml" href="/images/foodizo-brand-mark.svg" />
   <title>Dispatch Dashboard | Foodizo &amp; Obunuzi</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -10,7 +12,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
   <link rel="stylesheet" href="/css/theme_tokens.css?v=2" />
   <link rel="stylesheet" href="/css/live_surfaces.css?v=14" />
-  <link rel="stylesheet" href="/css/dispatch_dashboard.css?v=2" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/css/dispatch_dashboard.css?v=4" />
   <link rel="stylesheet" href="/css/brand_theme.css?v=3" />
 </head>
 <body class="ls-body dispatch-dashboard" data-surface="dispatch">
@@ -100,21 +103,17 @@
     <div class="dispatch-primary-grid">
       <section class="dispatch-panel dispatch-map-panel" id="dispatch-map-panel" aria-labelledby="dispatch-map-title">
         <div class="dispatch-panel-heading">
-          <div><h2 id="dispatch-map-title"><i class="dispatch-heading-dot"></i>Delivery destinations</h2><p id="dispatch-map-summary">GPS points from active delivery orders</p></div>
-          <label class="dispatch-zone-filter"><span class="sr-only">Filter map and queue by zone</span><select id="dispatch-zone-filter"><option value="all">All zones</option></select></label>
+          <div><h2 id="dispatch-map-title"><i class="dispatch-heading-dot"></i>Delivery &amp; rider map</h2><p id="dispatch-map-summary">Customer destinations and active rider GPS</p></div>
+          <div class="dispatch-zone-filter"><select id="dispatch-zone-filter" aria-label="Filter map and queue by zone"><option value="all">All zones</option></select></div>
         </div>
-        <div class="dispatch-map-canvas" id="dispatch-map-canvas" aria-label="Schematic map of customer delivery destinations">
-          <div class="dispatch-map-grid" aria-hidden="true"></div>
-          <div class="dispatch-map-road dispatch-map-road-a" aria-hidden="true"></div>
-          <div class="dispatch-map-road dispatch-map-road-b" aria-hidden="true"></div>
-          <div class="dispatch-map-markers" id="dispatch-map-markers"></div>
+        <div class="dispatch-map-canvas" id="dispatch-map-canvas" role="region" aria-label="Interactive OpenStreetMap of Kampala and Makerere delivery areas">
           <div class="dispatch-map-empty" id="dispatch-map-empty" hidden></div>
-          <span class="dispatch-map-caption">Customer GPS destinations · schematic view, not live rider tracking</span>
+          <span class="dispatch-map-caption">Rider GPS is shared only for active handoffs · latest position only</span>
         </div>
         <div class="dispatch-map-legend">
-          <span><i class="is-order"></i>Delivery destination</span>
           <span><i class="is-pending"></i>Awaiting rider</span>
           <span><i class="is-transit"></i>Rider assigned</span>
+          <span><i class="is-rider"></i>Live rider GPS</span>
           <span class="dispatch-map-count" id="dispatch-map-count">0 destinations</span>
         </div>
       </section>
@@ -145,7 +144,7 @@
           <span class="dispatch-panel-action-label" id="dispatch-rider-count">0 active</span>
         </div>
         <div class="dispatch-rider-list" id="dispatch-riders"><div class="ls-loading">Loading assigned riders…</div></div>
-        <p class="dispatch-panel-footnote">Rider availability and GPS tracking are not collected by this system.</p>
+        <p class="dispatch-panel-footnote">Riders choose when to share GPS. Only the latest position is retained and cleared when tracking ends.</p>
       </section>
 
       <section class="dispatch-panel dispatch-snapshot-panel" id="dispatch-settings" aria-labelledby="dispatch-snapshot-title">
@@ -156,7 +155,7 @@
         <div class="dispatch-snapshot-content">
           <div class="dispatch-snapshot-value"><span>Active queue value</span><strong class="ls-money" id="dispatch-value">UGX —</strong></div>
           <div class="dispatch-snapshot-metrics">
-            <div><strong id="dispatch-snapshot-gps">0</strong><span>GPS locations</span></div>
+            <div><strong id="dispatch-snapshot-gps">0</strong><span>Customer GPS pins</span></div>
             <div><strong id="dispatch-snapshot-oldest">—</strong><span>Oldest waiting</span></div>
             <div><strong id="dispatch-snapshot-zones">0</strong><span>Active zones</span></div>
           </div>
@@ -203,8 +202,8 @@
       <form class="ls-modal-body" id="dispatch-assign-form">
         <input type="hidden" id="dispatch-order-id" />
         <div class="ls-form-grid">
-          <label class="ls-field"><span>Rider name</span><input class="ls-input" id="dispatch-rider-name" type="text" required maxlength="80" /></label>
-          <label class="ls-field"><span>Rider phone</span><input class="ls-input" id="dispatch-rider-phone" type="tel" required placeholder="2567…" /></label>
+          <label class="ls-field"><span>Rider name</span><input class="ls-input" id="dispatch-rider-name" type="text" required minlength="2" maxlength="80" autocomplete="name" /></label>
+          <label class="ls-field"><span>Rider phone</span><input class="ls-input" id="dispatch-rider-phone" type="tel" required minlength="9" maxlength="20" autocomplete="tel" placeholder="e.g. 0772 123 456" /></label>
           <label class="ls-field"><span>Boda plate</span><input class="ls-input" id="dispatch-plate" type="text" maxlength="20" placeholder="e.g. UEX 123A" /></label>
           <label class="ls-field"><span>Boda stage</span><input class="ls-input" id="dispatch-stage" type="text" maxlength="80" placeholder="e.g. Wandegeya stage" /></label>
           <label class="ls-field"><span>Dispatch method</span>
@@ -214,13 +213,44 @@
               <option value="COUNTER_HANDOFF">Counter handoff</option>
             </select>
           </label>
-          <label class="ls-field"><span>Advance cash (UGX)</span><input class="ls-input" id="dispatch-advance" type="number" min="0" step="500" value="0" /></label>
+          <label class="ls-field"><span>Advance cash (UGX)</span><input class="ls-input" id="dispatch-advance" type="number" min="0" step="1" value="0" /></label>
         </div>
         <p class="ls-help" style="margin-top:10px">Rider handoff is only valid for READY PHONE_DELIVERY orders. The order stays READY until the delivery is completed.</p>
       </form>
       <div class="ls-modal-foot">
         <button class="ls-btn ls-btn--ghost" type="button" id="dispatch-assign-cancel">Cancel</button>
         <button class="ls-btn" type="button" id="dispatch-assign-submit">Assign rider</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="ls-modal" id="dispatch-tracking-invite-modal" hidden>
+    <div class="ls-modal-card" role="dialog" aria-modal="true" aria-labelledby="dispatch-tracking-invite-title">
+      <div class="ls-modal-head">
+        <div>
+          <div class="ls-card-title" id="dispatch-tracking-invite-title">Share private rider invite</div>
+          <div class="ls-card-sub" id="dispatch-tracking-invite-sub">The rider must open this link and start GPS sharing.</div>
+        </div>
+        <button class="ls-icon-btn" type="button" id="dispatch-tracking-invite-close" aria-label="Close">×</button>
+      </div>
+      <div class="ls-modal-body dispatch-invite-body">
+        <label class="ls-field"><span>Rider tracking link · expires in 24 hours</span>
+          <input class="ls-input" id="dispatch-rider-tracking-link" type="text" readonly />
+        </label>
+        <div class="dispatch-invite-actions">
+          <button class="ls-btn ls-btn--ghost" type="button" id="dispatch-copy-rider-link">Copy rider link</button>
+          <button class="ls-btn" type="button" id="dispatch-share-rider-link">Share with rider</button>
+        </div>
+        <div id="dispatch-customer-tracking-invite" class="dispatch-customer-invite" hidden>
+          <label class="ls-field"><span>Customer live-map link</span>
+            <input class="ls-input" id="dispatch-customer-tracking-link" type="text" readonly />
+          </label>
+          <button class="ls-btn ls-btn--ghost" type="button" id="dispatch-copy-customer-link">Copy customer link</button>
+        </div>
+        <p class="ls-help">The link is private to this handoff. GPS starts only after the rider taps Start and grants location permission.</p>
+      </div>
+      <div class="ls-modal-foot">
+        <button class="ls-btn ls-btn--ghost" type="button" id="dispatch-tracking-invite-done">Done</button>
       </div>
     </div>
   </div>
@@ -245,8 +275,8 @@
               <option value="RETURNED">Returned to outlet</option>
             </select>
           </label>
-          <label class="ls-field is-wide"><span>Rider advance returned (UGX)</span><input class="ls-input" id="dispatch-advance-returned" type="number" min="0" step="500" placeholder="Optional" /></label>
-          <label class="ls-field is-wide" id="dispatch-cash-tendered-wrap" hidden><span>Cash collected from customer (UGX)</span><input class="ls-input" id="dispatch-cash-tendered" type="number" min="1" step="500" /></label>
+          <label class="ls-field is-wide"><span>Rider advance returned (UGX)</span><input class="ls-input" id="dispatch-advance-returned" type="number" min="0" step="1" placeholder="Optional" /></label>
+          <label class="ls-field is-wide" id="dispatch-cash-tendered-wrap" hidden><span>Cash collected from customer (UGX)</span><input class="ls-input" id="dispatch-cash-tendered" type="number" min="1" step="1" /></label>
         </div>
         <p class="ls-help" style="margin-top:10px" id="dispatch-complete-note">A non-delivered outcome stays in the review queue and is counted in the daily digest. It does not silently complete the order.</p>
       </form>
@@ -258,6 +288,7 @@
   </div>
 
   <script src="/js/api.js"></script>
-  <script src="/js/dispatch.js?v=6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous"></script>
+  <script src="/js/dispatch.js?v=8"></script>
 </body>
 </html>

@@ -46,7 +46,7 @@ Chol-John-Arok-Market-Research-Project/
     |-- Dockerfile                # Legacy, not the reference deployment
     |-- .env.example
     |-- prisma/
-    |   |-- schema.prisma         # 17 models, 13 enums
+    |   |-- schema.prisma         # Canonical Prisma schema and enums
     |   `-- seed.ts               # Canonical fixtures
     |-- src/
     |   |-- index.ts              # API entrypoint + node-cron digest scheduler
@@ -65,6 +65,7 @@ Chol-John-Arok-Market-Research-Project/
     |   |   |-- kds.ts            # queue, claim, bump
     |   |   |-- payments.ts       # MoMo push stub, webhooks, refund
     |   |   |-- dispatch.ts       # rider handoff queue and outcomes
+    |   |   |-- deliveryTracking.ts # private rider/customer tracking links and GPS
     |   |   |-- surplus.ts        # closing surplus logs
     |   |   `-- digest.ts         # preview, overview, reconcile-cash, dispatch-now, view
     |   |-- services/
@@ -72,6 +73,7 @@ Chol-John-Arok-Market-Research-Project/
     |   |   |-- bomService.ts
     |   |   |-- momoService.ts    # STK-initiation stub
     |   |   |-- handoffService.ts
+    |   |   |-- deliveryTrackingService.ts # token generation, hashing, and expiry
     |   |   |-- printerService.ts # ESC/POS + text sanitization
     |   |   |-- smsService.ts     # Africa's Talking (MOCK/LIVE/FAILED)
     |   |   `-- digestService.ts
@@ -95,6 +97,9 @@ Chol-John-Arok-Market-Research-Project/
 | `/pos` | Floor POS and table tabs |
 | `/kds` | Kitchen Display System |
 | `/dispatch` | Boda dispatch queue |
+| `/rider/dashboard` | Private, expiring rider invite dashboard for assigned delivery details and GPS sharing |
+| `/rider/track` | Compatibility route to the rider dashboard |
+| `/tracker` | Customer status and private delivery map |
 | `/admin` | Manager audit, cash, surplus, digest |
 | `/d/:token` | Public read-only digest report |
 | `/prototype/*` | Legacy URLs redirecting to live customer/staff workflows |
