@@ -52,7 +52,7 @@ export const customerMenuItems: MenuSeed[] = [
   { name: 'Tropical Yogurt Smoothie', category: 'Juices & Smoothies', price_ugx: 8000, station: 'BAR_BEVERAGE', description: 'Blended yogurt with mixed fruits' },
   { name: 'Single Egg Rolex', category: 'Kampala Street Food Favourites', price_ugx: 3500, station: 'ROLEX_GRIDDLE', description: 'Eggs, onions, tomatoes wrapped in a warm chapati' },
   { name: 'Double Egg Rolex with Cabbage', category: 'Kampala Street Food Favourites', price_ugx: 5000, station: 'ROLEX_GRIDDLE', description: 'Extra eggs, veggies, and chapati goodness' },
-  { name: 'Kikkomando (Chapati chopped with Beans)', category: 'Kampala Street Food Favourites', price_ugx: 5000, station: 'ROLEX_GRIDDLE', description: 'Campus favorite comfort food' },
+  { name: 'Kikomando (Chapati chopped with Beans)', category: 'Kampala Street Food Favourites', price_ugx: 5000, station: 'ROLEX_GRIDDLE', description: 'Campus favorite comfort food' },
   { name: 'Grilled Muchomo (Beef Skewer)', category: 'Kampala Street Food Favourites', price_ugx: 6000, station: 'GRILL_FRYER', description: 'Juicy spiced meat skewers with kachumbari' },
   { name: 'Grilled Muchomo (Pork Skewer)', category: 'Kampala Street Food Favourites', price_ugx: 6000, station: 'GRILL_FRYER', description: 'Juicy spiced meat skewers with kachumbari' },
   { name: 'Chicken Tikka Pizza (Medium)', category: 'Pizza & Wraps', price_ugx: 25000, station: 'GRILL_FRYER', description: 'Spiced chicken chunks, mozzarella, and bell peppers' },

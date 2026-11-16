@@ -168,7 +168,9 @@ function normalizeMenuToken(value: string): string {
       : value.length > 4 && value.endsWith('s') && !value.endsWith('ss')
         ? value.slice(0, -1)
         : value;
-  return singular === 'buger' ? 'burger' : singular;
+  if (singular === 'buger') return 'burger';
+  if (singular === 'kikkomando') return 'kikomando';
+  return singular;
 }
 
 function menuTokens(value: string): Set<string> {
@@ -226,11 +228,20 @@ function matchingZones(question: string, zones: BuddyDeliveryZone[]): BuddyDeliv
 function matchingMenuItems(question: string, menuItems: BuddyMenuItem[]): BuddyMenuItem[] {
   const queryWords = menuTokens(question);
   const matches = menuItems
-    .map((item) => ({
-      item,
-      score: [...menuTokens(`${item.name} ${item.category}`)]
-        .filter((word) => queryWords.has(word)).length
-    }))
+    .map((item) => {
+      const itemWords = [...menuTokens(`${item.name} ${item.category}`)];
+      const score = [...queryWords].reduce((total, queryWord) => {
+        const bestMatch = Math.max(
+          0,
+          ...itemWords.map((itemWord) => {
+            if (queryWord === itemWord) return 2;
+            return queryWord.length >= 3 && itemWord.includes(queryWord) ? 1 : 0;
+          })
+        );
+        return total + bestMatch;
+      }, 0);
+      return { item, score };
+    })
     .filter((match) => match.score > 0)
     .sort((left, right) => right.score - left.score || left.item.priceUgx - right.item.priceUgx);
 
@@ -238,7 +249,6 @@ function matchingMenuItems(question: string, menuItems: BuddyMenuItem[]): BuddyM
   const highestScore = matches[0].score;
   return matches
     .filter((match) => match.score === highestScore)
-    .slice(0, 5)
     .map((match) => match.item);
 }
 

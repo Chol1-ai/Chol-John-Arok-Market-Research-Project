@@ -156,6 +156,36 @@ describe('Foodizo Buddy data-backed answers', () => {
     expect(answer).toContain('Slow-cooked chicken.');
   });
 
+  it('answers price questions when only part of a menu item name is provided', () => {
+    const answer = getDeterministicBuddyReply('How much is luw?', context);
+
+    expect(answer).toContain('Chicken Luwombo: UGX 12,000');
+    expect(answer).toContain('Slow-cooked chicken.');
+  });
+
+  it('matches Kikomando questions against existing menu entries with the misspelling', () => {
+    const kikomandoContext: BuddyContext = {
+      ...context,
+      menuItems: [
+        ...context.menuItems,
+        {
+          name: 'Kikkomando (Chapati chopped with Beans)',
+          category: 'Kampala Street Food Favourites',
+          description: 'Campus favorite comfort food',
+          priceUgx: 5000,
+          isAvailable: true,
+          station: 'ROLEX_GRIDDLE',
+          preparationTimeEstimate: { minMinutes: 5, maxMinutes: 10 }
+        }
+      ]
+    };
+
+    const answer = getDeterministicBuddyReply('how much is kikomando', kikomandoContext);
+
+    expect(answer).toContain('UGX 5,000');
+    expect(answer).not.toContain('Broader AI chat is not enabled');
+  });
+
   it('answers preparation-time questions with clearly labeled station estimates', () => {
     const answer = getDeterministicBuddyReply(
       'How long does Chicken Luwombo take to prepare?',
