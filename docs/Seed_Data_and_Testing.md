@@ -53,13 +53,17 @@ The business date rolls at **05:00 EAT**; `business_date` is stored as UTC midni
 # Type-check and build the backend
 npm --prefix backend run build
 
-# Unit and integration tests (Vitest)
+# Non-destructive unit tests (Vitest)
+npm --prefix backend test -- --exclude tests/integration.test.ts
+
+# Full suite: run only against a disposable development/test database.
+# integration.test.ts rebuilds the canonical seed and mutates operational data.
 npm --prefix backend test
 ```
 
-**Current repository test suite:** 5 files, **20 tests passed** — token sequencing, BOM deduction, ESC/POS output, cash variance, and integration coverage for auth, RBAC, orders, webhooks, dispatch, surplus, and digest privacy.
+**Current non-destructive unit suite:** 7 files, **20 tests passed** — token sequencing, BOM deduction, ESC/POS output, cash variance, handoff service, configuration, and related unit coverage. The separate `integration.test.ts` suite rebuilds the canonical seed and exercises auth, RBAC, orders, webhooks, dispatch, surplus, and digest privacy; run it only against a disposable development/test database.
 
-**Verification record for this revision:** backend build passed; API end-to-end run passed **109 checks**; browser end-to-end run passed **93 checks** with zero uncaught page errors. The browser run covered all seven staff logins, role redirects, POS → KDS → settlement → clearing, dispatch, digest channel reporting, the 72-hour digest link, and prototype namespacing.
+**Historical verification record:** a previous verification passed a backend build, **109** API end-to-end checks, and **93** browser end-to-end checks with zero uncaught page errors. The browser run covered all seven staff logins, role redirects, POS → KDS → settlement → clearing, dispatch, digest channel reporting, the 72-hour digest link, and prototype namespacing.
 
 > The API and browser E2E harnesses are developer tooling kept outside the committed app. Re-run them against a freshly seeded database when changing auth, order, payment, dispatch, or digest behaviour.
 

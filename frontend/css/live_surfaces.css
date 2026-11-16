@@ -41,8 +41,8 @@ html {
 body.ls-body {
   min-height: 100vh;
   margin: 0;
-  background: #22231f;
-  color: #f3f1ea;
+  background: var(--color-canvas-base);
+  color: var(--color-on-surface);
   font-family: var(--font-family-base);
   font-size: var(--font-size-body-md);
   line-height: 1.45;
@@ -74,37 +74,37 @@ body.ls-body {
 }
 
 body[data-surface='pos'] {
-  --surface-chrome: #8f1010;
-  --surface-chrome-soft: #b70011;
-  --surface-chrome-text: #fff7f5;
+  --surface-chrome: #302c26;
+  --surface-chrome-soft: #39342d;
+  --surface-chrome-text: #f7f3ec;
   --surface-accent: var(--color-primary);
-  --surface-accent-soft: #fff1ef;
+  --surface-accent-soft: #4b2924;
 }
 
 body[data-surface='kds'] {
-  --surface-chrome: #171b24;
-  --surface-chrome-soft: #232936;
-  --surface-chrome-text: #f3f7ee;
-  --surface-accent: var(--color-tertiary);
-  --surface-accent-soft: #e9fcef;
-  background: #10141b;
-  color: #eef2f7;
+  --surface-chrome: #302c26;
+  --surface-chrome-soft: #39342d;
+  --surface-chrome-text: #f7f3ec;
+  --surface-accent: var(--color-primary);
+  --surface-accent-soft: #4b2924;
+  background: #211f1b;
+  color: #f7f3ec;
 }
 
 body[data-surface='dispatch'] {
-  --surface-chrome: #5c3a00;
-  --surface-chrome-soft: #855300;
-  --surface-chrome-text: #fff8ea;
-  --surface-accent: #b26b00;
-  --surface-accent-soft: #fff3d9;
+  --surface-chrome: #302c26;
+  --surface-chrome-soft: #39342d;
+  --surface-chrome-text: #f7f3ec;
+  --surface-accent: var(--color-primary);
+  --surface-accent-soft: #4b2924;
 }
 
 body[data-surface='admin'] {
-  --surface-chrome: #1c2538;
-  --surface-chrome-soft: #293040;
-  --surface-chrome-text: #f2f5fb;
+  --surface-chrome: #302c26;
+  --surface-chrome-soft: #39342d;
+  --surface-chrome-text: #f7f3ec;
   --surface-accent: var(--color-primary);
-  --surface-accent-soft: #fff1ef;
+  --surface-accent-soft: #4b2924;
 }
 
 .ls-body h1,
@@ -549,7 +549,7 @@ body[data-surface='kds'] .ls-chip {
 body[data-surface='kds'] .ls-chip[aria-pressed='true'],
 body[data-surface='kds'] .ls-chip.is-active {
   background: var(--surface-accent);
-  color: #04210d;
+  color: #ffffff;
 }
 
 .ls-btn {
@@ -562,7 +562,7 @@ body[data-surface='kds'] .ls-chip.is-active {
   border: 1px solid transparent;
   border-radius: 10px;
   background: var(--surface-accent);
-  color: #ffffff;
+  color: var(--color-on-primary);
   font-size: 12px;
   font-weight: 800;
   text-decoration: none;
@@ -1306,32 +1306,32 @@ body[data-surface='kds'] .ls-empty {
 /* ── KDS ─────────────────────────────────────────────────────────────── */
 
 body[data-surface='kds'] .ls-card {
-  border-color: #303847;
-  background: #1b212c;
+  border-color: var(--color-border-default);
+  background: var(--color-canvas-elevated);
   box-shadow: none;
 }
 
 body[data-surface='kds'] .ls-card-head {
-  border-color: #303847;
+  border-color: var(--color-border-default);
 }
 
 body[data-surface='kds'] .ls-card-title {
-  color: #f2f6fc;
+  color: var(--color-on-surface);
 }
 
 body[data-surface='kds'] .ls-card-sub {
-  color: #9da9ba;
+  color: var(--color-on-surface-variant);
 }
 
 body[data-surface='kds'] .ls-btn--ghost {
-  border-color: #3a4352;
-  background: #232936;
-  color: #f2f6fc;
+  border-color: var(--color-border-default);
+  background: var(--color-surface-high);
+  color: var(--color-on-surface);
 }
 
 body[data-surface='kds'] .ls-btn--ghost:hover {
-  border-color: #4b5668;
-  background: #2b3342;
+  border-color: var(--color-outline);
+  background: var(--color-surface-highest);
 }
 
 .kds-summary {
@@ -1343,13 +1343,13 @@ body[data-surface='kds'] .ls-btn--ghost:hover {
 
 .kds-stat {
   padding: 14px 16px;
-  border: 1px solid #303847;
+  border: 1px solid var(--color-border-default);
   border-radius: 13px;
-  background: #1b212c;
+  background: var(--color-canvas-elevated);
 }
 
 .kds-stat-label {
-  color: #9da9ba;
+  color: var(--color-on-surface-variant);
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -3350,9 +3350,10 @@ body[data-surface='admin'] .admin-kpi,
 body[data-surface='admin'] .admin-kpi:nth-child(2),
 body[data-surface='admin'] .admin-kpi:nth-child(3),
 body[data-surface='admin'] .admin-kpi:nth-child(4) {
-  border: 1px solid #e8e5de;
-  border-top: 3px solid #34744f;
-  background: #fff;
+  border: 1px solid var(--color-border-default);
+  border-top: 3px solid var(--surface-accent);
+  background: var(--color-canvas-elevated);
+  color: var(--color-on-surface);
 }
 
 .admin-kpi-label {

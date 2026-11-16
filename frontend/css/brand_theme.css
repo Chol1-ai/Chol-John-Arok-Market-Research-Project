@@ -1,0 +1,389 @@
+:root {
+  color-scheme: dark;
+  --brand-bg: #211f1b;
+  --brand-panel: #302c26;
+  --brand-panel-raised: #39342d;
+  --brand-inset: #28241f;
+  --brand-line: #494238;
+  --brand-text: #f7f3ec;
+  --brand-muted: #c8bfb2;
+  --brand-coral: #ff705b;
+  --brand-coral-deep: #c83d2d;
+  --brand-amber: #ffb02e;
+  --brand-green: #24734f;
+  --ink: var(--brand-text);
+  --muted: var(--brand-muted);
+  --paper: var(--brand-bg);
+  --card: var(--brand-panel);
+  --line: var(--brand-line);
+  --red: var(--brand-coral);
+  --green: var(--brand-green);
+  --amber: var(--brand-amber);
+  --surface-inset: var(--brand-inset);
+  --color-canvas-base: var(--brand-bg);
+  --color-canvas-elevated: var(--brand-panel);
+  --color-surface: var(--brand-bg);
+  --color-surface-lowest: var(--brand-inset);
+  --color-surface-low: var(--brand-panel);
+  --color-surface-container: var(--brand-panel);
+  --color-surface-high: var(--brand-panel-raised);
+  --color-surface-highest: var(--brand-line);
+  --color-on-surface: var(--brand-text);
+  --color-on-surface-variant: var(--brand-muted);
+  --color-primary: var(--brand-green);
+  --color-primary-dark: #1d5f40;
+  --color-on-primary: #fff;
+  --color-secondary: var(--brand-amber);
+  --color-secondary-container: #493317;
+  --color-on-secondary: var(--brand-bg);
+  --color-tertiary: var(--brand-green);
+  --color-tertiary-dark: #1d5f40;
+  --color-tertiary-container: var(--brand-green);
+  --color-on-tertiary: #fff;
+  --color-border-default: var(--brand-line);
+}
+
+body[data-surface] {
+  --surface-chrome: var(--brand-panel);
+  --surface-chrome-soft: var(--brand-panel-raised);
+  --surface-chrome-text: var(--brand-text);
+  --surface-accent: var(--brand-green);
+  --surface-accent-soft: #234634;
+  background: var(--brand-bg);
+  color: var(--brand-text);
+}
+
+body:not([data-surface]) {
+  background: var(--brand-bg);
+  color: var(--brand-text);
+}
+
+body.manager-dashboard {
+  --manager-bg: var(--brand-bg);
+  --manager-panel: var(--brand-panel);
+  --manager-panel-soft: var(--brand-panel-raised);
+  --manager-border: var(--brand-line);
+  --manager-muted: var(--brand-muted);
+  --manager-text: var(--brand-text);
+}
+
+body.waiter-dashboard {
+  --waiter-bg: var(--brand-bg);
+  --waiter-panel: var(--brand-panel);
+  --waiter-panel-raised: var(--brand-panel-raised);
+  --waiter-border: var(--brand-line);
+  --waiter-muted: var(--brand-muted);
+  --waiter-text: var(--brand-text);
+  background: var(--brand-bg);
+  color: var(--brand-text);
+}
+
+body.dispatch-dashboard {
+  --dispatch-bg: var(--brand-bg);
+  --dispatch-panel: var(--brand-panel);
+  --dispatch-panel-deep: var(--brand-inset);
+  --dispatch-border: var(--brand-line);
+  --dispatch-muted: var(--brand-muted);
+  --dispatch-text: var(--brand-text);
+  background: var(--brand-bg);
+  color: var(--brand-text);
+}
+
+body.kds-body {
+  --kds-bg: var(--brand-bg);
+  --kds-panel: var(--brand-panel);
+  --kds-panel-raised: var(--brand-panel-raised);
+  --kds-line: var(--brand-line);
+  --kds-text: var(--brand-text);
+  --kds-muted: var(--brand-muted);
+  --kds-amber: var(--brand-amber);
+  background: var(--brand-bg);
+  color: var(--brand-text);
+}
+
+body[data-surface] .ls-card,
+body[data-surface] .admin-kpi {
+  border-color: var(--brand-line);
+  background: var(--brand-panel);
+  color: var(--brand-text);
+}
+
+body[data-surface] .ls-card-head {
+  border-color: var(--brand-line);
+  background: var(--brand-panel-raised);
+}
+
+body[data-surface] .ls-card-title,
+body[data-surface] .ls-card h3,
+body[data-surface] .admin-kpi-value {
+  color: var(--brand-text);
+}
+
+body[data-surface] .ls-card-sub,
+body[data-surface] .admin-kpi-label,
+body[data-surface] .admin-kpi-note {
+  color: var(--brand-muted);
+}
+
+body.manager-dashboard .manager-sidebar {
+  border-color: var(--brand-line);
+  background: linear-gradient(180deg, var(--brand-panel), var(--brand-bg) 74%);
+}
+
+body.manager-dashboard .manager-nav a.is-active {
+  background: #103321;
+  color: #f4fff8;
+}
+
+body.manager-dashboard .manager-nav a.is-active::before {
+  background: var(--brand-green);
+}
+
+body.manager-dashboard .ls-topbar {
+  border-color: var(--brand-line);
+  background: rgba(48, 44, 38, .96);
+}
+
+body.manager-dashboard .manager-kpi {
+  border-color: color-mix(in srgb, var(--kpi-color) 25%, var(--brand-line));
+  background: linear-gradient(
+    125deg,
+    color-mix(in srgb, var(--kpi-color) 9%, var(--brand-panel)),
+    var(--brand-panel) 72%
+  );
+}
+
+body.manager-dashboard .manager-panel {
+  border-color: var(--brand-line);
+  background: linear-gradient(145deg, var(--brand-panel), var(--brand-inset));
+  color: var(--brand-text);
+}
+
+body.manager-dashboard .manager-panel-heading h2 {
+  color: var(--brand-text);
+}
+
+body.manager-dashboard .manager-kpi--blue {
+  --kpi-color: var(--brand-coral);
+}
+
+body.manager-dashboard .manager-kpi--purple {
+  --kpi-color: var(--brand-amber);
+}
+
+body.manager-dashboard .manager-kpi--teal {
+  --kpi-color: var(--brand-green);
+}
+
+body.waiter-dashboard .waiter-kpi.is-teal {
+  --waiter-accent: var(--brand-green);
+}
+
+body.dispatch-dashboard .dispatch-kpi.is-purple {
+  --dispatch-accent: var(--brand-amber);
+}
+
+body.waiter-dashboard .waiter-kpi.is-purple {
+  --waiter-accent: var(--brand-coral);
+}
+
+body.dispatch-dashboard .dispatch-kpi.is-red {
+  --dispatch-accent: var(--brand-coral);
+}
+
+body.waiter-dashboard .waiter-kpi.is-amber {
+  --waiter-accent: var(--brand-amber);
+}
+
+body.dispatch-dashboard .dispatch-kpi.is-amber {
+  --dispatch-accent: var(--brand-amber);
+}
+
+body.waiter-dashboard .waiter-sidebar,
+body.dispatch-dashboard .dispatch-sidebar,
+body.kds-body .kds-sidebar {
+  border-color: var(--brand-line);
+  background: linear-gradient(180deg, var(--brand-panel), var(--brand-bg) 78%);
+}
+
+body.waiter-dashboard .waiter-nav a.is-active,
+body.dispatch-dashboard .dispatch-nav a.is-active,
+body.kds-body .kds-nav-item.is-active {
+  border-color: var(--brand-green);
+  background: linear-gradient(110deg, var(--brand-green), #1d5f40);
+  box-shadow: 0 7px 20px rgba(36, 115, 79, .2);
+  color: #fff;
+}
+
+body.waiter-dashboard .waiter-nav a.is-active .material-symbols-outlined,
+body.dispatch-dashboard .dispatch-nav a.is-active .material-symbols-outlined,
+body.kds-body .kds-nav-item.is-active > .material-symbols-outlined {
+  color: #fff;
+}
+
+.customer-topbar {
+  border-color: var(--brand-line);
+  background: rgba(33, 31, 27, .96);
+}
+
+.customer-menu,
+.customer-cart,
+.tracking-card {
+  border-color: var(--brand-line);
+  background: var(--brand-panel);
+  color: var(--brand-text);
+}
+
+.customer-field input,
+.customer-field select {
+  border-color: var(--brand-line);
+  background: var(--brand-panel-raised);
+  color: var(--brand-text);
+}
+
+.customer-primary-button,
+.customer-cart-toggle {
+  background: var(--brand-green);
+  color: #fff;
+}
+
+.customer-primary-button:hover:not(:disabled),
+.customer-cart-toggle:hover {
+  background: #1d5f40;
+}
+
+.customer-secondary-button,
+.customer-cart-close {
+  border-color: var(--brand-line);
+  background: var(--brand-panel-raised);
+  color: var(--brand-text);
+}
+
+.customer-payment-note {
+  border-color: #68491d;
+  background: #493317;
+  color: #ffe1a8;
+}
+
+.customer-notice,
+.tracker-notice {
+  border-color: #64352d;
+  background: #4b2924;
+  color: #ffe1d9;
+}
+
+.login-page {
+  --login-ink: var(--brand-text);
+  --login-muted: var(--brand-muted);
+  --login-forest: var(--brand-green);
+  --login-forest-dark: #1d5f40;
+  --login-red: var(--brand-coral);
+  --login-paper: var(--brand-panel);
+  --login-line: var(--brand-line);
+  color: var(--brand-text);
+  background: var(--brand-bg);
+}
+
+.login-page .login-content,
+.login-page .login-shell {
+  background: var(--brand-bg);
+}
+
+.login-page .login-header,
+.login-page .login-brand,
+.login-page .login-phone-entry,
+.login-page .login-pin-heading {
+  color: var(--brand-text);
+}
+
+.login-page .login-card-heading .login-card-description,
+.login-page .login-footer {
+  color: var(--brand-muted);
+}
+
+.login-page .login-card-heading .login-card-kicker {
+  color: var(--brand-coral);
+}
+
+.login-page .login-phone-input,
+.login-page .pin-btn {
+  border-color: var(--brand-line);
+  background: var(--brand-panel-raised);
+  color: var(--brand-text);
+}
+
+.login-page .login-phone-input::placeholder {
+  color: var(--brand-muted);
+}
+
+.login-page .login-keypad {
+  border-color: var(--brand-line);
+  background: var(--brand-inset);
+}
+
+.login-page .pin-btn:hover {
+  border-color: var(--brand-amber);
+  background: var(--brand-panel);
+}
+
+.login-page .login-submit {
+  background: linear-gradient(120deg, var(--brand-green), #1d5f40);
+  color: #fff;
+}
+
+.login-page .login-submit:hover {
+  background: #1d5f40;
+}
+
+.login-page .login-workspace-card {
+  border-color: rgba(255, 255, 255, .16);
+  background: rgba(48, 44, 38, .94);
+  color: var(--brand-text);
+}
+
+.login-page .login-workspace-card span:last-child {
+  color: var(--brand-muted);
+}
+
+.login-page .login-portal-badge {
+  border-color: var(--brand-line);
+  background: var(--brand-panel);
+  color: var(--brand-amber);
+}
+
+.page .home-link,
+.page .button {
+  border-color: var(--brand-line);
+}
+
+.page .home-link {
+  background: var(--brand-panel);
+  color: var(--brand-text);
+}
+
+.page .empty-card {
+  border-color: var(--brand-line);
+  background: var(--brand-panel);
+}
+
+.page .tracker-form input,
+.page .tracker-form select {
+  border-color: var(--brand-line);
+  background: var(--brand-panel-raised);
+  color: var(--brand-text);
+}
+
+.page .button {
+  background: var(--brand-green);
+  color: #fff;
+}
+
+.page .button:hover {
+  background: #1d5f40;
+}
+
+nav[aria-label='Customer navigation'] {
+  border-color: var(--brand-line);
+  background: rgba(48, 44, 38, .96);
+  color: var(--brand-text);
+}

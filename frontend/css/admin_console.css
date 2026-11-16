@@ -579,12 +579,12 @@ body[data-surface='admin'] .admin-digest-outcome:empty {
 
 /* Manager dashboard overview */
 body.manager-dashboard {
-  --manager-bg: #090e10;
-  --manager-panel: #11171a;
-  --manager-panel-soft: #171e22;
-  --manager-border: #252d31;
-  --manager-muted: #9aa5ac;
-  --manager-text: #f3f6f7;
+  --manager-bg: #211f1b;
+  --manager-panel: #302c26;
+  --manager-panel-soft: #39342d;
+  --manager-border: #494238;
+  --manager-muted: #c8bfb2;
+  --manager-text: #f7f3ec;
   --manager-green: #00d181;
   background: var(--manager-bg);
   color: var(--manager-text);
@@ -599,8 +599,8 @@ body.manager-dashboard {
   flex-direction: column;
   padding: 18px 12px 14px;
   overflow: auto;
-  border-right: 1px solid #202927;
-  background: linear-gradient(180deg, #07110e, #091311 72%, #07100e);
+  border-right: 1px solid var(--manager-border);
+  background: linear-gradient(180deg, #302c26, #211f1b 72%, #28241f);
   scrollbar-width: thin;
   scrollbar-color: #273530 transparent;
 }

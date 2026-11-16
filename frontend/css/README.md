@@ -1,13 +1,14 @@
 ﻿# Fast-Casual Modular Stylesheets (`css/`)
 
-This directory contains screen-specific CSS stylesheets matched to their HTML pages, plus shared design tokens and card-surface styles.
+This directory contains screen-specific CSS stylesheets matched to their HTML pages, plus the shared espresso, warm-cream, forest, coral, and amber brand theme.
 
 | Stylesheet File | Companion HTML Screen | Surface / Purpose |
 | :--- | :--- | :--- |
 | [`menu-category.css`](menu-category.css) | [`../html/menu-category.html`](../html/menu-category.html) | Responsive meal cards with live images, prices, availability, outlet labels, and order links. |
 | [`card_surfaces.css`](file:///c:/Users/USER/OneDrive/Desktop/Chol-John-Arok-Market-Research-Project/frontend/css/card_surfaces.css) | *(Imported by `theme_tokens.css`)* | Consistent borders, subtle elevation, and hover states for shared card surfaces across the app. |
+| [`brand_theme.css`](brand_theme.css) | Live landing, ordering, tracking, sign-in, and staff dashboards | Shared dark surface palette and coordinated brand/semantic colors across active screens. |
 | [`staff_prototype_header.css`](file:///c:/Users/USER/OneDrive/Desktop/Chol-John-Arok-Market-Research-Project/frontend/css/staff_prototype_header.css) | *(Imported by POS, KDS, dispatch, and manager prototype stylesheets)* | Shared responsive staff navigation and high-contrast outlet selection states. |
-| [`theme_tokens.css`](file:///c:/Users/USER/OneDrive/Desktop/Chol-John-Arok-Market-Research-Project/frontend/css/theme_tokens.css) | *(Shared by all stylesheets)* | Global theme variables (Terracotta Red `#DC2626`, Saffron Amber `#FEA619`, Forest Green `#16A34A`, Cream Canvas `#FAF9F6`), Plus Jakarta Sans typography scales, radii, and ambient shadows. |
+| [`theme_tokens.css`](file:///c:/Users/USER/OneDrive/Desktop/Chol-John-Arok-Market-Research-Project/frontend/css/theme_tokens.css) | *(Shared by dashboard and legacy stylesheets)* | Espresso `#211F1B`, raised surfaces `#302C26`, warm cream `#F7F3EC`, forest primary `#24734F`, coral `#FF705B`, and amber `#FFB02E` tokens, with shared typography, radii, and shadows. |
 | [`staff_terminal_pin_login.css`](file:///c:/Users/USER/OneDrive/Desktop/Chol-John-Arok-Market-Research-Project/frontend/css/staff_terminal_pin_login.css) | [`../html/staff_terminal_pin_login.html`](file:///c:/Users/USER/OneDrive/Desktop/Chol-John-Arok-Market-Research-Project/frontend/html/staff_terminal_pin_login.html) | Staff PIN terminal, 56px keypad buttons, PIN dot state indicators, edge node sync badges. |
 | [`customer_pwa_landing_page.css`](file:///c:/Users/USER/OneDrive/Desktop/Chol-John-Arok-Market-Research-Project/frontend/css/customer_pwa_landing_page.css) | [`../html/customer_pwa_landing_page.html`](file:///c:/Users/USER/OneDrive/Desktop/Chol-John-Arok-Market-Research-Project/frontend/html/customer_pwa_landing_page.html) | Mobile landing layout, hero image, outlet switcher, and bottom navigation. |
 | [`campus_pre_order_menu.css`](file:///c:/Users/USER/OneDrive/Desktop/Chol-John-Arok-Market-Research-Project/frontend/css/campus_pre_order_menu.css) | [`../html/campus_pre_order_menu.html`](file:///c:/Users/USER/OneDrive/Desktop/Chol-John-Arok-Market-Research-Project/frontend/html/campus_pre_order_menu.html) | Category filter chips, 4:3 menu cards, single-tap item adders, floating bottom cart tray. |

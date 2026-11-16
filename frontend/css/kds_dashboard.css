@@ -1,8 +1,8 @@
 :root {
-  --kds-bg: #171411;
-  --kds-panel: #211d19;
-  --kds-panel-raised: #2a2520;
-  --kds-line: #3c332b;
+  --kds-bg: #211f1b;
+  --kds-panel: #302c26;
+  --kds-panel-raised: #39342d;
+  --kds-line: #494238;
   --kds-text: #f7f3ec;
   --kds-muted: #bcb2a5;
   --kds-amber: #ffad24;
@@ -124,14 +124,14 @@
 }
 
 .kds-nav-item.is-active {
-  border-color: #ffc252;
-  background: linear-gradient(115deg, #ffae25, #f28a0b);
-  box-shadow: 0 6px 18px rgba(243, 145, 17, .24);
-  color: #24180d;
+  border-color: #24734f;
+  background: linear-gradient(115deg, #24734f, #1d5f40);
+  box-shadow: 0 6px 18px rgba(36, 115, 79, .24);
+  color: #fff;
 }
 
 .kds-nav-item.is-active > .material-symbols-outlined {
-  color: #24180d;
+  color: #fff;
 }
 
 .kds-nav-count {

@@ -1,10 +1,10 @@
 body.dispatch-dashboard {
-  --dispatch-bg: #080d0e;
-  --dispatch-panel: #11191c;
-  --dispatch-panel-deep: #0c1316;
-  --dispatch-border: #263237;
-  --dispatch-muted: #93a0a5;
-  --dispatch-text: #f0f3f4;
+  --dispatch-bg: #211f1b;
+  --dispatch-panel: #302c26;
+  --dispatch-panel-deep: #28241f;
+  --dispatch-border: #494238;
+  --dispatch-muted: #c8bfb2;
+  --dispatch-text: #f7f3ec;
   min-width: 320px;
   min-height: 100vh;
   background:
@@ -27,8 +27,8 @@ body.dispatch-dashboard {
   flex-direction: column;
   gap: 20px;
   padding: 18px 12px 14px;
-  border-right: 1px solid #1e302a;
-  background: linear-gradient(180deg, #06120e, #07110e 72%, #091813);
+  border-right: 1px solid var(--dispatch-border);
+  background: linear-gradient(180deg, #302c26, #211f1b 72%, #28241f);
 }
 
 .dispatch-brand {
@@ -159,10 +159,10 @@ body.dispatch-dashboard {
 }
 
 .dispatch-nav a.is-active {
-  border-color: #147d4d;
-  background: linear-gradient(100deg, #07864d, #0d5f3d);
+  border-color: #24734f;
+  background: linear-gradient(100deg, #24734f, #1d5f40);
   color: #fff;
-  box-shadow: 0 7px 20px rgba(0, 149, 83, 0.16);
+  box-shadow: 0 7px 20px rgba(36, 115, 79, 0.2);
 }
 
 .dispatch-nav a .material-symbols-outlined,

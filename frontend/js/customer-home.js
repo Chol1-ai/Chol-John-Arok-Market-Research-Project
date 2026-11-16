@@ -9,8 +9,23 @@
   const form = document.getElementById('delivery-finder');
   const menuGroups = document.getElementById('home-menu-groups');
   const allMealsLink = document.getElementById('see-all-meals');
+  const bestSellersGrid = document.getElementById('best-sellers-grid');
+  const bestSellersTitle = document.getElementById('best-sellers-title');
+  const bestSellersDescription = document.getElementById('best-sellers-description');
+  const favoritesStatus = document.getElementById('favorites-status');
+  const favoriteNavCount = document.querySelector('[data-customer-favorites-count]');
   const OUTLETS = new Set(['FOODIZO_HAM_TOWERS', 'OBUNUZI_YMCA']);
   const defaultOutlet = 'FOODIZO_HAM_TOWERS';
+  const favoritesStorageKey = 'foodizo-customer-favorites-v1';
+  const featuredMealNames = [
+    'Double Egg Rolex with Cabbage',
+    'Single Egg Rolex',
+    'Kikkomando (Chapati chopped with Beans)',
+    'Katogo (Banana & Beef)',
+    'Traditional Luwombo (Chicken)',
+    'Traditional Luwombo (Goat)',
+    'Traditional Beef Luwombo'
+  ];
   const activeOutletValue = () => (outlet && outlet.value ? outlet.value : defaultOutlet);
   let requestNumber = 0;
   let menuRequestNumber = 0;
@@ -50,6 +65,104 @@
 
   function formatUgx(value) {
     return `UGX ${Number(value || 0).toLocaleString('en-UG')}`;
+  }
+
+  function savedFavorites() {
+    try {
+      const stored = JSON.parse(localStorage.getItem(favoritesStorageKey) || '[]');
+      return Array.isArray(stored) ? stored.filter((id) => typeof id === 'string') : [];
+    } catch (error) {
+      console.error('Could not read saved meal favorites.', error);
+      if (favoritesStatus) favoritesStatus.textContent = 'Could not load saved favorites from this browser.';
+      return [];
+    }
+  }
+
+  function updateFavoriteCount() {
+    if (!favoriteNavCount) return;
+    const count = savedFavorites().length;
+    favoriteNavCount.textContent = count > 99 ? '99+' : String(count);
+    favoriteNavCount.hidden = count === 0;
+  }
+
+  function menuItemImage(item) {
+    const uploadedImage = typeof item.imageUrl === 'string' &&
+      item.imageUrl.startsWith('/api/v1/menu-items/images/')
+      ? item.imageUrl
+      : null;
+    const itemImages = window.FOODIZO_MENU_ITEM_IMAGES || {};
+    if (uploadedImage) return uploadedImage;
+    if (Object.prototype.hasOwnProperty.call(itemImages, item.name)) return itemImages[item.name];
+    const categories = window.FOODIZO_MENU_CATEGORIES || [];
+    const category = categories.find((entry) => entry.name === item.category);
+    return category ? category.image : '/images/foodizo-landing-hero.jpg';
+  }
+
+  function renderBestSellers(items) {
+    if (!bestSellersGrid) return;
+    const favoritesView = new URLSearchParams(location.search).get('view') === 'favorites';
+    const byName = new Map(items.map((item) => [item.name, item]));
+    const featuredItems = featuredMealNames.map((name) => byName.get(name)).filter(Boolean);
+    const selectedItems = favoritesView
+      ? items.filter((item) => savedFavorites().includes(item.id))
+      : (featuredItems.length ? featuredItems : items).slice(0, 4);
+
+    if (bestSellersTitle) bestSellersTitle.textContent = favoritesView ? 'Your favorites' : 'Best-selling meals';
+    if (bestSellersDescription) {
+      bestSellersDescription.textContent = favoritesView
+        ? 'Meals you have saved in this browser.'
+        : 'Campus favorites made fresh at your selected outlet.';
+    }
+
+    if (!selectedItems.length) {
+      bestSellersGrid.innerHTML = favoritesView
+        ? '<p class="section-description">No favorites saved yet. Tap the heart on a meal to save it here.</p>'
+        : '<p class="section-description">No featured meals are available at this outlet right now.</p>';
+      return;
+    }
+
+    const favorites = savedFavorites();
+    bestSellersGrid.innerHTML = selectedItems.map((item) => {
+      const selected = favorites.includes(item.id);
+      const orderUrl = `/order?q=${encodeURIComponent(item.name)}&outlet=${encodeURIComponent(activeOutletValue())}`;
+      return `
+        <article class="best-seller-card">
+          <img src="${escapeHtml(menuItemImage(item))}" alt="${escapeHtml(item.name)}" loading="lazy" />
+          <button class="best-seller-favorite" type="button" data-favorite-id="${escapeHtml(item.id)}"
+            aria-label="${selected ? 'Remove' : 'Save'} ${escapeHtml(item.name)} ${selected ? 'from' : 'to'} favorites"
+            aria-pressed="${selected}">
+            <span class="material-symbols-outlined" aria-hidden="true">favorite</span>
+          </button>
+          <div class="best-seller-content">
+            <h3>${escapeHtml(item.name)}</h3>
+            <p>${escapeHtml(item.description || item.category || 'Freshly prepared to order')}</p>
+            <div class="best-seller-actions">
+              <span class="best-seller-price">${formatUgx(item.priceUgx)}</span>
+              <a class="button button-primary best-seller-order" href="${escapeHtml(orderUrl)}">Order meal</a>
+            </div>
+          </div>
+        </article>
+      `;
+    }).join('');
+
+    bestSellersGrid.querySelectorAll('[data-favorite-id]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const id = button.dataset.favoriteId;
+        const currentFavorites = savedFavorites();
+        const updatedFavorites = currentFavorites.includes(id)
+          ? currentFavorites.filter((favoriteId) => favoriteId !== id)
+          : [...currentFavorites, id];
+        try {
+          localStorage.setItem(favoritesStorageKey, JSON.stringify(updatedFavorites));
+          if (favoritesStatus) favoritesStatus.textContent = 'Favorite list updated.';
+          updateFavoriteCount();
+          renderBestSellers(items);
+        } catch (error) {
+          console.error('Could not save meal favorites.', error);
+          if (favoritesStatus) favoritesStatus.textContent = 'Could not save favorites in this browser.';
+        }
+      });
+    });
   }
 
   function renderMenuGroups(items) {
@@ -127,11 +240,17 @@
         throw new Error('The current menu response was invalid.');
       }
       if (currentRequest !== menuRequestNumber) return;
-      renderMenuGroups(data.items.filter((item) => item.isActive));
+      const activeItems = data.items.filter((item) => item.isActive);
+      renderMenuGroups(activeItems);
+      renderBestSellers(activeItems);
+      updateFavoriteCount();
     } catch (error) {
       if (currentRequest !== menuRequestNumber) return;
       menuGroups.innerHTML =
         `<p class="section-description" role="status">Could not load the current menu: ${escapeHtml(error.message)} <a href="/order?outlet=${encodeURIComponent(activeOutletValue())}">Open the full menu</a>.</p>`;
+      if (bestSellersGrid) {
+        bestSellersGrid.innerHTML = `<p class="section-description" role="status">Could not load featured meals: ${escapeHtml(error.message)}.</p>`;
+      }
     }
   }
 

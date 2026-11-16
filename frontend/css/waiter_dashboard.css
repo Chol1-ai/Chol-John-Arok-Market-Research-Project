@@ -1,10 +1,10 @@
 body.waiter-dashboard {
-  --waiter-bg: #080d0e;
-  --waiter-panel: #11181b;
-  --waiter-panel-raised: #171f23;
-  --waiter-border: #273238;
-  --waiter-muted: #93a0a6;
-  --waiter-text: #f0f3f4;
+  --waiter-bg: #211f1b;
+  --waiter-panel: #302c26;
+  --waiter-panel-raised: #39342d;
+  --waiter-border: #494238;
+  --waiter-muted: #c8bfb2;
+  --waiter-text: #f7f3ec;
   min-width: 320px;
   min-height: 100vh;
   background:
@@ -27,8 +27,8 @@ body.waiter-dashboard {
   flex-direction: column;
   gap: 20px;
   padding: 18px 12px 14px;
-  border-right: 1px solid #1f2c2d;
-  background: linear-gradient(180deg, #07120f, #07100e 74%, #091713);
+  border-right: 1px solid var(--waiter-border);
+  background: linear-gradient(180deg, #302c26, #211f1b 74%, #28241f);
 }
 
 .waiter-brand {
@@ -153,10 +153,10 @@ body.waiter-dashboard {
 }
 
 .waiter-nav a.is-active {
-  border-color: #137b4d;
-  background: linear-gradient(100deg, #07864d, #0d5f3d);
+  border-color: #24734f;
+  background: linear-gradient(100deg, #24734f, #1d5f40);
   color: #fff;
-  box-shadow: 0 7px 20px rgba(0, 149, 83, 0.16);
+  box-shadow: 0 7px 20px rgba(36, 115, 79, 0.2);
 }
 
 .waiter-nav .material-symbols-outlined,
