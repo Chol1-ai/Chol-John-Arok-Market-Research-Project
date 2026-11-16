@@ -15,6 +15,7 @@
     selectedZone: null,
     category: 'ALL',
     cart: new Map(),
+    itemNotes: new Map(),
     token: null,
     pollTimer: null
   };
@@ -100,7 +101,11 @@
     try {
       localStorage.setItem(
         `${CART_STORAGE_PREFIX}${state.outlet}`,
-        JSON.stringify(Array.from(state.cart.entries()))
+        JSON.stringify(Array.from(state.cart.entries()).map(([itemId, quantity]) => [
+          itemId,
+          quantity,
+          state.itemNotes.get(itemId) || ''
+        ]))
       );
     } catch (error) {
       showNotice(`Could not save your cart in this browser: ${error.message}`);
@@ -143,18 +148,27 @@
 
     let skippedItems = false;
     for (const entry of saved) {
-      if (!Array.isArray(entry) || entry.length !== 2) {
+      if (!Array.isArray(entry) || (entry.length !== 2 && entry.length !== 3)) {
         skippedItems = true;
         continue;
       }
-      const [itemId, quantity] = entry;
-      if (typeof itemId !== 'string' || !Number.isSafeInteger(quantity) || quantity < 1) {
+      const [itemId, quantity, note] = entry;
+      if (
+        typeof itemId !== 'string' ||
+        !Number.isSafeInteger(quantity) ||
+        quantity < 1 ||
+        (entry.length === 3 && (typeof note !== 'string' || note.length > 200))
+      ) {
         skippedItems = true;
         continue;
       }
       const item = state.menu.find((row) => row.id === itemId);
-      if (item && item.isAvailable && !item.is86) state.cart.set(itemId, quantity);
-      else skippedItems = true;
+      if (item && item.isAvailable && !item.is86) {
+        state.cart.set(itemId, quantity);
+        if (typeof note === 'string' && note.trim()) state.itemNotes.set(itemId, note);
+      } else {
+        skippedItems = true;
+      }
     }
     if (skippedItems) showNotice('Some saved cart items were omitted because they are no longer available.');
   }
@@ -172,11 +186,15 @@
     if (preserveCart) {
       for (const itemId of state.cart.keys()) {
         const item = state.menu.find((row) => row.id === itemId);
-        if (!item || !item.isAvailable || item.is86) state.cart.delete(itemId);
+        if (!item || !item.isAvailable || item.is86) {
+          state.cart.delete(itemId);
+          state.itemNotes.delete(itemId);
+        }
       }
       persistCart();
     } else {
       state.cart.clear();
+      state.itemNotes.clear();
       restoreCart();
     }
     state.category = 'ALL';
@@ -316,6 +334,12 @@
           <strong>${quantity}</strong>
           <button class="customer-qty-button" type="button" data-cart-change="1" data-id="${escapeHtml(item.id)}" aria-label="Add one ${escapeHtml(item.name)}">+</button>
         </span>
+        <label class="customer-item-request">
+          <span>Allergy or ingredient request (optional)</span>
+          <textarea data-item-note data-id="${escapeHtml(item.id)}" maxlength="200" rows="2"
+            aria-label="Allergy or ingredient request for ${escapeHtml(item.name)}"
+            placeholder="e.g. Please leave out chili">${escapeHtml(state.itemNotes.get(item.id) || '')}</textarea>
+        </label>
       </div>
     `).join('') : '';
   }
@@ -324,7 +348,10 @@
     const item = state.menu.find((row) => row.id === itemId);
     if (!item || (delta > 0 && (!item.isAvailable || item.is86))) return;
     const next = (state.cart.get(itemId) || 0) + delta;
-    if (next <= 0) state.cart.delete(itemId);
+    if (next <= 0) {
+      state.cart.delete(itemId);
+      state.itemNotes.delete(itemId);
+    }
     else state.cart.set(itemId, next);
     persistCart();
     renderCart();
@@ -348,7 +375,10 @@
   async function submitOrder(event) {
     event.preventDefault();
     hideNotice();
-    const lines = Array.from(state.cart.entries()).map(([menuItemId, quantity]) => ({ menuItemId, quantity }));
+    const lines = Array.from(state.cart.entries()).map(([menuItemId, quantity]) => {
+      const notes = (state.itemNotes.get(menuItemId) || '').trim();
+      return { menuItemId, quantity, ...(notes ? { notes } : {}) };
+    });
     if (!lines.length) return;
 
     const formData = new FormData(elements.checkoutForm);
@@ -375,6 +405,7 @@
       state.token = data.order.tokenNumber;
       saveActiveOrder();
       state.cart.clear();
+      state.itemNotes.clear();
       persistCart();
       history.replaceState(null, '', `/order?token=${encodeURIComponent(state.token)}&outlet=${encodeURIComponent(state.outlet)}`);
       showTrackingScreen();
@@ -471,6 +502,7 @@
     elements.orderScreen.hidden = false;
     elements.checkoutForm.reset();
     state.cart.clear();
+    state.itemNotes.clear();
     persistCart();
     updateFulfillment();
   }
@@ -495,6 +527,12 @@
     elements.cartLines.addEventListener('click', (event) => {
       const button = event.target.closest('[data-cart-change]');
       if (button) changeQuantity(button.dataset.id, Number(button.dataset.cartChange));
+    });
+    elements.cartLines.addEventListener('input', (event) => {
+      const field = event.target.closest('[data-item-note]');
+      if (!(field instanceof HTMLTextAreaElement)) return;
+      state.itemNotes.set(field.dataset.id, field.value);
+      persistCart();
     });
     elements.cartToggle.addEventListener('click', () => setCartOpen(true));
     elements.cartClose.addEventListener('click', () => setCartOpen(false));

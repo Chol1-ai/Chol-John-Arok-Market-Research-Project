@@ -8,7 +8,7 @@
 
 ## 1. Architecture Overview
 
-The backend is built with Fastify, Prisma ORM, and TypeScript to power the five live staff surfaces of the Kampala fast-casual restaurant suite (`/login`, `/pos`, `/kds`, `/dispatch`, `/admin`). The customer menu prototype reads the live menu catalogue, but its cart and checkout remain demonstrations and do not create orders.
+The backend is built with Fastify, Prisma ORM, and TypeScript to power the five live staff surfaces of the Kampala fast-casual restaurant suite (`/login`, `/pos`, `/kds`, `/dispatch`, `/admin`) and the live customer order and tracking flow. Customer orders store item-specific requests (including allergy or ingredient requests) for kitchen tickets and printed chits.
 
 * **High Throughput & Low Overhead:** Fastify delivers low latency during the 12:00–14:00 campus lunch rush.
 * **Real-Time WebSocket Bus (`/ws/events`):** Pushes live ticket creations, bumps, and takeaway token statuses to KDS displays without client polling.

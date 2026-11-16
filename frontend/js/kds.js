@@ -351,7 +351,8 @@
         <span class="kds-item-qty">${F.escapeHtml(item.quantity)}</span>
         <div>
           <div class="kds-item-name">${F.escapeHtml(item.name)}</div>
-          <div class="kds-item-meta">${F.escapeHtml(stationLabel(item.station))}${item.notes ? ` · ${F.escapeHtml(item.notes)}` : ''}</div>
+          <div class="kds-item-meta">${F.escapeHtml(stationLabel(item.station))}</div>
+          ${item.notes ? `<div class="kds-item-request"><strong>Customer request</strong><span>${F.escapeHtml(item.notes)}</span></div>` : ''}
         </div>
       </div>`).join('');
     const statusIcon = ticket.status === 'PENDING' ? 'notifications_active' :

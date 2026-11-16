@@ -40,8 +40,14 @@
       if (!Array.isArray(saved)) throw new Error('Saved cart data is not a list.');
       let skippedInvalidEntries = false;
       const count = saved.reduce((total, entry) => {
-        if (!Array.isArray(entry) || entry.length !== 2 ||
-            typeof entry[0] !== 'string' || !Number.isSafeInteger(entry[1]) || entry[1] < 1) {
+        if (
+          !Array.isArray(entry) ||
+          (entry.length !== 2 && entry.length !== 3) ||
+          typeof entry[0] !== 'string' ||
+          !Number.isSafeInteger(entry[1]) ||
+          entry[1] < 1 ||
+          (entry.length === 3 && (typeof entry[2] !== 'string' || entry[2].length > 200))
+        ) {
           skippedInvalidEntries = true;
           return total;
         }

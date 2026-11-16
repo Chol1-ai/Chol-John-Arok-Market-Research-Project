@@ -82,7 +82,7 @@ export class PrinterService {
     for (const item of data.items) {
       appendText(`${item.quantity}x ${this.sanitizeText(item.name)}`);
       if (item.notes) {
-        appendText(`   * ${this.sanitizeText(item.notes)}`);
+        appendText(`   ITEM REQUEST: ${this.sanitizeText(item.notes, 200)}`);
       }
     }
 

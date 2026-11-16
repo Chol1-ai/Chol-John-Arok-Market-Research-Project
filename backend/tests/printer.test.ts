@@ -24,7 +24,7 @@ describe('PrinterService (ESC/POS 80mm Chit Formatting)', () => {
     expect(stringRepresentation).toContain('TOKEN #F-104');
     expect(stringRepresentation).toContain('Brian K.');
     expect(stringRepresentation).toContain('2pc Fried Chicken & Chips');
-    expect(stringRepresentation).toContain('Extra chili dip');
+    expect(stringRepresentation).toContain('ITEM REQUEST: Extra chili dip');
     expect(stringRepresentation).toContain('UGX 21,000');
 
     // Verify trailing GS V 66 0 partial paper cut command
