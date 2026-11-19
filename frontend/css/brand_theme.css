@@ -1,5 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
+
 :root {
   color-scheme: dark;
+  --font-family-base: 'DM Sans', system-ui, -apple-system, sans-serif;
+  --font-family-display: 'Outfit', var(--font-family-base);
   --brand-bg: #211f1b;
   --brand-panel: #302c26;
   --brand-panel-raised: #39342d;
@@ -41,6 +45,14 @@
   --color-tertiary-container: var(--brand-green);
   --color-on-tertiary: #fff;
   --color-border-default: var(--brand-line);
+}
+
+body {
+  font-family: var(--font-family-base);
+}
+
+h1, h2, h3, h4, h5, h6, .ls-title, .ls-card-title {
+  font-family: var(--font-family-display);
 }
 
 body[data-surface] {

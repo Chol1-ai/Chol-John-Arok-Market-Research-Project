@@ -19,7 +19,7 @@ These values supersede older references elsewhere in the documentation set:
 | :--- | :--- |
 | KDS bump button height | **68px**, full ticket width |
 | Customer token display | **54px** JetBrains Mono 700 |
-| Display / narrative font | **Plus Jakarta Sans** (600/700/800) |
+| Display font | **Outfit** (600/700/800); body and UI font: **DM Sans** |
 | Data / numeric font | **JetBrains Mono** (500/700/800) |
 | KDS surface / card | `#050811` / `#0F172A` |
 | Customer surface / card | `#FAF8F5` / `#FFFFFF` |
@@ -245,22 +245,23 @@ All quantitative data runs on a **Monospace Engine**. All narrative text runs on
 | Engine | Family | Weights | Usage |
 | :--- | :--- | :--- | :--- |
 | **Operational Data** | `JetBrains Mono`, `Consolas`, monospace | 500 / 700 / 800 | Tokens, timers, quantities, UGX values, table counts, audit IDs |
-| **Narrative / UI** | `Plus Jakarta Sans`, `Inter`, sans-serif | 600 / 700 / 800 | Dish names, modifiers, prompts, headings, buttons |
+| **Display / headings** | `Outfit`, `DM Sans`, sans-serif | 600 / 700 / 800 | Dish names, prompts, headings, prominent values |
+| **Body / UI** | `DM Sans`, system-ui, sans-serif | 400 / 500 / 600 / 700 | Modifiers, labels, controls, buttons |
 
 ### 3.1 Type Scale
 
 | Token | Spec |
 | :--- | :--- |
 | Customer token display | **54px** / JetBrains Mono / 700 / line-height 1.0 / tracking -0.03em |
-| KDS station label | **24px** / Plus Jakarta Sans / 800 / uppercase / tracking +0.08em |
+| KDS station label | **24px** / Outfit / 800 / uppercase / tracking +0.08em |
 | KDS elapsed timer | **26px** / JetBrains Mono / 800 / tabular-nums |
 | KDS ticket number | **22px** / JetBrains Mono / 700 |
-| Menu dish title | **19px** / Plus Jakarta Sans / 700 / wraps to two lines |
-| Table number indicator | **24px** / Plus Jakarta Sans / 800 |
+| Menu dish title | **19px** / Outfit / 700 / wraps to two lines |
+| Table number indicator | **24px** / Outfit / 800 |
 | UGX currency value | **17px** / JetBrains Mono / 700 / tabular-nums |
 | Modifier flag | **14px** / JetBrains Mono / 700 / black on `#FDE047` |
-| Body / labels | **15–16px** / Plus Jakarta Sans / 600 |
-| Admin table row | **14px** / Plus Jakarta Sans / 600 + mono numerics |
+| Body / labels | **15–16px** / DM Sans / 600 |
+| Admin table row | **14px** / DM Sans / 600 + mono numerics |
 
 ### 3.2 Typographic Rules
 
@@ -273,15 +274,16 @@ All quantitative data runs on a **Monospace Engine**. All narrative text runs on
 
 ### 3.3 Font Loading & Offline Resilience
 
-- **Phase 1 implementation:** `frontend/css/live_surfaces.css` and the prototype HTML load Plus Jakarta Sans and Material Symbols from Google Fonts at runtime. The fonts are not bundled in the repository.
+- **Phase 1 implementation:** the frontend loads Outfit, DM Sans, and Material Symbols from Google Fonts at runtime. The fonts are not bundled in the repository.
 - **Deployment note:** for a fiber cut or long UMEME outage, cache the font files at the edge or self-host WOFF2 files; a runtime Google Fonts request is a known dependency, not an offline guarantee.
 - Set `font-display: swap` and preload only the 700/800 display weights plus the 700 mono weight when self-hosting.
-- Keep the fallback stack metric-compatible: `Plus Jakarta Sans → Inter → system-ui → sans-serif`; `JetBrains Mono → Consolas → monospace`.
+- Keep the fallback stack readable: `Outfit → DM Sans → system-ui → sans-serif`; `JetBrains Mono → Consolas → monospace`.
 - Expose the loaded families as CSS variables so the Tailwind config resolves:
 
 ```css
 :root {
-  --font-display: 'Plus Jakarta Sans';
+  --font-display: 'Outfit';
+  --font-body: 'DM Sans';
   --font-mono: 'JetBrains Mono';
 }
 ```
@@ -836,7 +838,7 @@ const config: Config = {
         'kds-warn': '0 5px 0 #451a03',
       },
       fontFamily: {
-        display: ['var(--font-display)', 'Plus Jakarta Sans', 'Inter', 'sans-serif'],
+        display: ['var(--font-display)', 'Outfit', 'DM Sans', 'sans-serif'],
         mono: ['var(--font-mono)', 'JetBrains Mono', 'Consolas', 'monospace'],
       },
       spacing: {
@@ -1114,7 +1116,7 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ['Plus Jakarta Sans', 'sans-serif'],
+        sans: ['DM Sans', 'sans-serif'],
         mono: ['JetBrains Mono', 'monospace'],
       },
       borderRadius: {

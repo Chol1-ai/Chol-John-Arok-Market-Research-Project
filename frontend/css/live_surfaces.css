@@ -169,6 +169,7 @@ a.ls-brand:hover .ls-brand-title {
   width: 42px;
   height: 42px;
   border-radius: 12px;
+  object-fit: cover;
   background: rgba(255, 255, 255, 0.13);
   color: inherit;
   font-weight: 800;

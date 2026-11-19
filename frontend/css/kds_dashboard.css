@@ -17,7 +17,7 @@
   margin: 0;
   background: var(--kds-bg);
   color: var(--kds-text);
-  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  font-family: "DM Sans", system-ui, sans-serif;
 }
 
 .kds-app {
@@ -57,8 +57,7 @@
   flex: 0 0 auto;
   place-items: center;
   border-radius: 12px;
-  background: linear-gradient(145deg, #ff6a42, #ed3038);
-  box-shadow: 0 7px 20px rgba(237, 48, 56, .2);
+  object-fit: cover;
   color: #fff;
   font-size: 25px;
   font-weight: 800;
@@ -151,7 +150,7 @@
   gap: 3px;
   margin: auto 8px 20px;
   color: #eee8df;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Outfit", sans-serif;
   font-size: 20px;
   font-style: italic;
   transform: rotate(-4deg);
@@ -230,7 +229,7 @@
 .kds-topbar-title p {
   margin: 0;
   color: #f8f3ec;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Outfit", sans-serif;
   font-size: 19px;
   font-style: italic;
 }

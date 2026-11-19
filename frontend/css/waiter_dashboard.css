@@ -11,7 +11,7 @@ body.waiter-dashboard {
     radial-gradient(ellipse at 68% 0%, rgba(80, 57, 34, 0.2), transparent 28rem),
     var(--waiter-bg);
   color: var(--waiter-text);
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'DM Sans', sans-serif;
 }
 
 .waiter-dashboard [hidden] {
@@ -44,7 +44,8 @@ body.waiter-dashboard {
 .waiter-brand img {
   width: 31px;
   height: 36px;
-  object-fit: contain;
+  object-fit: cover;
+  border-radius: 8px;
 }
 
 .waiter-brand > span,

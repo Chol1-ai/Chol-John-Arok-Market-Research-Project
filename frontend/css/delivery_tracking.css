@@ -1,10 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
+
 :root {
   color-scheme: light;
-  font-family: "Plus Jakarta Sans", "Segoe UI", sans-serif;
+  font-family: "DM Sans", "Segoe UI", sans-serif;
   color: #202b25;
   background: #f3f5ef;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family-display, "Outfit", sans-serif);
 }
 
 * {
@@ -40,7 +46,8 @@ body.delivery-tracking-page {
 .delivery-tracking-brand img {
   width: 40px;
   height: 44px;
-  object-fit: contain;
+  object-fit: cover;
+  border-radius: 8px;
 }
 
 .delivery-tracking-brand span {

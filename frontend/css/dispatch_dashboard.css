@@ -11,7 +11,7 @@ body.dispatch-dashboard {
     radial-gradient(ellipse at 68% 0%, rgba(12, 73, 49, 0.18), transparent 34rem),
     var(--dispatch-bg);
   color: var(--dispatch-text);
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'DM Sans', sans-serif;
 }
 
 .dispatch-dashboard [hidden] {
@@ -44,7 +44,8 @@ body.dispatch-dashboard {
 .dispatch-brand img {
   width: 32px;
   height: 37px;
-  object-fit: contain;
+  object-fit: cover;
+  border-radius: 8px;
 }
 
 .dispatch-brand > span,
@@ -648,7 +649,7 @@ body.dispatch-dashboard {
   width: 100%;
   height: 100%;
   background: #e9e5db;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'DM Sans', sans-serif;
 }
 
 .dispatch-map-canvas .leaflet-bar a {
@@ -744,7 +745,7 @@ body.dispatch-dashboard {
   gap: 5px;
   min-width: 150px;
   color: #37322b;
-  font: 12px/1.4 'Plus Jakarta Sans', sans-serif;
+  font: 12px/1.4 'DM Sans', sans-serif;
 }
 
 .dispatch-map-popup strong {

@@ -5,7 +5,7 @@
  */
 
 @import './theme_tokens.css';
-@import './customer_prototype_support.css?v=4';
+@import './customer_prototype_support.css?v=6';
 
 /* Fulfillment Segmented Control (Takeaway vs. Boda Delivery) */
 .fulfillment-segmented-control {

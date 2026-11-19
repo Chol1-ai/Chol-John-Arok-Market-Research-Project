@@ -7,7 +7,7 @@
   --login-red: #c83d2d;
   --login-paper: #fff;
   --login-line: #e7e0d6;
-  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-family-base);
 }
 
 * {
@@ -73,6 +73,8 @@ input:focus-visible {
 .login-brand img {
   width: 44px;
   height: 44px;
+  object-fit: cover;
+  border-radius: 10px;
 }
 
 .login-brand-copy {

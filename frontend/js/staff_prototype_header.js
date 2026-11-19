@@ -167,8 +167,8 @@
   const brand = brandName?.closest('div');
   if (brand) {
     const logo = document.createElement('img');
-    logo.src = '../images/foodizo-obunuzi-logo.svg';
-    logo.alt = 'Foodizo and Obunuzi';
+    logo.src = '../images/Foodizo_logo.png';
+    logo.alt = 'Foodizo';
     logo.className = 'staff-header-logo';
     brand.replaceChildren(logo);
     brand.classList.add('staff-prototype-brand');

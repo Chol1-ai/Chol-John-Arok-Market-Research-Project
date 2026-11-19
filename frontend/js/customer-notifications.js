@@ -156,7 +156,7 @@
     try {
       notification = new Notification('Your order is ready', {
         body: `${OUTLET_LABELS[order.outlet]} · ${order.channel === 'PHONE_DELIVERY' ? 'Ready for dispatch' : 'Ready for pickup'}`,
-        icon: '/images/foodizo-brand-mark.svg',
+        icon: '/images/Foodizo_logo.png',
         tag: key
       });
     } catch (error) {

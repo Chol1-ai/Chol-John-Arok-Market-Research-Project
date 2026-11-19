@@ -50,68 +50,68 @@ colors:
   surface-variant: '#dce2f7'
 typography:
   headline-xl:
-    fontFamily: Plus Jakarta Sans
+    fontFamily: Outfit
     fontSize: 36px
     fontWeight: '800'
     lineHeight: 44px
     letterSpacing: -0.02em
   headline-xl-mobile:
-    fontFamily: Plus Jakarta Sans
+    fontFamily: Outfit
     fontSize: 28px
     fontWeight: '800'
     lineHeight: 34px
     letterSpacing: -0.02em
   headline-lg:
-    fontFamily: Plus Jakarta Sans
+    fontFamily: Outfit
     fontSize: 24px
     fontWeight: '700'
     lineHeight: 32px
     letterSpacing: -0.01em
   headline-md:
-    fontFamily: Plus Jakarta Sans
+    fontFamily: Outfit
     fontSize: 20px
     fontWeight: '700'
     lineHeight: 26px
   headline-sm:
-    fontFamily: Plus Jakarta Sans
+    fontFamily: Outfit
     fontSize: 18px
     fontWeight: '600'
     lineHeight: 24px
   body-lg:
-    fontFamily: Plus Jakarta Sans
+    fontFamily: DM Sans
     fontSize: 16px
     fontWeight: '400'
     lineHeight: 24px
   body-md:
-    fontFamily: Plus Jakarta Sans
+    fontFamily: DM Sans
     fontSize: 14px
     fontWeight: '400'
     lineHeight: 20px
   body-sm:
-    fontFamily: Plus Jakarta Sans
+    fontFamily: DM Sans
     fontSize: 12px
     fontWeight: '400'
     lineHeight: 16px
   label-lg:
-    fontFamily: Plus Jakarta Sans
+    fontFamily: DM Sans
     fontSize: 14px
     fontWeight: '700'
     lineHeight: 18px
     letterSpacing: 0.01em
   label-md:
-    fontFamily: Plus Jakarta Sans
+    fontFamily: DM Sans
     fontSize: 12px
     fontWeight: '700'
     lineHeight: 16px
     letterSpacing: 0.02em
   label-sm:
-    fontFamily: Plus Jakarta Sans
+    fontFamily: DM Sans
     fontSize: 11px
     fontWeight: '600'
     lineHeight: 14px
     letterSpacing: 0.03em
   currency-display:
-    fontFamily: Plus Jakarta Sans
+    fontFamily: Outfit
     fontSize: 22px
     fontWeight: '800'
     lineHeight: 28px
@@ -164,7 +164,7 @@ The palette balances appetizing warmth, energetic urban accents, and institution
 - **Text Subdued:** `#6B7280`
 
 ## Typography
-Plus Jakarta Sans is used universally across display, body, and label roles. Its geometric roundness, wide apertures, and clean vertical metrics preserve instant readability for fast ordering in bustling environments.
+Outfit is used for expressive headlines and display values, while DM Sans keeps body copy, labels, and controls clear and readable in bustling ordering environments.
 
 ### Currency Formatting Rules
 Local Ugandan currency strings must strictly follow the format: `UGX 15,000` with the code prefix uppercase, a non-breaking space, followed by comma-separated grouping. In compact menu tags, the prefix uses `label-sm` weight while the amount uses `label-lg` or `currency-display` weight for clear billing visibility.

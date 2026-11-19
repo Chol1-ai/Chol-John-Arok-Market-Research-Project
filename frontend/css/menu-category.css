@@ -6,9 +6,13 @@
   --card: #fffefa;
   --line: #e8e4da;
   --green: #245c3e;
-  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  font-family: "DM Sans", system-ui, sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family-display, "Outfit", sans-serif);
 }
 
 * { box-sizing: border-box; }
