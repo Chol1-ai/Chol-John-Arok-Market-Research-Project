@@ -1621,10 +1621,33 @@
     }
 
     .footer-brand img {
-      width: 150px;
-      height: 65px;
-      object-fit: cover;
+      display: block;
+      width: 96px;
+      height: 96px;
+      object-fit: contain;
       object-position: center;
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .footer-brand-name {
+      color: var(--ink);
+      font-family: var(--font-family-display);
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .brand-name {
+      color: var(--ink);
+      font-family: var(--font-family-display);
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
     }
 
     .footer-brand p {
@@ -1799,7 +1822,7 @@
   </style>
   <link rel="stylesheet" href="/css/brand_theme.css?v=5" />
   <link rel="stylesheet" href="/css/foodizo-buddy.css?v=1" />
-  <link rel="stylesheet" href="/css/obunuzi_landing.css?v=7" />
+  <link rel="stylesheet" href="/css/obunuzi_landing.css?v=11" />
 </head>
 
 <body id="top">
@@ -1809,6 +1832,7 @@
         <span>
           <img class="brand-logo" src="../images/Foodizo_logo.png?v=2" alt="Foodizo" />
         </span>
+        <span class="brand-name" data-app-brand>Foodizo</span>
       </a>
       <nav class="nav customer-nav" aria-label="Main navigation">
         <a href="#menu">Menu</a>
@@ -1913,6 +1937,7 @@
     <div class="wrap customer-footer-main">
       <div class="footer-brand">
         <img src="../images/Foodizo_logo.png?v=2" alt="Foodizo" />
+        <span class="footer-brand-name" data-app-brand>Foodizo</span>
       </div>
       <nav class="footer-column" aria-label="Links of interest">
         <h2>Links of interest</h2>

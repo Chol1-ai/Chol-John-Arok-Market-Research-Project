@@ -35,7 +35,8 @@ button { cursor: pointer; }
 .customer-back-link { display: inline-flex; min-height: 40px; align-items: center; gap: 6px; color: #dedfd7; font-size: 12px; font-weight: 700; text-decoration: none; }
 .customer-back-link:hover { color: #b8dfc0; }
 .customer-back-link:focus-visible, .customer-cart-nav:focus-visible, .customer-cart-toggle:focus-visible, .customer-cart-close:focus-visible { outline: 3px solid #e8bf79; outline-offset: 3px; }
-.customer-brand img { display: block; width: 132px; height: 58px; object-fit: cover; object-position: center; }
+.customer-brand { display: inline-flex; align-items: center; gap: 10px; color: #f3f1ea; font-family: var(--font-family-display, "Outfit", sans-serif); font-size: 20px; font-weight: 800; letter-spacing: -.03em; text-decoration: none; }
+.customer-brand img { display: block; width: 58px; height: 58px; object-fit: contain; object-position: center; }
 .customer-cart-nav { position: relative; display: inline-flex; min-height: 38px; align-items: center; gap: 5px; padding: 0 10px; border: 1px solid #4b4c44; border-radius: 999px; background: #2b2c27; color: #e4e4dc; font-size: 11px; font-weight: 800; text-decoration: none; }
 .customer-cart-nav:hover { border-color: #77937b; background: #292b25; color: #c3e3c9; }
 .customer-cart-nav .material-symbols-outlined { font-size: 17px; }
@@ -139,7 +140,8 @@ h1 { margin: 9px 0; font-size: clamp(30px, 5vw, 46px); line-height: 1.1; letter-
 }
 @media (max-width: 540px) {
   .customer-topbar { min-height: 60px; padding-inline: 14px; }
-  .customer-brand img { width: 116px; height: 50px; }
+  .customer-brand { gap: 8px; font-size: 17px; }
+  .customer-brand img { width: 50px; height: 50px; }
   .customer-topbar-actions { gap: 10px; }
   .customer-back-link { font-size: 11px; }
   .customer-main { width: calc(100% - 24px); padding-top: 22px; }

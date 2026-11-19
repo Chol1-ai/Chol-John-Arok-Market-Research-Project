@@ -403,6 +403,17 @@ function serveAppConfig(res) {
     document.querySelectorAll('img[src*="Foodizo_logo.png"], img[src*="obunuzi_logo.png"]').forEach(function (image) {
       image.src = appConfig.logoPath;
       if (image.alt) image.alt = replaceBranding(image.alt);
+      if (!image.nextElementSibling || !image.nextElementSibling.matches('[data-app-brand], .app-brand-name')) {
+        const parent = image.parentElement;
+        const existingBrandName = parent && parent.querySelector('[data-app-brand], .app-brand-name, strong');
+        if (!existingBrandName) {
+          const name = document.createElement('span');
+          name.className = 'app-brand-name';
+          name.textContent = appConfig.brandName;
+          name.setAttribute('aria-hidden', 'true');
+          image.insertAdjacentElement('afterend', name);
+        }
+      }
     });
     document.querySelectorAll('link[rel~="icon"]').forEach(function (icon) {
       icon.href = appConfig.logoPath;
