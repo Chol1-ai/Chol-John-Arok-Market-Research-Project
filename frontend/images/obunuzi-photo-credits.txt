@@ -1,6 +1,6 @@
 Obunuzi menu photo credits
 
-The following locally stored photos are used for Obunuzi category and meal images. Images are displayed as downloaded thumbnails and may be cropped by the interface.
+The following locally stored photos are used for Obunuzi category, meal, and hero images. Images are displayed as downloaded thumbnails and may be cropped by the interface.
 
 - obunuzi-category-american.jpg: "Fried-Chicken-Set" by Evan-Amos, CC0 1.0. https://commons.wikimedia.org/wiki/File:Fried-Chicken-Set.jpg
 - obunuzi-category-asian.jpg: "Fried flat rice noodles (Kueh Teow Goreng)" by Dr.Francostein1975, CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:Fried_flat_rice_noodles_(_Kueh_Teow_Goreng).jpg
