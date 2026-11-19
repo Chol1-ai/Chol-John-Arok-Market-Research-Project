@@ -1799,6 +1799,7 @@
   </style>
   <link rel="stylesheet" href="/css/brand_theme.css?v=5" />
   <link rel="stylesheet" href="/css/foodizo-buddy.css?v=1" />
+  <link rel="stylesheet" href="/css/obunuzi_landing.css?v=7" />
 </head>
 
 <body id="top">
@@ -1840,8 +1841,14 @@
   <section class="customer-hero customer-hero-empty" aria-labelledby="home-hero-title">
     <div class="customer-hero-copy">
       <div class="customer-topline">Foodizo · Ham Towers</div>
-      <h1 id="home-hero-title">Good food, <span>your way.</span></h1>
-      <p>Find something you love, then order pickup or delivery from Foodizo.</p>
+      <h1 id="home-hero-title">
+        <span data-outlet-copy="FOODIZO_HAM_TOWERS">Good food, <span>your way.</span></span>
+        <span data-outlet-copy="OBUNUZI_YMCA" hidden>Flavours of home,<br /><span>made to share.</span></span>
+      </h1>
+      <p>
+        <span data-outlet-copy="FOODIZO_HAM_TOWERS">Find something you love, then order pickup or delivery from Foodizo.</span>
+        <span data-outlet-copy="OBUNUZI_YMCA" hidden>Local ingredients, generous plates, and the comfort of a meal made with care.</span>
+      </p>
       <form class="customer-hero-search" action="/order" method="get" role="search" aria-label="Search meals">
         <label class="visually-hidden" for="home-meal-search">Search meals by name or ingredient</label>
         <input id="home-meal-search" name="q" type="search" placeholder="Search meals or ingredients" />
@@ -1862,14 +1869,24 @@
         <img class="customer-hero-burger-art" src="../images/hero-burger.png" alt="" />
       </div>
     </div>
+    <figure class="obunuzi-hero-visual" data-outlet-copy="OBUNUZI_YMCA" hidden>
+      <img src="../images/african-luwombo.jpg" alt="Luwombo wrapped in banana leaves, ready to share" />
+      <figcaption><span>FROM OUR KITCHEN</span><strong>Tradition, served fresh.</strong></figcaption>
+    </figure>
   </section>
 
   <main class="wrap">
     <section class="section customer-section best-sellers-section" id="best-sellers" aria-labelledby="best-sellers-title">
       <div class="section-heading">
         <div>
-          <h2 id="best-sellers-title">Best-selling meals</h2>
-          <p class="section-description" id="best-sellers-description">Campus favorites made fresh at your selected outlet.</p>
+          <h2 id="best-sellers-title">
+            <span data-outlet-copy="FOODIZO_HAM_TOWERS">Best-selling meals</span>
+            <span data-outlet-copy="OBUNUZI_YMCA" hidden>Obunuzi favourites</span>
+          </h2>
+          <p class="section-description" id="best-sellers-description">
+            <span data-outlet-copy="FOODIZO_HAM_TOWERS">Campus favorites made fresh at your selected outlet.</span>
+            <span data-outlet-copy="OBUNUZI_YMCA" hidden>Local favourites, prepared fresh every day at Obunuzi.</span>
+          </p>
         </div>
         <span class="visually-hidden" id="favorites-status" role="status" aria-live="polite"></span>
       </div>
@@ -2088,8 +2105,8 @@
       <p class="visually-hidden" data-buddy-status role="status" aria-live="polite"></p>
     </section>
   </div>
-  <script src="/js/customer-menu-categories.js?v=3"></script>
-  <script src="/js/customer-home.js?v=20261116"></script>
+  <script src="/js/customer-menu-categories.js?v=4"></script>
+  <script src="/js/customer-home.js?v=20261119"></script>
   <script src="/js/customer-cart-navigation.js?v=2" defer></script>
   <script src="/js/customer-notifications.js?v=1" defer></script>
   <script src="/js/customer-navigation.js" defer></script>

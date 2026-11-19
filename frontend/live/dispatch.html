@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous" />
   <link rel="stylesheet" href="/css/dispatch_dashboard.css?v=7" />
   <link rel="stylesheet" href="/css/brand_theme.css?v=5" />
+  <link rel="stylesheet" href="/css/obunuzi_staff.css?v=6" />
 </head>
 <body class="ls-body dispatch-dashboard" data-surface="dispatch">
   <a class="ls-skip" href="#main-content">Skip to main content</a>
@@ -40,7 +41,7 @@
     <div class="dispatch-sidebar-promo">
       <span class="material-symbols-outlined" aria-hidden="true">delivery_dining</span>
       <strong>Every handoff,<br />right on track.</strong>
-      <small>Wandegeya · Kampala</small>
+      <small data-app-outlet-label>Foodizo · Wandegeya</small>
     </div>
     <button class="dispatch-logout" type="button" data-action="logout" aria-label="Log out">
       <span class="material-symbols-outlined" aria-hidden="true">logout</span><span>Log out</span>
@@ -204,7 +205,7 @@
           <label class="ls-field"><span>Rider name</span><input class="ls-input" id="dispatch-rider-name" type="text" required minlength="2" maxlength="80" autocomplete="name" /></label>
           <label class="ls-field"><span>Rider phone</span><input class="ls-input" id="dispatch-rider-phone" type="tel" required minlength="9" maxlength="20" autocomplete="tel" placeholder="e.g. 0772 123 456" /></label>
           <label class="ls-field"><span>Boda plate</span><input class="ls-input" id="dispatch-plate" type="text" maxlength="20" placeholder="e.g. UEX 123A" /></label>
-          <label class="ls-field"><span>Boda stage</span><input class="ls-input" id="dispatch-stage" type="text" maxlength="80" placeholder="e.g. Wandegeya stage" /></label>
+          <label class="ls-field"><span>Boda stage</span><input class="ls-input" id="dispatch-stage" type="text" maxlength="80" placeholder="e.g. nearby landmark" /></label>
           <label class="ls-field"><span>Dispatch method</span>
             <select class="ls-select" id="dispatch-method">
               <option value="CALL">Phone call</option>

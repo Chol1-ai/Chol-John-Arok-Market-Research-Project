@@ -241,6 +241,17 @@
       .replace(/\b\w/g, (letter) => letter.toUpperCase());
   }
 
+  function menuItemImage(item) {
+    if (item.imageUrl) return item.imageUrl;
+    if (item.hideOriginalImage || F.APP_OUTLET !== 'OBUNUZI_YMCA') return null;
+
+    const itemImages = window.OBUNUZI_MENU_ITEM_IMAGES || {};
+    if (Object.prototype.hasOwnProperty.call(itemImages, item.name)) return itemImages[item.name];
+    const categories = window.OBUNUZI_MENU_CATEGORIES || [];
+    const category = categories.find((entry) => entry.name === item.category);
+    return category ? category.image : null;
+  }
+
   function renderMenu() {
     const search = STATE.menuSearch.trim().toLocaleLowerCase();
     const items = STATE.menu.filter((item) => {
@@ -258,13 +269,14 @@
     }
 
     els.menu.innerHTML = items
-      .map(
-        (item) => `
+      .map((item) => {
+        const image = menuItemImage(item);
+        return `
         <button class="pos-menu-item" type="button" data-menu-id="${F.escapeHtml(item.id)}"
           ${item.isAvailable ? '' : 'disabled'}>
           ${
-            item.imageUrl
-              ? `<img class="pos-menu-image" src="${F.escapeHtml(item.imageUrl)}" alt="" loading="lazy" />`
+            image
+              ? `<img class="pos-menu-image" src="${F.escapeHtml(image)}" alt="" loading="lazy" />`
               : '<span class="pos-menu-image-placeholder"><span class="material-symbols-outlined" aria-hidden="true">restaurant</span></span>'
           }
           <span class="pos-menu-name">${F.escapeHtml(item.name)}</span>
@@ -274,8 +286,8 @@
           ${item.isAvailable ? '' : `<span class="ls-status" data-status="CANCELLED">${
             item.is86 ? 'Unavailable by manager' : 'Temporarily unavailable'
           }</span>`}
-        </button>`
-      )
+        </button>`;
+      })
       .join('');
   }
 

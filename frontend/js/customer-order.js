@@ -70,11 +70,16 @@
   }
 
   function defaultMealImage(item) {
-    const itemImages = window.FOODIZO_MENU_ITEM_IMAGES || {};
+    const isObunuzi = APP_CONFIG.outlet === 'OBUNUZI_YMCA';
+    const itemImages = isObunuzi
+      ? window.OBUNUZI_MENU_ITEM_IMAGES || {}
+      : window.FOODIZO_MENU_ITEM_IMAGES || {};
     if (Object.prototype.hasOwnProperty.call(itemImages, item.name)) {
       return itemImages[item.name];
     }
-    const categories = window.FOODIZO_MENU_CATEGORIES || [];
+    const categories = isObunuzi
+      ? window.OBUNUZI_MENU_CATEGORIES || []
+      : window.FOODIZO_MENU_CATEGORIES || [];
     const category = categories.find((entry) => entry.name === item.category);
     return category ? category.image : null;
   }
@@ -251,7 +256,9 @@
 
   function renderMenu() {
     const query = elements.search.value.trim().toLowerCase();
-    const categories = window.FOODIZO_MENU_CATEGORIES || [];
+    const categories = APP_CONFIG.outlet === 'OBUNUZI_YMCA'
+      ? window.OBUNUZI_MENU_CATEGORIES || []
+      : window.FOODIZO_MENU_CATEGORIES || [];
     const category = categories.find((entry) => entry.name === state.category);
     elements.menuTitle.textContent = category ? category.name : 'Menu';
     elements.menuDescription.textContent = category ? category.description : '';

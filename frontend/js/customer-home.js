@@ -86,33 +86,58 @@
     favoriteNavCount.hidden = count === 0;
   }
 
+  function fallbackMenuImage() {
+    return activeOutletValue() === 'OBUNUZI_YMCA'
+      ? '/images/obunuzi-category-local.svg'
+      : '/images/foodizo-landing-hero.jpg';
+  }
+
   function menuItemImage(item) {
+    const isObunuzi = APP_CONFIG.outlet === 'OBUNUZI_YMCA';
     const uploadedImage = typeof item.imageUrl === 'string' &&
       item.imageUrl.startsWith('/api/v1/menu-items/images/')
       ? item.imageUrl
       : null;
-    const itemImages = window.FOODIZO_MENU_ITEM_IMAGES || {};
     if (uploadedImage) return uploadedImage;
+    if (item.hideOriginalImage) return null;
+    const itemImages = isObunuzi
+      ? window.OBUNUZI_MENU_ITEM_IMAGES || {}
+      : window.FOODIZO_MENU_ITEM_IMAGES || {};
     if (Object.prototype.hasOwnProperty.call(itemImages, item.name)) return itemImages[item.name];
-    const categories = window.FOODIZO_MENU_CATEGORIES || [];
+    const categories = isObunuzi
+      ? window.OBUNUZI_MENU_CATEGORIES || []
+      : window.FOODIZO_MENU_CATEGORIES || [];
     const category = categories.find((entry) => entry.name === item.category);
-    return category ? category.image : '/images/foodizo-landing-hero.jpg';
+    return category ? category.image : fallbackMenuImage();
   }
 
   function renderBestSellers(items) {
     if (!bestSellersGrid) return;
     const favoritesView = new URLSearchParams(location.search).get('view') === 'favorites';
+    const isObunuzi = APP_CONFIG.outlet === 'OBUNUZI_YMCA';
     const byName = new Map(items.map((item) => [item.name, item]));
     const featuredItems = featuredMealNames.map((name) => byName.get(name)).filter(Boolean);
     const selectedItems = favoritesView
       ? items.filter((item) => savedFavorites().includes(item.id))
       : (featuredItems.length ? featuredItems : items).slice(0, 4);
 
-    if (bestSellersTitle) bestSellersTitle.textContent = favoritesView ? 'Your favorites' : 'Best-selling meals';
+    if (bestSellersTitle) {
+      if (favoritesView) {
+        bestSellersTitle.textContent = 'Your favorites';
+      } else if (isObunuzi) {
+        bestSellersTitle.textContent = 'Obunuzi favourites';
+      } else {
+        bestSellersTitle.textContent = 'Best-selling meals';
+      }
+    }
     if (bestSellersDescription) {
-      bestSellersDescription.textContent = favoritesView
-        ? 'Meals you have saved in this browser.'
-        : 'Campus favorites made fresh at your selected outlet.';
+      if (favoritesView) {
+        bestSellersDescription.textContent = 'Meals you have saved in this browser.';
+      } else if (isObunuzi) {
+        bestSellersDescription.textContent = 'Local favourites, prepared fresh every day at Obunuzi.';
+      } else {
+        bestSellersDescription.textContent = 'Campus favorites made fresh at your selected outlet.';
+      }
     }
 
     if (!selectedItems.length) {
@@ -126,9 +151,14 @@
     bestSellersGrid.innerHTML = selectedItems.map((item) => {
       const selected = favorites.includes(item.id);
       const orderUrl = `/order?q=${encodeURIComponent(item.name)}&outlet=${encodeURIComponent(activeOutletValue())}`;
+      const image = menuItemImage(item);
       return `
         <article class="best-seller-card">
-          <img src="${escapeHtml(menuItemImage(item))}" alt="${escapeHtml(item.name)}" loading="lazy" />
+          ${
+            image
+              ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(item.name)}" loading="lazy" />`
+              : '<span class="best-seller-image-placeholder" aria-hidden="true"><span class="material-symbols-outlined">restaurant</span></span>'
+          }
           <button class="best-seller-favorite" type="button" data-favorite-id="${escapeHtml(item.id)}"
             aria-label="${selected ? 'Remove' : 'Save'} ${escapeHtml(item.name)} ${selected ? 'from' : 'to'} favorites"
             aria-pressed="${selected}">
@@ -187,7 +217,9 @@
       return;
     }
 
-    const categories = window.FOODIZO_MENU_CATEGORIES || [];
+    const categories = APP_CONFIG.outlet === 'OBUNUZI_YMCA'
+      ? window.OBUNUZI_MENU_CATEGORIES || []
+      : window.FOODIZO_MENU_CATEGORIES || [];
     const categoryByName = new Map(categories.map((category) => [category.name, category]));
     const orderedNames = [
       ...categories.filter((category) => groups.has(category.name)).map((category) => category.name),
@@ -204,7 +236,7 @@
           return `
             <a class="card home-category-card" href="/order?${categoryQuery}">
               <div class="card-media">
-                <img src="${escapeHtml(categoryDetails ? categoryDetails.image : '/images/foodizo-landing-hero.jpg')}"
+                <img src="${escapeHtml(categoryDetails ? categoryDetails.image : fallbackMenuImage())}"
                   alt="" loading="lazy" />
               </div>
               <div class="card-content">

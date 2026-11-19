@@ -375,7 +375,18 @@ function serveAppConfig(res) {
   res.end(`(function () {
   const appConfig = Object.freeze(${config});
   window.FoodizoAppConfig = appConfig;
+  document.documentElement.dataset.appOutlet = appConfig.outlet;
   document.addEventListener('DOMContentLoaded', function () {
+    document.body.dataset.appOutlet = appConfig.outlet;
+    document.querySelectorAll('[data-outlet-copy]').forEach(function (node) {
+      node.hidden = node.getAttribute('data-outlet-copy') !== appConfig.outlet;
+    });
+
+    const themeColor = document.querySelector('meta[name="theme-color"]');
+    if (themeColor) {
+      themeColor.content = appConfig.outlet === 'OBUNUZI_YMCA' ? '#f3f1ef' : '#211f1b';
+    }
+
     function replaceBranding(value) {
       return value
         .replace(/\\b(?:Foodizo|Obunuzi)\\b/gi, appConfig.brandName)
@@ -418,6 +429,10 @@ function serveAppConfig(res) {
     });
     document.querySelectorAll('[data-app-outlet-label]').forEach(function (node) {
       node.textContent = appConfig.outletLabel;
+    });
+    document.querySelectorAll('[data-app-outlet-map]').forEach(function (node) {
+      node.href = 'https://www.google.com/maps/search/?api=1&query=' +
+        encodeURIComponent(appConfig.locationLabel + ', Kampala');
     });
     document.querySelectorAll('[title], [alt], [aria-label], [placeholder], meta[content]').forEach(function (node) {
       ['title', 'alt', 'aria-label', 'placeholder', 'content'].forEach(function (attribute) {

@@ -130,4 +130,33 @@
     'Belgian Waffle with Syrup': '/images/dessert-belgian-waffle.jpg',
     'Sweet Crêpe with Nutella': '/images/dessert-chocolate-crepe.jpg'
   };
+
+  window.OBUNUZI_MENU_CATEGORIES = [
+    { name: 'African & Local Cuisine', description: 'Slow-cooked local favourites, prepared with care at Obunuzi.', image: '/images/obunuzi-category-local.svg' },
+    { name: 'American', description: 'Crisp, hearty plates with a little Obunuzi warmth.', image: '/images/obunuzi-category-american.svg' },
+    { name: 'Asian', description: 'Wok-tossed noodles and bright, savoury flavours.', image: '/images/obunuzi-category-asian.svg' },
+    { name: 'Bakery & Pastries', description: 'Golden pastries and warm treats for any time of day.', image: '/images/obunuzi-category-bakery.svg' },
+    { name: 'Breakfast & Morning Combos', description: 'A generous start, from eggs and toast to porridge.', image: '/images/obunuzi-category-breakfast.svg' },
+    { name: 'Burgers', description: 'Grilled, stacked and made fresh to order.', image: '/images/obunuzi-category-burgers.svg' },
+    { name: 'Coffee & Hot Teas', description: 'A comforting cup, steeped with local spice.', image: '/images/obunuzi-category-coffee.svg' },
+    { name: 'Cold Drinks & Beverages', description: 'Cold refreshment for Kampala afternoons.', image: '/images/obunuzi-category-drinks.svg' },
+    { name: 'Juices & Smoothies', description: 'Bright fruit blends made for a sunny day.', image: '/images/obunuzi-category-juices.svg' },
+    { name: 'Kampala Street Food Favourites', description: 'Muchomo, Rolex and other street-side classics.', image: '/images/obunuzi-category-street.svg' },
+    { name: 'Pizza & Wraps', description: 'Toasty slices and wraps filled to the edge.', image: '/images/obunuzi-category-pizza.svg' },
+    { name: 'Snacks & Quick Bites', description: 'Crisp, golden bites for a quick pause.', image: '/images/obunuzi-category-snacks.svg' },
+    { name: 'Sweets & Desserts', description: 'A little something sweet to finish.', image: '/images/obunuzi-category-desserts.svg' }
+  ];
+
+  window.OBUNUZI_MENU_ITEM_IMAGES = {
+    'Matooke & Beef Stew': '/images/obunuzi-meal-matooke-beef.svg',
+    'Traditional Luwombo (Chicken)': '/images/obunuzi-meal-luwombo.svg',
+    'Traditional Luwombo (Goat)': '/images/obunuzi-meal-luwombo.svg',
+    'Traditional Beef Luwombo': '/images/obunuzi-meal-luwombo.svg',
+    'Katogo (Banana & Offals)': '/images/obunuzi-meal-katogo.svg',
+    'Katogo (Banana & Beef)': '/images/obunuzi-meal-katogo.svg',
+    'Posho & Beans': '/images/obunuzi-meal-posho-beans.svg',
+    'Rice & Beans': '/images/obunuzi-meal-posho-beans.svg',
+    'Groundnut Sauce with Local Greens': '/images/obunuzi-meal-groundnut-greens.svg',
+    'Steamed Matooke': '/images/obunuzi-meal-matooke-beef.svg'
+  };
 })();

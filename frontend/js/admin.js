@@ -195,8 +195,18 @@
     }[station] || station;
   }
 
-  function hasOriginalMenuArtwork(name) {
-    return /chicken|rolex|luwombo|passion juice/i.test(name);
+  function originalMenuArtwork(item) {
+    if (F.APP_OUTLET !== 'OBUNUZI_YMCA' || item.hideOriginalImage) return null;
+    const itemImages = window.OBUNUZI_MENU_ITEM_IMAGES || {};
+    if (Object.prototype.hasOwnProperty.call(itemImages, item.name)) return itemImages[item.name];
+    const categories = window.OBUNUZI_MENU_CATEGORIES || [];
+    const category = categories.find((entry) => entry.name === item.category);
+    return category ? category.image : null;
+  }
+
+  function hasOriginalMenuArtwork(item) {
+    if (F.APP_OUTLET === 'OBUNUZI_YMCA') return Boolean(originalMenuArtwork(item));
+    return /chicken|rolex|luwombo|passion juice/i.test(item.name);
   }
 
   function fileAsDataUrl(file) {
@@ -815,11 +825,14 @@
 
     els.menuItems.innerHTML = items
       .map(
-        (item) => `
+        (item) => {
+          const defaultArtwork = originalMenuArtwork(item);
+          const image = item.imageUrl || defaultArtwork;
+          return `
           <article class="menu-item-editor manager-searchable" data-menu-item-id="${F.escapeHtml(item.id)}">
             ${
-              item.imageUrl
-                ? `<img src="${F.escapeHtml(item.imageUrl)}" alt="" loading="lazy" />`
+              image
+                ? `<img src="${F.escapeHtml(image)}" alt="" loading="lazy" />`
                 : '<div class="admin-kpi-label">No photo</div>'
             }
             <div class="menu-item-editor-copy">
@@ -846,17 +859,18 @@
             ${
               item.imageUrl
                 ? `<button class="ls-btn ls-btn--danger" type="button" data-menu-remove-image>${
-                    hasOriginalMenuArtwork(item.name)
+                    hasOriginalMenuArtwork(item)
                       ? 'Remove uploaded photo (restore original)'
                       : 'Remove photo'
                   }</button>`
-                : hasOriginalMenuArtwork(item.name)
+                : hasOriginalMenuArtwork(item)
                   ? `<button class="ls-btn ls-btn--danger" type="button" data-menu-original-visibility="${
                       item.hideOriginalImage ? 'show' : 'hide'
                     }">${item.hideOriginalImage ? 'Restore original photo' : 'Remove original photo'}</button>`
                   : '<small class="ls-help">No photo uploaded.</small>'
             }
-          </article>`
+          </article>`;
+        }
       )
       .join('');
   }
@@ -984,7 +998,7 @@
         body: JSON.stringify({ removeImage: true })
       });
       F.toast(
-        hasOriginalMenuArtwork(data.item.name)
+        hasOriginalMenuArtwork(data.item)
           ? `Uploaded photo removed from ${data.item.name}. Original artwork restored.`
           : `Photo removed from ${data.item.name}.`,
         'success'
