@@ -45,9 +45,9 @@ body.delivery-tracking-page {
 
 .delivery-tracking-brand img {
   width: 40px;
-  height: 44px;
+  height: 40px;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: 50%;
 }
 
 .delivery-tracking-brand span {

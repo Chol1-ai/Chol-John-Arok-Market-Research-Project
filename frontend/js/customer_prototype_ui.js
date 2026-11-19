@@ -80,7 +80,7 @@
     fallback.dataset.imageKind = isBrand ? 'brand' : isAvatar ? 'avatar' : 'food';
     fallback.alt = image.alt || image.dataset.alt || '';
     fallback.setAttribute('aria-hidden', 'true');
-    fallback.src = isBrand ? '../images/Foodizo_logo.png' :
+    fallback.src = isBrand ? '../images/Foodizo_logo.png?v=2' :
       isAvatar ? (alt.includes('rider') ? '../images/motorbike-illustration.svg' : '../images/profile-placeholder.svg') :
         alt.includes('juice') ? '../images/foodizo-juice.jpg' :
           alt.includes('luwombo') || alt.includes('tilapia') || alt.includes('fish') ? '../images/foodizo-luwombo.jpg' :
@@ -95,7 +95,7 @@
   function replaceBrandMarks(root) {
     const images = root.querySelectorAll ? root.querySelectorAll('img[alt*="Foodizo Obunuzi Emblem"]') : [];
     images.forEach((image) => {
-      image.src = '../images/Foodizo_logo.png';
+      image.src = '../images/Foodizo_logo.png?v=2';
       image.alt = 'Foodizo logo';
     });
   }

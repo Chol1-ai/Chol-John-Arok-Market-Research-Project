@@ -104,6 +104,10 @@ html, body {
   -webkit-tap-highlight-color: transparent;
 }
 
+img[src*="Foodizo_logo.png"] {
+  border-radius: 50%;
+}
+
 h1, h2, h3, h4, h5, h6, .ls-title, .ls-card-title {
   font-family: var(--font-family-display);
 }

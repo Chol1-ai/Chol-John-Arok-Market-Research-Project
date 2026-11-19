@@ -56,7 +56,7 @@
   height: 42px;
   flex: 0 0 auto;
   place-items: center;
-  border-radius: 12px;
+  border-radius: 50%;
   object-fit: cover;
   color: #fff;
   font-size: 25px;

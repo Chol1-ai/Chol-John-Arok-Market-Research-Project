@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="icon" type="image/png" href="../images/Foodizo_logo.png" />
+  <link rel="icon" type="image/png" href="../images/Foodizo_logo.png?v=2" />
   <meta name="theme-color" content="#211F1B" />
   <title>Foodizo | Menu and Ordering</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -85,10 +85,11 @@
 
     .brand-logo {
       display: block;
-      width: 152px;
-      height: 66px;
-      object-fit: cover;
+      width: 68px;
+      height: 68px;
+      object-fit: contain;
       object-position: center;
+      border-radius: 50%;
       transform-origin: left center;
       animation: foodizo-logo-arrive 750ms cubic-bezier(.18, .75, .32, 1) both;
     }
@@ -549,7 +550,7 @@
       }
 
       .brand-logo {
-        width: 120px;
+        width: 52px;
         height: 52px;
       }
 
@@ -675,8 +676,8 @@
       }
 
       .brand-logo {
-        width: 112px;
-        height: 49px;
+        width: 48px;
+        height: 48px;
       }
 
       .nav .button {
@@ -1796,7 +1797,7 @@
       text-align: center;
     }
   </style>
-  <link rel="stylesheet" href="/css/brand_theme.css?v=4" />
+  <link rel="stylesheet" href="/css/brand_theme.css?v=5" />
   <link rel="stylesheet" href="/css/foodizo-buddy.css?v=1" />
 </head>
 
@@ -1805,7 +1806,7 @@
     <div class="wrap topbar-inner">
       <a class="brand" href="#top" aria-label="Foodizo home">
         <span>
-          <img class="brand-logo" src="../images/Foodizo_logo.png" alt="Foodizo" />
+          <img class="brand-logo" src="../images/Foodizo_logo.png?v=2" alt="Foodizo" />
         </span>
       </a>
       <nav class="nav customer-nav" aria-label="Main navigation">
@@ -1894,7 +1895,7 @@
   <footer class="customer-footer">
     <div class="wrap customer-footer-main">
       <div class="footer-brand">
-        <img src="../images/Foodizo_logo.png" alt="Foodizo" />
+        <img src="../images/Foodizo_logo.png?v=2" alt="Foodizo" />
       </div>
       <nav class="footer-column" aria-label="Links of interest">
         <h2>Links of interest</h2>

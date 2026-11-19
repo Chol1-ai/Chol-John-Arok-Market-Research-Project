@@ -167,7 +167,7 @@
   const brand = brandName?.closest('div');
   if (brand) {
     const logo = document.createElement('img');
-    logo.src = '../images/Foodizo_logo.png';
+    logo.src = '../images/Foodizo_logo.png?v=2';
     logo.alt = 'Foodizo';
     logo.className = 'staff-header-logo';
     brand.replaceChildren(logo);

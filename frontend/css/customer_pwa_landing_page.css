@@ -5,7 +5,7 @@
  */
 
 @import './theme_tokens.css';
-@import './customer_prototype_support.css?v=6';
+@import './customer_prototype_support.css?v=7';
 
 .customer-home {
   background:

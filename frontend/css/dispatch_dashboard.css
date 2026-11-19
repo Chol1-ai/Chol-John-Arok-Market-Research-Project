@@ -43,9 +43,9 @@ body.dispatch-dashboard {
 
 .dispatch-brand img {
   width: 32px;
-  height: 37px;
+  height: 32px;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: 50%;
 }
 
 .dispatch-brand > span,
@@ -2015,6 +2015,7 @@ body.dispatch-dashboard {
 .dispatch-brand img {
   width: 38px;
   height: 38px;
+  border-radius: 50%;
 }
 
 .dispatch-brand strong {
