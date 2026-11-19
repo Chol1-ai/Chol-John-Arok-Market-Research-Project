@@ -1,0 +1,27 @@
+Obunuzi menu photo credits
+
+The following locally stored photos are used for Obunuzi category and meal images. Images are displayed as downloaded thumbnails and may be cropped by the interface.
+
+- obunuzi-category-american.jpg: "Fried-Chicken-Set" by Evan-Amos, CC0 1.0. https://commons.wikimedia.org/wiki/File:Fried-Chicken-Set.jpg
+- obunuzi-category-asian.jpg: "Fried flat rice noodles (Kueh Teow Goreng)" by Dr.Francostein1975, CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:Fried_flat_rice_noodles_(_Kueh_Teow_Goreng).jpg
+- obunuzi-category-bakery.jpg: "MANDAZI UGANDAN BREAKFAST SNACK" by Rebeccananonof, CC0 1.0. https://commons.wikimedia.org/wiki/File:MANDAZI_UGANDAN_BREAKFAST_SNACK.jpg
+- obunuzi-category-burgers.jpg: "Hamburger and onion rings" by jeffreyw, CC BY 2.0. https://commons.wikimedia.org/wiki/File:Hamburger_and_onion_rings.jpg
+- obunuzi-category-coffee.jpg: "A-cup-of-cappuccino-coffee-dar-es-salaam-cafe" by Aneth David (SLU), CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:A-cup-of-cappuccino-coffee-dar-es-salaam-cafe.jpg
+- obunuzi-category-desserts.jpg: "Waffle dessert" by dreamcat115, CC BY-SA 2.0. https://commons.wikimedia.org/wiki/File:Waffle_dessert.jpg
+- obunuzi-category-drinks.jpg: "Chanhmuoiglass" by Front Studio, CC BY 2.0. https://commons.wikimedia.org/wiki/File:Chanhmuoiglass.jpg
+- obunuzi-category-juices.jpg: "A glass of Welch's Passion Fruit Juice" by Famartin, CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:2020-06-23_19_31_14_A_glass_of_Welch%27s_Passion_Fruit_Juice_in_the_Franklin_Farm_section_of_Oak_Hill,_Fairfax_County,_Virginia.jpg
+- obunuzi-category-pizza.jpg: "Vegetarian Pizza" by Petar Milošević, CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:Vegetarian_Pizza.jpg
+- obunuzi-category-snacks.jpg: "Samosa 4" by Gaurav Dhwaj Khadka, CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:Samosa_4.jpg
+- obunuzi-meal-katogo.jpg: "Katogo Ugandan food" by Rebeccananonof, CC0 1.0. https://commons.wikimedia.org/wiki/File:Katogo_Ugandan_food.jpg
+- obunuzi-meal-kikomando.jpg: "Ekikomando 01" by Denis kasozi, CC BY 4.0. https://commons.wikimedia.org/wiki/File:Ekikomando_01.jpg
+- obunuzi-meal-luwombo.jpg: "Chicken Luwombo prepared in Uganda" by Ssemmanda will, CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:Chicken_Luwombo_prepared_in_Uganda.jpg
+- obunuzi-meal-matooke-beef.jpg: "A plate of rice, matooke, G.nuts, beef, chicken and chappati 02" by Adellah owobusingye, CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:A_plate_of_rice,_matooke,_G.nuts,_beef,_chicken_and_chappati_02.jpg
+- obunuzi-meal-muchomo.jpg: "Roasted meat skewers with vegetable gravy" by Jameswasswa, CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:Roasted_meat_skewers_with_vegetable_gravy.jpg
+- obunuzi-meal-posho-beans.jpg: "Ugali, Maharage & Kuku" by RVRikhye, CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:Ugali,_Maharage_%26_Kuku.JPG
+- obunuzi-meal-rolex.jpg: "Well prepared rolex red to eat" by Zahara5555, CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:Well_prepared_rolex_red_to_eat.jpg
+
+CC0 1.0: https://creativecommons.org/publicdomain/zero/1.0/
+CC BY 2.0: https://creativecommons.org/licenses/by/2.0/
+CC BY 4.0: https://creativecommons.org/licenses/by/4.0/
+CC BY-SA 2.0: https://creativecommons.org/licenses/by-sa/2.0/
+CC BY-SA 4.0: https://creativecommons.org/licenses/by-sa/4.0/

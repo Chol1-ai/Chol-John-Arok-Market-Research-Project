@@ -88,7 +88,7 @@
 
   function fallbackMenuImage() {
     return activeOutletValue() === 'OBUNUZI_YMCA'
-      ? '/images/obunuzi-category-local.svg'
+      ? '/images/obunuzi-meal-luwombo.jpg'
       : '/images/foodizo-landing-hero.jpg';
   }
 

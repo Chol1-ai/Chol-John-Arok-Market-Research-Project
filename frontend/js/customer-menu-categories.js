@@ -132,39 +132,39 @@
   };
 
   window.OBUNUZI_MENU_CATEGORIES = [
-    { name: 'African & Local Cuisine', description: 'Slow-cooked local favourites, prepared with care at Obunuzi.', image: '/images/obunuzi-category-local.svg' },
-    { name: 'American', description: 'Crisp, hearty plates with a little Obunuzi warmth.', image: '/images/obunuzi-category-american.svg' },
-    { name: 'Asian', description: 'Wok-tossed noodles and bright, savoury flavours.', image: '/images/obunuzi-category-asian.svg' },
-    { name: 'Bakery & Pastries', description: 'Golden pastries and warm treats for any time of day.', image: '/images/obunuzi-category-bakery.svg' },
-    { name: 'Breakfast & Morning Combos', description: 'A generous start, from eggs and toast to porridge.', image: '/images/obunuzi-category-breakfast.svg' },
-    { name: 'Burgers', description: 'Grilled, stacked and made fresh to order.', image: '/images/obunuzi-category-burgers.svg' },
-    { name: 'Coffee & Hot Teas', description: 'A comforting cup, steeped with local spice.', image: '/images/obunuzi-category-coffee.svg' },
-    { name: 'Cold Drinks & Beverages', description: 'Cold refreshment for Kampala afternoons.', image: '/images/obunuzi-category-drinks.svg' },
-    { name: 'Juices & Smoothies', description: 'Bright fruit blends made for a sunny day.', image: '/images/obunuzi-category-juices.svg' },
-    { name: 'Kampala Street Food Favourites', description: 'Muchomo, Rolex and other street-side classics.', image: '/images/obunuzi-category-street.svg' },
-    { name: 'Pizza & Wraps', description: 'Toasty slices and wraps filled to the edge.', image: '/images/obunuzi-category-pizza.svg' },
-    { name: 'Snacks & Quick Bites', description: 'Crisp, golden bites for a quick pause.', image: '/images/obunuzi-category-snacks.svg' },
-    { name: 'Sweets & Desserts', description: 'A little something sweet to finish.', image: '/images/obunuzi-category-desserts.svg' }
+    { name: 'African & Local Cuisine', description: 'Slow-cooked local favourites, prepared with care at Obunuzi.', image: '/images/obunuzi-meal-luwombo.jpg' },
+    { name: 'American', description: 'Crisp, hearty plates with a little Obunuzi warmth.', image: '/images/obunuzi-category-american.jpg' },
+    { name: 'Asian', description: 'Wok-tossed noodles and bright, savoury flavours.', image: '/images/obunuzi-category-asian.jpg' },
+    { name: 'Bakery & Pastries', description: 'Golden pastries and warm treats for any time of day.', image: '/images/obunuzi-category-bakery.jpg' },
+    { name: 'Breakfast & Morning Combos', description: 'A generous start, from eggs and toast to porridge.', image: '/images/obunuzi-meal-katogo.jpg' },
+    { name: 'Burgers', description: 'Grilled, stacked and made fresh to order.', image: '/images/obunuzi-category-burgers.jpg' },
+    { name: 'Coffee & Hot Teas', description: 'A comforting cup, steeped with local spice.', image: '/images/obunuzi-category-coffee.jpg' },
+    { name: 'Cold Drinks & Beverages', description: 'Cold refreshment for Kampala afternoons.', image: '/images/obunuzi-category-drinks.jpg' },
+    { name: 'Juices & Smoothies', description: 'Bright fruit blends made for a sunny day.', image: '/images/obunuzi-category-juices.jpg' },
+    { name: 'Kampala Street Food Favourites', description: 'Muchomo, Rolex and other street-side classics.', image: '/images/obunuzi-meal-rolex.jpg' },
+    { name: 'Pizza & Wraps', description: 'Toasty slices and wraps filled to the edge.', image: '/images/obunuzi-category-pizza.jpg' },
+    { name: 'Snacks & Quick Bites', description: 'Crisp, golden bites for a quick pause.', image: '/images/obunuzi-category-snacks.jpg' },
+    { name: 'Sweets & Desserts', description: 'A little something sweet to finish.', image: '/images/obunuzi-category-desserts.jpg' }
   ];
 
   window.OBUNUZI_MENU_ITEM_IMAGES = {
-    'Matooke & Beef Stew': '/images/obunuzi-meal-matooke-beef.svg',
-    'Traditional Luwombo (Chicken)': '/images/obunuzi-meal-luwombo.svg',
-    'Traditional Luwombo (Goat)': '/images/obunuzi-meal-luwombo.svg',
-    'Traditional Beef Luwombo': '/images/obunuzi-meal-luwombo.svg',
-    'Katogo (Banana & Offals)': '/images/obunuzi-meal-katogo.svg',
-    'Katogo (Banana & Beef)': '/images/obunuzi-meal-katogo.svg',
-    'Posho & Beans': '/images/obunuzi-meal-posho-beans.svg',
-    'Rice & Beans': '/images/obunuzi-meal-posho-beans.svg',
-    'Groundnut Sauce with Local Greens': '/images/obunuzi-meal-groundnut-greens.svg',
-    'Steamed Matooke': '/images/obunuzi-meal-matooke-beef.svg',
-    'Single Egg Rolex': '/images/obunuzi-meal-rolex.svg',
-    'Double Egg Rolex with Cabbage': '/images/obunuzi-meal-rolex.svg',
-    'Regular Rolex (2 Eggs, 1 Chapati)': '/images/obunuzi-meal-rolex.svg',
-    'Kikomando (Chapati chopped with Beans)': '/images/obunuzi-meal-kikomando.svg',
-    'Kikkomando (Chapati chopped with Beans)': '/images/obunuzi-meal-kikomando.svg',
-    'Grilled Muchomo (Beef Skewer)': '/images/obunuzi-meal-muchomo.svg',
-    'Grilled Muchomo (Pork Skewer)': '/images/obunuzi-meal-muchomo.svg'
+    'Matooke & Beef Stew': '/images/obunuzi-meal-matooke-beef.jpg',
+    'Traditional Luwombo (Chicken)': '/images/obunuzi-meal-luwombo.jpg',
+    'Traditional Luwombo (Goat)': '/images/obunuzi-meal-luwombo.jpg',
+    'Traditional Beef Luwombo': '/images/obunuzi-meal-luwombo.jpg',
+    'Katogo (Banana & Offals)': '/images/obunuzi-meal-katogo.jpg',
+    'Katogo (Banana & Beef)': '/images/obunuzi-meal-katogo.jpg',
+    'Posho & Beans': '/images/obunuzi-meal-posho-beans.jpg',
+    'Rice & Beans': '/images/obunuzi-meal-posho-beans.jpg',
+    'Groundnut Sauce with Local Greens': '/images/obunuzi-meal-matooke-beef.jpg',
+    'Steamed Matooke': '/images/obunuzi-meal-matooke-beef.jpg',
+    'Single Egg Rolex': '/images/obunuzi-meal-rolex.jpg',
+    'Double Egg Rolex with Cabbage': '/images/obunuzi-meal-rolex.jpg',
+    'Regular Rolex (2 Eggs, 1 Chapati)': '/images/obunuzi-meal-rolex.jpg',
+    'Kikomando (Chapati chopped with Beans)': '/images/obunuzi-meal-kikomando.jpg',
+    'Kikkomando (Chapati chopped with Beans)': '/images/obunuzi-meal-kikomando.jpg',
+    'Grilled Muchomo (Beef Skewer)': '/images/obunuzi-meal-muchomo.jpg',
+    'Grilled Muchomo (Pork Skewer)': '/images/obunuzi-meal-muchomo.jpg'
   };
 
   const normalizeMenuLabel = (value) => String(value || '')
@@ -199,6 +199,6 @@
     const category = window.OBUNUZI_MENU_CATEGORIES.find(
       (entry) => normalizeMenuLabel(entry.name) === categoryName
     );
-    return category ? category.image : '/images/obunuzi-category-local.svg';
+    return category ? category.image : '/images/obunuzi-meal-luwombo.jpg';
   };
 })();

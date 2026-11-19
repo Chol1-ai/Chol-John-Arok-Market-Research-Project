@@ -55,6 +55,7 @@ const MIME_TYPES = {
   '.css': 'text/css; charset=utf-8',
   '.js': 'application/javascript; charset=utf-8',
   '.json': 'application/json; charset=utf-8',
+  '.txt': 'text/plain; charset=utf-8',
   '.png': 'image/png',
   '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg',
@@ -380,6 +381,11 @@ function serveAppConfig(res) {
     document.body.dataset.appOutlet = appConfig.outlet;
     document.querySelectorAll('[data-outlet-copy]').forEach(function (node) {
       node.hidden = node.getAttribute('data-outlet-copy') !== appConfig.outlet;
+      if (node.hidden) {
+        node.style.setProperty('display', 'none', 'important');
+      } else {
+        node.style.removeProperty('display');
+      }
     });
 
     const themeColor = document.querySelector('meta[name="theme-color"]');
