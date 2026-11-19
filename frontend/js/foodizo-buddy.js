@@ -4,6 +4,11 @@
   const widget = document.getElementById('foodizo-buddy');
   if (!widget) return;
 
+  const appConfig = window.FoodizoAppConfig || {
+    outlet: 'FOODIZO_HAM_TOWERS',
+    brandName: 'Foodizo'
+  };
+  const buddyName = `${appConfig.brandName} Buddy`;
   const toggle = widget.querySelector('[data-buddy-toggle]');
   const panel = widget.querySelector('[data-buddy-panel]');
   const closeButton = widget.querySelector('[data-buddy-close]');
@@ -25,7 +30,7 @@
     message.dataset.role = role;
 
     const label = document.createElement('strong');
-    label.textContent = role === 'user' ? 'You' : 'Foodizo Buddy';
+    label.textContent = role === 'user' ? 'You' : buddyName;
 
     const body = document.createElement('p');
     body.textContent = text;
@@ -42,7 +47,7 @@
     prompts.querySelectorAll('button').forEach((button) => {
       button.disabled = value;
     });
-    if (status) status.textContent = value ? 'Foodizo Buddy is checking the menu…' : '';
+    if (status) status.textContent = value ? `${buddyName} is checking the menu…` : '';
   }
 
   function setOpen(open) {
@@ -69,7 +74,7 @@
         body: JSON.stringify({
           outlet: outletSelect && outletSelect.value
             ? outletSelect.value
-            : 'FOODIZO_HAM_TOWERS',
+            : appConfig.outlet,
           message,
           history
         })
@@ -89,11 +94,11 @@
         throw new Error(
           payload && typeof payload.message === 'string'
             ? payload.message
-            : 'Foodizo Buddy could not answer right now. Please try again shortly.'
+            : `${buddyName} could not answer right now. Please try again shortly.`
         );
       }
       if (!payload || typeof payload.answer !== 'string' || !payload.answer.trim()) {
-        throw new Error('Foodizo Buddy returned no answer. Please try again.');
+        throw new Error(`${buddyName} returned no answer. Please try again.`);
       }
 
       appendMessage('buddy', payload.answer);

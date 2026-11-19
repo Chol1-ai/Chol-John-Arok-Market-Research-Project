@@ -22,7 +22,8 @@ export class SmsService {
     riderName: string,
     riderPhone: string
   ): Promise<SmsResult> {
-    const message = `[Foodizo Delivery] Your meal is on its way! Boda Rider: ${riderName} (${riderPhone}). Keep cash/MoMo ready for handoff.`;
+    const brandName = config.APP_OUTLET === 'OBUNUZI_YMCA' ? 'Obunuzi' : 'Foodizo';
+    const message = `[${brandName} Delivery] Your meal is on its way! Boda Rider: ${riderName} (${riderPhone}). Keep cash/MoMo ready for handoff.`;
     return this.dispatchSms(phoneNumber, message);
   }
 

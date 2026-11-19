@@ -1,6 +1,10 @@
 (function () {
   'use strict';
 
+  const appConfig = window.FoodizoAppConfig || {
+    brandName: 'Foodizo',
+    logoPath: '../images/Foodizo_logo.png?v=2'
+  };
   const STORAGE_KEY = 'foodizo-prototype-selected-outlet';
   const OUTLETS = {
     fdz: { label: 'Foodizo · Ham Towers', buttonLabel: 'Foodizo (Ham Towers)' },
@@ -167,8 +171,8 @@
   const brand = brandName?.closest('div');
   if (brand) {
     const logo = document.createElement('img');
-    logo.src = '../images/Foodizo_logo.png?v=2';
-    logo.alt = 'Foodizo';
+    logo.src = appConfig.logoPath;
+    logo.alt = appConfig.brandName;
     logo.className = 'staff-header-logo';
     brand.replaceChildren(logo);
     brand.classList.add('staff-prototype-brand');

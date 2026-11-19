@@ -20,3 +20,28 @@ services:
         generateValue: true
       - key: PAYMENTS_WEBHOOK_SECRET
         generateValue: true
+  - type: web
+    name: obunuzi-restaurant
+    runtime: node
+    plan: free
+    buildCommand: npm ci --prefix backend --include=dev && npm --prefix backend run prisma:generate && npm --prefix backend run build
+    startCommand: node scripts/render-start.js
+    healthCheckPath: /api/v1/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: APP_OUTLET
+        value: OBUNUZI_YMCA
+      - key: HOST
+        value: 127.0.0.1
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: PAYMENTS_WEBHOOK_SECRET
+        generateValue: true
+      - key: SMS_SENDER_ID
+        value: OBUNUZI
+      - key: DIGEST_EMAIL_ENABLED
+        value: 'false'

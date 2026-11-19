@@ -26,12 +26,14 @@
   const APP_CONFIG = global.FoodizoAppConfig || {
     outlet: 'FOODIZO_HAM_TOWERS',
     brandName: 'Foodizo',
-    outletLabel: 'Foodizo · Ham Towers'
+    outletLabel: 'Foodizo · Ham Towers',
+    logoPath: '/images/Foodizo_logo.png?v=2'
   };
   const OUTLET_LABEL = {
     FOODIZO_HAM_TOWERS: 'Foodizo · Ham Towers',
     OBUNUZI_YMCA: 'Obunuzi · Opp. YMCA'
   };
+  OUTLET_LABEL[APP_CONFIG.outlet] = APP_CONFIG.outletLabel;
   const STATUS_LABEL = {
     AWAITING_PAYMENT: 'Awaiting payment',
     PENDING: 'Queued',
@@ -519,7 +521,7 @@
         const state = (health.status || 'UP').toUpperCase();
         button.dataset.healthState = state === 'UP' ? 'UP' : 'DOWN';
         if (label) label.textContent = `${state} · ${latency}ms`;
-        toast(`API ${state} · ${latency}ms · ${health.service || 'Foodizo'}`, state === 'UP' ? 'success' : 'error');
+        toast(`API ${state} · ${latency}ms · ${health.service || APP_CONFIG.brandName}`, state === 'UP' ? 'success' : 'error');
       } catch (error) {
         button.dataset.healthState = 'DOWN';
         if (label) label.textContent = 'API unreachable';

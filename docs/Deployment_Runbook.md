@@ -9,13 +9,14 @@
 
 ## Temporary hosted preview (Render + Neon)
 
-The repository includes a Render Blueprint at [`render.yaml`](../render.yaml) for a temporary, single-service demo. Render runs the static frontend and Fastify API from this repository; Neon provides PostgreSQL. This is separate from the on-site production design below.
+The repository includes a Render Blueprint at [`render.yaml`](../render.yaml) for temporary Foodizo and Obunuzi demo services. Render runs the static frontend and Fastify API from this repository; each service must use its own Neon database. This is separate from the on-site production design below.
 
-1. Push the repository to GitHub and create a Neon project. Choose a database region close to the Render region you plan to use.
-2. Copy the Neon **direct (non-pooled) PostgreSQL connection string** with SSL enabled. Do not commit it or paste it into source files.
-3. In Render, choose **New → Blueprint**, select this repository, and apply `render.yaml`. Provide a Foodizo-only Neon connection string as `DATABASE_URL`; Render generates the JWT and webhook secrets.
-4. Render builds the Prisma client and backend, then the start command applies pending Prisma migrations, starts the API, and waits up to 30 seconds for `/api/v1/health` to verify API and database readiness before starting the frontend. The app uses Render's HTTPS service URL for same-origin CORS and digest links automatically.
-5. The first deploy creates an empty schema. Set `APP_OUTLET=FOODIZO_HAM_TOWERS` and use a database dedicated to Foodizo before bootstrapping its manager. Do not point the deployment at the former shared database: outlet scoping protects application access but does not move or delete the other restaurant's records. The destructive development seed creates fixtures for both outlets and must not be run against this deployment.
+1. Push the repository to GitHub and create one Neon project for each restaurant. Choose database regions close to the Render region.
+2. Copy each Neon **direct (non-pooled) PostgreSQL connection string** with SSL enabled. Do not commit either URL or paste it into source files.
+3. In Render, create or open the repository's Blueprint and apply/sync `render.yaml`. It defines separate `foodizo-restaurant` and `obunuzi-restaurant` services. Set each service's `DATABASE_URL` to that restaurant's Neon URL only; Render generates separate JWT and webhook secrets for each service.
+4. The Obunuzi service starts with its digest recipients blank to prevent messages going to Foodizo's default contact. Configure Obunuzi's own `DIGEST_RECIPIENT_PHONE` in its Render environment before enabling real SMS. The `SMS_SENDER_ID` is set to `OBUNUZI`.
+5. Each service runs Prisma migrations, starts the API, and waits up to 30 seconds for `/api/v1/health` to verify API and database readiness before starting the frontend. The app uses Render's HTTPS service URL for same-origin CORS and digest links automatically. Both services auto-deploy from the configured branch.
+6. The first deploy creates an empty schema. Set the correct `APP_OUTLET` for each service and use its dedicated database before bootstrapping the manager. Do not point either deployment at the former shared database: outlet scoping protects application access but does not move or delete the other restaurant's records. The destructive development seed creates fixtures for both outlets and must not be run against these deployments.
 
 ### Create the first manager account
 
@@ -32,7 +33,20 @@ $env:BOOTSTRAP_MANAGER_OUTLET = 'FOODIZO_HAM_TOWERS'
 npm --prefix backend run bootstrap:manager
 ```
 
-The manager outlet must match `APP_OUTLET`. Obunuzi should be bootstrapped only after its own deployment and database are configured. Afterward, sign in at `/staff` (`/login` is an alias) with the manager's phone number and PIN, then use **Create staff access** to provision waiter and kitchen accounts. Do not share or commit the connection string or PIN; close the PowerShell window after the command to clear its temporary environment variables.
+The manager outlet must match `APP_OUTLET`. For Obunuzi, set both outlet variables to `OBUNUZI_YMCA` and use only Obunuzi's direct Neon URL. Bootstrap it only after its own deployment and database are configured. Afterward, sign in at `/staff` (`/login` is an alias) with the manager's phone number and PIN, then use **Create staff access** to provision waiter and kitchen accounts. Do not share or commit the connection string or PIN; close the PowerShell window after the command to clear its temporary environment variables.
+
+For Obunuzi, use the same command with these outlet values:
+
+```powershell
+$env:DATABASE_URL = '<Obunuzi Neon direct connection string>'
+$env:BOOTSTRAP_MANAGER_CONFIRM = 'CREATE_MANAGER'
+$env:BOOTSTRAP_MANAGER_FULL_NAME = '<manager full name>'
+$env:BOOTSTRAP_MANAGER_PHONE = '<manager Ugandan mobile number>'
+$env:BOOTSTRAP_MANAGER_PIN = '<private four-digit PIN>'
+$env:APP_OUTLET = 'OBUNUZI_YMCA'
+$env:BOOTSTRAP_MANAGER_OUTLET = 'OBUNUZI_YMCA'
+npm --prefix backend run bootstrap:manager
+```
 
 Free Render web services sleep after inactivity, have ephemeral local filesystems, and can take around a minute to wake. The free Neon database has its own usage and scale-to-zero limits. Uploaded files/local changes are not durable, backups and production reliability are not provided by this setup, and the app's live MoMo flow refuses simulated payments in production mode. Use it only to preview/share the application—not for actual restaurant operations or payments. For real operations, use the on-site edge deployment below and complete its acceptance checklist.
 

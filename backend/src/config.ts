@@ -59,6 +59,9 @@ const envSchema = z.object({
 
 export function loadConfig(environment: NodeJS.ProcessEnv = process.env) {
   const parsed = envSchema.parse(environment);
+  const appOutlet = parsed.NODE_ENV === 'test'
+    ? undefined
+    : parsed.APP_OUTLET || 'FOODIZO_HAM_TOWERS';
   const renderExternalUrl = environment.RENDER_EXTERNAL_URL;
   let renderOrigin: string | undefined;
   if (renderExternalUrl) {
@@ -71,9 +74,13 @@ export function loadConfig(environment: NodeJS.ProcessEnv = process.env) {
   }
   const effective = {
     ...parsed,
-    APP_OUTLET: parsed.NODE_ENV === 'test'
-      ? undefined
-      : parsed.APP_OUTLET || 'FOODIZO_HAM_TOWERS',
+    APP_OUTLET: appOutlet,
+    SMS_SENDER_ID: environment.SMS_SENDER_ID ??
+      (appOutlet === 'OBUNUZI_YMCA' ? 'OBUNUZI' : parsed.SMS_SENDER_ID),
+    DIGEST_RECIPIENT_PHONE: environment.DIGEST_RECIPIENT_PHONE ??
+      (appOutlet === 'OBUNUZI_YMCA' ? '' : parsed.DIGEST_RECIPIENT_PHONE),
+    DIGEST_RECIPIENT_EMAIL: environment.DIGEST_RECIPIENT_EMAIL ??
+      (appOutlet === 'OBUNUZI_YMCA' ? '' : parsed.DIGEST_RECIPIENT_EMAIL),
     ...(parsed.NODE_ENV === 'production' && renderOrigin
       ? {
           CORS_ORIGIN: environment.CORS_ORIGIN || renderOrigin,

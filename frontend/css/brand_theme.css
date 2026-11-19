@@ -51,7 +51,8 @@ body {
   font-family: var(--font-family-base);
 }
 
-img[src*="Foodizo_logo.png"] {
+img[src*="Foodizo_logo.png"],
+img[src*="obunuzi_logo.png"] {
   border-radius: 50%;
 }
 

@@ -51,13 +51,16 @@ export const buddyRoutes: FastifyPluginAsync = async (fastify) => {
         return reply.send({ answer });
       } catch (error) {
         if (error instanceof BuddyProviderError) {
+          const buddyName = config.APP_OUTLET === 'OBUNUZI_YMCA'
+            ? 'Obunuzi Buddy'
+            : 'Foodizo Buddy';
           fastify.log.warn(
             { providerStatus: error.status },
-            'Foodizo Buddy AI provider request failed'
+            `${buddyName} AI provider request failed`
           );
           return reply.status(503).send({
             code: 'BUDDY_AI_UNAVAILABLE',
-            message: 'Foodizo Buddy could not reach its AI service. Please try again shortly.'
+            message: `${buddyName} could not reach its AI service. Please try again shortly.`
           });
         }
         throw error;

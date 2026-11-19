@@ -696,7 +696,7 @@
     }
     try {
       await navigator.share({
-        title: 'Foodizo delivery GPS invite',
+        title: `${F.APP_BRAND} delivery GPS invite`,
         text: 'Open this private link on your Android phone to share your location for the active delivery.',
         url
       });

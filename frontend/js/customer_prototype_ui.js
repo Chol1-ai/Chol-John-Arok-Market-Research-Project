@@ -1,4 +1,8 @@
 (function () {
+  const appConfig = window.FoodizoAppConfig || {
+    brandName: 'Foodizo',
+    logoPath: '../images/Foodizo_logo.png?v=2'
+  };
   const routes = {
     'customer_pwa_landing_page.html': '/prototype/customer',
     'campus_pre_order_menu.html': '/prototype/menu',
@@ -80,7 +84,7 @@
     fallback.dataset.imageKind = isBrand ? 'brand' : isAvatar ? 'avatar' : 'food';
     fallback.alt = image.alt || image.dataset.alt || '';
     fallback.setAttribute('aria-hidden', 'true');
-    fallback.src = isBrand ? '../images/Foodizo_logo.png?v=2' :
+    fallback.src = isBrand ? appConfig.logoPath :
       isAvatar ? (alt.includes('rider') ? '../images/motorbike-illustration.svg' : '../images/profile-placeholder.svg') :
         alt.includes('juice') ? '../images/foodizo-juice.jpg' :
           alt.includes('luwombo') || alt.includes('tilapia') || alt.includes('fish') ? '../images/foodizo-luwombo.jpg' :
@@ -95,8 +99,8 @@
   function replaceBrandMarks(root) {
     const images = root.querySelectorAll ? root.querySelectorAll('img[alt*="Foodizo Obunuzi Emblem"]') : [];
     images.forEach((image) => {
-      image.src = '../images/Foodizo_logo.png?v=2';
-      image.alt = 'Foodizo logo';
+      image.src = appConfig.logoPath;
+      image.alt = `${appConfig.brandName} logo`;
     });
   }
 
@@ -174,7 +178,7 @@
     heading.id = 'prototype-profile-title';
     heading.textContent = localStorage.getItem('foodizo-prototype-customer-name') || 'Guest customer';
     const subtitle = document.createElement('p');
-    subtitle.textContent = 'Your Foodizo profile';
+    subtitle.textContent = `Your ${appConfig.brandName} profile`;
 
     const details = document.createElement('dl');
     details.className = 'prototype-profile-details';

@@ -7,6 +7,14 @@ import { SmsService } from './smsService.js';
 
 export const OUTLETS: OutletLocation[] = ['FOODIZO_HAM_TOWERS', 'OBUNUZI_YMCA'];
 
+export function getDigestOutlets(
+  requestedOutlet?: OutletLocation,
+  appOutlet: OutletLocation | undefined = config.APP_OUTLET
+): OutletLocation[] {
+  if (requestedOutlet) return [requestedOutlet];
+  return appOutlet ? [appOutlet] : OUTLETS;
+}
+
 export interface DigestFlag {
   code: string;
   message: string;
@@ -414,7 +422,7 @@ export class DigestService {
     // UTC midnight is 03:00 EAT, which would incorrectly roll it back a day.
     const businessDate = date;
     const staleCutoff = new Date(Date.now() - 45 * 60 * 1000);
-    const requestedOutlets = outlet ? [outlet] : OUTLETS;
+    const requestedOutlets = getDigestOutlets(outlet);
 
     const outletSummaries: OutletDigestSummary[] = [];
     for (const target of requestedOutlets) {
@@ -489,10 +497,16 @@ export class DigestService {
   ): Promise<DigestDispatchResult> {
     const summary = await DigestService.generateDigest(prisma, date, outlet);
     const persisted = await DigestService.persistDigest(prisma, summary, 'GENERATED');
-    const sms = await SmsService.sendOwnerDigest(
-      config.DIGEST_RECIPIENT_PHONE,
-      persisted.summary.smsSummary
-    );
+    const sms = config.DIGEST_RECIPIENT_PHONE
+      ? await SmsService.sendOwnerDigest(
+          config.DIGEST_RECIPIENT_PHONE,
+          persisted.summary.smsSummary
+        )
+      : {
+          success: false,
+          mode: 'FAILED' as const,
+          detail: 'DIGEST_RECIPIENT_PHONE is not configured.'
+        };
 
     const emailStatus = config.DIGEST_EMAIL_ENABLED ? 'FAILED_NOT_IMPLEMENTED' : 'NOT_CONFIGURED';
     const channelsSent: string[] = [];

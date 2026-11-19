@@ -1,6 +1,15 @@
 import { describe, it, expect } from 'vitest';
+import { getDigestOutlets } from '../src/services/digestService.js';
 
 describe('Daily Audit Digest & Cash Drawer Variance', () => {
+  it('defaults the digest to the configured deployment outlet', () => {
+    expect(getDigestOutlets(undefined, 'OBUNUZI_YMCA')).toEqual(['OBUNUZI_YMCA']);
+  });
+
+  it('keeps both outlets available when no deployment outlet is configured', () => {
+    expect(getDigestOutlets()).toEqual(['FOODIZO_HAM_TOWERS', 'OBUNUZI_YMCA']);
+  });
+
   it('detects balanced cash drawer with 0 variance', () => {
     const cashSalesUgx = 246000;
     const countedCashUgx = 246000;

@@ -30,8 +30,18 @@ const BACKEND_HOST = process.env.BACKEND_HOST || '127.0.0.1';
 const FRONTEND_DIR = path.join(__dirname, 'frontend');
 const FRONTEND_ROOT = path.resolve(FRONTEND_DIR);
 const OUTLET_BRANDS = {
-  FOODIZO_HAM_TOWERS: { name: 'Foodizo', outletLabel: 'Foodizo · Ham Towers' },
-  OBUNUZI_YMCA: { name: 'Obunuzi', outletLabel: 'Obunuzi · Opposite YMCA' }
+  FOODIZO_HAM_TOWERS: {
+    name: 'Foodizo',
+    locationLabel: 'Ham Towers',
+    outletLabel: 'Foodizo · Ham Towers',
+    logoPath: '/images/Foodizo_logo.png?v=2'
+  },
+  OBUNUZI_YMCA: {
+    name: 'Obunuzi',
+    locationLabel: 'Opposite YMCA',
+    outletLabel: 'Obunuzi · Opposite YMCA',
+    logoPath: '/images/obunuzi_logo.png?v=1'
+  }
 };
 const APP_OUTLET = process.env.APP_OUTLET || 'FOODIZO_HAM_TOWERS';
 const APP_BRAND = OUTLET_BRANDS[APP_OUTLET];
@@ -354,7 +364,9 @@ function serveAppConfig(res) {
   const config = JSON.stringify({
     outlet: APP_OUTLET,
     brandName: APP_BRAND.name,
-    outletLabel: APP_BRAND.outletLabel
+    locationLabel: APP_BRAND.locationLabel,
+    outletLabel: APP_BRAND.outletLabel,
+    logoPath: APP_BRAND.logoPath
   });
   res.writeHead(200, {
     'Content-Type': 'application/javascript; charset=utf-8',
@@ -364,7 +376,20 @@ function serveAppConfig(res) {
   const appConfig = Object.freeze(${config});
   window.FoodizoAppConfig = appConfig;
   document.addEventListener('DOMContentLoaded', function () {
-    document.title = document.title.replace(/Foodizo\\s*&\\s*Obunuzi/gi, appConfig.brandName);
+    function replaceBranding(value) {
+      return value
+        .replace(/\\b(?:Foodizo|Obunuzi)\\b/gi, appConfig.brandName)
+        .replace(/\\b(?:Ham Towers|Opposite YMCA|Opp\\.?\\s+YMCA)\\b/gi, appConfig.locationLabel);
+    }
+
+    document.title = replaceBranding(document.title);
+    document.querySelectorAll('img[src*="Foodizo_logo.png"], img[src*="obunuzi_logo.png"]').forEach(function (image) {
+      image.src = appConfig.logoPath;
+      if (image.alt) image.alt = replaceBranding(image.alt);
+    });
+    document.querySelectorAll('link[rel~="icon"]').forEach(function (icon) {
+      icon.href = appConfig.logoPath;
+    });
     document.querySelectorAll('select').forEach(function (select) {
       const options = Array.from(select.options);
       const outletOption = options.find(function (option) {
@@ -394,6 +419,23 @@ function serveAppConfig(res) {
     document.querySelectorAll('[data-app-outlet-label]').forEach(function (node) {
       node.textContent = appConfig.outletLabel;
     });
+    document.querySelectorAll('[title], [alt], [aria-label], [placeholder], meta[content]').forEach(function (node) {
+      ['title', 'alt', 'aria-label', 'placeholder', 'content'].forEach(function (attribute) {
+        const value = node.getAttribute(attribute);
+        if (value) node.setAttribute(attribute, replaceBranding(value));
+      });
+    });
+
+    const textWalker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+      acceptNode: function (node) {
+        return node.parentElement && node.parentElement.closest('script, style, noscript, textarea')
+          ? NodeFilter.FILTER_REJECT
+          : NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    while (textWalker.nextNode()) {
+      textWalker.currentNode.nodeValue = replaceBranding(textWalker.currentNode.nodeValue);
+    }
   });
 })();`);
 }

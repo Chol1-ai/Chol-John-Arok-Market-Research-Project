@@ -2,6 +2,7 @@
   'use strict';
 
   const TOKEN_STORAGE_KEY = 'foodizo-rider-tracking-token-v1';
+  const appConfig = window.FoodizoAppConfig || { brandName: 'Foodizo' };
   const LOCATION_OPTIONS = {
     enableHighAccuracy: true,
     maximumAge: 5000,
@@ -282,7 +283,7 @@
       return;
     }
     if (!window.isSecureContext && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
-      showNotice('GPS sharing requires a secure HTTPS connection. Open this invite using the secure Foodizo link.');
+      showNotice(`GPS sharing requires a secure HTTPS connection. Open this invite using the secure ${appConfig.brandName} link.`);
       return;
     }
 

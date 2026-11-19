@@ -98,4 +98,32 @@ describe('production configuration', () => {
       })
     ).toThrow('APP_OUTLET must be set to FOODIZO_HAM_TOWERS or OBUNUZI_YMCA');
   });
+
+  it('uses Obunuzi-safe sender and digest defaults without inheriting Foodizo recipients', () => {
+    const config = loadConfig({
+      ...productionEnvironment,
+      APP_OUTLET: 'OBUNUZI_YMCA'
+    });
+
+    expect(config).toMatchObject({
+      APP_OUTLET: 'OBUNUZI_YMCA',
+      SMS_SENDER_ID: 'OBUNUZI',
+      DIGEST_RECIPIENT_PHONE: '',
+      DIGEST_RECIPIENT_EMAIL: ''
+    });
+  });
+
+  it('honors Obunuzi digest recipients when explicitly configured', () => {
+    const config = loadConfig({
+      ...productionEnvironment,
+      APP_OUTLET: 'OBUNUZI_YMCA',
+      DIGEST_RECIPIENT_PHONE: '+256700000000',
+      DIGEST_RECIPIENT_EMAIL: 'owner@example.test'
+    });
+
+    expect(config).toMatchObject({
+      DIGEST_RECIPIENT_PHONE: '+256700000000',
+      DIGEST_RECIPIENT_EMAIL: 'owner@example.test'
+    });
+  });
 });
