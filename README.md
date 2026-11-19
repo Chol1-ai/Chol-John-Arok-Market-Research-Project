@@ -1,6 +1,8 @@
 # Chol-John-Arok-Market-Research-Project
 
-Solution Project: Foodizo & Obunuzi Restaurant & Cafe
+Solution Project: Foodizo Restaurant
+
+> **Current application scope:** the live customer and staff app is Foodizo-only. Obunuzi was part of the original comparative research brief, but is no longer presented in the Foodizo app and can be deployed separately later.
 1. Business Name
 ●	Selected Eateries for Comparative Solution Development:
 1.	Foodizo (Ham Towers)

@@ -5,6 +5,10 @@
     FOODIZO_HAM_TOWERS: 'Foodizo · Ham Towers',
     OBUNUZI_YMCA: 'Obunuzi · Opposite YMCA'
   };
+  const APP_CONFIG = window.FoodizoAppConfig || { outlet: 'FOODIZO_HAM_TOWERS' };
+  Object.keys(OUTLET_LABELS).forEach((outlet) => {
+    if (outlet !== APP_CONFIG.outlet) delete OUTLET_LABELS[outlet];
+  });
   const ACTIVE_ORDER_KEY = 'foodizo-ready-active-order-v1';
   const OPT_IN_KEY = 'foodizo-ready-notifications-enabled-v1';
   const READY_NOTIFICATION_PREFIX = 'foodizo-ready-notified-v1:';

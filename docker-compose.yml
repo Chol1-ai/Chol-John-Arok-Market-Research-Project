@@ -1,7 +1,6 @@
 # ==============================================================================
-# FOODIZO & OBUNUZI RESTAURANT ECOSYSTEM — EDGE CONTAINER ORCHESTRATION
+# FOODIZO RESTAURANT — EDGE CONTAINER ORCHESTRATION
 # Deploy Target: In-Store Edge Mini-PC / LAN Server / Cloud Fallback
-# Locations: Foodizo (Ham Towers) & Obunuzi Restaurant (Opposite YMCA, Kampala)
 # ==============================================================================
 
 version: '3.8'
@@ -43,7 +42,6 @@ services:
       - NODE_ENV=production
       - PORT=4000
       - HOST=0.0.0.0
-      - DATABASE_URL=postgresql://foodizo_admin:WandegeyaSecure2026@postgres-edge:5432/foodizo_obunuzi_db?schema=public
       - JWT_SECRET=kla_foodizo_obunuzi_secure_session_key_2026_kampala_fast_casual
       - EXPO_PRINTER_IP=192.168.1.200
       - EXPO_PRINTER_PORT=9100
@@ -51,8 +49,6 @@ services:
       - MTN_MOMO_PRIMARY_KEY=${MTN_MOMO_PRIMARY_KEY:-sandbox_key}
       - AIRTEL_MONEY_CLIENT_ID=${AIRTEL_MONEY_CLIENT_ID:-sandbox_client_id}
       - AFRICASTALKING_API_KEY=${AFRICASTALKING_API_KEY:-sandbox_key}
-    depends_on:
-      - postgres-edge
     networks:
       - foodizo_edge_net
 
@@ -74,31 +70,11 @@ services:
     networks:
       - foodizo_edge_net
 
-  # ----------------------------------------------------------------------------
-  # 4. LOCAL POSTGRESQL CANONICAL DATABASE LAYER (PORT 5432)
-  # ----------------------------------------------------------------------------
-  postgres-edge:
-    image: postgres:15-alpine
-    container_name: foodizo_postgres_edge
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: foodizo_admin
-      POSTGRES_PASSWORD: WandegeyaSecure2026
-      POSTGRES_DB: foodizo_obunuzi_db
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_edge_data:/var/lib/postgresql/data
-    networks:
-      - foodizo_edge_net
-
 volumes:
   edge_logs:
     name: foodizo_edge_logs
   spooler_queue:
     name: foodizo_spooler_queue
-  postgres_edge_data:
-    name: foodizo_postgres_edge_data
 
 networks:
   foodizo_edge_net:

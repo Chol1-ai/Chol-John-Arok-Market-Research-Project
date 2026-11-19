@@ -2,7 +2,7 @@
 
 > **Location:** `backend/`  
 > **Framework:** TypeScript + Fastify API Engine + Prisma ORM  
-> **Brand & Outlets:** Foodizo (Ham Towers) & Obunuzi Restaurant (Opposite YMCA, Wandegeya, Kampala)
+> **Current app:** Foodizo (Ham Towers), Wandegeya, Kampala. Obunuzi is intended for a separate deployment.
 
 ---
 
@@ -93,6 +93,8 @@ Copy the example environment file and adjust credentials if needed:
 cp .env.example .env
 ```
 
+`APP_OUTLET` selects the restaurant served by this deployment. Production requires it to be set explicitly; API requests, staff sessions, and reports are restricted to that outlet. Use a separate production database containing only that restaurant's data. The application setting does not migrate or remove data from an existing shared database.
+
 ### 3.3 Database Migration & Seeding
 Ensure PostgreSQL is running on port 5432, then generate the Prisma client and seed development data:
 ```bash
@@ -101,7 +103,7 @@ npm run prisma:migrate
 npm run prisma:seed
 ```
 
-The development seed creates staff accounts for both outlets. Seeded credentials are for disposable development and test databases only; never use them in production. Staff sign in with their registered phone number and PIN. The login page does not expose a public staff directory.
+The destructive development seed creates fixtures for both outlets for integration tests. Seeded credentials are for disposable development and test databases only; never use them in production. For the Foodizo deployment, create a Foodizo-only database and bootstrap its manager with `BOOTSTRAP_MANAGER_OUTLET=FOODIZO_HAM_TOWERS`. Staff sign in with their registered phone number and PIN. The login page does not expose a public staff directory.
 
 Each outlet seeds 16 tables (`T-01`–`T-12`, `B-01`–`B-04`).
 

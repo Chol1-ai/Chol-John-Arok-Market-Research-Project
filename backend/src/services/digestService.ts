@@ -391,7 +391,10 @@ function formatSms(summary: DigestSummary): string {
     ? `\nFull: ${summary.link}`
     : '\nOpen the manager dashboard for the full report.';
 
-  const text = `FOODIZO+OBUNUZI ${summary.digestDate}: Gross UGX ${gross}.\n${cashLine} ${flags} flags.${link}`;
+  const brand = config.APP_OUTLET
+    ? config.APP_OUTLET === 'FOODIZO_HAM_TOWERS' ? 'FOODIZO' : 'OBUNUZI'
+    : 'FOODIZO+OBUNUZI';
+  const text = `${brand} ${summary.digestDate}: Gross UGX ${gross}.\n${cashLine} ${flags} flags.${link}`;
   return text.length > 320 ? `${text.slice(0, 317)}...` : text;
 }
 

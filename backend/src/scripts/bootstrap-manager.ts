@@ -44,6 +44,13 @@ async function bootstrapManager(): Promise<void> {
     );
   }
   const outlet: Outlet = outletValue;
+  const appOutlet = process.env.APP_OUTLET;
+  if (process.env.NODE_ENV === 'production' && !appOutlet) {
+    throw new Error('APP_OUTLET must be set for a production deployment.');
+  }
+  if (appOutlet && appOutlet !== outlet) {
+    throw new Error(`The manager outlet must match APP_OUTLET (${appOutlet}).`);
+  }
   const pinHash = await bcrypt.hash(pin, 12);
 
   const manager = await prisma.$transaction(

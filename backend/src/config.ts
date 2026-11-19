@@ -7,6 +7,7 @@ const developmentJwtSecret = 'kla_foodizo_obunuzi_secure_session_key_2026_kampal
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+  APP_OUTLET: z.enum(['FOODIZO_HAM_TOWERS', 'OBUNUZI_YMCA']).optional(),
   PORT: z.coerce.number().default(4000),
   HOST: z.string().default('0.0.0.0'),
   CORS_ORIGIN: z.string().default('http://localhost:3000,http://127.0.0.1:3000'),
@@ -70,6 +71,9 @@ export function loadConfig(environment: NodeJS.ProcessEnv = process.env) {
   }
   const effective = {
     ...parsed,
+    APP_OUTLET: parsed.NODE_ENV === 'test'
+      ? undefined
+      : parsed.APP_OUTLET || 'FOODIZO_HAM_TOWERS',
     ...(parsed.NODE_ENV === 'production' && renderOrigin
       ? {
           CORS_ORIGIN: environment.CORS_ORIGIN || renderOrigin,
@@ -115,6 +119,9 @@ export function loadConfig(environment: NodeJS.ProcessEnv = process.env) {
     }
     if (!isHttpsUrl(effective.DIGEST_APP_URL)) {
       invalid.push('DIGEST_APP_URL must be an HTTPS URL');
+    }
+    if (!parsed.APP_OUTLET) {
+      invalid.push('APP_OUTLET must be set to FOODIZO_HAM_TOWERS or OBUNUZI_YMCA');
     }
 
     if (invalid.length > 0) {

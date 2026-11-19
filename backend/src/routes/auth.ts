@@ -250,8 +250,11 @@ export const authRoutes: FastifyPluginAsync = async (fastify) => {
     { config: { rateLimit: { max: config.NODE_ENV === 'test' ? 1000 : 10, timeWindow: '1 minute' } } },
     async (request, reply) => {
       const { phoneNumber, pin } = loginSchema.parse(request.body);
-      const user = await fastify.prisma.users.findUnique({
-        where: { phone_number: phoneNumber }
+      const user = await fastify.prisma.users.findFirst({
+        where: {
+          phone_number: phoneNumber,
+          ...(config.APP_OUTLET ? { outlet: config.APP_OUTLET } : {})
+        }
       });
       const isStaffAccount = user && user.is_active && user.role !== 'CUSTOMER';
 

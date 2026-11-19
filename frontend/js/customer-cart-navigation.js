@@ -1,10 +1,11 @@
 (function () {
   'use strict';
 
-  const OUTLETS = new Set(['FOODIZO_HAM_TOWERS', 'OBUNUZI_YMCA']);
+  const APP_CONFIG = window.FoodizoAppConfig || { outlet: 'FOODIZO_HAM_TOWERS' };
+  const OUTLETS = new Set([APP_CONFIG.outlet]);
   const CART_STORAGE_PREFIX = 'foodizo-customer-cart-v1:';
   const LAST_OUTLET_STORAGE_KEY = 'foodizo-customer-last-outlet';
-  const DEFAULT_OUTLET = 'FOODIZO_HAM_TOWERS';
+  const DEFAULT_OUTLET = APP_CONFIG.outlet;
   const links = Array.from(document.querySelectorAll('[data-customer-cart]'));
   let selectedOutletOverride = null;
 

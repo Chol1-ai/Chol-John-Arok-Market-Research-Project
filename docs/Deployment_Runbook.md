@@ -2,7 +2,7 @@
 
 **Production deployment model:** Single in-store edge node. Fastify/Prisma API, PostgreSQL, and the static frontend server run on the same machine. The cloud tunnel is optional remote administration, not a live ticket-sync layer. A temporary Render + Neon preview is documented below.<br>
 **Target hardware:** Intel NUC / mini-PC (recommended) or Raspberry Pi 5 (8 GB) with SSD and UPS. The stack uses static HTML/CSS/JS, Fastify, and PostgreSQL; it does **not** run Next.js or Redis.<br>
-**Target sites:** Foodizo (Ham Towers) and Obunuzi (Opposite YMCA), Wandegeya, Kampala.<br>
+**Current target site:** Foodizo (Ham Towers), Wandegeya, Kampala. Obunuzi requires its own deployment and database.<br>
 **Related specifications:** `Tech_Stack.md` · `Repo_Scaffold_and_Config.md` · `Hardware_and_Peripherals.md` · `Daily_Audit_Digest.md` · `Seed_Data_and_Testing.md` · `Payment_Integration.md`
 
 ---
@@ -13,22 +13,9 @@ The repository includes a Render Blueprint at [`render.yaml`](../render.yaml) fo
 
 1. Push the repository to GitHub and create a Neon project. Choose a database region close to the Render region you plan to use.
 2. Copy the Neon **direct (non-pooled) PostgreSQL connection string** with SSL enabled. Do not commit it or paste it into source files.
-3. In Render, choose **New → Blueprint**, select this repository, and apply `render.yaml`. Provide the Neon connection string as `DATABASE_URL`; Render generates the JWT and webhook secrets.
+3. In Render, choose **New → Blueprint**, select this repository, and apply `render.yaml`. Provide a Foodizo-only Neon connection string as `DATABASE_URL`; Render generates the JWT and webhook secrets.
 4. Render builds the Prisma client and backend, then the start command applies pending Prisma migrations, starts the API, and waits up to 30 seconds for `/api/v1/health` to verify API and database readiness before starting the frontend. The app uses Render's HTTPS service URL for same-origin CORS and digest links automatically.
-5. The first deploy creates an empty schema. For a real setup, bootstrap the first manager as described below. Seeding is only for a fresh, disposable demo database:
-
-   ```powershell
-   $env:NODE_ENV = 'production'
-   $env:HOST = '127.0.0.1'
-   $env:RENDER_EXTERNAL_URL = 'https://<your-service>.onrender.com'
-   $env:DATABASE_URL = '<Neon direct connection string>'
-   $env:JWT_SECRET = '<Render-generated JWT secret>'
-   $env:PAYMENTS_WEBHOOK_SECRET = '<Render-generated webhook secret>'
-   $env:ALLOW_DESTRUCTIVE_SEED = 'true'
-   npm --prefix backend run prisma:seed
-   ```
-
-   **The seed is destructive:** it replaces operational data and creates development-only demo accounts. Run it only against a fresh disposable database, never rerun it on a database with data to keep, and do not enter real customer or business data into this public demo. Do not use seeded credentials in production. Close the PowerShell window when finished so the temporary environment variables are cleared.
+5. The first deploy creates an empty schema. Set `APP_OUTLET=FOODIZO_HAM_TOWERS` and use a database dedicated to Foodizo before bootstrapping its manager. Do not point the deployment at the former shared database: outlet scoping protects application access but does not move or delete the other restaurant's records. The destructive development seed creates fixtures for both outlets and must not be run against this deployment.
 
 ### Create the first manager account
 
@@ -40,11 +27,12 @@ $env:BOOTSTRAP_MANAGER_CONFIRM = 'CREATE_MANAGER'
 $env:BOOTSTRAP_MANAGER_FULL_NAME = '<manager full name>'
 $env:BOOTSTRAP_MANAGER_PHONE = '<manager Ugandan mobile number>'
 $env:BOOTSTRAP_MANAGER_PIN = '<private four-digit PIN>'
+$env:APP_OUTLET = 'FOODIZO_HAM_TOWERS'
 $env:BOOTSTRAP_MANAGER_OUTLET = 'FOODIZO_HAM_TOWERS'
 npm --prefix backend run bootstrap:manager
 ```
 
-Use `OBUNUZI_YMCA` for an Obunuzi manager. To create a manager for both outlets, run the command again with a different phone number and the other outlet. Afterward, sign in at `/staff` (`/login` is an alias) with that manager's phone number and PIN, then use **Create staff access** to provision waiter and kitchen accounts. Do not share or commit the connection string or PIN; close the PowerShell window after the command to clear its temporary environment variables.
+The manager outlet must match `APP_OUTLET`. Obunuzi should be bootstrapped only after its own deployment and database are configured. Afterward, sign in at `/staff` (`/login` is an alias) with the manager's phone number and PIN, then use **Create staff access** to provision waiter and kitchen accounts. Do not share or commit the connection string or PIN; close the PowerShell window after the command to clear its temporary environment variables.
 
 Free Render web services sleep after inactivity, have ephemeral local filesystems, and can take around a minute to wake. The free Neon database has its own usage and scale-to-zero limits. Uploaded files/local changes are not durable, backups and production reliability are not provided by this setup, and the app's live MoMo flow refuses simulated payments in production mode. Use it only to preview/share the application—not for actual restaurant operations or payments. For real operations, use the on-site edge deployment below and complete its acceptance checklist.
 
@@ -101,7 +89,8 @@ NODE_ENV=production
 PORT=4000
 HOST=127.0.0.1                 # only the local frontend server proxies to the API
 CORS_ORIGIN=https://192.168.1.100
-DATABASE_URL="postgresql://foodizo_app:<strong-password>@127.0.0.1:5432/foodizo_obunuzi_db?schema=public"
+APP_OUTLET=FOODIZO_HAM_TOWERS
+DATABASE_URL="postgresql://foodizo_app:<strong-password>@127.0.0.1:5432/foodizo_db?schema=public"
 JWT_SECRET=<at-least-32-random-characters>
 PAYMENTS_WEBHOOK_SECRET=<telco-callback-signing-secret>
 DIGEST_APP_URL=https://192.168.1.100
@@ -109,7 +98,7 @@ DIGEST_RECIPIENT_PHONE=+2567XXXXXXXX
 DIGEST_CRON_SCHEDULE="30 21 * * *"
 ```
 
-Production startup now fails closed unless `DATABASE_URL` is explicit, `JWT_SECRET` and `PAYMENTS_WEBHOOK_SECRET` are unique values of at least 32 characters, `HOST` is `127.0.0.1`, and the configured CORS origins and digest URL use HTTPS. The startup error names invalid settings but never echoes their values. Validate deployment configuration before enabling the service:
+Production startup now fails closed unless `APP_OUTLET` and `DATABASE_URL` are explicit, `JWT_SECRET` and `PAYMENTS_WEBHOOK_SECRET` are unique values of at least 32 characters, `HOST` is `127.0.0.1`, and the configured CORS origins and digest URL use HTTPS. Keep each restaurant in a separate database as well as a separate deployment. The startup error names invalid settings but never echoes their values. Validate deployment configuration before enabling the service:
 
 ```bash
 cd /opt/foodizo/backend
@@ -156,7 +145,7 @@ Create `/etc/systemd/system/foodizo-api.service`:
 
 ```ini
 [Unit]
-Description=Foodizo/Obunuzi Fastify API
+Description=Foodizo Fastify API
 After=network.target postgresql.service
 Wants=postgresql.service
 
@@ -178,7 +167,7 @@ Create `/etc/systemd/system/foodizo-web.service`:
 
 ```ini
 [Unit]
-Description=Foodizo/Obunuzi static frontend + API proxy
+Description=Foodizo static frontend + API proxy
 After=network.target foodizo-api.service
 Wants=foodizo-api.service
 
@@ -189,6 +178,7 @@ WorkingDirectory=/opt/foodizo
 Environment=PORT=3000
 Environment=BACKEND_HOST=127.0.0.1
 Environment=BACKEND_PORT=4000
+Environment=APP_OUTLET=FOODIZO_HAM_TOWERS
 ExecStart=/usr/bin/node server.js
 Restart=always
 RestartSec=5

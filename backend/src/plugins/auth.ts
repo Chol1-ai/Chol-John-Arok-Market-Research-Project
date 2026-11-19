@@ -76,7 +76,10 @@ export async function resolveSessionToken(
     !session ||
     session.revoked_at ||
     session.expires_at.getTime() <= Date.now() ||
-    !session.user.is_active
+    !session.user.is_active ||
+    (config.APP_OUTLET &&
+      session.user.role !== 'CUSTOMER' &&
+      session.user.outlet !== config.APP_OUTLET)
   ) {
     return null;
   }

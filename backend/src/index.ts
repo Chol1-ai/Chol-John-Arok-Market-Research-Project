@@ -21,7 +21,11 @@ async function startServer() {
         }
         digestRunning = true;
         try {
-          const result = await DigestService.dispatchDigest(app.prisma);
+          const result = await DigestService.dispatchDigest(
+            app.prisma,
+            undefined,
+            config.APP_OUTLET
+          );
           app.log.info(
             {
               digestId: result.digestId,
@@ -72,7 +76,7 @@ async function startServer() {
       host: config.HOST
     });
     console.log(`\n===============================================================`);
-    console.log(`Foodizo & Obunuzi Fastify Engine listening on: ${address}`);
+    console.log(`${config.APP_OUTLET || 'Restaurant'} Fastify Engine listening on: ${address}`);
     console.log(`Environment: ${config.NODE_ENV}`);
     console.log(`WebSocket Event Bus: ws://${config.HOST}:${config.PORT}/ws/events`);
     console.log(

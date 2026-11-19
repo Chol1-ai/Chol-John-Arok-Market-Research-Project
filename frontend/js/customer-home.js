@@ -14,8 +14,9 @@
   const bestSellersDescription = document.getElementById('best-sellers-description');
   const favoritesStatus = document.getElementById('favorites-status');
   const favoriteNavCount = document.querySelector('[data-customer-favorites-count]');
-  const OUTLETS = new Set(['FOODIZO_HAM_TOWERS', 'OBUNUZI_YMCA']);
-  const defaultOutlet = 'FOODIZO_HAM_TOWERS';
+  const APP_CONFIG = window.FoodizoAppConfig || { outlet: 'FOODIZO_HAM_TOWERS' };
+  const OUTLETS = new Set([APP_CONFIG.outlet]);
+  const defaultOutlet = APP_CONFIG.outlet;
   const favoritesStorageKey = 'foodizo-customer-favorites-v1';
   const featuredMealNames = [
     'Double Egg Rolex with Cabbage',

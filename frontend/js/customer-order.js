@@ -5,10 +5,14 @@
     FOODIZO_HAM_TOWERS: 'Foodizo · Ham Towers',
     OBUNUZI_YMCA: 'Obunuzi · Opposite YMCA'
   };
+  const APP_CONFIG = window.FoodizoAppConfig || {
+    outlet: 'FOODIZO_HAM_TOWERS',
+    brandName: 'Foodizo'
+  };
   const CART_STORAGE_PREFIX = 'foodizo-customer-cart-v1:';
   const LAST_OUTLET_STORAGE_KEY = 'foodizo-customer-last-outlet';
   const state = {
-    outlet: 'FOODIZO_HAM_TOWERS',
+    outlet: APP_CONFIG.outlet,
     channel: 'TAKEAWAY_PICKUP',
     menu: [],
     zones: [],
@@ -222,7 +226,9 @@
   function updateFulfillment() {
     state.channel = elements.fulfillment.value;
     const isDelivery = state.channel === 'PHONE_DELIVERY';
-    document.title = isDelivery ? 'Order for delivery | Foodizo & Obunuzi' : 'Order for pickup | Foodizo & Obunuzi';
+    document.title = isDelivery
+      ? `Order for delivery | ${APP_CONFIG.brandName || 'Foodizo'}`
+      : `Order for pickup | ${APP_CONFIG.brandName || 'Foodizo'}`;
     elements.deliveryFields.hidden = !isDelivery;
     elements.deliveryZone.required = isDelivery;
     elements.deliveryNote.required = isDelivery;
@@ -488,7 +494,7 @@
     const statusLabel = statusLabels[deliveryStatus] || `Order status: ${deliveryStatus}`;
     elements.trackingTitle.textContent = statusLabel;
     elements.trackingTokenLabel.textContent = isDelivery ? 'Delivery token' : 'Pickup token';
-    document.title = `${statusLabel} | Foodizo & Obunuzi`;
+    document.title = `${statusLabel} | ${APP_CONFIG.brandName || 'Foodizo'}`;
     if (window.FoodizoReadyNotifications) {
       if (deliveryStatus === 'READY') {
         window.FoodizoReadyNotifications.notifyReady({
@@ -591,18 +597,10 @@
     wireEvents();
     const params = new URLSearchParams(location.search);
     const requestedOutlet = params.get('outlet');
-    if (requestedOutlet && Object.prototype.hasOwnProperty.call(OUTLET_LABEL, requestedOutlet)) {
-      state.outlet = requestedOutlet;
-    } else {
-      try {
-        const savedOutlet = localStorage.getItem(LAST_OUTLET_STORAGE_KEY);
-        if (savedOutlet && Object.prototype.hasOwnProperty.call(OUTLET_LABEL, savedOutlet)) {
-          state.outlet = savedOutlet;
-        }
-      } catch (error) {
-        showNotice(`Could not restore your selected outlet: ${error.message}`);
-      }
+    if (requestedOutlet && requestedOutlet !== APP_CONFIG.outlet) {
+      showNotice(`This ordering site is for ${APP_CONFIG.brandName || 'this restaurant'} only.`);
     }
+    state.outlet = APP_CONFIG.outlet;
     elements.outlet.value = state.outlet;
     persistLastOutlet();
     const requestedFulfillment = params.get('fulfillment');

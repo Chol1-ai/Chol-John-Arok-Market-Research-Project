@@ -1129,11 +1129,12 @@
     STATE.user = user;
     F.fillSessionChrome(user);
 
-    if (user.outlet) {
-      STATE.outlet = user.outlet;
+    const scopedOutlet = F.APP_OUTLET || user.outlet;
+    if (scopedOutlet) {
+      STATE.outlet = scopedOutlet;
       els.outletWrap.hidden = true;
     } else {
-      STATE.outlet = 'FOODIZO_HAM_TOWERS';
+      STATE.outlet = F.APP_OUTLET || 'FOODIZO_HAM_TOWERS';
       els.outletWrap.hidden = false;
       els.outlet.value = STATE.outlet;
     }

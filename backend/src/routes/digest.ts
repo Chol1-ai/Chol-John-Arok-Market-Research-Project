@@ -2,6 +2,7 @@ import { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { DigestService } from '../services/digestService.js';
 import { getKampalaBusinessDate } from '../services/tokenService.js';
+import { config } from '../config.js';
 import { OutletLocation } from '../types/index.js';
 
 const cashCountSchema = z.object({
@@ -380,6 +381,30 @@ export const digestRoutes: FastifyPluginAsync = async (fastify) => {
         code: 'DIGEST_LINK_EXPIRED',
         message: 'This digest link is invalid or older than 72 hours.'
       });
+    }
+
+    if (config.APP_OUTLET) {
+      const payload = record.payload_json;
+      const outlets =
+        payload && typeof payload === 'object' && !Array.isArray(payload)
+          ? Reflect.get(payload, 'outlets')
+          : null;
+      if (
+        !Array.isArray(outlets) ||
+        outlets.some(
+          (summary) =>
+            !summary ||
+            typeof summary !== 'object' ||
+            Reflect.get(summary, 'outlet') !== config.APP_OUTLET
+        )
+      ) {
+        return reply.status(404).send({
+          statusCode: 404,
+          error: 'Not Found',
+          code: 'DIGEST_LINK_UNAVAILABLE',
+          message: 'This digest link is unavailable for this restaurant.'
+        });
+      }
     }
 
     return reply.send({

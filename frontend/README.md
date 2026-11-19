@@ -2,7 +2,7 @@
 
 > **Location:** `frontend/`  
 > **Purpose:** API-backed staff and customer surfaces, retained legacy design assets, shared stylesheets, and design tokens.
-> **Brand Identity:** Foodizo (Ham Towers) & Obunuzi Restaurant (Opposite YMCA, Wandegeya, Kampala)
+> **Current app brand:** Foodizo (Ham Towers), Wandegeya, Kampala. Obunuzi will use a separate deployment.
 
 ---
 
@@ -87,6 +87,8 @@ These routes run against the Fastify/Prisma backend and the real-time `/ws/event
 | **Surface 6** | Manager Audit & Digest | `/admin` | [`live/admin.html`](live/admin.html) | [`js/admin.js`](js/admin.js) | `MANAGER_ADMIN` |
 
 Customer ordering is live at `/order` and `/customer`; token lookup and status tracking are live at `/tracker`. Former `/prototype/*` URLs redirect to their corresponding live screens. Staff routes remain protected by role-based authentication.
+
+The frontend receives its outlet and brand from the deployment's `/app-config.js`. A Foodizo deployment removes cross-outlet choices, while the backend independently enforces the same `APP_OUTLET` setting.
 
 The login page accepts a staff member's registered mobile number and PIN; it does not display a public staff directory. PIN attempts are rate-limited by source IP and account failures are serialized before lockout updates. Other live pages use the shared [`js/api.js`](js/api.js) client, which relies on the HttpOnly `foodizo_session` cookie with a Bearer-token fallback.
 

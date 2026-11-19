@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: foodizo-obunuzi-demo
+    name: foodizo-restaurant
     runtime: node
     plan: free
     buildCommand: npm ci --prefix backend --include=dev && npm --prefix backend run prisma:generate && npm --prefix backend run build
@@ -10,6 +10,8 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      - key: APP_OUTLET
+        value: FOODIZO_HAM_TOWERS
       - key: HOST
         value: 127.0.0.1
       - key: DATABASE_URL

@@ -179,7 +179,7 @@
   }
 
   function outletLabel(outlet) {
-    return F.OUTLET_LABEL[outlet] || outlet || 'Both outlets';
+    return F.OUTLET_LABEL[outlet] || outlet || F.APP_BRAND;
   }
 
   function roleLabel(role) {
@@ -1767,14 +1767,15 @@
     F.fillSessionChrome(user);
     wireEvents();
 
-    if (user.outlet) {
-      STATE.scope = user.outlet;
+    const scopedOutlet = F.APP_OUTLET || user.outlet;
+    if (scopedOutlet) {
+      STATE.scope = scopedOutlet;
       els.outletWrap.hidden = true;
-      els.staffOutlet.value = user.outlet;
+      els.staffOutlet.value = scopedOutlet;
       els.staffOutlet.disabled = true;
-      els.cashOutlet.value = user.outlet;
-      els.surplusOutlet.value = user.outlet;
-      els.menuOutlet.value = user.outlet;
+      els.cashOutlet.value = scopedOutlet;
+      els.surplusOutlet.value = scopedOutlet;
+      els.menuOutlet.value = scopedOutlet;
       els.menuOutletWrap.hidden = true;
       els.cashOutletWrap.hidden = true;
       els.surplusOutletWrap.hidden = true;

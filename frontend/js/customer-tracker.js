@@ -5,6 +5,10 @@
     FOODIZO_HAM_TOWERS: 'Foodizo · Ham Towers',
     OBUNUZI_YMCA: 'Obunuzi · Opposite YMCA'
   };
+  const APP_CONFIG = window.FoodizoAppConfig || { outlet: 'FOODIZO_HAM_TOWERS' };
+  Object.keys(OUTLET_LABEL).forEach((outlet) => {
+    if (outlet !== APP_CONFIG.outlet) delete OUTLET_LABEL[outlet];
+  });
   const STATUS_COPY = {
     AWAITING_PAYMENT: 'Order received. Pay cash at the counter before kitchen preparation starts.',
     PENDING: 'Your order is queued for the kitchen.',

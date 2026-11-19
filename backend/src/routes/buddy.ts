@@ -31,7 +31,7 @@ export const buddyRoutes: FastifyPluginAsync = async (fastify) => {
     },
     async (request, reply) => {
       const { outlet: selectedOutlet, message, history = [] } = buddyMessageSchema.parse(request.body);
-      const outlet = resolveBuddyOutlet(message, selectedOutlet);
+      const outlet = config.APP_OUTLET || resolveBuddyOutlet(message, selectedOutlet);
       const context = await buildBuddyContext(fastify.prisma, outlet);
       const deterministicReply = getDeterministicBuddyReply(message, context);
 

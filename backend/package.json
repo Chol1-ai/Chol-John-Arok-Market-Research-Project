@@ -1,7 +1,7 @@
 {
-  "name": "foodizo-obunuzi-backend",
+  "name": "foodizo-backend",
   "version": "1.0.0",
-  "description": "Kampala Fast-Casual Dining & Kitchen Display Engine for Foodizo (Ham Towers) & Obunuzi (Opposite YMCA)",
+  "description": "Restaurant operations and kitchen display engine for Foodizo (Ham Towers)",
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",

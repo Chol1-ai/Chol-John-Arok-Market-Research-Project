@@ -307,6 +307,11 @@ export const paymentRoutes: FastifyPluginAsync = async (fastify) => {
         return;
       }
 
+      if (config.APP_OUTLET && payment.order.outlet !== config.APP_OUTLET) {
+        state.result = 'NOT_FOUND';
+        return;
+      }
+
       if (payload.provider && payload.provider !== payment.carrier) {
         state.result = 'PROVIDER_MISMATCH';
         return;

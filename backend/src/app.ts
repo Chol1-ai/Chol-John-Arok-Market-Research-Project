@@ -23,6 +23,7 @@ import { digestRoutes } from './routes/digest.js';
 import { inventoryRoutes } from './routes/inventory.js';
 import { buddyRoutes } from './routes/buddy.js';
 import { config } from './config.js';
+import { applyOutletScope } from './plugins/outletScope.js';
 
 export async function buildApp(): Promise<FastifyInstance> {
   const app = fastify({
@@ -51,13 +52,28 @@ export async function buildApp(): Promise<FastifyInstance> {
   await app.register(websocketPlugin);
   await app.register(errorHandlerPlugin);
 
+  const appOutlet = config.APP_OUTLET;
+  if (appOutlet) {
+    app.addHook('preValidation', async (request, reply) => {
+      const requestedOutlet = applyOutletScope(request, appOutlet);
+      if (requestedOutlet !== null) {
+        return reply.status(403).send({
+          statusCode: 403,
+          error: 'Forbidden',
+          code: 'OUTLET_FORBIDDEN',
+          message: `This app is configured for ${appOutlet}.`
+        });
+      }
+    });
+  }
+
   // 3. Health Check
   app.get('/api/v1/health', async (_request, reply) => {
     try {
       await app.prisma.$queryRaw`SELECT 1`;
       return {
         status: 'UP',
-        service: 'foodizo-obunuzi-fastify-api',
+        service: 'restaurant-fastify-api',
         ...(config.NODE_ENV === 'production' ? {} : { environment: config.NODE_ENV }),
         timestamp: new Date().toISOString()
       };
@@ -65,7 +81,7 @@ export async function buildApp(): Promise<FastifyInstance> {
       app.log.error('Health check failed: database unavailable');
       return reply.code(503).send({
         status: 'DOWN',
-        service: 'foodizo-obunuzi-fastify-api',
+        service: 'restaurant-fastify-api',
         timestamp: new Date().toISOString()
       });
     }

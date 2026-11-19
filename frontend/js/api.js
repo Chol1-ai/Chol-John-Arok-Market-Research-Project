@@ -1,5 +1,5 @@
 /**
- * Shared live-surface client for the Foodizo & Obunuzi staff terminals.
+ * Shared live-surface client for restaurant staff terminals.
  *
  * The browser authenticates with the HttpOnly `foodizo_session` cookie. The
  * token returned by /auth/pin is also kept in sessionStorage as a Bearer
@@ -22,6 +22,11 @@
     WAITER_FOH: 'Waiter / FOH',
     KITCHEN_STAFF: 'Kitchen Staff',
     MANAGER_ADMIN: 'Manager / Admin'
+  };
+  const APP_CONFIG = global.FoodizoAppConfig || {
+    outlet: 'FOODIZO_HAM_TOWERS',
+    brandName: 'Foodizo',
+    outletLabel: 'Foodizo · Ham Towers'
   };
   const OUTLET_LABEL = {
     FOODIZO_HAM_TOWERS: 'Foodizo · Ham Towers',
@@ -430,7 +435,9 @@
       node.textContent = user.roleLabel || ROLE_LABEL[role] || role;
     });
     outletNodes.forEach((node) => {
-      node.textContent = user.outlet ? OUTLET_LABEL[user.outlet] || user.outlet : 'Both outlets';
+      node.textContent = user.outlet
+        ? OUTLET_LABEL[user.outlet] || user.outlet
+        : APP_CONFIG.outletLabel;
     });
     initialNodes.forEach((node) => {
       node.textContent = initials(user.fullName);
@@ -445,6 +452,9 @@
   global.Foodizo = {
     TOKEN_KEY,
     USER_KEY,
+    APP_OUTLET: APP_CONFIG.outlet,
+    APP_BRAND: APP_CONFIG.brandName,
+    APP_OUTLET_LABEL: APP_CONFIG.outletLabel,
     ROLE_HOME,
     ROLE_LABEL,
     OUTLET_LABEL,

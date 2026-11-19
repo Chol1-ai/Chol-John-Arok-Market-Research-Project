@@ -3,6 +3,7 @@ import { loadConfig } from '../src/config.js';
 
 const productionEnvironment: NodeJS.ProcessEnv = {
   NODE_ENV: 'production',
+  APP_OUTLET: 'FOODIZO_HAM_TOWERS',
   HOST: '127.0.0.1',
   DATABASE_URL: 'postgresql://foodizo_app:secret@127.0.0.1:5432/foodizo?schema=public',
   JWT_SECRET: 'a-production-only-secret-that-is-long-enough',
@@ -15,6 +16,7 @@ describe('production configuration', () => {
   it('accepts explicit secure production values', () => {
     expect(loadConfig(productionEnvironment)).toMatchObject({
       NODE_ENV: 'production',
+      APP_OUTLET: 'FOODIZO_HAM_TOWERS',
       HOST: '127.0.0.1',
       CORS_ORIGIN: 'https://192.168.1.100'
     });
@@ -55,10 +57,10 @@ describe('production configuration', () => {
       ...productionEnvironment,
       CORS_ORIGIN: undefined,
       DIGEST_APP_URL: undefined,
-      RENDER_EXTERNAL_URL: 'https://foodizo-obunuzi-demo.onrender.com'
+      RENDER_EXTERNAL_URL: 'https://foodizo-restaurant.onrender.com'
     });
-    expect(config.CORS_ORIGIN).toBe('https://foodizo-obunuzi-demo.onrender.com');
-    expect(config.DIGEST_APP_URL).toBe('https://foodizo-obunuzi-demo.onrender.com');
+    expect(config.CORS_ORIGIN).toBe('https://foodizo-restaurant.onrender.com');
+    expect(config.DIGEST_APP_URL).toBe('https://foodizo-restaurant.onrender.com');
   });
 
   it('does not use a non-HTTPS Render URL as a production origin', () => {
@@ -67,7 +69,7 @@ describe('production configuration', () => {
         ...productionEnvironment,
         CORS_ORIGIN: undefined,
         DIGEST_APP_URL: undefined,
-        RENDER_EXTERNAL_URL: 'http://foodizo-obunuzi-demo.onrender.com'
+        RENDER_EXTERNAL_URL: 'http://foodizo-restaurant.onrender.com'
       })
     ).toThrow(/CORS_ORIGIN.*DIGEST_APP_URL/);
   });
@@ -86,5 +88,14 @@ describe('production configuration', () => {
       OPENAI_API_KEY: 'test-key',
       OPENAI_MODEL: 'test-model'
     });
+  });
+
+  it('requires an outlet assignment in production', () => {
+    expect(() =>
+      loadConfig({
+        ...productionEnvironment,
+        APP_OUTLET: undefined
+      })
+    ).toThrow('APP_OUTLET must be set to FOODIZO_HAM_TOWERS or OBUNUZI_YMCA');
   });
 });

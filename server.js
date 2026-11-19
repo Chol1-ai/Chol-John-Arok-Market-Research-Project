@@ -1,6 +1,6 @@
 /**
  * Kampala Fast-Casual Restaurant Suite — Unified Frontend & API Server
- * Outlets: Foodizo (Ham Towers) & Obunuzi Restaurant (Opp. YMCA, Wandegeya, Kampala)
+ * APP_OUTLET selects the restaurant served by this deployment (Foodizo by default).
  * Currency: UGX (Ugandan Shilling)
  *
  * Zero external dependencies: Runs on native Node.js (v18+)
@@ -29,6 +29,16 @@ const BACKEND_PORT = parseInt(process.env.BACKEND_PORT || '4000', 10);
 const BACKEND_HOST = process.env.BACKEND_HOST || '127.0.0.1';
 const FRONTEND_DIR = path.join(__dirname, 'frontend');
 const FRONTEND_ROOT = path.resolve(FRONTEND_DIR);
+const OUTLET_BRANDS = {
+  FOODIZO_HAM_TOWERS: { name: 'Foodizo', outletLabel: 'Foodizo · Ham Towers' },
+  OBUNUZI_YMCA: { name: 'Obunuzi', outletLabel: 'Obunuzi · Opposite YMCA' }
+};
+const APP_OUTLET = process.env.APP_OUTLET || 'FOODIZO_HAM_TOWERS';
+const APP_BRAND = OUTLET_BRANDS[APP_OUTLET];
+
+if (!APP_BRAND) {
+  throw new Error('APP_OUTLET must be FOODIZO_HAM_TOWERS or OBUNUZI_YMCA.');
+}
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -340,6 +350,54 @@ function renderNotFound(res, pathname) {
   `);
 }
 
+function serveAppConfig(res) {
+  const config = JSON.stringify({
+    outlet: APP_OUTLET,
+    brandName: APP_BRAND.name,
+    outletLabel: APP_BRAND.outletLabel
+  });
+  res.writeHead(200, {
+    'Content-Type': 'application/javascript; charset=utf-8',
+    'Cache-Control': 'no-store'
+  });
+  res.end(`(function () {
+  const appConfig = Object.freeze(${config});
+  window.FoodizoAppConfig = appConfig;
+  document.addEventListener('DOMContentLoaded', function () {
+    document.title = document.title.replace(/Foodizo\\s*&\\s*Obunuzi/gi, appConfig.brandName);
+    document.querySelectorAll('select').forEach(function (select) {
+      const options = Array.from(select.options);
+      const outletOption = options.find(function (option) {
+        return option.value === 'FOODIZO_HAM_TOWERS' || option.value === 'OBUNUZI_YMCA';
+      });
+      if (!outletOption) return;
+      outletOption.value = appConfig.outlet;
+      outletOption.textContent = appConfig.outletLabel;
+      options.forEach(function (option) {
+        if (option === outletOption) return;
+        if (
+          option.value === 'ALL' ||
+          option.value === 'FOODIZO_HAM_TOWERS' ||
+          option.value === 'OBUNUZI_YMCA'
+        ) {
+          option.remove();
+        }
+      });
+      select.value = appConfig.outlet;
+      select.hidden = true;
+      const field = select.closest('label');
+      if (field) field.hidden = true;
+    });
+    document.querySelectorAll('[data-app-brand]').forEach(function (node) {
+      node.textContent = appConfig.brandName;
+    });
+    document.querySelectorAll('[data-app-outlet-label]').forEach(function (node) {
+      node.textContent = appConfig.outletLabel;
+    });
+  });
+})();`);
+}
+
 function serveStatic(pathname, res, options) {
   let relativePath = ROUTE_MAP[pathname];
 
@@ -388,11 +446,25 @@ function serveStatic(pathname, res, options) {
     const ext = path.extname(filePath).toLowerCase();
     const contentType = MIME_TYPES[ext] || 'application/octet-stream';
 
+    if (ext === '.html') {
+      fs.readFile(filePath, 'utf8', (readError, html) => {
+        if (readError) {
+          console.error(`Could not read frontend page ${filePath}:`, readError);
+          res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
+          res.end('Could not load this page.');
+          return;
+        }
+        res.writeHead(200, {
+          'Content-Type': contentType,
+          'Cache-Control': options && options.noStore ? 'no-store' : 'no-cache'
+        });
+        res.end(html.replace(/<head(\s[^>]*)?>/i, (head) => `${head}\n  <script src="/app-config.js"></script>`));
+      });
+      return;
+    }
     res.writeHead(200, {
       'Content-Type': contentType,
-      'Cache-Control': options && options.noStore
-        ? 'no-store'
-        : ext === '.html' ? 'no-cache' : 'public, max-age=300'
+      'Cache-Control': options && options.noStore ? 'no-store' : 'public, max-age=300'
     });
     fs.createReadStream(filePath).pipe(res);
   });
@@ -416,6 +488,11 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'OPTIONS') {
     res.writeHead(204);
     res.end();
+    return;
+  }
+
+  if (pathname === '/app-config.js') {
+    serveAppConfig(res);
     return;
   }
 
@@ -457,8 +534,8 @@ server.on('upgrade', (req, socket, head) => {
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log('\n===============================================================');
-  console.log(' KAMPALA FAST-CASUAL DINING & KITCHEN DISPLAY SYSTEM');
-  console.log(' Foodizo (Ham Towers) & Obunuzi Restaurant (Opposite YMCA)');
+  console.log(` ${APP_BRAND.name.toUpperCase()} RESTAURANT & KITCHEN DISPLAY SYSTEM`);
+  console.log(` ${APP_BRAND.outletLabel}`);
   console.log(' Currency Engine: UGX (Ugandan Shilling)');
   console.log(` Server active on:  http://localhost:${PORT}`);
   console.log(` API + WS backend:  http://localhost:${BACKEND_PORT}`);

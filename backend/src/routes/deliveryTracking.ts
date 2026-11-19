@@ -4,6 +4,7 @@ import {
   hashTrackingToken,
   isTrackingToken
 } from '../services/deliveryTrackingService.js';
+import { config } from '../config.js';
 
 function trackingToken(request: FastifyRequest): string | null {
   const authorization = request.headers.authorization;
@@ -72,7 +73,8 @@ export const deliveryTrackingRoutes: FastifyPluginAsync = async (fastify) => {
       if (
         !session ||
         session.customer_token_expires_at.getTime() <= Date.now() ||
-        session.order.channel !== 'PHONE_DELIVERY'
+        session.order.channel !== 'PHONE_DELIVERY' ||
+        (config.APP_OUTLET && session.order.outlet !== config.APP_OUTLET)
       ) {
         return reply.status(404).send({
           statusCode: 404,
@@ -128,6 +130,7 @@ export const deliveryTrackingRoutes: FastifyPluginAsync = async (fastify) => {
             select: {
               public_ref: true,
               digital_token: true,
+              outlet: true,
               status: true,
               channel: true,
               customer_name: true,
@@ -146,6 +149,7 @@ export const deliveryTrackingRoutes: FastifyPluginAsync = async (fastify) => {
         !session.rider_token_expires_at ||
         session.rider_token_expires_at.getTime() <= Date.now() ||
         session.status === 'STOPPED' ||
+        (config.APP_OUTLET && session.order.outlet !== config.APP_OUTLET) ||
         session.order.channel !== 'PHONE_DELIVERY' ||
         session.order.status !== 'READY' ||
         session.handoff?.outcome !== 'PENDING'
@@ -212,6 +216,7 @@ export const deliveryTrackingRoutes: FastifyPluginAsync = async (fastify) => {
         !session.rider_token_expires_at ||
         session.rider_token_expires_at.getTime() <= Date.now() ||
         session.status === 'STOPPED' ||
+        (config.APP_OUTLET && session.order.outlet !== config.APP_OUTLET) ||
         session.order.channel !== 'PHONE_DELIVERY' ||
         session.order.status !== 'READY' ||
         session.handoff?.outcome !== 'PENDING'
@@ -310,6 +315,7 @@ export const deliveryTrackingRoutes: FastifyPluginAsync = async (fastify) => {
         !session.rider_token_expires_at ||
         session.rider_token_expires_at.getTime() <= Date.now() ||
         session.status !== 'SHARING' ||
+        (config.APP_OUTLET && session.order.outlet !== config.APP_OUTLET) ||
         session.order.channel !== 'PHONE_DELIVERY' ||
         session.order.status !== 'READY' ||
         session.handoff?.outcome !== 'PENDING'
