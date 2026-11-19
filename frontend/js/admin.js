@@ -197,6 +197,9 @@
 
   function originalMenuArtwork(item) {
     if (F.APP_OUTLET !== 'OBUNUZI_YMCA' || item.hideOriginalImage) return null;
+    if (typeof window.OBUNUZI_MENU_IMAGE_FOR_ITEM === 'function') {
+      return window.OBUNUZI_MENU_IMAGE_FOR_ITEM(item);
+    }
     const itemImages = window.OBUNUZI_MENU_ITEM_IMAGES || {};
     if (Object.prototype.hasOwnProperty.call(itemImages, item.name)) return itemImages[item.name];
     const categories = window.OBUNUZI_MENU_CATEGORIES || [];

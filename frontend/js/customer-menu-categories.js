@@ -157,6 +157,48 @@
     'Posho & Beans': '/images/obunuzi-meal-posho-beans.svg',
     'Rice & Beans': '/images/obunuzi-meal-posho-beans.svg',
     'Groundnut Sauce with Local Greens': '/images/obunuzi-meal-groundnut-greens.svg',
-    'Steamed Matooke': '/images/obunuzi-meal-matooke-beef.svg'
+    'Steamed Matooke': '/images/obunuzi-meal-matooke-beef.svg',
+    'Single Egg Rolex': '/images/obunuzi-meal-rolex.svg',
+    'Double Egg Rolex with Cabbage': '/images/obunuzi-meal-rolex.svg',
+    'Regular Rolex (2 Eggs, 1 Chapati)': '/images/obunuzi-meal-rolex.svg',
+    'Kikomando (Chapati chopped with Beans)': '/images/obunuzi-meal-kikomando.svg',
+    'Kikkomando (Chapati chopped with Beans)': '/images/obunuzi-meal-kikomando.svg',
+    'Grilled Muchomo (Beef Skewer)': '/images/obunuzi-meal-muchomo.svg',
+    'Grilled Muchomo (Pork Skewer)': '/images/obunuzi-meal-muchomo.svg'
+  };
+
+  const normalizeMenuLabel = (value) => String(value || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+
+  const obunuziCategoryAliases = {
+    mains: 'african local cuisine',
+    main: 'african local cuisine',
+    sides: 'african local cuisine',
+    side: 'african local cuisine',
+    drinks: 'cold drinks beverages',
+    beverages: 'cold drinks beverages',
+    breakfast: 'breakfast morning combos',
+    desserts: 'sweets desserts',
+    dessert: 'sweets desserts',
+    'street food': 'kampala street food favourites'
+  };
+
+  window.OBUNUZI_MENU_IMAGE_FOR_ITEM = (item) => {
+    if (!item || item.hideOriginalImage) return null;
+    const itemName = normalizeMenuLabel(item.name);
+    const itemImage = Object.entries(window.OBUNUZI_MENU_ITEM_IMAGES)
+      .find(([name]) => normalizeMenuLabel(name) === itemName);
+    if (itemImage) return itemImage[1];
+
+    const rawCategory = normalizeMenuLabel(item.category);
+    const categoryName = obunuziCategoryAliases[rawCategory] || rawCategory;
+    const category = window.OBUNUZI_MENU_CATEGORIES.find(
+      (entry) => normalizeMenuLabel(entry.name) === categoryName
+    );
+    return category ? category.image : '/images/obunuzi-category-local.svg';
   };
 })();

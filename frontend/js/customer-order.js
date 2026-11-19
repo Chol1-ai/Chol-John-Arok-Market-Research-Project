@@ -71,6 +71,9 @@
 
   function defaultMealImage(item) {
     const isObunuzi = APP_CONFIG.outlet === 'OBUNUZI_YMCA';
+    if (isObunuzi && typeof window.OBUNUZI_MENU_IMAGE_FOR_ITEM === 'function') {
+      return window.OBUNUZI_MENU_IMAGE_FOR_ITEM(item);
+    }
     const itemImages = isObunuzi
       ? window.OBUNUZI_MENU_ITEM_IMAGES || {}
       : window.FOODIZO_MENU_ITEM_IMAGES || {};

@@ -243,7 +243,11 @@
 
   function menuItemImage(item) {
     if (item.imageUrl) return item.imageUrl;
-    if (item.hideOriginalImage || F.APP_OUTLET !== 'OBUNUZI_YMCA') return null;
+    if (F.APP_OUTLET !== 'OBUNUZI_YMCA') return null;
+    if (typeof window.OBUNUZI_MENU_IMAGE_FOR_ITEM === 'function') {
+      return window.OBUNUZI_MENU_IMAGE_FOR_ITEM(item);
+    }
+    if (item.hideOriginalImage) return null;
 
     const itemImages = window.OBUNUZI_MENU_ITEM_IMAGES || {};
     if (Object.prototype.hasOwnProperty.call(itemImages, item.name)) return itemImages[item.name];

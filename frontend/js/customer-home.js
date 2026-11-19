@@ -99,6 +99,9 @@
       ? item.imageUrl
       : null;
     if (uploadedImage) return uploadedImage;
+    if (isObunuzi && typeof window.OBUNUZI_MENU_IMAGE_FOR_ITEM === 'function') {
+      return window.OBUNUZI_MENU_IMAGE_FOR_ITEM(item);
+    }
     if (item.hideOriginalImage) return null;
     const itemImages = isObunuzi
       ? window.OBUNUZI_MENU_ITEM_IMAGES || {}

@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 560" role="img" aria-label="Obunuzi grilled muchomo skewers with kachumbari">
+  <defs>
+    <linearGradient id="surface" x2=".9" y2="1">
+      <stop stop-color="#f4e3c2"/>
+      <stop offset="1" stop-color="#d9bd92"/>
+    </linearGradient>
+    <linearGradient id="meat" x2="0" y2="1">
+      <stop stop-color="#b75d35"/>
+      <stop offset=".55" stop-color="#81402b"/>
+      <stop offset="1" stop-color="#542c24"/>
+    </linearGradient>
+    <filter id="shadow" x="-.2" y="-.2" width="1.4" height="1.5">
+      <feGaussianBlur stdDeviation="13"/>
+    </filter>
+  </defs>
+  <rect width="720" height="560" rx="32" fill="url(#surface)"/>
+  <path d="M0 119q190-70 360 0t360 0M0 451q180-65 360 0t360 0" fill="none" stroke="#fff7e7" stroke-width="4" opacity=".48"/>
+  <ellipse cx="360" cy="386" rx="251" ry="83" fill="#62412d" opacity=".19" filter="url(#shadow)"/>
+  <ellipse cx="360" cy="315" rx="265" ry="172" fill="#fff9ee" stroke="#896549" stroke-width="9"/>
+  <ellipse cx="360" cy="311" rx="229" ry="137" fill="#ead8b8" stroke="#d2b88e" stroke-width="5"/>
+  <path d="M431 204q67-48 117-6l42 48-46 49-93-16-47-39Z" fill="#567447"/>
+  <g fill="#e0523d">
+    <circle cx="482" cy="220" r="21"/>
+    <circle cx="538" cy="244" r="17"/>
+    <circle cx="504" cy="272" r="16"/>
+  </g>
+  <g fill="#f3e5c7">
+    <path d="M462 203q17 12 23 33-18 1-30-13Z"/>
+    <path d="M527 231q15 9 21 24-16 2-27-10Z"/>
+  </g>
+  <g transform="rotate(-13 350 300)" stroke-linecap="round">
+    <path d="M144 256 536 336" stroke="#80512f" stroke-width="9"/>
+    <path d="M154 213 545 293" stroke="#80512f" stroke-width="9"/>
+    <path d="M166 168 557 248" stroke="#80512f" stroke-width="9"/>
+    <g fill="url(#meat)" stroke="#5b3125" stroke-width="6">
+      <path d="m206 228 22-35 47 8 17 33-26 30-48-7Z"/>
+      <path d="m297 247 22-34 47 9 15 34-28 29-45-8Z"/>
+      <path d="m393 267 22-34 47 9 15 34-28 29-45-8Z"/>
+      <path d="m221 180 22-35 47 9 16 33-27 30-46-7Z"/>
+      <path d="m315 199 22-34 46 8 16 34-27 29-46-8Z"/>
+      <path d="m411 219 22-34 46 8 16 34-27 29-46-8Z"/>
+      <path d="m236 136 22-34 47 8 16 34-27 29-46-8Z"/>
+      <path d="m330 155 22-34 46 8 16 34-27 29-46-8Z"/>
+      <path d="m426 175 22-34 46 8 16 34-27 29-46-8Z"/>
+    </g>
+    <g fill="none" stroke="#e29a50" stroke-width="7">
+      <path d="m215 212 54 11m36 10 54 11m42 9 54 11"/>
+      <path d="m230 164 54 11m35 9 54 11m43 9 54 11"/>
+      <path d="m245 120 54 11m35 10 54 10m43 9 54 11"/>
+    </g>
+  </g>
+  <path d="M48 30h624v500H48Z" fill="none" stroke="#76553c" stroke-opacity=".32" stroke-width="2"/>
+</svg>
