@@ -1514,7 +1514,7 @@ body[data-surface='pos'] .pos-menu-grid.is-list .pos-menu-image,
   .waiter-nav a > span:not(.material-symbols-outlined),
   .waiter-nav button > span:not(.material-symbols-outlined),
   .waiter-sidebar-footer,
-  .waiter-logout:not(.material-symbols-outlined) {
+  .waiter-logout > span:not(.material-symbols-outlined) {
     display: none;
   }
 
@@ -1585,9 +1585,12 @@ body[data-surface='pos'] .pos-menu-grid.is-list .pos-menu-image,
   .waiter-sidebar {
     inset: auto 0 0;
     z-index: 70;
-    display: block;
+    display: flex;
     width: auto;
     height: 60px;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
     padding: 3px 6px;
     border-top: 1px solid #26332e;
     border-right: 0;
@@ -1596,14 +1599,15 @@ body[data-surface='pos'] .pos-menu-grid.is-list .pos-menu-image,
 
   .waiter-brand,
   .waiter-profile,
-  .waiter-sidebar-footer,
-  .waiter-logout {
+  .waiter-sidebar-footer {
     display: none;
   }
 
   .waiter-nav {
     display: flex;
+    min-width: 0;
     height: 100%;
+    flex: 1 1 auto;
     align-items: center;
     justify-content: space-between;
     gap: 3px;
@@ -1618,6 +1622,20 @@ body[data-surface='pos'] .pos-menu-grid.is-list .pos-menu-image,
     min-height: 45px;
     flex: 0 0 auto;
     padding: 6px;
+  }
+
+  .waiter-logout {
+    display: flex;
+    width: 45px;
+    min-width: 45px;
+    height: 45px;
+    min-height: 45px;
+    flex: 0 0 45px;
+    justify-content: center;
+    margin: 0;
+    padding: 6px;
+    border-left: 1px solid #26332e;
+    border-radius: 9px;
   }
 
   .waiter-nav a > span:not(.material-symbols-outlined),
