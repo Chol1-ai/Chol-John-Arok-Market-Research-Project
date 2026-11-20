@@ -211,7 +211,7 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
     expect(res.statusCode).toBe(200);
     expect(res.json()).toMatchObject({
       status: 'UP',
-      service: 'foodizo-obunuzi-fastify-api'
+      service: 'restaurant-fastify-api'
     });
   });
 
