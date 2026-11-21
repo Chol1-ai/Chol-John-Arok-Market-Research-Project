@@ -1802,7 +1802,7 @@
   </style>
   <link rel="stylesheet" href="/css/brand_theme.css?v=5" />
   <link rel="stylesheet" href="/css/foodizo-buddy.css?v=1" />
-  <link rel="stylesheet" href="/css/obunuzi_landing.css?v=21" />
+  <link rel="stylesheet" href="/css/obunuzi_landing.css?v=24" />
 </head>
 
 <body id="top">
@@ -1812,10 +1812,15 @@
         <span>
           <img class="brand-logo" src="../images/Foodizo_logo.png?v=2" alt="" />
         </span>
-        <span class="brand-name" data-app-brand>Foodizo</span>
+        <span class="brand-copy">
+          <span class="brand-name" data-app-brand>Foodizo</span>
+          <span class="brand-detail" data-outlet-copy="FOODIZO_HAM_TOWERS">Ham Towers · Open</span>
+          <span class="brand-detail" data-outlet-copy="OBUNUZI_YMCA" hidden>Ham Towers · Wandegeya · Open</span>
+        </span>
       </a>
       <nav class="nav customer-nav" aria-label="Main navigation">
-        <a href="#menu">Menu</a>
+        <a href="#menu" data-outlet-copy="FOODIZO_HAM_TOWERS">Menu</a>
+        <a href="/order?outlet=OBUNUZI_YMCA" data-outlet-copy="OBUNUZI_YMCA" hidden>Menu</a>
         <a class="button button-outline customer-nav-favorites" href="/?view=favorites#best-sellers"
           data-customer-favorites aria-label="Open favorites" title="Favorites">
           <span class="material-symbols-outlined" aria-hidden="true">favorite</span>
@@ -1844,15 +1849,32 @@
 
   <section class="customer-hero customer-hero-empty" aria-labelledby="home-hero-title">
     <div class="customer-hero-copy">
-      <div class="customer-topline">Foodizo · Ham Towers</div>
+      <div class="customer-topline">
+        <span data-outlet-copy="FOODIZO_HAM_TOWERS">FRESH FROM THE KITCHEN</span>
+        <span data-outlet-copy="OBUNUZI_YMCA" hidden>UGANDAN FAVOURITES, MADE FRESH</span>
+      </div>
       <h1 id="home-hero-title">
         <span data-outlet-copy="FOODIZO_HAM_TOWERS">Good food, <span>your way.</span></span>
-        <span data-outlet-copy="OBUNUZI_YMCA" hidden>Flavours of home,<br /><span>made to share.</span></span>
+        <span data-outlet-copy="OBUNUZI_YMCA" hidden>Flavours of Kampala,<br /><span>made fresh.</span></span>
       </h1>
       <p>
         <span data-outlet-copy="FOODIZO_HAM_TOWERS">Find something you love, then order pickup or delivery from Foodizo.</span>
-        <span data-outlet-copy="OBUNUZI_YMCA" hidden>Local ingredients, generous plates, and the comfort of a meal made with care.</span>
+        <span data-outlet-copy="OBUNUZI_YMCA" hidden>Local ingredients, generous plates, prepared fresh when you order.</span>
       </p>
+      <div class="obunuzi-home-controls" data-outlet-copy="OBUNUZI_YMCA" hidden>
+        <div class="obunuzi-service-info">
+          <span class="material-symbols-outlined" aria-hidden="true">location_on</span>
+          <span><strong>Ham Towers, Wandegeya</strong><small>Open now · Kampala</small></span>
+        </div>
+        <div class="obunuzi-order-mode" role="group" aria-label="Choose pickup or delivery">
+          <a class="is-active" href="/order?fulfillment=TAKEAWAY_PICKUP&amp;outlet=OBUNUZI_YMCA">
+            <span class="material-symbols-outlined" aria-hidden="true">storefront</span> Pickup
+          </a>
+          <a href="/order?fulfillment=PHONE_DELIVERY&amp;outlet=OBUNUZI_YMCA">
+            <span class="material-symbols-outlined" aria-hidden="true">moped</span> Delivery
+          </a>
+        </div>
+      </div>
       <form class="customer-hero-search" action="/order" method="get" role="search" aria-label="Search meals">
         <label class="visually-hidden" for="home-meal-search">Search meals by name or ingredient</label>
         <input id="home-meal-search" name="q" type="search" placeholder="Search meals or ingredients" />
@@ -1860,6 +1882,12 @@
           Search <span class="material-symbols-outlined" aria-hidden="true">search</span>
         </button>
       </form>
+      <nav class="obunuzi-category-chips" data-outlet-copy="OBUNUZI_YMCA" hidden aria-label="Browse Obunuzi categories">
+        <a href="/order?category=African%20%26%20Local%20Cuisine&amp;outlet=OBUNUZI_YMCA">Local plates</a>
+        <a href="/order?category=Kampala%20Street%20Food%20Favourites&amp;outlet=OBUNUZI_YMCA">Rolex &amp; Kikomando</a>
+        <a href="/order?q=Muchomo&amp;outlet=OBUNUZI_YMCA">Muchomo &amp; grills</a>
+        <a href="/order?category=Juices%20%26%20Smoothies&amp;outlet=OBUNUZI_YMCA">Fresh juices</a>
+      </nav>
       <div class="hero-actions">
         <a class="button button-outline" href="#menu">Explore categories <span class="material-symbols-outlined"
             aria-hidden="true">arrow_downward</span></a>
@@ -1921,11 +1949,11 @@
         <div>
           <h2 id="best-sellers-title">
             <span data-outlet-copy="FOODIZO_HAM_TOWERS">Best-selling meals</span>
-            <span data-outlet-copy="OBUNUZI_YMCA" hidden>Obunuzi favourites</span>
+            <span data-outlet-copy="OBUNUZI_YMCA" hidden>Bestsellers</span>
           </h2>
           <p class="section-description" id="best-sellers-description">
             <span data-outlet-copy="FOODIZO_HAM_TOWERS">Campus favorites made fresh at your selected outlet.</span>
-            <span data-outlet-copy="OBUNUZI_YMCA" hidden>Local favourites, prepared fresh every day at Obunuzi.</span>
+            <span data-outlet-copy="OBUNUZI_YMCA" hidden>Beloved Kampala plates, prepared fresh at Obunuzi.</span>
           </p>
         </div>
         <span class="visually-hidden" id="favorites-status" role="status" aria-live="polite"></span>
@@ -2147,8 +2175,8 @@
       <p class="visually-hidden" data-buddy-status role="status" aria-live="polite"></p>
     </section>
   </div>
-  <script src="/js/customer-menu-categories.js?v=7"></script>
-  <script src="/js/customer-home.js?v=20261119-3"></script>
+  <script src="/js/customer-menu-categories.js?v=10"></script>
+  <script src="/js/customer-home.js?v=20261121-5"></script>
   <script src="/js/customer-cart-navigation.js?v=2" defer></script>
   <script src="/js/customer-notifications.js?v=1" defer></script>
   <script src="/js/customer-navigation.js" defer></script>

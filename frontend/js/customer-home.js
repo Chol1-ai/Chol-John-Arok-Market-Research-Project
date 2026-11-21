@@ -27,6 +27,15 @@
     'Traditional Luwombo (Goat)',
     'Traditional Beef Luwombo'
   ];
+  const obunuziFeaturedMealNames = [
+    'Matooke & Beef Stew',
+    'Double Egg Rolex with Cabbage',
+    'Traditional Beef Luwombo',
+    'Katogo (Banana & Beef)',
+    'Traditional Luwombo (Chicken)',
+    'Single Egg Rolex',
+    'Kikkomando (Chapati chopped with Beans)'
+  ];
   const activeOutletValue = () => (outlet && outlet.value ? outlet.value : defaultOutlet);
   let requestNumber = 0;
   let menuRequestNumber = 0;
@@ -119,16 +128,22 @@
     const favoritesView = new URLSearchParams(location.search).get('view') === 'favorites';
     const isObunuzi = APP_CONFIG.outlet === 'OBUNUZI_YMCA';
     const byName = new Map(items.map((item) => [item.name, item]));
-    const featuredItems = featuredMealNames.map((name) => byName.get(name)).filter(Boolean);
+    const featuredNames = isObunuzi ? obunuziFeaturedMealNames : featuredMealNames;
+    const featuredItems = featuredNames.map((name) => byName.get(name)).filter(Boolean);
     const selectedItems = favoritesView
       ? items.filter((item) => savedFavorites().includes(item.id))
-      : (featuredItems.length ? featuredItems : items).slice(0, 4);
+      : isObunuzi
+        ? [
+          ...featuredItems,
+          ...items.filter((item) => !featuredItems.includes(item))
+        ].slice(0, 4)
+        : (featuredItems.length ? featuredItems : items).slice(0, 4);
 
     if (bestSellersTitle) {
       if (favoritesView) {
         bestSellersTitle.textContent = 'Your favorites';
       } else if (isObunuzi) {
-        bestSellersTitle.textContent = 'Obunuzi favourites';
+        bestSellersTitle.textContent = 'Bestsellers';
       } else {
         bestSellersTitle.textContent = 'Best-selling meals';
       }
@@ -137,7 +152,7 @@
       if (favoritesView) {
         bestSellersDescription.textContent = 'Meals you have saved in this browser.';
       } else if (isObunuzi) {
-        bestSellersDescription.textContent = 'Local favourites, prepared fresh every day at Obunuzi.';
+        bestSellersDescription.textContent = 'Beloved Kampala plates, prepared fresh at Obunuzi.';
       } else {
         bestSellersDescription.textContent = 'Campus favorites made fresh at your selected outlet.';
       }

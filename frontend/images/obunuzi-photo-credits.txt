@@ -2,9 +2,14 @@ Obunuzi menu photo credits
 
 The following locally stored photos are used for Obunuzi category, meal, and hero images. Images are displayed as downloaded thumbnails and may be cropped by the interface.
 
+These two images were generated with ImgCreatorAI for Obunuzi on 2026-11-21. Its Terms of Service state that users retain ownership of generated images: https://imgcreatorai.io/terms-of-service.html
+
+- obunuzi-imgcreator-street-food-category.jpg: Kampala Street Food Favourites category cover.
+- obunuzi-imgcreator-double-egg-rolex.jpg: Double Egg Rolex menu listing.
+- obunuzi-home-matooke-beef.jpg and obunuzi-home-chicken-luwombo.jpg: food-only crops from the matching Stitch menu-card photos below.
+
 The following locally stored photos are the exact menu-card images shown in the Obunuzi Waiter POS screens in the Stitch project: https://stitch.google.com/projects/12073478657696213391
 
-- obunuzi-stitch-double-egg-rolex.jpg
 - obunuzi-stitch-matooke-beef-stew.jpg
 - obunuzi-stitch-chicken-luwombo.jpg
 - obunuzi-stitch-katogo-special.jpg
