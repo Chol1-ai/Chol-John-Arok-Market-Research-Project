@@ -2296,6 +2296,15 @@ html[data-app-outlet="OBUNUZI_YMCA"] body#top .obunuzi-hero-visual img {
   object-position: center 42%;
 }
 
+html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-hero-empty {
+  background-image:
+    linear-gradient(90deg, rgb(63 18 18 / 78%) 0%, rgb(63 18 18 / 58%) 42%, rgb(63 18 18 / 14%) 78%, transparent 100%),
+    url("/images/obunuzi-cover.png?v=20261121") !important;
+  background-position: center 42%;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
 /* Obunuzi mobile-reference theme: deep burgundy, red food accents, and a full-photo cover. */
 html[data-app-outlet="OBUNUZI_YMCA"] body,
 html[data-app-outlet="OBUNUZI_YMCA"] body#top,
