@@ -3448,7 +3448,7 @@ html[data-app-outlet="OBUNUZI_YMCA"] body#top .obunuzi-hero-visual:not([hidden])
   inset: auto !important;
   display: block;
   width: 100% !important;
-  height: clamp(330px, 35vw, 430px) !important;
+  height: clamp(300px, 31vw, 380px) !important;
   margin: 0 !important;
   overflow: hidden;
   border: 0;
@@ -3623,7 +3623,44 @@ html[data-app-outlet="OBUNUZI_YMCA"] body#top .browse-section {
 }
 
 html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-footer {
-  display: none;
+  display: block !important;
+  margin-top: 32px;
+  border-top: 1px solid #f0e2e0;
+  background: #fff8f7;
+  color: #5c1620;
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-footer-main {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.2fr) repeat(3, minmax(0, 1fr));
+  gap: 34px;
+  padding-block: 32px;
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-footer a,
+html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-footer h2 {
+  color: #5c1620;
+}
+
+@media (max-width: 700px) {
+  html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-footer-main {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px 18px;
+  }
+
+  html[data-app-outlet="OBUNUZI_YMCA"] body#top .footer-brand {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 430px) {
+  html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-footer-main {
+    grid-template-columns: 1fr;
+  }
+
+  html[data-app-outlet="OBUNUZI_YMCA"] body#top .footer-brand {
+    grid-column: auto;
+  }
 }
 
 html[data-app-outlet="OBUNUZI_YMCA"] body#top .foodizo-buddy-toggle {
@@ -3741,7 +3778,7 @@ html[data-app-outlet="OBUNUZI_YMCA"] body#top .foodizo-buddy-toggle {
   }
 
   html[data-app-outlet="OBUNUZI_YMCA"] body#top .obunuzi-hero-visual:not([hidden]) {
-    height: clamp(220px, 60vw, 330px) !important;
+    height: clamp(200px, 54vw, 300px) !important;
     border-radius: 18px;
   }
 
