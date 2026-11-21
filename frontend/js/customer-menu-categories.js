@@ -194,6 +194,55 @@
       .find(([name]) => normalizeMenuLabel(name) === itemName);
     if (itemImage) return itemImage[1];
 
+    const nameImageRules = [
+      ['french fries', '/images/obunuzi-category-american.jpg'],
+      ['loaded chips', '/images/obunuzi-category-american.jpg'],
+      ['fried chicken', '/images/obunuzi-category-american.jpg'],
+      ['hot dog', '/images/obunuzi-category-american.jpg'],
+      ['noodles', '/images/obunuzi-category-asian.jpg'],
+      ['fried rice', '/images/obunuzi-category-asian.jpg'],
+      ['spring rolls', '/images/obunuzi-category-asian.jpg'],
+      ['scone', '/images/obunuzi-category-bakery.jpg'],
+      ['mandazi', '/images/obunuzi-category-bakery.jpg'],
+      ['pie', '/images/obunuzi-category-bakery.jpg'],
+      ['doughnut', '/images/obunuzi-category-bakery.jpg'],
+      ['omelette', '/images/obunuzi-meal-katogo.jpg'],
+      ['pancakes', '/images/obunuzi-meal-katogo.jpg'],
+      ['breakfast combo', '/images/obunuzi-meal-katogo.jpg'],
+      ['porridge', '/images/obunuzi-meal-posho-beans.jpg'],
+      ['burger', '/images/obunuzi-category-burgers.jpg'],
+      ['tea', '/images/obunuzi-category-coffee.jpg'],
+      ['cappuccino', '/images/obunuzi-category-coffee.jpg'],
+      ['latte', '/images/obunuzi-category-coffee.jpg'],
+      ['hot chocolate', '/images/obunuzi-category-coffee.jpg'],
+      ['soda', '/images/obunuzi-category-drinks.jpg'],
+      ['mineral water', '/images/obunuzi-category-drinks.jpg'],
+      ['energy drink', '/images/obunuzi-category-drinks.jpg'],
+      ['juice', '/images/obunuzi-category-juices.jpg'],
+      ['smoothie', '/images/obunuzi-category-juices.jpg'],
+      ['rolex', '/images/obunuzi-meal-rolex.jpg'],
+      ['kikomando', '/images/obunuzi-meal-kikomando.jpg'],
+      ['kikkomando', '/images/obunuzi-meal-kikomando.jpg'],
+      ['muchomo', '/images/obunuzi-meal-muchomo.jpg'],
+      ['pizza', '/images/obunuzi-category-pizza.jpg'],
+      ['wrap', '/images/obunuzi-category-pizza.jpg'],
+      ['samosa', '/images/obunuzi-category-snacks.jpg'],
+      ['cassava', '/images/obunuzi-category-snacks.jpg'],
+      ['plantain', '/images/obunuzi-category-snacks.jpg'],
+      ['gonja', '/images/obunuzi-category-snacks.jpg'],
+      ['nuggets', '/images/obunuzi-category-snacks.jpg'],
+      ['ice cream', '/images/obunuzi-category-desserts.jpg'],
+      ['waffle', '/images/obunuzi-category-desserts.jpg'],
+      ['crepe', '/images/obunuzi-category-desserts.jpg'],
+      ['matooke', '/images/obunuzi-meal-matooke-beef.jpg'],
+      ['luwombo', '/images/obunuzi-meal-luwombo.jpg'],
+      ['katogo', '/images/obunuzi-meal-katogo.jpg'],
+      ['posho', '/images/obunuzi-meal-posho-beans.jpg'],
+      ['rice', '/images/obunuzi-meal-posho-beans.jpg']
+    ];
+    const matchedRule = nameImageRules.find(([keyword]) => itemName.includes(keyword));
+    if (matchedRule) return matchedRule[1];
+
     const rawCategory = normalizeMenuLabel(item.category);
     const categoryName = obunuziCategoryAliases[rawCategory] || rawCategory;
     const category = window.OBUNUZI_MENU_CATEGORIES.find(
