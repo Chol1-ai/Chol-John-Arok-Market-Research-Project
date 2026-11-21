@@ -1136,6 +1136,20 @@
       will-change: transform, opacity;
     }
 
+    .customer-hero-burger-video {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      display: block;
+      width: 100%;
+      height: clamp(230px, 30vw, 360px);
+      border-radius: 24px;
+      object-fit: cover;
+      object-position: center;
+      transform: translateX(-50%);
+      filter: drop-shadow(0 10px 18px rgba(0, 0, 0, .22));
+    }
+
     @keyframes empty-hero-in {
       from {
         opacity: 0;
@@ -1435,6 +1449,10 @@
       .customer-hero-burger-build {
         left: 82%;
         width: clamp(130px, 32vw, 205px);
+      }
+
+      .customer-hero-burger-video {
+        height: clamp(180px, 44vw, 230px);
       }
 
       .home-category-grid {
@@ -1898,7 +1916,10 @@
         <img class="customer-hero-man-art" src="../images/hero-man-cutout.png" alt="" />
       </div>
       <div class="customer-hero-burger-build">
-        <img class="customer-hero-burger-art" src="../images/hero-burger.png" alt="" />
+        <video class="customer-hero-burger-video" autoplay muted loop playsinline preload="auto"
+          aria-label="Foodizo hero video">
+          <source src="../images/foodizo-hero-video.mp4" type="video/mp4" />
+        </video>
       </div>
     </div>
     <figure class="obunuzi-hero-visual" data-outlet-copy="OBUNUZI_YMCA" hidden>
