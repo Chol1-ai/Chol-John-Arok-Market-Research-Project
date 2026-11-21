@@ -333,7 +333,7 @@ html[data-app-outlet="OBUNUZI_YMCA"] .browse-section .section-heading {
 }
 
 html[data-app-outlet="OBUNUZI_YMCA"] .home-category-grid {
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 14px;
 }
 
@@ -342,10 +342,10 @@ html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card.home-category-reveal,
 html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card.home-category-reveal.is-visible {
   position: relative;
   display: grid;
-  grid-template-columns: 76px minmax(0, 1fr) 18px;
+  grid-template-columns: 76px minmax(0, 1fr);
   align-items: center;
   gap: 18px;
-  min-height: 96px;
+  min-height: 124px;
   padding: 10px;
   overflow: hidden;
   aspect-ratio: auto;
@@ -397,15 +397,27 @@ html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card h3 {
   text-shadow: none;
 }
 
-html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card p,
-html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card .card-link {
-  display: none;
+html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card p {
+  display: -webkit-box;
+  margin: 5px 0 0;
+  color: #806a68;
+  font-size: 10px;
+  line-height: 1.45;
+  -webkit-line-clamp: 2;
 }
 
-html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card::after {
-  content: "→";
-  color: var(--red);
-  font-size: 20px;
+html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card .card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+  color: #d93829;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card .card-link .material-symbols-outlined {
+  font-size: 14px;
 }
 
 html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card:hover,
@@ -1368,10 +1380,6 @@ html[data-app-outlet="OBUNUZI_YMCA"] .customer-footer {
     font-size: 16px;
   }
 
-  html[data-app-outlet="OBUNUZI_YMCA"] .browse-section {
-    display: none;
-  }
-
   html[data-app-outlet="OBUNUZI_YMCA"] .obunuzi-right-rail {
     position: absolute;
     z-index: 4;
@@ -1798,13 +1806,13 @@ html[data-app-outlet="OBUNUZI_YMCA"] .tracking-token {
   html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card,
   html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card.home-category-reveal,
   html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card.home-category-reveal.is-visible {
-    display: flex;
-    flex: 0 0 78px;
-    min-height: 100px;
-    flex-direction: column;
-    justify-content: flex-start;
-    gap: 7px;
-    padding: 8px 6px;
+    display: grid;
+    flex: 0 0 min(78vw, 220px);
+    grid-template-columns: 48px minmax(0, 1fr);
+    min-height: 124px;
+    align-items: center;
+    gap: 10px;
+    padding: 9px;
     border-radius: 16px;
     scroll-snap-align: start;
   }
@@ -1824,12 +1832,22 @@ html[data-app-outlet="OBUNUZI_YMCA"] .tracking-token {
     display: -webkit-box;
     overflow: hidden;
     font-family: var(--font-family-base);
-    font-size: 9px;
+    font-size: 11px;
     font-weight: 700;
-    line-height: 1.15;
-    text-align: center;
+    line-height: 1.25;
+    text-align: left;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
+  }
+
+  html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card p {
+    margin-top: 4px;
+    font-size: 9px;
+  }
+
+  html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card .card-link {
+    margin-top: 4px;
+    font-size: 9px;
   }
 
   html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card::after {
@@ -3618,10 +3636,6 @@ html[data-app-outlet="OBUNUZI_YMCA"] body#top .home-category-card:focus-visible 
   box-shadow: 0 12px 30px rgb(92 22 32 / 10%);
 }
 
-html[data-app-outlet="OBUNUZI_YMCA"] body#top .browse-section {
-  display: none;
-}
-
 html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-footer {
   display: block !important;
   margin-top: 32px;
@@ -3643,6 +3657,10 @@ html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-footer h2 {
 }
 
 @media (max-width: 700px) {
+  html[data-app-outlet="OBUNUZI_YMCA"] body#top .browse-section .section-heading .section-description {
+    display: block;
+  }
+
   html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-footer-main {
     grid-template-columns: 1fr 1fr;
     gap: 24px 18px;

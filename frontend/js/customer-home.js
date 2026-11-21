@@ -259,6 +259,8 @@
               </div>
               <div class="card-content">
                 <h3>${escapeHtml(category)}</h3>
+                <p>${escapeHtml(categoryDetails ? categoryDetails.description : `Browse ${category} meals.`)}</p>
+                <span class="card-link">View meals <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></span>
               </div>
             </a>
           `;
