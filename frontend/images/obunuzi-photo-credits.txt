@@ -3,7 +3,7 @@ Obunuzi menu photo credits
 The following locally stored photos are used for Obunuzi category and meal images. Images are displayed as downloaded thumbnails and may be cropped by the interface.
 
 The landing-page hero video is a user-provided asset authorized for Obunuzi use:
-- obunuzi-hero-video.mp4
+- Obunuzi.mp4
 
 These two images were generated with ImgCreatorAI for Obunuzi on 2026-11-21. Its Terms of Service state that users retain ownership of generated images: https://imgcreatorai.io/terms-of-service.html
 
