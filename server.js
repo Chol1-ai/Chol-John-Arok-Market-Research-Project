@@ -43,7 +43,7 @@ const OUTLET_BRANDS = {
     logoPath: '/images/obunuzi_logo.png?v=1'
   }
 };
-const APP_OUTLET = process.env.APP_OUTLET || 'FOODIZO_HAM_TOWERS';
+const APP_OUTLET = process.env.APP_OUTLET || 'OBUNUZI_YMCA';
 const APP_BRAND = OUTLET_BRANDS[APP_OUTLET];
 
 if (!APP_BRAND) {
