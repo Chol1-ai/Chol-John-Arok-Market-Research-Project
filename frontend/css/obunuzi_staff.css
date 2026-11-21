@@ -675,6 +675,19 @@ html[data-app-outlet="OBUNUZI_YMCA"] .kds-item-qty {
   color: #5c1620;
 }
 
+html[data-app-outlet="OBUNUZI_YMCA"] .kds-item.has-image {
+  grid-template-columns: 30px minmax(0, 1fr) 48px;
+  align-items: center;
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] .kds-item-image {
+  width: 48px;
+  height: 48px;
+  border-radius: 9px;
+  background: #fbefec;
+  object-fit: cover;
+}
+
 html[data-app-outlet="OBUNUZI_YMCA"] .kds-item-meta,
 html[data-app-outlet="OBUNUZI_YMCA"] .kds-ticket-footer {
   color: #806a68 !important;

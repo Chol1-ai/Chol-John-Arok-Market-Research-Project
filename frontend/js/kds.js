@@ -346,15 +346,22 @@
 
   function renderTicket(ticket, mode) {
     const overdue = isOverdue(ticket);
-    const items = (ticket.items || []).map((item) => `
-      <div class="kds-item">
-        <span class="kds-item-qty">${F.escapeHtml(item.quantity)}</span>
-        <div>
-          <div class="kds-item-name">${F.escapeHtml(item.name)}</div>
-          <div class="kds-item-meta">${F.escapeHtml(stationLabel(item.station))}</div>
-          ${item.notes ? `<div class="kds-item-request"><strong>Customer request</strong><span>${F.escapeHtml(item.notes)}</span></div>` : ''}
-        </div>
-      </div>`).join('');
+    const items = (ticket.items || []).map((item) => {
+      const image = F.APP_OUTLET === 'OBUNUZI_YMCA' &&
+        typeof window.OBUNUZI_STAFF_MENU_IMAGE_FOR_ITEM === 'function'
+        ? window.OBUNUZI_STAFF_MENU_IMAGE_FOR_ITEM(item.name)
+        : null;
+      return `
+        <div class="kds-item${image ? ' has-image' : ''}">
+          <span class="kds-item-qty">${F.escapeHtml(item.quantity)}</span>
+          <div>
+            <div class="kds-item-name">${F.escapeHtml(item.name)}</div>
+            <div class="kds-item-meta">${F.escapeHtml(stationLabel(item.station))}</div>
+            ${item.notes ? `<div class="kds-item-request"><strong>Customer request</strong><span>${F.escapeHtml(item.notes)}</span></div>` : ''}
+          </div>
+          ${image ? `<img class="kds-item-image" src="${F.escapeHtml(image)}" alt="" loading="lazy" />` : ''}
+        </div>`;
+    }).join('');
     const statusIcon = ticket.status === 'PENDING' ? 'notifications_active' :
       ticket.status === 'PREPARING' ? 'soup_kitchen' : 'check_circle';
     const destinationIcon = ticket.channel === 'DINE_IN' ? 'chair' :

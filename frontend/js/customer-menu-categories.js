@@ -174,6 +174,27 @@
     .replace(/[^a-z0-9]+/g, ' ')
     .trim();
 
+  const obunuziStaffImageRules = [
+    ['double egg rolex', '/images/obunuzi-stitch-double-egg-rolex.jpg'],
+    ['matooke beef stew', '/images/obunuzi-stitch-matooke-beef-stew.jpg'],
+    ['chicken luwombo', '/images/obunuzi-stitch-chicken-luwombo.jpg'],
+    ['luwombo chicken', '/images/obunuzi-stitch-chicken-luwombo.jpg'],
+    ['katogo special', '/images/obunuzi-stitch-katogo-special.jpg'],
+    ['fresh passion juice', '/images/obunuzi-stitch-fresh-passion-juice.jpg'],
+    ['fresh passion fruit juice', '/images/obunuzi-stitch-fresh-passion-juice.jpg'],
+    ['kikomando supreme', '/images/obunuzi-stitch-kikomando-supreme.jpg'],
+    ['kikkomando supreme', '/images/obunuzi-stitch-kikomando-supreme.jpg'],
+    ['pork muchomo', '/images/obunuzi-stitch-pork-muchomo-chips.jpg'],
+    ['muchomo pork', '/images/obunuzi-stitch-pork-muchomo-chips.jpg']
+  ];
+
+  window.OBUNUZI_STAFF_MENU_IMAGE_FOR_ITEM = (item) => {
+    if (!item || (typeof item === 'object' && item.hideOriginalImage)) return null;
+    const itemName = normalizeMenuLabel(typeof item === 'string' ? item : item.name);
+    const matchedRule = obunuziStaffImageRules.find(([keyword]) => itemName.includes(keyword));
+    return matchedRule ? matchedRule[1] : null;
+  };
+
   const obunuziCategoryAliases = {
     mains: 'african local cuisine',
     main: 'african local cuisine',

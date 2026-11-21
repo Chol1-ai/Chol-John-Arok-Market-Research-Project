@@ -2,6 +2,16 @@ Obunuzi menu photo credits
 
 The following locally stored photos are used for Obunuzi category, meal, and hero images. Images are displayed as downloaded thumbnails and may be cropped by the interface.
 
+The following locally stored photos are the exact menu-card images shown in the Obunuzi Waiter POS screens in the Stitch project: https://stitch.google.com/projects/12073478657696213391
+
+- obunuzi-stitch-double-egg-rolex.jpg
+- obunuzi-stitch-matooke-beef-stew.jpg
+- obunuzi-stitch-chicken-luwombo.jpg
+- obunuzi-stitch-katogo-special.jpg
+- obunuzi-stitch-fresh-passion-juice.jpg
+- obunuzi-stitch-kikomando-supreme.jpg
+- obunuzi-stitch-pork-muchomo-chips.jpg
+
 - obunuzi-category-american.jpg: "Fried-Chicken-Set" by Evan-Amos, CC0 1.0. https://commons.wikimedia.org/wiki/File:Fried-Chicken-Set.jpg
 - obunuzi-category-asian.jpg: "Fried flat rice noodles (Kueh Teow Goreng)" by Dr.Francostein1975, CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:Fried_flat_rice_noodles_(_Kueh_Teow_Goreng).jpg
 - obunuzi-category-bakery.jpg: "MANDAZI UGANDAN BREAKFAST SNACK" by Rebeccananonof, CC0 1.0. https://commons.wikimedia.org/wiki/File:MANDAZI_UGANDAN_BREAKFAST_SNACK.jpg

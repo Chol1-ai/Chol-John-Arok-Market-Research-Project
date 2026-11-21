@@ -244,6 +244,10 @@
   function menuItemImage(item) {
     if (item.imageUrl) return item.imageUrl;
     if (F.APP_OUTLET !== 'OBUNUZI_YMCA') return null;
+    if (typeof window.OBUNUZI_STAFF_MENU_IMAGE_FOR_ITEM === 'function') {
+      const staffImage = window.OBUNUZI_STAFF_MENU_IMAGE_FOR_ITEM(item);
+      if (staffImage) return staffImage;
+    }
     if (typeof window.OBUNUZI_MENU_IMAGE_FOR_ITEM === 'function') {
       return window.OBUNUZI_MENU_IMAGE_FOR_ITEM(item);
     }
