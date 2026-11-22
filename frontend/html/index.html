@@ -1840,10 +1840,18 @@
       flex-direction: column;
       text-align: center;
     }
+
+    html[data-app-outlet="OBUNUZI_YMCA"] .customer-section .section-heading,
+    html[data-app-outlet="OBUNUZI_YMCA"] .browse-section .section-heading {
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+    }
   </style>
   <link rel="stylesheet" href="/css/brand_theme.css?v=5" />
   <link rel="stylesheet" href="/css/foodizo-buddy.css?v=1" />
-  <link rel="stylesheet" href="/css/obunuzi_landing.css?v=32" />
+  <link rel="stylesheet" href="/css/obunuzi_landing.css?v=33" />
 </head>
 
 <body id="top">
@@ -1856,7 +1864,7 @@
         <span class="brand-copy">
           <span class="brand-name" data-app-brand>Foodizo</span>
           <span class="brand-detail" data-outlet-copy="FOODIZO_HAM_TOWERS">Ham Towers · Open</span>
-          <span class="brand-detail" data-outlet-copy="OBUNUZI_YMCA" hidden>Ham Towers · Wandegeya · Open</span>
+          <span class="brand-detail" data-outlet-copy="OBUNUZI_YMCA" hidden>Opposite YMCA · Wandegeya</span>
         </span>
       </a>
       <nav class="nav customer-nav" aria-label="Main navigation">
@@ -1892,7 +1900,7 @@
     <div class="customer-hero-copy">
       <div class="customer-topline">
         <span data-outlet-copy="FOODIZO_HAM_TOWERS">FRESH FROM THE KITCHEN</span>
-        <span data-outlet-copy="OBUNUZI_YMCA" hidden>UGANDAN FAVOURITES, MADE FRESH</span>
+        <span data-outlet-copy="OBUNUZI_YMCA" hidden></span>
       </div>
       <h1 id="home-hero-title">
         <span data-outlet-copy="FOODIZO_HAM_TOWERS">Good food, <span>your way.</span></span>
@@ -1905,7 +1913,7 @@
       <div class="obunuzi-home-controls" data-outlet-copy="OBUNUZI_YMCA" hidden>
         <div class="obunuzi-service-info">
           <span class="material-symbols-outlined" aria-hidden="true">location_on</span>
-          <span><strong>Ham Towers, Wandegeya</strong><small>Open now · Kampala</small></span>
+          <span><strong>Opposite YMCA, Wandegeya</strong><small>Kampala</small></span>
         </div>
         <div class="obunuzi-order-mode" role="group" aria-label="Choose pickup or delivery">
           <a class="is-active" href="/order?fulfillment=TAKEAWAY_PICKUP&amp;outlet=OBUNUZI_YMCA">

@@ -3864,3 +3864,72 @@ html[data-app-outlet="OBUNUZI_YMCA"] body#top .foodizo-buddy-toggle {
     font-size: 9px;
   }
 }
+
+/* Obunuzi customer navigation and section alignment */
+html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-topline > span:empty {
+  display: none;
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-topline:has(> span:empty) {
+  display: none;
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-section .section-heading,
+html[data-app-outlet="OBUNUZI_YMCA"] body#top .browse-section .section-heading,
+html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-section .section-heading > div {
+  align-items: center !important;
+  justify-content: center !important;
+  flex-direction: column;
+  text-align: center;
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-nav-favorites,
+html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-notification-toggle,
+html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-nav-cart,
+html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-nav > .button-primary {
+  min-height: 42px;
+  border-radius: 999px;
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-nav-favorites,
+html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-notification-toggle,
+html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-nav-cart {
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] body:not(#top) .customer-topbar-actions {
+  gap: 8px;
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] body:not(#top) .customer-cart-nav,
+html[data-app-outlet="OBUNUZI_YMCA"] body:not(#top) .customer-back-link {
+  min-height: 42px;
+  justify-content: center;
+  border-radius: 999px;
+  padding-inline: 13px;
+  font-size: 12px;
+  font-weight: 800;
+  box-shadow: 0 8px 20px rgb(92 22 32 / 5%);
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] body:not(#top) .customer-back-link {
+  gap: 7px;
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] body:not(#top) .customer-cart-nav-count {
+  background: #d93829;
+}
+
+@media (max-width: 540px) {
+  html[data-app-outlet="OBUNUZI_YMCA"] body:not(#top) .customer-topbar-actions {
+    gap: 6px;
+  }
+
+  html[data-app-outlet="OBUNUZI_YMCA"] body:not(#top) .customer-cart-nav,
+  html[data-app-outlet="OBUNUZI_YMCA"] body:not(#top) .customer-back-link {
+    min-height: 38px;
+    padding-inline: 10px;
+  }
+}
