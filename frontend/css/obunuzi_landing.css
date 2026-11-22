@@ -3866,14 +3866,6 @@ html[data-app-outlet="OBUNUZI_YMCA"] body#top .foodizo-buddy-toggle {
 }
 
 /* Obunuzi customer navigation and section alignment */
-html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-topline > span:empty {
-  display: none;
-}
-
-html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-topline:has(> span:empty) {
-  display: none;
-}
-
 html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-section .section-heading,
 html[data-app-outlet="OBUNUZI_YMCA"] body#top .browse-section .section-heading,
 html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-section .section-heading > div {
