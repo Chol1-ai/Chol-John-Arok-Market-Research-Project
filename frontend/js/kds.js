@@ -55,7 +55,11 @@
     autoRefreshSetting: document.getElementById('kds-auto-refresh'),
     compactSetting: document.getElementById('kds-compact-mode'),
     settingsFeedback: document.getElementById('kds-settings-feedback'),
-    lastUpdated: document.getElementById('kds-last-updated')
+    lastUpdated: document.getElementById('kds-last-updated'),
+    priorityAlert: document.getElementById('kds-priority-alert'),
+    priorityTitle: document.getElementById('kds-priority-title'),
+    priorityDetail: document.getElementById('kds-priority-detail'),
+    priorityFocus: document.getElementById('kds-priority-focus')
   };
 
   function stationLabel(station) {
@@ -160,6 +164,7 @@
     STATE.connectionStatus = status;
     const label = status === 'online' ? 'Kitchen online' : status === 'offline' ? 'Reconnecting' : 'Connecting';
     document.getElementById('kds-connection-label').textContent = label;
+    document.getElementById('kds-footer-connection-label').textContent = label;
     const state = status === 'online' ? 'online' : status === 'offline' ? 'offline' : 'connecting';
     document.querySelectorAll('.kds-connection-dot').forEach((dot) => {
       dot.dataset.state = state;
@@ -182,10 +187,12 @@
     document.getElementById('kds-count-preparing').textContent = String(counts.preparing ?? 0);
     document.getElementById('kds-count-ready').textContent = String(counts.ready ?? 0);
     document.getElementById('kds-count-overdue').textContent = String(counts.overdue ?? 0);
-    document.getElementById('kds-nav-active-count').textContent = String(
-      (counts.newOrders || 0) + (counts.preparing || 0) + (counts.ready || 0)
-    );
+    const activeCount = (counts.newOrders || 0) + (counts.preparing || 0) + (counts.ready || 0);
+    document.getElementById('kds-nav-active-count').textContent = String(activeCount);
+    document.getElementById('kds-header-active-count').textContent = F.formatNumber(activeCount);
+    document.getElementById('kds-header-overdue-count').textContent = F.formatNumber(counts.overdue || 0);
     document.getElementById('kds-orders-today').textContent = F.formatNumber(counts.ordersToday || 0);
+    document.getElementById('kds-header-orders-today').textContent = F.formatNumber(counts.ordersToday || 0);
     document.getElementById('kds-average-prep').textContent =
       counts.averagePrepMinutes === null || counts.averagePrepMinutes === undefined
         ? '—'
@@ -328,6 +335,44 @@
       (ticket.isOverdue || currentElapsed(ticket) >= 10);
   }
 
+  function renderPriorityAlert() {
+    const overdueTickets = STATE.activeTickets
+      .filter((ticket) =>
+        ['PENDING', 'PREPARING'].includes(ticket.status) &&
+        (STATE.channel === 'ALL' || ticket.channel === STATE.channel) &&
+        isOverdue(ticket)
+      )
+      .sort((a, b) => currentElapsed(b) - currentElapsed(a));
+
+    if (!overdueTickets.length) {
+      els.priorityAlert.hidden = true;
+      els.priorityFocus.removeAttribute('data-ticket-id');
+      return;
+    }
+
+    const oldest = overdueTickets[0];
+    const ticketNumber = oldest.tokenNumber || oldest.orderNumber || '—';
+    const attentionLabel = overdueTickets.length === 1
+      ? '1 kitchen ticket needs attention'
+      : `${overdueTickets.length} kitchen tickets need attention`;
+
+    els.priorityTitle.textContent = attentionLabel;
+    els.priorityDetail.textContent =
+      `Oldest: #${ticketNumber} · ${Math.floor(currentElapsed(oldest))} min in queue · ${statusLabel(oldest.status)}`;
+    els.priorityFocus.dataset.ticketId = String(oldest.id);
+    els.priorityAlert.hidden = false;
+  }
+
+  function focusPriorityTicket(ticketId) {
+    const ticketCard = Array.from(document.querySelectorAll('.kds-ticket[data-ticket-id]'))
+      .find((card) => card.dataset.ticketId === ticketId);
+    if (!ticketCard) return;
+
+    ticketCard.classList.add('is-priority-focused');
+    ticketCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    window.setTimeout(() => ticketCard.classList.remove('is-priority-focused'), 2200);
+  }
+
   function ticketAction(ticket, mode) {
     if (mode !== 'active') return '';
     const busy = STATE.busy.has(ticket.id);
@@ -372,7 +417,7 @@
       : `${currentElapsed(ticket)} min`;
     const itemMarkup = items || '<p class="kds-item-meta">No items on this ticket.</p>';
 
-    return `<article class="kds-ticket${overdue ? ' is-overdue' : ''}" data-status="${F.escapeHtml(ticket.status)}">
+    return `<article class="kds-ticket${overdue ? ' is-overdue' : ''}" data-ticket-id="${F.escapeHtml(ticket.id)}" data-status="${F.escapeHtml(ticket.status)}">
       <header class="kds-ticket-head">
         <div>
           <div class="kds-ticket-id">#${F.escapeHtml(ticket.tokenNumber || ticket.orderNumber || '—')}</div>
@@ -416,6 +461,7 @@
 
   function renderCurrentView() {
     if (STATE.view === 'home') {
+      renderPriorityAlert();
       renderBoard(els.homeBoard, STATE.activeTickets.filter((ticket) => ['PENDING', 'PREPARING'].includes(ticket.status)), 'active', 'ALL', '');
     } else if (STATE.view === 'status') {
       const tickets = [...STATE.activeTickets, ...STATE.readyTickets];
@@ -621,8 +667,28 @@
     els.statusSearch.addEventListener('input', renderCurrentView);
     els.completedSearch.addEventListener('input', renderCurrentView);
     document.getElementById('kds-refresh-button').addEventListener('click', () => refreshDashboard({ quiet: false }));
+    document.getElementById('kds-alert-button').addEventListener('click', () => {
+      STATE.statusFilter = 'OVERDUE';
+      setView('status');
+    });
+    document.getElementById('kds-fullscreen-button').addEventListener('click', async () => {
+      try {
+        if (document.fullscreenElement) {
+          await document.exitFullscreen();
+        } else {
+          await document.documentElement.requestFullscreen();
+        }
+      } catch (error) {
+        F.toast(error.message || 'Fullscreen is unavailable in this browser window.', 'error');
+      }
+    });
 
     document.addEventListener('click', (event) => {
+      const priorityFocus = event.target.closest('#kds-priority-focus[data-ticket-id]');
+      if (priorityFocus) {
+        focusPriorityTicket(priorityFocus.dataset.ticketId);
+        return;
+      }
       const retry = event.target.closest('[data-kds-retry]');
       if (retry) {
         refreshDashboard({ quiet: false });
