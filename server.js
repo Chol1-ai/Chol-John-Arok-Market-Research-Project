@@ -103,7 +103,8 @@ const STAFF_SURFACE_ROLES = {
   '/live/dispatch.html': ['WAITER_FOH', 'MANAGER_ADMIN'],
   '/admin': ['MANAGER_ADMIN'],
   '/digest': ['MANAGER_ADMIN'],
-  '/live/admin.html': ['MANAGER_ADMIN']
+  '/live/admin.html': ['MANAGER_ADMIN'],
+  '/live/digest.html': ['MANAGER_ADMIN']
 };
 
 const SESSION_COOKIE = 'foodizo_session';

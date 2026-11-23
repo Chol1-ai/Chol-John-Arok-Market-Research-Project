@@ -1094,6 +1094,10 @@ describeIntegration('Foodizo & Obunuzi API integration', () => {
     expect(overviewBody.summary.outlets).toHaveLength(1);
     expect(overviewBody.summary.outlets[0].outlet).toBe('OBUNUZI_YMCA');
     expect(overviewBody.staff).toHaveLength(4);
+    const waiterOverview = await inject('GET', '/api/v1/digest/overview', { token: tokens.sarah });
+    expect(waiterOverview.statusCode).toBe(403);
+    const kitchenOverview = await inject('GET', '/api/v1/digest/overview', { token: tokens.juma });
+    expect(kitchenOverview.statusCode).toBe(403);
     const tableTotal = (overviewBody.tables as Json[]).reduce(
       (sum, row) => sum + Number(row.count),
       0
