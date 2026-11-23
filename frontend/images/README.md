@@ -4,11 +4,9 @@ These locally served photographs provide matching defaults for the customer menu
 
 | Asset | Depicts | Creator | License and source |
 | --- | --- | --- | --- |
-| `foodizo-chicken-chips.jpg` | Chicken and chips | E4024 | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/), [Wikimedia Commons file page](https://commons.wikimedia.org/wiki/File:Chicken_and_chips.jpg) |
 | `foodizo-bottled-water.jpg` | Aqua bottled mineral water | Midori | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/), [Wikimedia Commons file page](https://commons.wikimedia.org/wiki/File:A_bottle_of_Aqua_mineral_water.JPG) |
 | `foodizo-plain-chips.jpg` | French fries | Horacio Cambeiro (Tubby3) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), [Wikimedia Commons file page](https://commons.wikimedia.org/wiki/File:Papas_fritas_(plato).jpg) |
 | `foodizo-matooke.jpg` | Steamed matooke | Erinamukuta | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/), [Wikimedia Commons file page](https://commons.wikimedia.org/wiki/File:Steamed_matooke.jpg) |
-| `foodizo-rice-beans.jpg` | Ugandan rice and beans | Rebeccananonof | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/), [Wikimedia Commons file page](https://commons.wikimedia.org/wiki/File:Beans_and_rice_Ugandan_food.jpg) |
 | `category-asian-photo.jpg` | Stir-fried noodles with vegetables and prawns | Andy Li | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/), [Wikimedia Commons file page](https://commons.wikimedia.org/wiki/File:Prawn_Stir_Fry_Egg_Noodles_with_Dark_Soy_sauce_-_Tookta%27s_Thai_Food.jpg) |
 | `category-bakery-photo.jpg` | Bread and pastries at GAIL's Bakery | Andy Li | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/), [Wikimedia Commons file page](https://commons.wikimedia.org/wiki/File:Items_in_GAIL%27s_Bakery,_Seven_Dials,_Brighton_2_2024-03-15.jpg) |
 | `category-breakfast-photo.jpg` | Big breakfast with eggs, toast, and iced tea | Bahnfrend | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/), [Wikimedia Commons file page](https://commons.wikimedia.org/wiki/File:All_Day_Big_Breakfast,_Coffee_Quarter,_Perth_Airport,_2026_(01).jpg) |
