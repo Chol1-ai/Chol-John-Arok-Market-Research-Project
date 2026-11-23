@@ -20,6 +20,23 @@ The following locally stored photos are the exact menu-card images shown in the 
 - obunuzi-stitch-kikomando-supreme.jpg
 - obunuzi-stitch-pork-muchomo-chips.jpg
 
+The following locally stored images were generated with Magnific AI for Obunuzi:
+- obunuzi-ai-category-african-local.jpg
+- obunuzi-ai-category-american.jpg
+- obunuzi-ai-category-asian.jpg
+- obunuzi-ai-category-bakery.jpg
+- obunuzi-ai-category-breakfast.jpg
+- obunuzi-ai-category-burgers.jpg
+- obunuzi-ai-category-coffee.jpg
+- obunuzi-ai-category-drinks.jpg
+- obunuzi-ai-category-juices.jpg
+- obunuzi-ai-category-street-food.jpg
+- obunuzi-ai-item-beef-samosa.jpg
+- obunuzi-ai-item-beef-shawarma-wrap.jpg
+- obunuzi-ai-item-belgian-waffle.jpg
+- obunuzi-ai-item-matooke-beef.jpg
+- obunuzi-ai-item-vegetable-noodles.jpg
+
 - obunuzi-category-american.jpg: "Fried-Chicken-Set" by Evan-Amos, CC0 1.0. https://commons.wikimedia.org/wiki/File:Fried-Chicken-Set.jpg
 - obunuzi-category-asian.jpg: "Fried flat rice noodles (Kueh Teow Goreng)" by Dr.Francostein1975, CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:Fried_flat_rice_noodles_(_Kueh_Teow_Goreng).jpg
 - obunuzi-category-bakery.jpg: "MANDAZI UGANDAN BREAKFAST SNACK" by Rebeccananonof, CC0 1.0. https://commons.wikimedia.org/wiki/File:MANDAZI_UGANDAN_BREAKFAST_SNACK.jpg
