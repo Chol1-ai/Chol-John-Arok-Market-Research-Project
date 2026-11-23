@@ -40,6 +40,8 @@
     currentDate: document.getElementById('pos-current-date'),
     notificationCount: document.getElementById('pos-notification-count'),
     notificationList: document.getElementById('pos-notification-list'),
+    topbarOrders: document.getElementById('pos-topbar-orders'),
+    topbarPickups: document.getElementById('pos-topbar-pickups'),
     kpiOrders: document.getElementById('pos-kpi-orders'),
     kpiValue: document.getElementById('pos-kpi-value'),
     kpiTables: document.getElementById('pos-kpi-tables'),
@@ -47,6 +49,7 @@
     kpiPickups: document.getElementById('pos-kpi-pickups'),
     menuSearch: document.getElementById('pos-menu-search'),
     menuViewButtons: document.querySelectorAll('[data-pos-menu-view]'),
+    currentOrderTitle: document.getElementById('pos-current-order-title'),
     currentTable: document.getElementById('pos-current-table'),
     currentOrderSub: document.getElementById('pos-current-order-sub'),
     orderEmpty: document.getElementById('pos-order-empty'),
@@ -134,17 +137,23 @@
     return String(a.label).localeCompare(String(b.label), undefined, { numeric: true });
   }
 
+  function elapsedMinutes(order) {
+    const createdAt = Date.parse(order && order.createdAt);
+    if (!Number.isFinite(createdAt)) return '';
+    return `${Math.max(0, Math.floor((Date.now() - createdAt) / 60000))}m`;
+  }
+
   function renderFloor() {
     if (!STATE.tables.length) {
       els.floor.classList.add('is-empty');
-      els.floor.innerHTML = '<div class="ls-empty">No tables returned for this outlet.</div>';
-      els.floorSub.textContent = 'No table records found';
+      els.floor.innerHTML = '<div class="ls-empty">No tables are configured for this outlet yet.</div>';
+      els.floorSub.textContent = 'Configure tables to start seating orders';
       return;
     }
 
     els.floor.classList.remove('is-empty');
-    const occupied = STATE.tables.filter((table) => table.status !== 'VACANT').length;
-    els.floorSub.textContent = `${STATE.tables.length} tables · ${occupied} currently seated`;
+    const inService = STATE.tables.filter((table) => ['OCCUPIED', 'BILL_REQUESTED'].includes(table.status)).length;
+    els.floorSub.textContent = `${STATE.tables.length} tables · ${inService} in service`;
 
     els.floor.innerHTML = STATE.tables
       .slice()
@@ -152,18 +161,24 @@
       .map((table) => {
         const order = table.activeOrders && table.activeOrders[0];
         const waiter = table.currentWaiter || (order ? 'Assigned floor staff' : 'No waiter assigned');
-        const meta = order
-          ? `${F.escapeHtml(waiter)} · ${order.status.toLowerCase()} · ${F.formatUGX(order.totalUgx)}`
-          : `${F.escapeHtml(waiter)} · ${table.capacity} seats`;
+        const status = F.statusLabel(table.status);
+        const capacity = Number(table.capacity) || 0;
+        const meta = `${capacity} seats · ${F.escapeHtml(waiter)}`;
+        const age = elapsedMinutes(order);
+        const footer = order
+          ? F.formatUGX(order.totalUgx)
+          : table.status === 'VACANT'
+            ? 'Open table'
+            : status;
         return `
           <button class="pos-table${table.id === STATE.selectedTableId ? ' is-selected' : ''}" type="button"
             data-table-id="${F.escapeHtml(table.id)}" data-status="${F.escapeHtml(table.status)}">
             <span class="pos-table-label">
               <span>${F.escapeHtml(table.label)}</span>
-              <span class="pos-table-dot"></span>
+              <span class="pos-table-status" data-status="${F.escapeHtml(table.status)}">${F.escapeHtml(age || status)}</span>
             </span>
             <span class="pos-table-meta">${meta}</span>
-            <span class="pos-table-total">${order ? F.escapeHtml(order.tokenNumber || '') : 'Choose for dine-in'}</span>
+            <span class="pos-table-total">${F.escapeHtml(footer)}</span>
           </button>`;
       })
       .join('');
@@ -291,6 +306,9 @@
               : '<span class="pos-menu-image-placeholder"><span class="material-symbols-outlined" aria-hidden="true">restaurant</span></span>'
           }
           <span class="pos-menu-name">${F.escapeHtml(item.name)}</span>
+          ${F.APP_OUTLET === 'OBUNUZI_YMCA' && item.description
+            ? `<span class="pos-menu-description">${F.escapeHtml(item.description)}</span>`
+            : ''}
           <span class="pos-menu-station">${F.escapeHtml(stationLabel(item.station))} · ${F.escapeHtml(item.category)}</span>
           <span class="pos-menu-price">${F.formatUGX(item.priceUgx)}</span>
           ${item.isAvailable ? '<span class="waiter-menu-add material-symbols-outlined" aria-hidden="true">add</span>' : ''}
@@ -300,6 +318,18 @@
         </button>`;
       })
       .join('');
+    els.menu.querySelectorAll('.pos-menu-image').forEach((image) => {
+      image.addEventListener('error', () => {
+        const placeholder = document.createElement('span');
+        placeholder.className = 'pos-menu-image-placeholder';
+        const icon = document.createElement('span');
+        icon.className = 'material-symbols-outlined';
+        icon.setAttribute('aria-hidden', 'true');
+        icon.textContent = 'restaurant';
+        placeholder.append(icon);
+        image.replaceWith(placeholder);
+      }, { once: true });
+    });
   }
 
   function orderLineMarkup(line, options) {
@@ -431,13 +461,16 @@
     els.kpiTables.textContent = String(activeTables);
     els.kpiTablesNote.textContent = `${activeTables} of ${STATE.tables.length} tables in service`;
     els.kpiPickups.textContent = String(STATE.pickupOrders.length);
+    els.topbarOrders.textContent = String(orders.length);
+    els.topbarPickups.textContent = String(STATE.pickupOrders.length);
 
-    const tableLabel = selectedTable()
-      ? selectedTable().label
+    const table = selectedTable();
+    els.currentOrderTitle.textContent = table
+      ? table.label
       : STATE.activeOrder
-        ? `Pickup · ${STATE.activeOrder.tokenNumber}`
-        : 'Pickup';
-    els.currentTable.textContent = tableLabel;
+        ? 'Pickup order'
+        : 'Current order';
+    els.currentTable.textContent = table ? F.statusLabel(table.status) : 'Pickup';
     if (STATE.activeOrder) {
       els.currentOrderSub.textContent = `${STATE.activeOrder.tokenNumber} · ${F.statusLabel(STATE.activeOrder.status)}`;
     } else if (STATE.draft.length) {
@@ -1164,7 +1197,7 @@
 
     if (STATE.outlet === 'OBUNUZI_YMCA') {
       document.title = 'Waiter POS | Obunuzi';
-      els.floorTitle.textContent = 'Floor & Station POS';
+      els.floorTitle.textContent = 'Floor Plan';
     }
 
     wireEvents();

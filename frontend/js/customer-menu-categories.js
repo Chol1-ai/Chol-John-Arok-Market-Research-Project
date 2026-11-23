@@ -165,7 +165,11 @@
     'Kikomando (Chapati chopped with Beans)': '/images/obunuzi-stitch-kikomando-supreme.jpg',
     'Kikkomando (Chapati chopped with Beans)': '/images/obunuzi-stitch-kikomando-supreme.jpg',
     'Grilled Muchomo (Beef Skewer)': '/images/obunuzi-meal-muchomo.jpg',
-    'Grilled Muchomo (Pork Skewer)': '/images/obunuzi-meal-muchomo.jpg'
+    'Grilled Muchomo (Pork Skewer)': '/images/obunuzi-meal-muchomo.jpg',
+    'Aromatic Porridge (Bushera/Corn)': '/images/breakfast-porridge.jpg',
+    'Vegetable Stir-fried Noodles': '/images/asian-vegetable-noodles.jpg',
+    'Chicken Fried Rice': '/images/asian-chicken-fried-rice.jpg',
+    'Asian Spring Rolls (3 pcs)': '/images/asian-spring-rolls.jpg'
   };
 
   const normalizeMenuLabel = (value) => String(value || '')
@@ -221,9 +225,9 @@
       ['loaded chips', '/images/obunuzi-category-american.jpg'],
       ['fried chicken', '/images/obunuzi-category-american.jpg'],
       ['hot dog', '/images/obunuzi-category-american.jpg'],
-      ['noodles', '/images/obunuzi-category-asian.jpg'],
-      ['fried rice', '/images/obunuzi-category-asian.jpg'],
-      ['spring rolls', '/images/obunuzi-category-asian.jpg'],
+      ['noodles', '/images/asian-vegetable-noodles.jpg'],
+      ['fried rice', '/images/asian-chicken-fried-rice.jpg'],
+      ['spring rolls', '/images/asian-spring-rolls.jpg'],
       ['scone', '/images/obunuzi-category-bakery.jpg'],
       ['mandazi', '/images/obunuzi-category-bakery.jpg'],
       ['pie', '/images/obunuzi-category-bakery.jpg'],
@@ -231,7 +235,7 @@
       ['omelette', '/images/obunuzi-meal-katogo.jpg'],
       ['pancakes', '/images/obunuzi-meal-katogo.jpg'],
       ['breakfast combo', '/images/obunuzi-meal-katogo.jpg'],
-      ['porridge', '/images/obunuzi-meal-posho-beans.jpg'],
+      ['porridge', '/images/breakfast-porridge.jpg'],
       ['burger', '/images/obunuzi-category-burgers.jpg'],
       ['tea', '/images/obunuzi-category-coffee.jpg'],
       ['cappuccino', '/images/obunuzi-category-coffee.jpg'],

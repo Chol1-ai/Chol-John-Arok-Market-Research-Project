@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="/css/pickup_orders.css" />
   <link rel="stylesheet" href="/css/waiter_dashboard.css?v=5" />
   <link rel="stylesheet" href="/css/brand_theme.css?v=5" />
-  <link rel="stylesheet" href="/css/obunuzi_staff.css?v=25" />
+  <link rel="stylesheet" href="/css/obunuzi_staff.css?v=26" />
 </head>
 <body class="ls-body waiter-dashboard" data-surface="pos">
   <a class="ls-skip" href="#main-content">Skip to main content</a>
@@ -33,7 +33,12 @@
       </span>
     </div>
     <nav class="waiter-nav" aria-label="Waiter workspace">
-      <a class="is-active" href="#pos-menu-section" aria-label="New order"><span class="material-symbols-outlined" aria-hidden="true">add_circle</span><span>New Order</span></a>
+      <a class="is-active" href="#pos-table-overview" aria-label="Waiter POS and tables">
+        <span class="material-symbols-outlined" aria-hidden="true" data-outlet-copy="OBUNUZI_YMCA">table_restaurant</span>
+        <span class="material-symbols-outlined" aria-hidden="true" data-outlet-copy="FOODIZO_HAM_TOWERS">add_circle</span>
+        <span data-outlet-copy="OBUNUZI_YMCA">Waiter POS &amp; Tables</span>
+        <span data-outlet-copy="FOODIZO_HAM_TOWERS">New Order</span>
+      </a>
       <a href="#pos-table-overview" aria-label="Tables"><span class="material-symbols-outlined" aria-hidden="true">table_restaurant</span><span>Tables</span></a>
       <a href="#pos-pickup-orders-card" aria-label="Orders"><span class="material-symbols-outlined" aria-hidden="true">receipt_long</span><span>Orders</span></a>
       <button type="button" id="pos-nav-kitchen" aria-label="Send to kitchen" disabled><span class="material-symbols-outlined" aria-hidden="true">soup_kitchen</span><span>Send to Kitchen</span></button>
@@ -68,6 +73,10 @@
       </label>
       <div class="waiter-outlet-pill"><i></i><span data-session-outlet>Restaurant</span></div>
       <div class="waiter-clock"><span class="material-symbols-outlined" aria-hidden="true">schedule</span><span id="pos-current-date">Today</span></div>
+      <div class="waiter-topbar-metrics" data-outlet-copy="OBUNUZI_YMCA" aria-label="Live service counts">
+        <span class="waiter-topbar-metric is-orders"><strong id="pos-topbar-orders">—</strong><span>Open Orders</span></span>
+        <span class="waiter-topbar-metric is-pickups"><strong id="pos-topbar-pickups">—</strong><span>Pickup Payments</span></span>
+      </div>
       <a class="waiter-notification-button" href="#pos-notifications-panel" aria-label="View order notifications">
         <span class="material-symbols-outlined" aria-hidden="true">notifications</span>
         <span id="pos-notification-count" hidden></span>
@@ -83,7 +92,7 @@
   </header>
 
   <main class="waiter-main" id="main-content">
-    <section class="waiter-kpis" aria-label="Live service summary">
+    <section class="waiter-kpis" data-outlet-copy="FOODIZO_HAM_TOWERS" aria-label="Live service summary">
       <article class="waiter-kpi is-green">
         <span class="waiter-kpi-icon material-symbols-outlined" aria-hidden="true">shopping_cart</span>
         <div><small>Open Orders</small><strong id="pos-kpi-orders">—</strong><span>Active in this outlet</span></div>
@@ -209,40 +218,42 @@
             </div>
           </aside>
         </section>
-
-        <section class="waiter-panel waiter-quick-panel" aria-labelledby="pos-quick-title">
-          <div class="waiter-panel-heading"><h2 id="pos-quick-title">Quick actions</h2></div>
-          <div class="waiter-quick-actions">
-            <a href="#pos-pickup-orders-card"><span class="material-symbols-outlined is-green" aria-hidden="true">receipt_long</span>View orders</a>
-            <button type="button" id="pos-quick-kitchen" disabled><span class="material-symbols-outlined is-amber" aria-hidden="true">soup_kitchen</span>Send to kitchen</button>
-            <button type="button" id="pos-browser-print" disabled><span class="material-symbols-outlined is-blue" aria-hidden="true">print</span>Print bill</button>
-            <a href="/dispatch"><span class="material-symbols-outlined is-teal" aria-hidden="true">delivery_dining</span>Send to delivery</a>
-            <button type="button" id="pos-drawer-btn"><span class="material-symbols-outlined is-purple" aria-hidden="true">point_of_sale</span>Open cash drawer</button>
-          </div>
-        </section>
-
-        <section class="waiter-panel pickup-orders-card waiter-pickup-panel" id="pos-pickup-orders-card">
-          <div class="waiter-panel-heading">
-            <div><h2>Pickup payments</h2><p id="pos-pickup-sub">Cash collection required before kitchen preparation</p></div>
-            <button class="waiter-menu-refresh" type="button" id="pos-pickup-refresh" aria-label="Refresh pickup orders" title="Refresh pickup orders">
-              <span class="material-symbols-outlined" aria-hidden="true">refresh</span>
-            </button>
-          </div>
-          <div class="pickup-orders-list" id="pos-pickup-orders" aria-live="polite">
-            <div class="ls-loading">Loading unpaid pickup orders…</div>
-          </div>
-        </section>
-
-        <section class="waiter-panel waiter-notifications-panel" id="pos-notifications-panel" aria-labelledby="pos-notifications-title">
-          <div class="waiter-panel-heading">
-            <div><h2 id="pos-notifications-title">Notifications</h2><p>Live table and order updates</p></div>
-            <span class="waiter-live-label"><i></i>Live</span>
-          </div>
-          <div class="waiter-notification-list" id="pos-notification-list" aria-live="polite">
-            <div class="ls-loading">Checking for updates…</div>
-          </div>
-        </section>
       </aside>
+    </div>
+
+    <div class="waiter-secondary-panels">
+      <section class="waiter-panel waiter-quick-panel" aria-labelledby="pos-quick-title">
+        <div class="waiter-panel-heading"><h2 id="pos-quick-title">Quick actions</h2></div>
+        <div class="waiter-quick-actions">
+          <a href="#pos-pickup-orders-card"><span class="material-symbols-outlined is-green" aria-hidden="true">receipt_long</span>View orders</a>
+          <button type="button" id="pos-quick-kitchen" disabled><span class="material-symbols-outlined is-amber" aria-hidden="true">soup_kitchen</span>Send to kitchen</button>
+          <button type="button" id="pos-browser-print" disabled><span class="material-symbols-outlined is-blue" aria-hidden="true">print</span>Print bill</button>
+          <a href="/dispatch"><span class="material-symbols-outlined is-teal" aria-hidden="true">delivery_dining</span>Send to delivery</a>
+          <button type="button" id="pos-drawer-btn"><span class="material-symbols-outlined is-purple" aria-hidden="true">point_of_sale</span>Open cash drawer</button>
+        </div>
+      </section>
+
+      <section class="waiter-panel pickup-orders-card waiter-pickup-panel" id="pos-pickup-orders-card">
+        <div class="waiter-panel-heading">
+          <div><h2>Pickup payments</h2><p id="pos-pickup-sub">Cash collection required before kitchen preparation</p></div>
+          <button class="waiter-menu-refresh" type="button" id="pos-pickup-refresh" aria-label="Refresh pickup orders" title="Refresh pickup orders">
+            <span class="material-symbols-outlined" aria-hidden="true">refresh</span>
+          </button>
+        </div>
+        <div class="pickup-orders-list" id="pos-pickup-orders" aria-live="polite">
+          <div class="ls-loading">Loading unpaid pickup orders…</div>
+        </div>
+      </section>
+
+      <section class="waiter-panel waiter-notifications-panel" id="pos-notifications-panel" aria-labelledby="pos-notifications-title">
+        <div class="waiter-panel-heading">
+          <div><h2 id="pos-notifications-title">Notifications</h2><p>Live table and order updates</p></div>
+          <span class="waiter-live-label"><i></i>Live</span>
+        </div>
+        <div class="waiter-notification-list" id="pos-notification-list" aria-live="polite">
+          <div class="ls-loading">Checking for updates…</div>
+        </div>
+      </section>
     </div>
     <div class="waiter-bottom-status">
       <span class="waiter-status-check material-symbols-outlined" aria-hidden="true">check_circle</span>
@@ -287,7 +298,7 @@
 
   <p class="ls-help" data-outlet-copy="OBUNUZI_YMCA" hidden><a href="/images/obunuzi-photo-credits.txt">Photo credits</a></p>
   <script src="/js/api.js"></script>
-  <script src="/js/customer-menu-categories.js?v=10"></script>
-  <script src="/js/pos.js?v=10"></script>
+  <script src="/js/customer-menu-categories.js?v=11"></script>
+  <script src="/js/pos.js?v=11"></script>
 </body>
 </html>
