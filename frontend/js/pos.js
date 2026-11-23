@@ -135,11 +135,13 @@
 
   function renderFloor() {
     if (!STATE.tables.length) {
+      els.floor.classList.add('is-empty');
       els.floor.innerHTML = '<div class="ls-empty">No tables returned for this outlet.</div>';
       els.floorSub.textContent = 'No table records found';
       return;
     }
 
+    els.floor.classList.remove('is-empty');
     const occupied = STATE.tables.filter((table) => table.status !== 'VACANT').length;
     els.floorSub.textContent = `${STATE.tables.length} tables · ${occupied} currently seated`;
 
