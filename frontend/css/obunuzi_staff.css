@@ -4341,6 +4341,10 @@ html[data-app-outlet="OBUNUZI_YMCA"] body.manager-dashboard .manager-sidebar-pro
 html[data-app-outlet="OBUNUZI_YMCA"] body.manager-dashboard .manager-sidebar-profile .manager-user {
   min-width: 0;
   gap: 9px;
+  padding: 0;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 html[data-app-outlet="OBUNUZI_YMCA"] body.manager-dashboard .manager-sidebar-profile .manager-avatar {
@@ -4512,6 +4516,10 @@ html[data-app-outlet="OBUNUZI_YMCA"] body.manager-dashboard .manager-kpis {
   gap: 16px;
 }
 
+html[data-app-outlet="OBUNUZI_YMCA"] body.manager-dashboard .manager-kpi:nth-child(4) {
+  grid-column: auto;
+}
+
 html[data-app-outlet="OBUNUZI_YMCA"] body.manager-dashboard .manager-kpi {
   min-height: 190px;
   padding: 18px;
@@ -4543,6 +4551,13 @@ html[data-app-outlet="OBUNUZI_YMCA"] body.manager-dashboard .manager-kpi:nth-chi
   color: #5c4300 !important;
 }
 
+html[data-app-outlet="OBUNUZI_YMCA"] body.manager-dashboard .manager-kpi > div:nth-child(2) {
+  height: 100%;
+  flex: 1 1 auto;
+  justify-content: space-between;
+  padding-top: 34px;
+}
+
 html[data-app-outlet="OBUNUZI_YMCA"] body.manager-dashboard .manager-kpi-label {
   color: #424842 !important;
   font-size: 9px;
@@ -4562,6 +4577,36 @@ html[data-app-outlet="OBUNUZI_YMCA"] body.manager-dashboard .manager-kpi > div:n
   color: #727972 !important;
   font-size: 10px;
   font-weight: 500;
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] body.manager-dashboard .manager-payment-rows .is-mtn,
+html[data-app-outlet="OBUNUZI_YMCA"] body.manager-dashboard .manager-payment-bar .is-mtn {
+  background: #d4a017;
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] body.manager-dashboard .manager-payment-rows .is-cash,
+html[data-app-outlet="OBUNUZI_YMCA"] body.manager-dashboard .manager-payment-bar .is-cash {
+  background: #143823;
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] body.manager-dashboard .manager-payment-rows .is-airtel,
+html[data-app-outlet="OBUNUZI_YMCA"] body.manager-dashboard .manager-payment-bar .is-airtel {
+  background: #a23e18;
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] body.manager-dashboard .manager-payment-rows .is-other,
+html[data-app-outlet="OBUNUZI_YMCA"] body.manager-dashboard .manager-payment-bar .is-other {
+  background: #727972;
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] body.manager-dashboard .manager-settlement-content {
+  display: flex;
+  height: 100%;
+  flex: 1 1 auto;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 6px !important;
+  padding-top: 34px !important;
 }
 
 html[data-app-outlet="OBUNUZI_YMCA"] body.manager-dashboard .manager-primary-grid {
@@ -4772,20 +4817,16 @@ html[data-app-outlet="OBUNUZI_YMCA"] body.manager-dashboard .manager-updated {
 }
 
 @media (max-width: 1180px) {
-  html[data-app-outlet="OBUNUZI_YMCA"] body.manager-dashboard .manager-kpis {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  html[data-app-outlet="OBUNUZI_YMCA"] body.manager-dashboard .manager-kpi:nth-child(4) {
-    grid-column: auto;
-  }
-
   html[data-app-outlet="OBUNUZI_YMCA"] body.manager-dashboard .manager-secondary-grid {
     grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.9fr);
   }
 }
 
 @media (max-width: 900px) {
+  html[data-app-outlet="OBUNUZI_YMCA"] body.manager-dashboard .manager-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   html[data-app-outlet="OBUNUZI_YMCA"] body.manager-dashboard .manager-sidebar {
     width: 68px;
     align-items: center;
