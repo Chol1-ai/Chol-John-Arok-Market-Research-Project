@@ -401,8 +401,8 @@ html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card p {
   display: -webkit-box;
   margin: 5px 0 0;
   color: #806a68;
-  font-size: 10px;
-  line-height: 1.45;
+  font-size: 11px;
+  line-height: 1.5;
   -webkit-line-clamp: 2;
 }
 
@@ -752,36 +752,61 @@ html[data-app-outlet="OBUNUZI_YMCA"] .best-seller-card .best-seller-actions {
 }
 
 html[data-app-outlet="OBUNUZI_YMCA"] .home-category-grid {
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
 }
 
 html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card,
 html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card.home-category-reveal,
 html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card.home-category-reveal.is-visible {
-  grid-template-columns: 72px minmax(0, 1fr) 18px;
-  min-height: 96px;
-  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  min-height: 366px;
+  padding: 0;
   border: 1px solid var(--glass-border);
   border-radius: 18px;
   background: linear-gradient(145deg, rgb(255 255 255 / 58%), rgb(255 255 255 / 30%));
 }
 
 html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card .card-media {
-  width: 72px;
-  height: 72px;
-  border: 1px solid rgb(255 255 255 / 72%);
-  border-radius: 14px;
+  width: 100%;
+  height: 190px;
+  flex: 0 0 190px;
+  border: 0;
+  border-radius: 0;
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card .card-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card .card-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 9px;
+  min-height: 174px;
+  padding: 15px;
 }
 
 html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card h3 {
   font-family: var(--font-family-base);
   font-size: 15px;
   font-weight: 700;
+  line-height: 1.4;
 }
 
 html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card::after {
   color: var(--amber);
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card .card-link {
+  margin-top: auto;
 }
 
 html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card:hover,
@@ -1792,7 +1817,7 @@ html[data-app-outlet="OBUNUZI_YMCA"] .tracking-token {
 
   html[data-app-outlet="OBUNUZI_YMCA"] .home-category-grid {
     display: flex;
-    gap: 10px;
+    gap: 12px;
     overflow-x: auto;
     padding: 4px 2px 12px;
     scroll-snap-type: x mandatory;
@@ -1806,48 +1831,45 @@ html[data-app-outlet="OBUNUZI_YMCA"] .tracking-token {
   html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card,
   html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card.home-category-reveal,
   html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card.home-category-reveal.is-visible {
-    display: grid;
-    flex: 0 0 min(78vw, 220px);
-    grid-template-columns: 48px minmax(0, 1fr);
-    min-height: 124px;
-    align-items: center;
-    gap: 10px;
-    padding: 9px;
+    display: flex;
+    flex: 0 0 min(72vw, 190px);
+    flex-direction: column;
+    min-height: 0;
+    gap: 0;
+    padding: 0;
     border-radius: 16px;
     scroll-snap-align: start;
   }
 
   html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card .card-media {
-    width: 48px;
-    height: 48px;
+    width: 100%;
+    height: auto;
     flex: 0 0 auto;
-    border-radius: 13px;
+    aspect-ratio: 1.04;
+    border-radius: 0;
   }
 
   html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card .card-content {
     width: 100%;
+    min-height: 164px;
+    gap: 8px;
+    padding: 12px;
   }
 
   html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card h3 {
-    display: -webkit-box;
-    overflow: hidden;
     font-family: var(--font-family-base);
-    font-size: 11px;
+    font-size: 15px;
     font-weight: 700;
-    line-height: 1.25;
-    text-align: left;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    line-height: 1.4;
   }
 
   html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card p {
-    margin-top: 4px;
-    font-size: 9px;
+    font-size: 11px;
   }
 
   html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card .card-link {
-    margin-top: 4px;
-    font-size: 9px;
+    margin-top: auto;
+    font-size: 10px;
   }
 
   html[data-app-outlet="OBUNUZI_YMCA"] .home-category-card::after {
@@ -2838,8 +2860,8 @@ html[data-app-outlet="OBUNUZI_YMCA"] body#top .best-seller-price {
 }
 
 html[data-app-outlet="OBUNUZI_YMCA"] body#top .home-category-grid {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
 }
 
 html[data-app-outlet="OBUNUZI_YMCA"] body#top .home-category-card,
@@ -2849,6 +2871,12 @@ html[data-app-outlet="OBUNUZI_YMCA"] body#top .home-category-card.home-category-
   border-radius: 18px;
   background: #fffdfb;
   box-shadow: 0 8px 22px rgb(75 56 34 / 6%);
+}
+
+@media (min-width: 1100px) {
+  html[data-app-outlet="OBUNUZI_YMCA"] body#top .home-category-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 html[data-app-outlet="OBUNUZI_YMCA"] body#top .home-category-card h3 {
