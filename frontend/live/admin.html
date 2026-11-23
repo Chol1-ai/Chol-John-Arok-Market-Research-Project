@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="/css/live_surfaces.css?v=16" />
   <link rel="stylesheet" href="/css/admin_console.css?v=15" />
   <link rel="stylesheet" href="/css/brand_theme.css?v=5" />
-  <link rel="stylesheet" href="/css/obunuzi_staff.css?v=12" />
+  <link rel="stylesheet" href="/css/obunuzi_staff.css?v=16" />
 </head>
 <body class="ls-body manager-dashboard" data-surface="admin" data-manager-view="dashboard">
   <a class="ls-skip" href="#main-content">Skip to main content</a>
@@ -81,6 +81,13 @@
 
   <main class="ls-main" id="main-content">
     <section class="manager-overview" id="manager-overview" aria-label="Restaurant dashboard overview">
+      <header class="manager-welcome">
+        <div>
+          <span class="manager-welcome-kicker"><span data-session-outlet>Loading outlet…</span> · Manager workspace</span>
+          <h1>Shift Performance &amp; Ops Intelligence</h1>
+          <p>Live service, sales, and inventory for this outlet.</p>
+        </div>
+      </header>
       <div class="manager-kpis" aria-label="Today's business metrics">
         <article class="manager-kpi manager-kpi--green">
           <div class="manager-kpi-icon"><span class="material-symbols-outlined" aria-hidden="true">payments</span></div>
@@ -96,11 +103,6 @@
           <div class="manager-kpi-icon"><span class="material-symbols-outlined" aria-hidden="true">star</span></div>
           <div><span class="manager-kpi-label">Avg. Order Value</span><strong id="admin-kpi-average">Loading…</strong><small>Per completed order</small></div>
           <svg class="manager-sparkline" viewBox="0 0 100 40" aria-hidden="true"><path d="M1 34 17 31 29 24 43 29 57 14 72 18 82 7 99 3" /></svg>
-        </article>
-        <article class="manager-kpi manager-kpi--amber">
-          <div class="manager-kpi-icon"><span class="material-symbols-outlined" aria-hidden="true">warning</span></div>
-          <div><span class="manager-kpi-label">Open Alerts</span><strong id="admin-kpi-alerts">Loading…</strong><small>Needs attention</small></div>
-          <svg class="manager-sparkline" viewBox="0 0 100 40" aria-hidden="true"><path d="M1 34 17 30 29 33 43 23 57 25 72 18 82 14 99 5" /></svg>
         </article>
         <article class="manager-kpi manager-kpi--teal">
           <div class="manager-kpi-icon"><span class="material-symbols-outlined" aria-hidden="true">check_circle</span></div>
@@ -128,6 +130,16 @@
           <div class="manager-chart-labels"><span>Oldest</span><span>Most recent</span></div>
         </section>
 
+        <section class="manager-panel manager-inventory-panel" aria-labelledby="manager-inventory-title">
+          <div class="manager-panel-heading">
+            <h2 id="manager-inventory-title"><span class="material-symbols-outlined" aria-hidden="true">inventory_2</span>Inventory Alerts</h2>
+            <a href="#manager-inventory">View all <span aria-hidden="true">→</span></a>
+          </div>
+          <div class="manager-inventory-alerts" id="admin-dashboard-inventory"><span>Loading stock alerts…</span></div>
+        </section>
+      </div>
+
+      <div class="manager-secondary-grid">
         <section class="manager-panel manager-status-panel" aria-labelledby="manager-status-title">
           <div class="manager-panel-heading">
             <h2 id="manager-status-title"><span class="material-symbols-outlined" aria-hidden="true">monitor_heart</span>Restaurant Status</h2>
@@ -139,9 +151,6 @@
             <a class="manager-status-card is-amber" href="#manager-inventory"><span class="material-symbols-outlined" aria-hidden="true">warning</span><span><small>Low Stock Alerts</small><strong id="admin-inventory-status">Loading…</strong></span></a>
           </div>
         </section>
-      </div>
-
-      <div class="manager-secondary-grid">
         <section class="manager-panel manager-orders-panel" aria-labelledby="manager-orders-title">
           <div class="manager-panel-heading">
             <h2 id="manager-orders-title"><span class="material-symbols-outlined" aria-hidden="true">format_list_bulleted</span>Recent Orders</h2>
@@ -161,16 +170,10 @@
           </div>
           <div class="manager-floor-summary" id="admin-dashboard-floor"><span>Loading table activity…</span></div>
         </section>
-        <section class="manager-panel manager-inventory-panel" aria-labelledby="manager-inventory-title">
-          <div class="manager-panel-heading">
-            <h2 id="manager-inventory-title"><span class="material-symbols-outlined" aria-hidden="true">inventory_2</span>Inventory Alerts</h2>
-            <a href="#manager-inventory">View all <span aria-hidden="true">→</span></a>
-          </div>
-          <div class="manager-inventory-alerts" id="admin-dashboard-inventory"><span>Loading stock alerts…</span></div>
-        </section>
         <section class="manager-panel manager-attention-panel" id="admin-flags-section" data-manager-workspace="dashboard reports" aria-labelledby="manager-attention-title">
           <div class="manager-panel-heading">
             <h2 id="manager-attention-title"><span class="material-symbols-outlined" aria-hidden="true">notifications_active</span>Needs your attention</h2>
+            <span class="manager-alert-count" id="admin-kpi-alerts" aria-label="Open alerts">Loading…</span>
             <button class="ls-btn ls-btn--ghost ls-btn--small manager-alert-clear-all" type="button" id="admin-clear-alerts" hidden>Clear</button>
           </div>
           <div class="admin-flags" id="admin-flags-list">
