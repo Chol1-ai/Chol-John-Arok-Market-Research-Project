@@ -32,6 +32,7 @@
     outlets: document.getElementById('admin-outlets'),
     ordersBody: document.getElementById('admin-orders-body'),
     staffBody: document.getElementById('admin-staff-body'),
+    dashboardStaff: document.getElementById('admin-dashboard-staff'),
     createStaffForm: document.getElementById('admin-create-staff-form'),
     createStaffSubmit: document.getElementById('admin-create-staff-submit'),
     staffOutlet: document.querySelector('#admin-create-staff-form [name="outlet"]'),
@@ -108,6 +109,10 @@
     els.live.dataset.state = state;
     els.live.setAttribute('aria-label', labels[state] || state);
     els.live.title = labels[state] || state;
+    const liveCopy = document.getElementById('admin-live-copy');
+    if (liveCopy) {
+      liveCopy.textContent = state === 'online' ? 'Live Sync Active' : labels[state] || state;
+    }
   }
 
   function renderManagerView() {
@@ -273,6 +278,7 @@
       (summary.flags || []).length
     );
     document.getElementById('admin-kpi-payments').textContent = F.formatNumber(totals.paymentCount);
+    renderPaymentSettlement(totals);
     document.getElementById('admin-current-date').textContent = F.formatDate(
       `${summary.digestDate}T12:00:00Z`
     );
@@ -299,7 +305,47 @@
 
     renderDashboardInventory(lowStock);
     renderDashboardChart(STATE.overview.recentOrders || []);
+    renderDashboardStaff(STATE.overview.staff || []);
     applyDashboardSearch();
+  }
+
+  function renderPaymentSettlement(totals) {
+    const gross = Math.max(0, Number(totals.grossUgx) || 0);
+    const mtn = Math.max(0, Number(totals.mtnUgx) || 0);
+    const cash = Math.max(0, Number(totals.cashUgx) || 0);
+    const airtel = Math.max(0, Number(totals.airtelUgx) || 0);
+    const other = Math.max(0, gross - mtn - cash - airtel);
+    const methods = [
+      ['mtn', mtn],
+      ['cash', cash],
+      ['airtel', airtel],
+      ['other', other]
+    ];
+
+    methods.forEach(([method, amount]) => {
+      const percent = gross ? (amount / gross) * 100 : 0;
+      document.getElementById(`admin-payment-${method}-share`).textContent =
+        `${Math.round(percent)}%`;
+      document.getElementById(`admin-payment-${method}-bar`).style.width =
+        `${Math.min(100, percent)}%`;
+    });
+  }
+
+  function renderDashboardStaff(staff) {
+    if (!els.dashboardStaff) return;
+    if (!staff.length) {
+      els.dashboardStaff.innerHTML =
+        '<tr><td colspan="4" data-empty="true">No active staff accounts in this outlet.</td></tr>';
+      return;
+    }
+
+    els.dashboardStaff.innerHTML = staff.slice(0, 5).map((row) => `
+      <tr class="manager-searchable">
+        <td>${F.escapeHtml(row.full_name)}</td>
+        <td>${F.escapeHtml(roleLabel(row.role))}</td>
+        <td>${F.escapeHtml(outletLabel(row.outlet))}</td>
+        <td>${row.last_login_at ? F.escapeHtml(F.relativeTime(row.last_login_at)) : 'Never signed in'}</td>
+      </tr>`).join('');
   }
 
   function renderDashboardChart(orders) {
@@ -307,6 +353,7 @@
     const line = document.getElementById('admin-chart-line');
     const area = document.getElementById('admin-chart-area');
     const marker = document.getElementById('admin-chart-point');
+    const empty = document.getElementById('admin-chart-empty');
     const maximum = Math.max(...points, 0);
 
     document.getElementById('admin-chart-max').textContent = maximum
@@ -316,8 +363,10 @@
       line.setAttribute('d', '');
       area.setAttribute('d', '');
       marker.setAttribute('r', '0');
+      empty.hidden = false;
       return;
     }
+    empty.hidden = true;
 
     const ceiling = maximum || 1;
     const coordinates = points.map((value, index) => ({
@@ -340,13 +389,21 @@
     document.getElementById('admin-inventory-status').textContent =
       `${F.formatNumber(count)} ${count === 1 ? 'item' : 'items'}`;
     if (!count) {
-      list.innerHTML = '<span>All tracked stock is above its reorder level.</span>';
+      list.innerHTML = `
+        <div class="manager-inventory-empty">
+          <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
+          <strong>Stock levels look healthy</strong>
+          <p>All tracked items are above their reorder thresholds.</p>
+          <a href="#manager-inventory">Review inventory <span aria-hidden="true">→</span></a>
+        </div>`;
       return;
     }
 
     list.innerHTML = items.slice(0, 4).map((item) => `
       <div class="manager-inventory-alert manager-searchable">
-        <span>${F.escapeHtml(item.itemName)}</span>
+        <div><span>${F.escapeHtml(item.itemName)}</span><small>Reorder point: ${F.escapeHtml(
+          String(item.alertThreshold)
+        )} ${F.escapeHtml(item.unit || '')}</small></div>
         <strong>${F.escapeHtml(String(item.currentStock))} ${F.escapeHtml(item.unit || '')} left</strong>
       </div>`).join('');
     applyDashboardSearch();

@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="/css/live_surfaces.css?v=16" />
   <link rel="stylesheet" href="/css/admin_console.css?v=15" />
   <link rel="stylesheet" href="/css/brand_theme.css?v=5" />
-  <link rel="stylesheet" href="/css/obunuzi_staff.css?v=19" />
+  <link rel="stylesheet" href="/css/obunuzi_staff.css?v=20" />
 </head>
 <body class="ls-body manager-dashboard" data-surface="admin" data-manager-view="dashboard">
   <a class="ls-skip" href="#main-content">Skip to main content</a>
@@ -61,11 +61,8 @@
         </select>
       </label>
       <div class="manager-date"><span class="material-symbols-outlined" aria-hidden="true">calendar_month</span><span id="admin-current-date">Today</span></div>
-      <button class="manager-refresh" type="button" id="admin-refresh" aria-label="Refresh dashboard data" title="Refresh dashboard data">
-        <span class="material-symbols-outlined" aria-hidden="true">refresh</span><span>Refresh</span>
-      </button>
       <span class="manager-connection" id="admin-live" data-state="connecting" aria-label="Connecting to live updates" title="Connecting to live updates">
-        <span class="manager-connection-dot" aria-hidden="true"></span>
+        <span class="manager-connection-dot" aria-hidden="true"></span><span id="admin-live-copy">Connecting</span>
       </span>
       <a class="admin-notification" id="admin-notification" href="#admin-flags-section" aria-label="View alerts">
         <span class="material-symbols-outlined" aria-hidden="true">notifications</span>
@@ -82,32 +79,54 @@
   <main class="ls-main" id="main-content">
     <section class="manager-overview" id="manager-overview" aria-label="Restaurant dashboard overview">
       <header class="manager-welcome">
-        <div>
+        <div class="manager-welcome-copy">
           <span class="manager-welcome-kicker"><span data-session-outlet>Loading outlet…</span> · Manager workspace</span>
           <h1>Shift Performance &amp; Ops Intelligence</h1>
           <p>Live service, sales, and inventory for this outlet.</p>
+        </div>
+        <div class="manager-welcome-actions">
+          <button class="manager-refresh" type="button" id="admin-refresh" aria-label="Refresh dashboard data" title="Refresh dashboard data">
+            <span class="material-symbols-outlined" aria-hidden="true">refresh</span><span>Sync Realtime</span>
+          </button>
+          <a class="manager-quick-action manager-quick-action--po" href="#manager-procurement">
+            <span class="material-symbols-outlined" aria-hidden="true">shopping_cart_checkout</span><span>Quick PO</span>
+          </a>
+          <a class="manager-quick-action manager-quick-action--report" href="#admin-digest-section">
+            <span class="material-symbols-outlined" aria-hidden="true">receipt_long</span><span>Daily Report</span>
+          </a>
         </div>
       </header>
       <div class="manager-kpis" aria-label="Today's business metrics">
         <article class="manager-kpi manager-kpi--green">
           <div class="manager-kpi-icon"><span class="material-symbols-outlined" aria-hidden="true">payments</span></div>
-          <div><span class="manager-kpi-label">Total Sales</span><strong id="admin-kpi-sales">Loading…</strong><small id="admin-kpi-sales-note">Today</small></div>
-          <svg class="manager-sparkline" viewBox="0 0 100 40" aria-hidden="true"><path d="M1 34 17 30 29 32 43 20 57 23 72 8 82 15 99 3" /></svg>
+          <div><span class="manager-kpi-label">Today’s Revenue</span><strong id="admin-kpi-sales">Loading…</strong><small id="admin-kpi-sales-note">Successful payments</small></div>
         </article>
         <article class="manager-kpi manager-kpi--blue">
           <div class="manager-kpi-icon"><span class="material-symbols-outlined" aria-hidden="true">shopping_cart</span></div>
-          <div><span class="manager-kpi-label">Completed Orders</span><strong id="admin-kpi-orders">Loading…</strong><small>Today</small></div>
-          <svg class="manager-sparkline" viewBox="0 0 100 40" aria-hidden="true"><path d="M1 34 17 27 29 31 43 18 57 22 72 9 82 13 99 3" /></svg>
+          <div><span class="manager-kpi-label">Orders Processed</span><strong id="admin-kpi-orders">Loading…</strong><small>Completed today</small></div>
         </article>
         <article class="manager-kpi manager-kpi--purple">
           <div class="manager-kpi-icon"><span class="material-symbols-outlined" aria-hidden="true">star</span></div>
           <div><span class="manager-kpi-label">Avg. Order Value</span><strong id="admin-kpi-average">Loading…</strong><small>Per completed order</small></div>
-          <svg class="manager-sparkline" viewBox="0 0 100 40" aria-hidden="true"><path d="M1 34 17 31 29 24 43 29 57 14 72 18 82 7 99 3" /></svg>
         </article>
-        <article class="manager-kpi manager-kpi--teal">
-          <div class="manager-kpi-icon"><span class="material-symbols-outlined" aria-hidden="true">check_circle</span></div>
-          <div><span class="manager-kpi-label">Successful Payments</span><strong id="admin-kpi-payments">Loading…</strong><small>Today</small></div>
-          <svg class="manager-sparkline" viewBox="0 0 100 40" aria-hidden="true"><path d="M1 34 17 29 29 31 43 19 57 22 72 8 82 12 99 3" /></svg>
+        <article class="manager-kpi manager-kpi--teal manager-settlement-kpi">
+          <div class="manager-kpi-icon"><span class="material-symbols-outlined" aria-hidden="true">contactless</span></div>
+          <div class="manager-settlement-content">
+            <span class="manager-kpi-label">Payment Settlement</span>
+            <div class="manager-payment-rows">
+              <div><span><i class="is-mtn"></i>MTN MoMo</span><strong id="admin-payment-mtn-share">0%</strong></div>
+              <div><span><i class="is-cash"></i>Cash</span><strong id="admin-payment-cash-share">0%</strong></div>
+              <div><span><i class="is-airtel"></i>Airtel Money</span><strong id="admin-payment-airtel-share">0%</strong></div>
+              <div><span><i class="is-other"></i>Other / Manual</span><strong id="admin-payment-other-share">0%</strong></div>
+            </div>
+            <div class="manager-payment-bar" role="img" aria-label="Successful payment totals by method">
+              <span class="is-mtn" id="admin-payment-mtn-bar"></span>
+              <span class="is-cash" id="admin-payment-cash-bar"></span>
+              <span class="is-airtel" id="admin-payment-airtel-bar"></span>
+              <span class="is-other" id="admin-payment-other-bar"></span>
+            </div>
+            <small><strong id="admin-kpi-payments">Loading…</strong> successful today</small>
+          </div>
         </article>
       </div>
 
@@ -126,6 +145,11 @@
               <path id="admin-chart-line" class="manager-chart-line" d="" />
               <circle id="admin-chart-point" class="manager-chart-point" cx="0" cy="0" r="5" />
             </svg>
+            <div class="manager-chart-empty" id="admin-chart-empty" hidden>
+              <span class="material-symbols-outlined" aria-hidden="true">monitoring</span>
+              <strong>No recent order activity</strong>
+              <span>Completed orders will appear here as they come in.</span>
+            </div>
           </div>
           <div class="manager-chart-labels"><span>Oldest</span><span>Most recent</span></div>
         </section>
@@ -135,11 +159,34 @@
             <h2 id="manager-inventory-title"><span class="material-symbols-outlined" aria-hidden="true">inventory_2</span>Inventory Alerts</h2>
             <a href="#manager-inventory">View all <span aria-hidden="true">→</span></a>
           </div>
-          <div class="manager-inventory-alerts" id="admin-dashboard-inventory"><span>Loading stock alerts…</span></div>
+          <div class="manager-inventory-alerts" id="admin-dashboard-inventory">
+            <div class="manager-inventory-empty"><span class="ls-loading">Loading stock alerts…</span></div>
+          </div>
         </section>
       </div>
 
       <div class="manager-secondary-grid">
+        <section class="manager-panel manager-team-panel" aria-labelledby="manager-team-title">
+          <div class="manager-panel-heading">
+            <div><h2 id="manager-team-title"><span class="material-symbols-outlined" aria-hidden="true">groups</span>Active Staff Roster</h2><p>Roles and latest sign-in at this outlet</p></div>
+            <a href="#admin-team-section">Manage <span aria-hidden="true">→</span></a>
+          </div>
+          <div class="manager-table-scroll">
+            <table class="manager-orders-table manager-staff-table">
+              <thead><tr><th>Staff member</th><th>Role</th><th>Outlet</th><th>Last active</th></tr></thead>
+              <tbody id="admin-dashboard-staff"><tr><td colspan="4" data-empty="true">Loading staff roster…</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+        <section class="manager-panel manager-quick-ops-panel" aria-labelledby="manager-quick-ops-title">
+          <div class="manager-panel-heading"><h2 id="manager-quick-ops-title"><span class="material-symbols-outlined" aria-hidden="true">bolt</span>Quick Ops Control</h2></div>
+          <div class="manager-quick-ops-list">
+            <a href="#admin-menu-section"><span class="material-symbols-outlined" aria-hidden="true">restaurant_menu</span><span><strong>Menu &amp; availability</strong><small>Manage prices and item status</small></span><span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></a>
+            <a href="#admin-cash-section"><span class="material-symbols-outlined" aria-hidden="true">point_of_sale</span><span><strong>Cash reconciliation</strong><small>Count and reconcile the drawer</small></span><span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></a>
+            <a href="#manager-procurement"><span class="material-symbols-outlined" aria-hidden="true">local_shipping</span><span><strong>Supplier orders</strong><small>Create and follow stock orders</small></span><span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></a>
+            <a href="#admin-digest-section"><span class="material-symbols-outlined" aria-hidden="true">fact_check</span><span><strong>Daily digest</strong><small>Review and dispatch the report</small></span><span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></a>
+          </div>
+        </section>
         <section class="manager-panel manager-status-panel" aria-labelledby="manager-status-title">
           <div class="manager-panel-heading">
             <h2 id="manager-status-title"><span class="material-symbols-outlined" aria-hidden="true">monitor_heart</span>Restaurant Status</h2>
@@ -725,6 +772,6 @@
   <p class="ls-help" data-outlet-copy="OBUNUZI_YMCA" hidden><a href="/images/obunuzi-photo-credits.txt">Photo credits</a></p>
   <script src="/js/api.js"></script>
   <script src="/js/customer-menu-categories.js?v=10"></script>
-  <script src="/js/admin.js?v=14"></script>
+  <script src="/js/admin.js?v=15"></script>
 </body>
 </html>
