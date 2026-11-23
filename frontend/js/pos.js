@@ -34,6 +34,7 @@
     refresh: document.getElementById('pos-refresh'),
     updated: document.getElementById('pos-updated'),
     floor: document.getElementById('pos-floor'),
+    floorTitle: document.getElementById('pos-floor-title'),
     floorSub: document.getElementById('pos-floor-sub'),
     sidebarLive: document.getElementById('pos-sidebar-live'),
     currentDate: document.getElementById('pos-current-date'),
@@ -1159,6 +1160,11 @@
       STATE.outlet = F.APP_OUTLET || 'FOODIZO_HAM_TOWERS';
       els.outletWrap.hidden = false;
       els.outlet.value = STATE.outlet;
+    }
+
+    if (STATE.outlet === 'OBUNUZI_YMCA') {
+      document.title = 'Waiter POS | Obunuzi';
+      els.floorTitle.textContent = 'Floor & Station POS';
     }
 
     wireEvents();
