@@ -119,7 +119,7 @@
     const hash = window.location.hash;
     const hashViews = {
       '#manager-overview': 'dashboard',
-      '#manager-workspaces': 'hub',
+      '#manager-workspaces': 'dashboard',
       '#manager-inventory': 'inventory',
       '#admin-inventory-section': 'inventory',
       '#manager-procurement': 'procurement',
@@ -180,7 +180,7 @@
       }
     });
 
-    if (view !== 'dashboard') window.scrollTo(0, 0);
+    if (view !== 'dashboard' || hash === '#manager-workspaces') window.scrollTo(0, 0);
   }
 
   function outletLabel(outlet) {
@@ -1695,10 +1695,12 @@
   }
 
   function wireEvents() {
-    els.search.addEventListener('input', applyDashboardSearch);
+    if (els.search) {
+      els.search.addEventListener('input', applyDashboardSearch);
+    }
     window.addEventListener('hashchange', renderManagerView);
     window.addEventListener('keydown', (event) => {
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+      if (els.search && (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
         event.preventDefault();
         els.search.focus();
       }

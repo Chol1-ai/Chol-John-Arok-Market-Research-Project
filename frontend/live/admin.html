@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="/css/live_surfaces.css?v=16" />
   <link rel="stylesheet" href="/css/admin_console.css?v=15" />
   <link rel="stylesheet" href="/css/brand_theme.css?v=5" />
-  <link rel="stylesheet" href="/css/obunuzi_staff.css?v=20" />
+  <link rel="stylesheet" href="/css/obunuzi_staff.css?v=22" />
 </head>
 <body class="ls-body manager-dashboard" data-surface="admin" data-manager-view="dashboard">
   <a class="ls-skip" href="#main-content">Skip to main content</a>
@@ -21,38 +21,52 @@
       <img src="/images/Foodizo_logo.png?v=2" alt="" />
       <span><strong data-app-brand>FOODIZO</strong><small>Good Food. Great Mood.</small></span>
     </a>
-    <div class="manager-role"><span class="material-symbols-outlined" aria-hidden="true">workspace_premium</span> Manager</div>
+    <div class="manager-role manager-location">
+      <span class="material-symbols-outlined" aria-hidden="true">storefront</span>
+      <span><small>Station location</small><strong data-session-outlet>Obunuzi · Opposite YMCA</strong></span>
+    </div>
     <nav class="manager-nav">
-      <a class="is-active" href="#manager-overview"><span class="material-symbols-outlined" aria-hidden="true">home</span><span>Dashboard</span></a>
-      <a href="#admin-orders-section"><span class="material-symbols-outlined" aria-hidden="true">receipt_long</span><span>Orders</span></a>
-      <a href="/kds"><span class="material-symbols-outlined" aria-hidden="true">skillet</span><span>Kitchen &amp; KDS</span></a>
-      <a href="#admin-floor-section"><span class="material-symbols-outlined" aria-hidden="true">table_restaurant</span><span>Tables &amp; Reservations</span></a>
-      <a href="/dispatch"><span class="material-symbols-outlined" aria-hidden="true">delivery_dining</span><span>Delivery &amp; Dispatch</span></a>
-      <div class="manager-nav-label">Management</div>
-      <a href="#admin-menu-section"><span class="material-symbols-outlined" aria-hidden="true">restaurant_menu</span><span>Menu Management</span></a>
-      <a href="#manager-inventory"><span class="material-symbols-outlined" aria-hidden="true">inventory_2</span><span>Inventory &amp; Stock</span></a>
-      <a href="#admin-team-section"><span class="material-symbols-outlined" aria-hidden="true">groups</span><span>Staff Management</span></a>
-      <a href="#admin-outlet-section"><span class="material-symbols-outlined" aria-hidden="true">storefront</span><span>Outlets &amp; Branches</span></a>
-      <a href="#admin-cash-section"><span class="material-symbols-outlined" aria-hidden="true">payments</span><span>Payments &amp; Finance</span></a>
-      <a href="#admin-surplus-section"><span class="material-symbols-outlined" aria-hidden="true">delete</span><span>Waste &amp; Surplus</span></a>
-      <div class="manager-nav-label">Reports &amp; System</div>
-      <a href="#admin-outlet-section"><span class="material-symbols-outlined" aria-hidden="true">bar_chart</span><span>Analytics &amp; Reports</span></a>
-      <a href="#admin-digest-section"><span class="material-symbols-outlined" aria-hidden="true">fact_check</span><span>Audit Logs</span></a>
-      <a href="#admin-flags-section"><span class="material-symbols-outlined" aria-hidden="true">notifications</span><span>Notifications</span></a>
-      <a href="#admin-digest-section"><span class="material-symbols-outlined" aria-hidden="true">settings</span><span>Settings</span></a>
-      <a href="#admin-team-section"><span class="material-symbols-outlined" aria-hidden="true">admin_panel_settings</span><span>Roles &amp; Permissions</span></a>
+      <a href="/pos"><span class="material-symbols-outlined" aria-hidden="true">table_restaurant</span><span>Waiter POS &amp; Tables</span></a>
+      <a href="/kds"><span class="material-symbols-outlined" aria-hidden="true">soup_kitchen</span><span>Kitchen Display KDS</span></a>
+      <a href="/dispatch"><span class="material-symbols-outlined" aria-hidden="true">two_wheeler</span><span>Dispatch &amp; Couriers</span></a>
+      <a class="is-active" href="#manager-overview"><span class="material-symbols-outlined" aria-hidden="true">monitoring</span><span>Manager Admin</span></a>
+      <details class="manager-nav-tools">
+        <summary><span class="material-symbols-outlined" aria-hidden="true">tune</span><span>Manager tools</span><span class="material-symbols-outlined manager-nav-chevron" aria-hidden="true">expand_more</span></summary>
+        <div class="manager-nav-tools-list">
+          <a href="#admin-orders-section"><span class="material-symbols-outlined" aria-hidden="true">receipt_long</span><span>Orders</span></a>
+          <a href="#admin-floor-section"><span class="material-symbols-outlined" aria-hidden="true">table_restaurant</span><span>Floor &amp; tables</span></a>
+          <a href="#manager-inventory"><span class="material-symbols-outlined" aria-hidden="true">inventory_2</span><span>Inventory &amp; stock</span></a>
+          <a href="#manager-procurement"><span class="material-symbols-outlined" aria-hidden="true">local_shipping</span><span>Supplier orders</span></a>
+          <a href="#admin-team-section"><span class="material-symbols-outlined" aria-hidden="true">groups</span><span>Staff management</span></a>
+          <a href="#admin-menu-section"><span class="material-symbols-outlined" aria-hidden="true">restaurant_menu</span><span>Menu management</span></a>
+          <a href="#admin-cash-section"><span class="material-symbols-outlined" aria-hidden="true">payments</span><span>Cash reconciliation</span></a>
+          <a href="#admin-surplus-section"><span class="material-symbols-outlined" aria-hidden="true">compost</span><span>Surplus &amp; waste</span></a>
+          <a href="#admin-outlet-section"><span class="material-symbols-outlined" aria-hidden="true">bar_chart</span><span>Reports &amp; alerts</span></a>
+          <a href="#admin-flags-section"><span class="material-symbols-outlined" aria-hidden="true">notifications</span><span>Notifications</span></a>
+          <a href="#admin-digest-section"><span class="material-symbols-outlined" aria-hidden="true">fact_check</span><span>Daily digest</span></a>
+          <a href="#admin-team-section"><span class="material-symbols-outlined" aria-hidden="true">admin_panel_settings</span><span>Roles &amp; permissions</span></a>
+        </div>
+      </details>
     </nav>
+    <div class="manager-sidebar-profile">
+      <div class="manager-user">
+        <span class="manager-avatar" data-session-initials>JM</span>
+        <span class="manager-user-copy"><strong data-session-name>Loading…</strong><small data-session-role>Manager</small></span>
+      </div>
+    </div>
     <button class="manager-logout" type="button" data-action="logout" aria-label="Log out">
       <span class="material-symbols-outlined" aria-hidden="true">power_settings_new</span><span>Log out</span>
     </button>
   </aside>
 
   <header class="ls-topbar manager-topbar">
-    <label class="manager-search">
-      <span class="material-symbols-outlined" aria-hidden="true">search</span>
-      <input id="admin-dashboard-search" type="search" placeholder="Search orders, customers, or menu items..." aria-label="Search dashboard data" />
-      <kbd>Ctrl + K</kbd>
-    </label>
+    <div class="manager-topbar-context">
+      <span class="manager-location-chip"><span class="material-symbols-outlined" aria-hidden="true">storefront</span><span data-session-outlet>Obunuzi · Opposite YMCA</span></span>
+      <div class="manager-date"><span class="material-symbols-outlined" aria-hidden="true">calendar_month</span><span id="admin-current-date">Today</span></div>
+      <span class="manager-connection" id="admin-live" data-state="connecting" aria-label="Connecting to live updates" title="Connecting to live updates">
+        <span class="manager-connection-dot" aria-hidden="true"></span><span id="admin-live-copy">Connecting</span>
+      </span>
+    </div>
     <div class="manager-topbar-actions">
       <label class="ls-field manager-outlet-filter" id="admin-outlet-wrap" hidden>
         <span class="sr-only">Dashboard outlet</span>
@@ -60,19 +74,10 @@
           <option value="FOODIZO_HAM_TOWERS">Foodizo Restaurant</option>
         </select>
       </label>
-      <div class="manager-date"><span class="material-symbols-outlined" aria-hidden="true">calendar_month</span><span id="admin-current-date">Today</span></div>
-      <span class="manager-connection" id="admin-live" data-state="connecting" aria-label="Connecting to live updates" title="Connecting to live updates">
-        <span class="manager-connection-dot" aria-hidden="true"></span><span id="admin-live-copy">Connecting</span>
-      </span>
       <a class="admin-notification" id="admin-notification" href="#admin-flags-section" aria-label="View alerts">
         <span class="material-symbols-outlined" aria-hidden="true">notifications</span>
         <span class="admin-notification-count" id="admin-notification-count" hidden></span>
       </a>
-      <div class="manager-user">
-        <span class="manager-avatar" data-session-initials>JM</span>
-        <span class="manager-user-copy"><strong data-session-name>Loading…</strong><small data-session-role>Manager</small></span>
-        <span class="material-symbols-outlined manager-user-chevron" aria-hidden="true">expand_more</span>
-      </div>
     </div>
   </header>
 
@@ -139,7 +144,7 @@
           <div class="manager-chart-wrap">
             <div class="manager-chart-axis" aria-hidden="true"><span id="admin-chart-max">UGX —</span><span>UGX 0</span></div>
             <svg class="manager-chart" viewBox="0 0 700 180" role="img" aria-label="Recent order values">
-              <defs><linearGradient id="manager-chart-fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#00d181" stop-opacity=".34" /><stop offset="100%" stop-color="#00d181" stop-opacity=".02" /></linearGradient></defs>
+              <defs><linearGradient id="manager-chart-fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#143823" stop-opacity=".22" /><stop offset="100%" stop-color="#143823" stop-opacity=".01" /></linearGradient></defs>
               <path class="manager-chart-grid" d="M0 24H700 M0 64H700 M0 104H700 M0 144H700" />
               <path id="admin-chart-area" class="manager-chart-area" d="" />
               <path id="admin-chart-line" class="manager-chart-line" d="" />
@@ -156,7 +161,7 @@
 
         <section class="manager-panel manager-inventory-panel" aria-labelledby="manager-inventory-title">
           <div class="manager-panel-heading">
-            <h2 id="manager-inventory-title"><span class="material-symbols-outlined" aria-hidden="true">inventory_2</span>Inventory Alerts</h2>
+            <h2 id="manager-inventory-title"><span class="material-symbols-outlined" aria-hidden="true">inventory_2</span>Low Inventory Alerts</h2>
             <a href="#manager-inventory">View all <span aria-hidden="true">→</span></a>
           </div>
           <div class="manager-inventory-alerts" id="admin-dashboard-inventory">
@@ -228,87 +233,12 @@
           </div>
         </section>
       </div>
-      <div class="manager-stock-shortcuts" aria-label="Stock management shortcuts">
-        <a class="manager-stock-shortcut is-workspace" href="#manager-workspaces">
-          <span class="manager-stock-shortcut-icon"><span class="material-symbols-outlined" aria-hidden="true">dashboard_customize</span></span>
-          <span><strong>Manage restaurant</strong><small>Open staff, menu, finance, and operations</small></span>
-          <span class="material-symbols-outlined manager-stock-shortcut-arrow" aria-hidden="true">arrow_forward</span>
-        </a>
-        <a class="manager-stock-shortcut" href="#manager-inventory">
-          <span class="manager-stock-shortcut-icon"><span class="material-symbols-outlined" aria-hidden="true">inventory_2</span></span>
-          <span><strong>View inventory</strong><small>Check stock levels and update counts</small></span>
-          <span class="material-symbols-outlined manager-stock-shortcut-arrow" aria-hidden="true">arrow_forward</span>
-        </a>
-        <a class="manager-stock-shortcut is-procurement" href="#manager-procurement">
-          <span class="manager-stock-shortcut-icon"><span class="material-symbols-outlined" aria-hidden="true">local_shipping</span></span>
-          <span><strong>Order stock</strong><small>Prepare a supplier order</small></span>
-          <span class="material-symbols-outlined manager-stock-shortcut-arrow" aria-hidden="true">arrow_forward</span>
-        </a>
-      </div>
       <div class="manager-updated" id="admin-updated">Waiting for dashboard data…</div>
     </section>
 
-    <section class="manager-workspace-hub" id="manager-workspaces" aria-labelledby="manager-workspaces-title">
+    <header class="manager-workspace-page-header" id="manager-workspace-page-header">
       <a class="manager-focused-back" href="#manager-overview">
         <span class="material-symbols-outlined" aria-hidden="true">arrow_back</span>Dashboard
-      </a>
-      <div class="manager-workspace-hub-heading">
-        <span>MANAGER TOOLS</span>
-        <h1 id="manager-workspaces-title">Manage restaurant</h1>
-        <p>Choose a workspace for the task at hand. Your dashboard stays focused on today’s priorities.</p>
-      </div>
-      <div class="manager-workspace-grid">
-        <a class="manager-workspace-link" href="#admin-orders-section">
-          <span class="manager-workspace-icon is-blue"><span class="material-symbols-outlined" aria-hidden="true">receipt_long</span></span>
-          <span><strong>Orders</strong><small>Review recent restaurant orders</small></span>
-          <span class="material-symbols-outlined manager-workspace-arrow" aria-hidden="true">arrow_forward</span>
-        </a>
-        <a class="manager-workspace-link" href="#admin-floor-section">
-          <span class="manager-workspace-icon is-purple"><span class="material-symbols-outlined" aria-hidden="true">table_restaurant</span></span>
-          <span><strong>Floor &amp; tables</strong><small>Check current table status</small></span>
-          <span class="material-symbols-outlined manager-workspace-arrow" aria-hidden="true">arrow_forward</span>
-        </a>
-        <a class="manager-workspace-link" href="#manager-inventory">
-          <span class="manager-workspace-icon is-green"><span class="material-symbols-outlined" aria-hidden="true">inventory_2</span></span>
-          <span><strong>Inventory</strong><small>View stock and record counts</small></span>
-          <span class="material-symbols-outlined manager-workspace-arrow" aria-hidden="true">arrow_forward</span>
-        </a>
-        <a class="manager-workspace-link" href="#manager-procurement">
-          <span class="manager-workspace-icon is-amber"><span class="material-symbols-outlined" aria-hidden="true">local_shipping</span></span>
-          <span><strong>Order stock</strong><small>Create and follow supplier orders</small></span>
-          <span class="material-symbols-outlined manager-workspace-arrow" aria-hidden="true">arrow_forward</span>
-        </a>
-        <a class="manager-workspace-link" href="#admin-team-section">
-          <span class="manager-workspace-icon is-teal"><span class="material-symbols-outlined" aria-hidden="true">groups</span></span>
-          <span><strong>Staff</strong><small>Manage access and staff accounts</small></span>
-          <span class="material-symbols-outlined manager-workspace-arrow" aria-hidden="true">arrow_forward</span>
-        </a>
-        <a class="manager-workspace-link" href="#admin-menu-section">
-          <span class="manager-workspace-icon is-red"><span class="material-symbols-outlined" aria-hidden="true">restaurant_menu</span></span>
-          <span><strong>Menu</strong><small>Manage meals, prices, and photos</small></span>
-          <span class="material-symbols-outlined manager-workspace-arrow" aria-hidden="true">arrow_forward</span>
-        </a>
-        <a class="manager-workspace-link" href="#admin-cash-section">
-          <span class="manager-workspace-icon is-green"><span class="material-symbols-outlined" aria-hidden="true">payments</span></span>
-          <span><strong>Cash reconciliation</strong><small>Record and review drawer counts</small></span>
-          <span class="material-symbols-outlined manager-workspace-arrow" aria-hidden="true">arrow_forward</span>
-        </a>
-        <a class="manager-workspace-link" href="#admin-surplus-section">
-          <span class="manager-workspace-icon is-amber"><span class="material-symbols-outlined" aria-hidden="true">compost</span></span>
-          <span><strong>Surplus &amp; waste</strong><small>Log clearance, staff meals, and waste</small></span>
-          <span class="material-symbols-outlined manager-workspace-arrow" aria-hidden="true">arrow_forward</span>
-        </a>
-        <a class="manager-workspace-link" href="#admin-outlet-section">
-          <span class="manager-workspace-icon is-purple"><span class="material-symbols-outlined" aria-hidden="true">monitoring</span></span>
-          <span><strong>Reports &amp; alerts</strong><small>Review outlet performance and exceptions</small></span>
-          <span class="material-symbols-outlined manager-workspace-arrow" aria-hidden="true">arrow_forward</span>
-        </a>
-      </div>
-    </section>
-
-    <header class="manager-workspace-page-header" id="manager-workspace-page-header">
-      <a class="manager-focused-back" href="#manager-workspaces">
-        <span class="material-symbols-outlined" aria-hidden="true">arrow_back</span>All manager tools
       </a>
       <div>
         <span class="manager-focused-eyebrow">MANAGER WORKSPACE</span>
@@ -772,6 +702,6 @@
   <p class="ls-help" data-outlet-copy="OBUNUZI_YMCA" hidden><a href="/images/obunuzi-photo-credits.txt">Photo credits</a></p>
   <script src="/js/api.js"></script>
   <script src="/js/customer-menu-categories.js?v=10"></script>
-  <script src="/js/admin.js?v=15"></script>
+  <script src="/js/admin.js?v=17"></script>
 </body>
 </html>
