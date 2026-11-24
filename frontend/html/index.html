@@ -1848,6 +1848,26 @@
       flex-direction: column;
       text-align: center;
     }
+
+    html[data-app-outlet="FOODIZO_HAM_TOWERS"] body#top .wrap,
+    html[data-app-outlet="FOODIZO_HAM_TOWERS"] body#top main.wrap,
+    html[data-app-outlet="FOODIZO_HAM_TOWERS"] body#top .topbar-inner {
+      width: calc(100% - 32px);
+    }
+
+    html[data-app-outlet="FOODIZO_HAM_TOWERS"] body#top .customer-hero-empty {
+      width: calc(100% - 32px);
+      margin-inline: auto;
+    }
+
+    @media (max-width: 700px) {
+      html[data-app-outlet="FOODIZO_HAM_TOWERS"] body#top .wrap,
+      html[data-app-outlet="FOODIZO_HAM_TOWERS"] body#top main.wrap,
+      html[data-app-outlet="FOODIZO_HAM_TOWERS"] body#top .topbar-inner,
+      html[data-app-outlet="FOODIZO_HAM_TOWERS"] body#top .customer-hero-empty {
+        width: calc(100% - 16px);
+      }
+    }
   </style>
   <link rel="stylesheet" href="/css/brand_theme.css?v=5" />
   <link rel="stylesheet" href="/css/foodizo-buddy.css?v=1" />

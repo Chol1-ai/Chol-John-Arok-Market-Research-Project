@@ -3953,3 +3953,19 @@ html[data-app-outlet="OBUNUZI_YMCA"] body:not(#top) .customer-cart-nav-count {
     padding-inline: 10px;
   }
 }
+
+/* Keep customer content close to the viewport edge instead of reserving wide gutters. */
+html[data-app-outlet="OBUNUZI_YMCA"] body#top .topbar-inner,
+html[data-app-outlet="OBUNUZI_YMCA"] body#top main.wrap,
+html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-hero-empty {
+  width: calc(100% - 32px);
+  margin-inline: auto;
+}
+
+@media (max-width: 700px) {
+  html[data-app-outlet="OBUNUZI_YMCA"] body#top .topbar-inner,
+  html[data-app-outlet="OBUNUZI_YMCA"] body#top main.wrap,
+  html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-hero-empty {
+    width: calc(100% - 16px);
+  }
+}
