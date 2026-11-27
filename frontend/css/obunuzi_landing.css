@@ -4245,3 +4245,49 @@ html[data-app-outlet="OBUNUZI_YMCA"] body#top .carousel-control-next:focus-visib
     color: #eadcc4;
   }
 }
+
+html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-nav > a:not(.button) {
+  border: 0 !important;
+  background: transparent !important;
+  color: #fffaf2 !important;
+  font-weight: 700;
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-nav > a.button-outline,
+html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-nav > button.customer-notification-toggle {
+  border: 1px solid #d3b77f !important;
+  background: #fffaf2 !important;
+  color: #42131c !important;
+  box-shadow: 0 2px 8px rgb(25 8 12 / 18%) !important;
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-nav > a.button-outline svg,
+html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-nav > a.button-outline .material-symbols-outlined,
+html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-nav > button.customer-notification-toggle .material-symbols-outlined {
+  color: #42131c !important;
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-nav > a.button-primary {
+  border: 1px solid #d3b77f !important;
+  background: #d3b77f !important;
+  color: #35121a !important;
+  font-weight: 800;
+  box-shadow: 0 3px 12px rgb(25 8 12 / 22%) !important;
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-nav > a.button-primary .material-symbols-outlined {
+  color: #35121a !important;
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-nav > a.button-outline:hover,
+html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-nav > a.button-outline:focus-visible,
+html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-nav > button.customer-notification-toggle:hover,
+html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-nav > button.customer-notification-toggle:focus-visible,
+html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-nav > a.button-primary:hover,
+html[data-app-outlet="OBUNUZI_YMCA"] body#top .customer-nav > a.button-primary:focus-visible {
+  border-color: #ead8aa !important;
+  background: #ead8aa !important;
+  color: #35121a !important;
+  outline: 2px solid #fffaf2;
+  outline-offset: 2px;
+}
