@@ -1,15 +1,15 @@
 html[data-app-outlet="OBUNUZI_YMCA"] {
   color-scheme: light;
-  --brand-bg: #fff8f7;
-  --brand-panel: #fffdfb;
-  --brand-panel-raised: #ffffff;
-  --brand-inset: #fbefec;
-  --brand-line: #f0e2e0;
+  --brand-bg: #f6f0e6;
+  --brand-panel: #fffaf2;
+  --brand-panel-raised: #fffdf8;
+  --brand-inset: #efe5d8;
+  --brand-line: #e6d9c8;
   --brand-text: #5c1620;
-  --brand-muted: #806a68;
-  --brand-coral: #d93829;
-  --brand-coral-deep: #b72b24;
-  --brand-amber: #e8ad83;
+  --brand-muted: #806d65;
+  --brand-coral: #5c1620;
+  --brand-coral-deep: #42131c;
+  --brand-amber: #b6965b;
   --brand-green: #526b3e;
   --brand-glass-shadow: 0 12px 30px rgb(92 22 32 / 8%);
   --color-canvas-base: var(--brand-bg);
@@ -1205,6 +1205,90 @@ html[data-app-outlet="OBUNUZI_YMCA"] .waiter-floor-legend i.is-bill {
 
 html[data-app-outlet="OBUNUZI_YMCA"] .waiter-floor-legend i.is-cleaning {
   background: #d93829;
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] body.ls-body,
+html[data-app-outlet="OBUNUZI_YMCA"] body.login-page,
+html[data-app-outlet="OBUNUZI_YMCA"] body.delivery-tracking-page,
+html[data-app-outlet="OBUNUZI_YMCA"] body.dispatch-dashboard,
+html[data-app-outlet="OBUNUZI_YMCA"] body.kds-body,
+html[data-app-outlet="OBUNUZI_YMCA"] body.waiter-dashboard,
+html[data-app-outlet="OBUNUZI_YMCA"] body.manager-dashboard {
+  background:
+    radial-gradient(ellipse at 8% 0, rgb(182 150 91 / 12%), transparent 25rem),
+    linear-gradient(180deg, #fffaf2, #f6f0e6 48rem) !important;
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] .manager-topbar,
+html[data-app-outlet="OBUNUZI_YMCA"] .waiter-topbar,
+html[data-app-outlet="OBUNUZI_YMCA"] .kds-topbar {
+  border-color: #e6d9c8 !important;
+  background: rgb(255 250 242 / 96%) !important;
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] .manager-panel,
+html[data-app-outlet="OBUNUZI_YMCA"] .manager-kpi,
+html[data-app-outlet="OBUNUZI_YMCA"] .waiter-panel,
+html[data-app-outlet="OBUNUZI_YMCA"] .waiter-kpi,
+html[data-app-outlet="OBUNUZI_YMCA"] .kds-stat,
+html[data-app-outlet="OBUNUZI_YMCA"] .kds-ticket,
+html[data-app-outlet="OBUNUZI_YMCA"] .kds-settings {
+  border-color: #e6d9c8 !important;
+  background: #fffaf2 !important;
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] .manager-nav a.is-active,
+html[data-app-outlet="OBUNUZI_YMCA"] .waiter-nav a.is-active,
+html[data-app-outlet="OBUNUZI_YMCA"] .kds-nav-item.is-active {
+  border-color: rgb(255 255 255 / 15%) !important;
+  background: #5c1620 !important;
+  color: #fffaf2 !important;
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] .manager-nav a.is-active::before {
+  background: #d3b77f !important;
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] .kds-kpi,
+html[data-app-outlet="OBUNUZI_YMCA"] .kds-ticket {
+  --ticket-accent: #5c1620;
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] .kds-ticket[data-status="PREPARING"] {
+  --ticket-accent: #b6965b;
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] .kds-ticket[data-status="OVERDUE"],
+html[data-app-outlet="OBUNUZI_YMCA"] .kds-ticket.is-overdue {
+  --ticket-accent: #42131c;
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] .kds-ticket-action,
+html[data-app-outlet="OBUNUZI_YMCA"] .kds-primary-button,
+html[data-app-outlet="OBUNUZI_YMCA"] .manager-dashboard .ls-btn--primary,
+html[data-app-outlet="OBUNUZI_YMCA"] .manager-dashboard .ls-btn--dark,
+html[data-app-outlet="OBUNUZI_YMCA"] .waiter-primary-action,
+html[data-app-outlet="OBUNUZI_YMCA"] .waiter-menu-add,
+html[data-app-outlet="OBUNUZI_YMCA"] body[data-surface] .ls-btn--primary,
+html[data-app-outlet="OBUNUZI_YMCA"] body[data-surface] .ls-btn--dark,
+html[data-app-outlet="OBUNUZI_YMCA"] .waiter-dashboard .button-primary {
+  border-color: #5c1620 !important;
+  background: #5c1620 !important;
+  color: #fffaf2 !important;
+  box-shadow: 0 7px 18px rgb(92 22 32 / 18%) !important;
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] .manager-chart-line,
+html[data-app-outlet="OBUNUZI_YMCA"] .manager-chart-point {
+  stroke: #b6965b;
+  fill: #b6965b;
+}
+
+html[data-app-outlet="OBUNUZI_YMCA"] body[data-surface] input:focus,
+html[data-app-outlet="OBUNUZI_YMCA"] body[data-surface] select:focus,
+html[data-app-outlet="OBUNUZI_YMCA"] body[data-surface] textarea:focus {
+  border-color: #b6965b;
+  box-shadow: 0 0 0 3px rgb(182 150 91 / 20%);
 }
 
 @media (max-width: 760px) {
