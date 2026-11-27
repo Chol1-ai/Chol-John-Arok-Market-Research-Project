@@ -1871,7 +1871,7 @@
   </style>
   <link rel="stylesheet" href="/css/brand_theme.css?v=5" />
   <link rel="stylesheet" href="/css/foodizo-buddy.css?v=1" />
-  <link rel="stylesheet" href="/css/obunuzi_landing.css?v=35" />
+  <link rel="stylesheet" href="/css/obunuzi_landing.css?v=37" />
 </head>
 
 <body id="top">
@@ -2016,8 +2016,25 @@
         </div>
         <span class="visually-hidden" id="favorites-status" role="status" aria-live="polite"></span>
       </div>
-      <div class="best-sellers-grid" id="best-sellers-grid" aria-live="polite">
-        <p class="section-description" role="status">Loading popular meals…</p>
+      <div class="carousel slide best-sellers-carousel" id="best-sellers-carousel">
+        <div class="carousel-indicators" id="best-sellers-indicators" aria-label="Choose a bestselling meal"></div>
+        <div class="carousel-inner best-sellers-grid" id="best-sellers-grid" aria-live="polite">
+          <p class="section-description" role="status">Loading popular meals…</p>
+        </div>
+        <button class="carousel-control-prev best-sellers-carousel-control" id="best-sellers-previous"
+          type="button" aria-label="Previous bestsellers" aria-controls="best-sellers-grid" disabled>
+          <span class="carousel-control-prev-icon" aria-hidden="true">
+            <span class="material-symbols-outlined">chevron_left</span>
+          </span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next best-sellers-carousel-control" id="best-sellers-next"
+          type="button" aria-label="Next bestsellers" aria-controls="best-sellers-grid" disabled>
+          <span class="carousel-control-next-icon" aria-hidden="true">
+            <span class="material-symbols-outlined">chevron_right</span>
+          </span>
+          <span class="visually-hidden">Next</span>
+        </button>
       </div>
     </section>
     <section class="section browse-section customer-section" id="menu" aria-labelledby="browse-title">
@@ -2240,7 +2257,7 @@
     </section>
   </div>
   <script src="/js/customer-menu-categories.js?v=13"></script>
-  <script src="/js/customer-home.js?v=20261121-6"></script>
+  <script src="/js/customer-home.js?v=20261127-2"></script>
   <script src="/js/customer-cart-navigation.js?v=2" defer></script>
   <script src="/js/customer-notifications.js?v=1" defer></script>
   <script src="/js/customer-navigation.js" defer></script>

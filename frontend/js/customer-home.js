@@ -9,7 +9,11 @@
   const form = document.getElementById('delivery-finder');
   const menuGroups = document.getElementById('home-menu-groups');
   const allMealsLink = document.getElementById('see-all-meals');
+  const bestSellersCarousel = document.getElementById('best-sellers-carousel');
   const bestSellersGrid = document.getElementById('best-sellers-grid');
+  const bestSellersIndicators = document.getElementById('best-sellers-indicators');
+  const bestSellersPrevious = document.getElementById('best-sellers-previous');
+  const bestSellersNext = document.getElementById('best-sellers-next');
   const bestSellersTitle = document.getElementById('best-sellers-title');
   const bestSellersDescription = document.getElementById('best-sellers-description');
   const favoritesStatus = document.getElementById('favorites-status');
@@ -43,6 +47,12 @@
   const prefersReducedMotion = Boolean(
     window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
   );
+  if (bestSellersGrid && APP_CONFIG.outlet === 'OBUNUZI_YMCA') {
+    bestSellersGrid.setAttribute('role', 'region');
+    bestSellersGrid.setAttribute('aria-label', 'Bestselling meals');
+    bestSellersGrid.setAttribute('aria-roledescription', 'carousel');
+    bestSellersGrid.setAttribute('tabindex', '0');
+  }
   const categoryRevealObserver = !prefersReducedMotion && 'IntersectionObserver' in window
     ? new window.IntersectionObserver((entries, observer) => {
       entries.forEach((entry) => {
@@ -52,6 +62,88 @@
       });
     }, { rootMargin: '0px 0px -24px 0px', threshold: 0.12 })
     : null;
+
+  function updateBestSellersCarouselControls() {
+    if (!bestSellersGrid || !bestSellersCarousel) return;
+    const maxScroll = bestSellersGrid.scrollWidth - bestSellersGrid.clientWidth;
+    const isCarousel = APP_CONFIG.outlet === 'OBUNUZI_YMCA' && maxScroll > 1;
+    bestSellersCarousel.classList.toggle('best-sellers-carousel-ready', isCarousel);
+    if (bestSellersPrevious) bestSellersPrevious.disabled = !isCarousel || bestSellersGrid.scrollLeft <= 1;
+    if (bestSellersNext) bestSellersNext.disabled = !isCarousel || bestSellersGrid.scrollLeft >= maxScroll - 1;
+
+    if (isCarousel && bestSellersIndicators) {
+      const cards = [...bestSellersGrid.querySelectorAll('.best-seller-card')];
+      let activeIndex = 0;
+      let closestDistance = Number.POSITIVE_INFINITY;
+      cards.forEach((card, index) => {
+        const distance = Math.abs(card.offsetLeft - bestSellersGrid.scrollLeft);
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          activeIndex = index;
+        }
+      });
+      bestSellersIndicators.querySelectorAll('[data-bs-slide-to]').forEach((indicator, index) => {
+        const active = index === activeIndex;
+        indicator.classList.toggle('active', active);
+        indicator.toggleAttribute('aria-current', active);
+      });
+    }
+  }
+
+  function refreshBestSellersCarouselControls() {
+    window.requestAnimationFrame(updateBestSellersCarouselControls);
+  }
+
+  function renderBestSellersIndicators(count) {
+    if (!bestSellersIndicators) return;
+    bestSellersIndicators.innerHTML = Array.from({ length: count }, (_, index) => `
+      <button type="button" data-bs-target="#best-sellers-carousel" data-bs-slide-to="${index}"
+        class="${index === 0 ? 'active' : ''}" ${index === 0 ? 'aria-current="true"' : ''}
+        aria-label="Slide ${index + 1}"></button>
+    `).join('');
+    bestSellersIndicators.querySelectorAll('[data-bs-slide-to]').forEach((indicator) => {
+      indicator.addEventListener('click', () => {
+        const card = bestSellersGrid?.querySelectorAll('.best-seller-card')[Number(indicator.dataset.bsSlideTo)];
+        if (!card) return;
+        bestSellersGrid.scrollTo({
+          left: card.offsetLeft,
+          behavior: prefersReducedMotion ? 'auto' : 'smooth'
+        });
+      });
+    });
+  }
+
+  function scrollBestSellers(direction) {
+    if (!bestSellersGrid) return;
+    const firstCard = bestSellersGrid.querySelector('.best-seller-card');
+    if (!firstCard) return;
+    const styles = window.getComputedStyle(bestSellersGrid);
+    const gap = Number.parseFloat(styles.columnGap || styles.gap) || 0;
+    bestSellersGrid.scrollBy({
+      left: direction * (firstCard.getBoundingClientRect().width + gap),
+      behavior: prefersReducedMotion ? 'auto' : 'smooth'
+    });
+  }
+
+  if (bestSellersPrevious) bestSellersPrevious.addEventListener('click', () => scrollBestSellers(-1));
+  if (bestSellersNext) bestSellersNext.addEventListener('click', () => scrollBestSellers(1));
+  if (bestSellersGrid) {
+    bestSellersGrid.addEventListener('scroll', updateBestSellersCarouselControls, { passive: true });
+    bestSellersGrid.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        scrollBestSellers(-1);
+      } else if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        scrollBestSellers(1);
+      }
+    });
+    window.addEventListener('resize', refreshBestSellersCarouselControls);
+    if ('ResizeObserver' in window) {
+      const bestSellersResizeObserver = new window.ResizeObserver(refreshBestSellersCarouselControls);
+      bestSellersResizeObserver.observe(bestSellersGrid);
+    }
+  }
 
   if (outlet) {
     const requestedOutlet = new URLSearchParams(location.search).get('outlet');
@@ -162,16 +254,20 @@
       bestSellersGrid.innerHTML = favoritesView
         ? '<p class="section-description">No favorites saved yet. Tap the heart on a meal to save it here.</p>'
         : '<p class="section-description">No featured meals are available at this outlet right now.</p>';
+      if (bestSellersIndicators) bestSellersIndicators.innerHTML = '';
+      refreshBestSellersCarouselControls();
       return;
     }
 
     const favorites = savedFavorites();
-    bestSellersGrid.innerHTML = selectedItems.map((item) => {
+    bestSellersGrid.innerHTML = selectedItems.map((item, index) => {
       const selected = favorites.includes(item.id);
       const orderUrl = `/order?q=${encodeURIComponent(item.name)}&outlet=${encodeURIComponent(activeOutletValue())}`;
       const image = menuItemImage(item);
       return `
-        <article class="best-seller-card">
+        <article class="best-seller-card" ${
+          isObunuzi ? `role="group" aria-roledescription="slide" aria-label="${index + 1} of ${selectedItems.length}"` : ''
+        }>
           ${
             image
               ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(item.name)}" loading="lazy" />`
@@ -193,6 +289,9 @@
         </article>
       `;
     }).join('');
+
+    renderBestSellersIndicators(isObunuzi ? selectedItems.length : 0);
+    refreshBestSellersCarouselControls();
 
     bestSellersGrid.querySelectorAll('[data-favorite-id]').forEach((button) => {
       button.addEventListener('click', () => {
